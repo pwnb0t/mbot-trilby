@@ -3,10 +3,50 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ownbotsidekick"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+        Title="ownbot Sidekick Overlay"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        WindowState="Maximized"
+        Loaded="Window_Loaded">
+    <Grid Background="Transparent">
+        <Border HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="24"
+                Background="#CC111111"
+                BorderBrush="#66FFFFFF"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="16">
+            <StackPanel Width="320">
+                <TextBlock Text="Sidekick Overlay (Phase 1)"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           Margin="0,0,0,12" />
+                <UniformGrid Rows="1" Columns="3" Margin="0,0,0,12">
+                    <Button Content="Clip A" Margin="4" Padding="8" Click="ClipAButton_Click" />
+                    <Button Content="Clip B" Margin="4" Padding="8" Click="ClipBButton_Click" />
+                    <Button Content="Clip C" Margin="4" Padding="8" Click="ClipCButton_Click" />
+                </UniformGrid>
+                <TextBlock Text="Log output"
+                           FontSize="12"
+                           Foreground="#DDFFFFFF"
+                           Margin="0,0,0,6" />
+                <TextBox x:Name="LogTextBox"
+                         Height="150"
+                         IsReadOnly="True"
+                         VerticalScrollBarVisibility="Auto"
+                         TextWrapping="Wrap"
+                         Background="#44000000"
+                         Foreground="White"
+                         BorderBrush="#66FFFFFF"
+                         BorderThickness="1" />
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>
