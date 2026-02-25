@@ -22,6 +22,7 @@ namespace ownbotsidekick
         private bool _hotkeyRegistered;
         private bool _exitRequested;
         private Forms.NotifyIcon? _trayIcon;
+        private Icon? _customTrayIcon;
 
         public MainWindow()
         {
@@ -125,6 +126,12 @@ namespace ownbotsidekick
                 _trayIcon = null;
             }
 
+            if (_customTrayIcon is not null)
+            {
+                _customTrayIcon.Dispose();
+                _customTrayIcon = null;
+            }
+
             base.OnClosed(e);
         }
 
@@ -175,9 +182,10 @@ namespace ownbotsidekick
 
         private void InitializeTrayIcon()
         {
+            var trayIconImage = LoadTrayIcon();
             _trayIcon = new Forms.NotifyIcon
             {
-                Icon = SystemIcons.Application,
+                Icon = trayIconImage,
                 Text = "ownbotsidekick",
                 Visible = true
             };
@@ -190,7 +198,28 @@ namespace ownbotsidekick
 
             _trayIcon.ContextMenuStrip = trayMenu;
             _trayIcon.DoubleClick += (_, _) => ToggleOverlayVisibility();
-            Log("Tray icon initialized.");
+            Log(trayIconImage == SystemIcons.Application
+                ? "Tray icon initialized with fallback icon (mbot.ico not available)."
+                : "Tray icon initialized from mbot.ico.");
+        }
+
+        private Icon LoadTrayIcon()
+        {
+            var iconPath = Path.Combine(AppContext.BaseDirectory, "mbot.ico");
+            if (!File.Exists(iconPath))
+            {
+                return SystemIcons.Application;
+            }
+
+            try
+            {
+                _customTrayIcon = new Icon(iconPath);
+                return _customTrayIcon;
+            }
+            catch
+            {
+                return SystemIcons.Application;
+            }
         }
 
         private void ShowOverlayFromTray()

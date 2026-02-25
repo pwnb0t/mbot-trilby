@@ -18,6 +18,7 @@ E:\g\ownbot\TODO.md also has a section about this Sidekick app.
 - Global hotkey support using `RegisterHotKey` to show/hide overlay.
 - System tray icon flow:
   - Tray icon is always available while app runs.
+  - Uses `mbot.ico` (generated from `mbot-square-cropped.png` and copied to build output); falls back to default app icon if icon is unavailable.
   - Tray menu supports `Show Overlay`, `Hide Overlay`, and `Exit`.
   - Closing window (`X` / Alt+F4) now hides to tray instead of exiting.
 - JSON config (`appsettings.json`) for hotkey and overlay startup behavior:
@@ -44,6 +45,7 @@ E:\g\ownbot\TODO.md also has a section about this Sidekick app.
 - `ownbotsidekick/ownbotsidekick.csproj`
   - Added copy-to-output for `appsettings.json`.
   - Enabled `<UseWindowsForms>true</UseWindowsForms>` for tray icon support.
+  - Added copy-to-output for root `mbot.ico` as linked file.
 
 ## Build/Run Verification (PowerShell)
 ```powershell
@@ -67,7 +69,7 @@ Expected behavior:
 ## Next Suggested Steps (Phase 1 completion)
 1. Confirm hotkey behavior on the target machine keyboard layout.
 2. Confirm startup/run behavior in Visual Studio on target machine.
-3. Decide whether to add tray icon exit/reopen flow before Phase 2.
+3. Finalize Phase 1 acceptance and start Phase 2 scope.
 
 ## Notes
 - Solution file appears as `.slnx` in VS 2026 (`ownbotsidekick.slnx`).
