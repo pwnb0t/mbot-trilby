@@ -6,22 +6,22 @@ E:\g\ownbot\TODO.md also has a section about this Sidekick app.
 ## Snapshot
 - Date: 2026-02-25
 - Phase: Sidekick app Phase 1 (overlay proof-of-concept)
-- Environment note: last edits were made from WSL path `/mnt/e/g/ownbotsidekick`; build/run should be done from Windows/Visual Studio.
+- Environment note: build/run should be done from Windows/Visual Studio (not WSL).
 
 ## What Is Implemented
-- Transparent, topmost overlay window in WPF.
+- Transparent, topmost WPF overlay window.
 - 3 clickable buttons (`Clip A`, `Clip B`, `Clip C`).
 - Button clicks log to:
   - Visual Studio Debug output
   - On-screen log textbox
   - File log at `%LocalAppData%\\ownbotsidekick\\logs\\overlay.log`
 - Global hotkey support using `RegisterHotKey` to show/hide overlay.
-- Overlay show behavior is now non-activating (`ShowActivated=False` + no-activate extended style) to reduce game focus/audio interruptions.
+- Non-activating overlay behavior for in-game use (WS_EX_NOACTIVATE + no `Activate()` calls), validated in Rocket League borderless mode with game audio preserved while overlay is shown.
 - System tray icon flow:
   - Tray icon is always available while app runs.
   - Uses `mbot.ico` (generated from `mbot-square-cropped.png` and copied to build output); falls back to default app icon if icon is unavailable.
   - Tray menu supports `Show Overlay`, `Hide Overlay`, and `Exit`.
-  - Closing window (`X` / Alt+F4) now hides to tray instead of exiting.
+  - Closing window (`X` / Alt+F4) hides to tray instead of exiting.
 - JSON config (`appsettings.json`) for hotkey and overlay startup behavior:
   - `Hotkey.Modifiers` (default `Alt`)
   - `Hotkey.Key` (default `Oem3`, backtick key on US layout)
@@ -30,23 +30,24 @@ E:\g\ownbot\TODO.md also has a section about this Sidekick app.
 
 ## Files Changed
 - `ownbotsidekick/MainWindow.xaml`
-  - Window configured as borderless overlay (`WindowStyle=None`, `AllowsTransparency=True`, `Topmost=True`, `WindowState=Maximized`, etc.)
-  - Added overlay panel UI, 3 buttons, and log textbox.
+  - Borderless overlay window config and overlay panel UI (buttons + log textbox).
 - `ownbotsidekick/MainWindow.xaml.cs`
-  - Added click handlers for all 3 buttons.
-  - Added `Log(string)` helper.
-  - Added startup logging in `Window_Loaded`.
-  - Added global hotkey registration/unregistration and WM_HOTKEY handling.
-  - Added overlay visibility toggle and appsettings loading/parsing.
-  - Added tray icon initialization, tray menu actions, and close-to-tray behavior.
+  - Button click handlers and `Log(string)` helper.
+  - Startup logging.
+  - Global hotkey register/unregister and WM_HOTKEY handling.
+  - Overlay visibility toggle and appsettings loading/parsing.
+  - Tray icon initialization, tray menu actions, and close-to-tray behavior.
+  - Non-activating overlay handle style (`WS_EX_NOACTIVATE`).
 - `ownbotsidekick/App.xaml.cs`
-  - Updated `App` base type to `System.Windows.Application` to avoid ambiguity after enabling WinForms.
+  - `App` base type explicitly set to `System.Windows.Application` (avoids WinForms ambiguity).
 - `ownbotsidekick/appsettings.json`
-  - Added default hotkey/overlay behavior config.
+  - Default hotkey/overlay config.
 - `ownbotsidekick/ownbotsidekick.csproj`
-  - Added copy-to-output for `appsettings.json`.
-  - Enabled `<UseWindowsForms>true</UseWindowsForms>` for tray icon support.
-  - Added copy-to-output for root `mbot.ico` as linked file.
+  - Copy-to-output for `appsettings.json`.
+  - `<UseWindowsForms>true</UseWindowsForms>` for tray support.
+  - Copy-to-output for root `mbot.ico` as linked file.
+- `.gitattributes` and `.editorconfig`
+  - Enforced CRLF line endings for VS consistency.
 
 ## Build/Run Verification (PowerShell)
 ```powershell
@@ -60,17 +61,12 @@ Then run via Visual Studio and test:
 - Press `Alt+`` to hide/show overlay.
 - Use tray icon menu to show/hide and `Exit`.
 - Close window and confirm app remains in tray.
+- In Rocket League (borderless), confirm overlay toggles without stealing focus/audio.
 
-Expected behavior:
-- Overlay appears full-screen transparent with a visible control panel.
-- Clicking each button appends timestamped log lines in UI and log file.
-- Hotkey toggles overlay visibility even when overlay is hidden.
-- Tray icon can reopen overlay and cleanly exit app.
-
-## Next Suggested Steps (Phase 1 completion)
-1. Confirm hotkey behavior on the target machine keyboard layout.
-2. Confirm startup/run behavior in Visual Studio on target machine.
-3. Finalize Phase 1 acceptance and start Phase 2 scope.
+## Next Suggested Steps
+1. Finalize Phase 1 acceptance checklist.
+2. Define Phase 2 scope (overlay interactions and clip workflow).
+3. Decide whether to add hold-to-show radial mode.
 
 ## Notes
 - Solution file appears as `.slnx` in VS 2026 (`ownbotsidekick.slnx`).
