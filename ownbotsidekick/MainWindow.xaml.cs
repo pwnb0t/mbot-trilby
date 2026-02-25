@@ -16,6 +16,8 @@ namespace ownbotsidekick
     {
         private const int WmHotKey = 0x0312;
         private const int HotkeyId = 1;
+        private const int GwlExStyle = -20;
+        private const int WsExNoActivate = 0x08000000;
 
         private readonly string _logFilePath;
         private readonly AppSettings _settings;
@@ -92,6 +94,7 @@ namespace ownbotsidekick
             var helper = new WindowInteropHelper(this);
             var source = HwndSource.FromHwnd(helper.Handle);
             source?.AddHook(WndProc);
+            EnableNoActivateMode(helper.Handle);
 
             InitializeTrayIcon();
             RegisterOverlayHotkey(helper.Handle);
@@ -175,7 +178,6 @@ namespace ownbotsidekick
             }
 
             Show();
-            Activate();
             Topmost = _settings.Overlay.Topmost;
             Log("Overlay shown.");
         }
@@ -230,9 +232,16 @@ namespace ownbotsidekick
             }
 
             Show();
-            Activate();
             Topmost = _settings.Overlay.Topmost;
             Log("Overlay shown from tray.");
+        }
+
+        private void EnableNoActivateMode(IntPtr hwnd)
+        {
+            var currentExStyle = GetWindowLongPtr(hwnd, GwlExStyle).ToInt64();
+            var updatedExStyle = new IntPtr(currentExStyle | WsExNoActivate);
+            SetWindowLongPtr(hwnd, GwlExStyle, updatedExStyle);
+            Log("Overlay no-activate mode enabled.");
         }
 
         private void HideOverlayFromTray()
@@ -334,6 +343,12 @@ namespace ownbotsidekick
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW", SetLastError = true)]
+        private static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
+        private static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
         [Flags]
         private enum HotkeyModifiers : uint

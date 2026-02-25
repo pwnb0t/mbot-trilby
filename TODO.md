@@ -42,3 +42,14 @@ Per game profiles
 Shared profiles (per server per game)
     e.g. siege profile in RZDZ server that lists all the operator clips
 
+
+-----
+
+I am now trying to test the app while in a game (Rocket League).
+I am going to compare with Discord's overlay features. Discord has 3 different overlay features. They only work if the game is set to borderless (or windowed) and not fullscreen. Borderless is what I normally run, so that's fine. Here are the 3 different overlay features:
+1. Channel List - There is a channel listing that always shows while in game. It will light up a user's name when they're talking. In RL, this has no effect on the game.
+2. Main Overlay - pressing a key command (shift+\` maybe? mine is rebound to ctrl+shift+\`), will open the "main" overlay which has voice/mute/deafen settings, where you can change the overlay for (1), notification settings, etc. In RL, when this is activate, RL is muted like it loses focus (same as if I alt-tab). But I can still see RL behind the transparent overlay (though it is darkened just a bit).
+3. Soundboard Radial - they have a radial menu for doing soundboard stuff. It requires a key command (ctrl+\` by default). Almost no effect on RL when activated. RL does not lose focus or sound, and it does not darken. You can mouse over the option in the radial menu and when you let go of ctrl+\` it plays the sound.
+
+For Sidekick, when I hit the alt+` key combination, the in-game music stops (like it loses focus), but I can see the overlay window. This matches the behavior of the "main" Discord overlay (like if I hit the key combination to bring up voice settings and what not). I would  prefer if it more matched the Soundboard Radial and the user did not lose in-game sound. But I don't know if that is a possibility.
+

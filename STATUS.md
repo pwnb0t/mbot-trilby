@@ -16,6 +16,7 @@ E:\g\ownbot\TODO.md also has a section about this Sidekick app.
   - On-screen log textbox
   - File log at `%LocalAppData%\\ownbotsidekick\\logs\\overlay.log`
 - Global hotkey support using `RegisterHotKey` to show/hide overlay.
+- Overlay show behavior is now non-activating (`ShowActivated=False` + no-activate extended style) to reduce game focus/audio interruptions.
 - System tray icon flow:
   - Tray icon is always available while app runs.
   - Uses `mbot.ico` (generated from `mbot-square-cropped.png` and copied to build output); falls back to default app icon if icon is unavailable.
