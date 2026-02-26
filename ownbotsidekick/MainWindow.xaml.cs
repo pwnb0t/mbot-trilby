@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using ownbotsidekick.Services;
 using Forms = System.Windows.Forms;
 
 namespace ownbotsidekick
@@ -25,6 +26,7 @@ namespace ownbotsidekick
         private bool _exitRequested;
         private Forms.NotifyIcon? _trayIcon;
         private Icon? _customTrayIcon;
+        private SidekickApiClientService? _sidekickApiClient;
 
         public MainWindow()
         {
@@ -32,6 +34,13 @@ namespace ownbotsidekick
 
             _settings = LoadSettings();
             Topmost = _settings.Overlay.Topmost;
+            if (_settings.SidekickApi.Enabled)
+            {
+                _sidekickApiClient = new SidekickApiClientService(
+                    _settings.SidekickApi.BaseUrl,
+                    _settings.SidekickApi.GuildId
+                );
+            }
 
             var logDirectory = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -46,7 +55,14 @@ namespace ownbotsidekick
         {
             Log("Overlay loaded.");
             Log($"Hotkey: {DescribeHotkey(_settings.Hotkey)}");
-            Log("Clicking buttons currently logs only (Phase 1).");
+            Log(_settings.SidekickApi.Enabled
+                ? "Sidekick API client enabled."
+                : "Sidekick API client disabled in appsettings.");
+            Log($"Clip triggers: A={_settings.SidekickApi.ClipATrigger}, B={_settings.SidekickApi.ClipBTrigger}, C={_settings.SidekickApi.ClipCTrigger}");
+            if (_sidekickApiClient is not null)
+            {
+                _ = InitializeHealthCheckAsync();
+            }
 
             if (_settings.Overlay.StartHidden)
             {
@@ -55,19 +71,19 @@ namespace ownbotsidekick
             }
         }
 
-        private void ClipAButton_Click(object sender, RoutedEventArgs e)
+        private async void ClipAButton_Click(object sender, RoutedEventArgs e)
         {
-            Log("Clip A clicked");
+            await PlayClipAsync("Clip A", _settings.SidekickApi.ClipATrigger);
         }
 
-        private void ClipBButton_Click(object sender, RoutedEventArgs e)
+        private async void ClipBButton_Click(object sender, RoutedEventArgs e)
         {
-            Log("Clip B clicked");
+            await PlayClipAsync("Clip B", _settings.SidekickApi.ClipBTrigger);
         }
 
-        private void ClipCButton_Click(object sender, RoutedEventArgs e)
+        private async void ClipCButton_Click(object sender, RoutedEventArgs e)
         {
-            Log("Clip C clicked");
+            await PlayClipAsync("Clip C", _settings.SidekickApi.ClipCTrigger);
         }
 
         private void Log(string message)
@@ -135,7 +151,55 @@ namespace ownbotsidekick
                 _customTrayIcon = null;
             }
 
+            _sidekickApiClient?.Dispose();
+            _sidekickApiClient = null;
+
             base.OnClosed(e);
+        }
+
+        private async System.Threading.Tasks.Task InitializeHealthCheckAsync()
+        {
+            try
+            {
+                if (_sidekickApiClient is null)
+                {
+                    return;
+                }
+
+                var message = await _sidekickApiClient.GetHealthSummaryAsync();
+                Log(message);
+            }
+            catch (Exception ex)
+            {
+                Log($"Health check failed: {ex.Message}");
+            }
+        }
+
+        private async System.Threading.Tasks.Task PlayClipAsync(string clipName, string trigger)
+        {
+            if (_sidekickApiClient is null)
+            {
+                Log($"{clipName} clicked, but Sidekick API is disabled.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(trigger))
+            {
+                Log($"{clipName} clicked, but trigger is empty.");
+                return;
+            }
+
+            Log($"{clipName} clicked -> trigger '{trigger}'");
+
+            try
+            {
+                var message = await _sidekickApiClient.PlayTriggerAsync(trigger);
+                Log(message);
+            }
+            catch (Exception ex)
+            {
+                Log($"Play trigger failed: {ex.Message}");
+            }
         }
 
         private void RegisterOverlayHotkey(IntPtr hwnd)
@@ -365,6 +429,7 @@ namespace ownbotsidekick
         {
             public HotkeySettings Hotkey { get; set; } = new();
             public OverlaySettings Overlay { get; set; } = new();
+            public SidekickApiSettings SidekickApi { get; set; } = new();
         }
 
         private sealed class HotkeySettings
@@ -377,6 +442,16 @@ namespace ownbotsidekick
         {
             public bool StartHidden { get; set; }
             public bool Topmost { get; set; } = true;
+        }
+
+        private sealed class SidekickApiSettings
+        {
+            public bool Enabled { get; set; }
+            public string BaseUrl { get; set; } = "http://127.0.0.1:8765";
+            public long GuildId { get; set; }
+            public string ClipATrigger { get; set; } = "clip-a";
+            public string ClipBTrigger { get; set; } = "clip-b";
+            public string ClipCTrigger { get; set; } = "clip-c";
         }
     }
 }

@@ -1,0 +1,228 @@
+openapi: 3.1.0
+info:
+  title: Sidekick Control API
+  version: 0.0.2
+servers:
+- url: http://127.0.0.1:8765
+paths:
+  /v1/health:
+    get:
+      operationId: GetHealth
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+          description: Successful Response
+      summary: Health
+  /v1/triggerables/play:
+    post:
+      operationId: PlayTrigger
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayTriggerRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayTriggerResponse"
+          description: Successful Response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad request error response.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Trigger not found error response.
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Voice not connected error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      summary: Play Trigger
+components:
+  schemas:
+    ApiErrorResponse:
+      example:
+        code: code
+        ok: true
+        message: message
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        code:
+          title: Code
+          type: string
+        message:
+          title: Message
+          type: string
+      required:
+      - code
+      - message
+      - ok
+      title: ApiErrorResponse
+    HTTPValidationError:
+      example:
+        detail:
+        - msg: msg
+          loc:
+          - Location_inner
+          - Location_inner
+          input: ""
+          ctx: "{}"
+          type: type
+        - msg: msg
+          loc:
+          - Location_inner
+          - Location_inner
+          input: ""
+          ctx: "{}"
+          type: type
+      properties:
+        detail:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          title: Detail
+          type: array
+      title: HTTPValidationError
+    HealthResponse:
+      example:
+        service: service
+        ok: true
+        version: version
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        service:
+          title: Service
+          type: string
+        version:
+          title: Version
+          type: string
+      required:
+      - ok
+      - service
+      - version
+      title: HealthResponse
+    PlayTriggerRequest:
+      example:
+        guild_id: 0
+        trigger: trigger
+        request_id: request_id
+      properties:
+        guild_id:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0.0
+          title: Guild Id
+          type: integer
+        trigger:
+          maxLength: 64
+          minLength: 1
+          title: Trigger
+          type: string
+        request_id:
+          nullable: true
+          type: string
+      required:
+      - guild_id
+      - trigger
+      title: PlayTriggerRequest
+    PlayTriggerResponse:
+      example:
+        guild_id: 0
+        resolved_trigger: resolved_trigger
+        trigger: trigger
+        ok: true
+        request_id: request_id
+        status: playing
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        trigger:
+          title: Trigger
+          type: string
+        resolved_trigger:
+          title: Resolved Trigger
+          type: string
+        status:
+          enum:
+          - playing
+          title: Status
+          type: string
+        request_id:
+          nullable: true
+          type: string
+      required:
+      - guild_id
+      - ok
+      - resolved_trigger
+      - status
+      - trigger
+      title: PlayTriggerResponse
+    ValidationError:
+      example:
+        msg: msg
+        loc:
+        - Location_inner
+        - Location_inner
+        input: ""
+        ctx: "{}"
+        type: type
+      properties:
+        loc:
+          items:
+            $ref: "#/components/schemas/Location_inner"
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+        input:
+          title: Input
+        ctx:
+          title: Context
+          type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    Location_inner:
+      anyOf:
+      - type: string
+      - type: integer
+
