@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,9 +43,9 @@ namespace ownbotsidekick.Services
 
             var response = await _api.PlayTriggerAsync(request, cancellationToken).ConfigureAwait(false);
 
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            if (response.IsOk)
             {
-                return $"Played '{ok.ResolvedTrigger}' in guild {ok.GuildId}.";
+                return BuildPlaySuccessMessage(response.RawContent);
             }
 
             if (response.IsConflict && response.TryConflict(out var conflict) && conflict is not null)
@@ -75,6 +76,38 @@ namespace ownbotsidekick.Services
             }
 
             return $"Unexpected status: {(int)response.StatusCode} ({response.StatusCode}).";
+        }
+
+        private static string BuildPlaySuccessMessage(string rawContent)
+        {
+            if (string.IsNullOrWhiteSpace(rawContent))
+            {
+                return "Play request succeeded.";
+            }
+
+            try
+            {
+                using var document = JsonDocument.Parse(rawContent);
+                var root = document.RootElement;
+                var resolvedTrigger = root.TryGetProperty("resolved_trigger", out var resolved)
+                    ? resolved.GetString()
+                    : null;
+                var guildId = root.TryGetProperty("guild_id", out var guildIdElement) &&
+                              guildIdElement.TryGetInt64(out var guildIdValue)
+                    ? guildIdValue.ToString()
+                    : "unknown";
+
+                if (!string.IsNullOrWhiteSpace(resolvedTrigger))
+                {
+                    return $"Played '{resolvedTrigger}' in guild {guildId}.";
+                }
+
+                return $"Play request succeeded in guild {guildId}.";
+            }
+            catch
+            {
+                return "Play request succeeded.";
+            }
         }
 
         public async Task<string> GetHealthSummaryAsync(CancellationToken cancellationToken = default)
