@@ -5,6 +5,12 @@ using System.Windows.Controls;
 
 namespace ownbotsidekick.Services
 {
+    internal enum OverlayShowSource
+    {
+        Standard,
+        Tray
+    }
+
     internal sealed class OverlayController
     {
         private const int GwlExStyle = -20;
@@ -67,14 +73,14 @@ namespace ownbotsidekick.Services
             return panelRect.Contains(screenPoint);
         }
 
-        public void Show(string logMessage, bool topmost)
+        public void Show(OverlayShowSource source, bool topmost)
         {
             _resetSearchState();
             _setOverlayVisible(true);
             IsVisible = true;
             SetOverlayInteractionEnabled(true);
             _setTopmost(topmost);
-            if (logMessage.Contains("from tray", StringComparison.OrdinalIgnoreCase))
+            if (source == OverlayShowSource.Tray)
             {
                 _diagnostics.OverlayShownFromTray();
             }

@@ -5,11 +5,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using ownbotsidekick.Configuration;
 using ownbotsidekick.Controls;
 using ownbotsidekick.Input;
 using ownbotsidekick.Search;
@@ -55,7 +54,7 @@ namespace ownbotsidekick
             DataContext = _viewModel;
             SearchPanel.ClipSelected += SearchPanel_ClipSelected;
 
-            _settings = LoadSettings();
+            _settings = AppSettingsLoader.LoadFromBaseDirectory(AppContext.BaseDirectory);
             Topmost = _settings.Overlay.Topmost;
             if (_settings.SidekickApi.Enabled)
             {
@@ -123,7 +122,7 @@ namespace ownbotsidekick
             }
             else
             {
-                _overlayController.Show("Overlay shown.", _settings.Overlay.Topmost);
+                _overlayController.Show(OverlayShowSource.Standard, _settings.Overlay.Topmost);
             }
 
             _overlayController.ApplyOverlayPanelLayout();
@@ -328,7 +327,7 @@ namespace ownbotsidekick
                 return;
             }
 
-            _overlayController.Show("Overlay shown.", _settings.Overlay.Topmost);
+            _overlayController.Show(OverlayShowSource.Standard, _settings.Overlay.Topmost);
         }
 
         private void ShowOverlayFromTray()
@@ -338,7 +337,7 @@ namespace ownbotsidekick
                 return;
             }
 
-            _overlayController.Show("Overlay shown from tray.", _settings.Overlay.Topmost);
+            _overlayController.Show(OverlayShowSource.Tray, _settings.Overlay.Topmost);
         }
 
         private void HideOverlayFromTray()
@@ -474,29 +473,6 @@ namespace ownbotsidekick
             return null;
         }
 
-        private static AppSettings LoadSettings()
-        {
-            var settingsPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
-            if (!File.Exists(settingsPath))
-            {
-                return new AppSettings();
-            }
-
-            try
-            {
-                var json = File.ReadAllText(settingsPath);
-                var settings = JsonSerializer.Deserialize<AppSettings>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-                return settings ?? new AppSettings();
-            }
-            catch
-            {
-                return new AppSettings();
-            }
-        }
-
         private static HotkeyModifiers ParseModifiers(string configuredModifiers)
         {
             var result = HotkeyModifiers.None;
@@ -566,51 +542,5 @@ namespace ownbotsidekick
             NoRepeat = 0x4000
         }
 
-        private sealed class AppSettings
-        {
-            public HotkeySettings Hotkey { get; set; } = new();
-            public OverlaySettings Overlay { get; set; } = new();
-            public SidekickApiSettings SidekickApi { get; set; } = new();
-            public InputBindingsSettings InputBindings { get; set; } = new();
-        }
-
-        private sealed class HotkeySettings
-        {
-            public string Modifiers { get; set; } = "Alt";
-            public string Key { get; set; } = "Oem3";
-        }
-
-        private sealed class OverlaySettings
-        {
-            public bool StartHidden { get; set; }
-            public bool Topmost { get; set; } = true;
-        }
-
-        private sealed class SidekickApiSettings
-        {
-            public bool Enabled { get; set; }
-            public string BaseUrl { get; set; } = "http://127.0.0.1:8765";
-            public long GuildId { get; set; }
-            public string QuickPlay1Trigger { get; set; } = "clip-a";
-            public string QuickPlay2Trigger { get; set; } = "clip-b";
-            public string QuickPlay3Trigger { get; set; } = "clip-c";
-
-            [JsonPropertyName("ClipATrigger")]
-            public string LegacyClipATrigger { set => QuickPlay1Trigger = value; }
-
-            [JsonPropertyName("ClipBTrigger")]
-            public string LegacyClipBTrigger { set => QuickPlay2Trigger = value; }
-
-            [JsonPropertyName("ClipCTrigger")]
-            public string LegacyClipCTrigger { set => QuickPlay3Trigger = value; }
-        }
-
-        private sealed class InputBindingsSettings
-        {
-            public string HideOverlayKey { get; set; } = "Escape";
-            public string ClearSearchKey { get; set; } = "Tab";
-            public string PlayFirstPrimaryKey { get; set; } = "Enter";
-            public string PlayFirstSecondaryKey { get; set; } = "Space";
-        }
     }
 }
