@@ -16,8 +16,6 @@
     <Grid x:Name="RootOverlayGrid"
           Background="Transparent">
         <Border x:Name="OverlayPanelBorder"
-                HorizontalAlignment="Center"
-                Width="1400"
                 Margin="20"
                 Background="#CC111111"
                 BorderBrush="#66FFFFFF"

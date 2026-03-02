@@ -102,6 +102,8 @@ namespace ownbotsidekick
                 Hide();
                 Log("Overlay starts hidden per appsettings.");
             }
+
+            ApplyOverlayPanelLayout();
         }
 
         private async void ClipAButton_Click(object sender, RoutedEventArgs e)
@@ -318,6 +320,7 @@ namespace ownbotsidekick
                 return;
             }
 
+            ResetSearchState();
             Show();
             Topmost = _settings.Overlay.Topmost;
             Log("Overlay shown.");
@@ -372,6 +375,7 @@ namespace ownbotsidekick
                 return;
             }
 
+            ResetSearchState();
             Show();
             Topmost = _settings.Overlay.Topmost;
             Log("Overlay shown from tray.");
@@ -416,6 +420,19 @@ namespace ownbotsidekick
         private void UpdateClipCountText(int count, string status)
         {
             ClipCountTextBlock.Text = $"Clips: {count} ({status})";
+        }
+
+        private void ApplyOverlayPanelLayout()
+        {
+            var taskbarHeightEstimate = Math.Max(0, SystemParameters.PrimaryScreenHeight - SystemParameters.WorkArea.Height);
+            var reservedBottom = Math.Max(56, taskbarHeightEstimate + 8);
+            OverlayPanelBorder.Margin = new Thickness(20, 20, 20, reservedBottom);
+        }
+
+        private void ResetSearchState()
+        {
+            _searchQuery = string.Empty;
+            RebuildFilteredResults();
         }
 
         private void RebuildFilteredResults()
