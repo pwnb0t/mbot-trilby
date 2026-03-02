@@ -443,7 +443,7 @@ namespace ownbotsidekick
                 _filteredClipTriggers.AddRange(
                     _allClipTriggers
                         .Where(trigger => trigger.StartsWith(_searchQuery, StringComparison.OrdinalIgnoreCase))
-                        .Take(12)
+                        .Take(15)
                 );
             }
 

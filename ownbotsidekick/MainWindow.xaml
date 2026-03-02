@@ -20,6 +20,7 @@
         <SolidColorBrush x:Key="PanelBorderBrush" Color="#503A4758" />
         <SolidColorBrush x:Key="TextPrimaryBrush" Color="#E9EDF4" />
         <SolidColorBrush x:Key="TextSecondaryBrush" Color="#A8B2C0" />
+        <SolidColorBrush x:Key="ClipButtonTextBrush" Color="#C6CEDA" />
         <SolidColorBrush x:Key="AccentBrush" Color="#6A96FF" />
         <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#24303E" />
         <SolidColorBrush x:Key="ButtonBackgroundHoverBrush" Color="#2A3950" />
@@ -69,6 +70,7 @@
         <Style x:Key="ClipButtonStyle"
                TargetType="Button"
                BasedOn="{StaticResource TopBarButtonStyle}">
+            <Setter Property="Foreground" Value="{StaticResource ClipButtonTextBrush}" />
             <Setter Property="MinHeight" Value="56" />
             <Setter Property="FontSize" Value="15" />
             <Setter Property="FontWeight" Value="SemiBold" />
@@ -118,7 +120,11 @@
                                        Foreground="{StaticResource TextPrimaryBrush}"
                                        VerticalAlignment="Center" />
                         </StackPanel>
-                        <UniformGrid Rows="1" Columns="3">
+                        <UniformGrid Rows="1"
+                                     Columns="3"
+                                     Width="640"
+                                     Height="86"
+                                     HorizontalAlignment="Left">
                             <Button Style="{StaticResource ClipButtonStyle}" Content="Clip A" Click="ClipAButton_Click" />
                             <Button Style="{StaticResource ClipButtonStyle}" Content="Clip B" Click="ClipBButton_Click" />
                             <Button Style="{StaticResource ClipButtonStyle}" Content="Clip C" Click="ClipCButton_Click" />
@@ -149,7 +155,7 @@
                     <Border HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Width="640"
-                            Height="420"
+                            Height="500"
                             Background="{StaticResource PanelBackgroundBrush}"
                             BorderBrush="{StaticResource PanelBorderBrush}"
                             BorderThickness="1"
@@ -170,7 +176,7 @@
 
                             <Grid Grid.Row="1">
                                 <UniformGrid x:Name="SearchResultsGrid"
-                                             Rows="4"
+                                             Rows="5"
                                              Columns="3" />
                                 <TextBlock x:Name="NoResultsTextBlock"
                                            Text="No results (press TAB to clear search)"
