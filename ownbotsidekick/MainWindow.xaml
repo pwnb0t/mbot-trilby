@@ -60,9 +60,9 @@
                                      Width="640"
                                      Height="86"
                                      HorizontalAlignment="Left">
-                            <Button Style="{StaticResource ClipButtonStyle}" Content="Clip A" Click="ClipAButton_Click" />
-                            <Button Style="{StaticResource ClipButtonStyle}" Content="Clip B" Click="ClipBButton_Click" />
-                            <Button Style="{StaticResource ClipButtonStyle}" Content="Clip C" Click="ClipCButton_Click" />
+                            <Button Style="{StaticResource ClipButtonStyle}" Content="Quick Play 1" Click="QuickPlay1Button_Click" />
+                            <Button Style="{StaticResource ClipButtonStyle}" Content="Quick Play 2" Click="QuickPlay2Button_Click" />
+                            <Button Style="{StaticResource ClipButtonStyle}" Content="Quick Play 3" Click="QuickPlay3Button_Click" />
                         </UniformGrid>
                     </StackPanel>
 

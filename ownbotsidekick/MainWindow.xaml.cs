@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -96,7 +97,7 @@ namespace ownbotsidekick
             Log(_settings.SidekickApi.Enabled
                 ? "Sidekick API client enabled."
                 : "Sidekick API client disabled in appsettings.");
-            Log($"Clip triggers: A={_settings.SidekickApi.ClipATrigger}, B={_settings.SidekickApi.ClipBTrigger}, C={_settings.SidekickApi.ClipCTrigger}");
+            Log($"Quick play triggers: 1={_settings.SidekickApi.QuickPlay1Trigger}, 2={_settings.SidekickApi.QuickPlay2Trigger}, 3={_settings.SidekickApi.QuickPlay3Trigger}");
             if (_sidekickApiClient is not null)
             {
                 _ = InitializeHealthCheckAsync();
@@ -119,19 +120,19 @@ namespace ownbotsidekick
             ApplyOverlayPanelLayout();
         }
 
-        private async void ClipAButton_Click(object sender, RoutedEventArgs e)
+        private async void QuickPlay1Button_Click(object sender, RoutedEventArgs e)
         {
-            await PlayClipAsync("Clip A", _settings.SidekickApi.ClipATrigger);
+            await PlayClipAsync("Quick Play 1", _settings.SidekickApi.QuickPlay1Trigger);
         }
 
-        private async void ClipBButton_Click(object sender, RoutedEventArgs e)
+        private async void QuickPlay2Button_Click(object sender, RoutedEventArgs e)
         {
-            await PlayClipAsync("Clip B", _settings.SidekickApi.ClipBTrigger);
+            await PlayClipAsync("Quick Play 2", _settings.SidekickApi.QuickPlay2Trigger);
         }
 
-        private async void ClipCButton_Click(object sender, RoutedEventArgs e)
+        private async void QuickPlay3Button_Click(object sender, RoutedEventArgs e)
         {
-            await PlayClipAsync("Clip C", _settings.SidekickApi.ClipCTrigger);
+            await PlayClipAsync("Quick Play 3", _settings.SidekickApi.QuickPlay3Trigger);
         }
 
         private async void RefreshClipsButton_Click(object sender, RoutedEventArgs e)
@@ -722,9 +723,18 @@ namespace ownbotsidekick
             public bool Enabled { get; set; }
             public string BaseUrl { get; set; } = "http://127.0.0.1:8765";
             public long GuildId { get; set; }
-            public string ClipATrigger { get; set; } = "clip-a";
-            public string ClipBTrigger { get; set; } = "clip-b";
-            public string ClipCTrigger { get; set; } = "clip-c";
+            public string QuickPlay1Trigger { get; set; } = "clip-a";
+            public string QuickPlay2Trigger { get; set; } = "clip-b";
+            public string QuickPlay3Trigger { get; set; } = "clip-c";
+
+            [JsonPropertyName("ClipATrigger")]
+            public string LegacyClipATrigger { set => QuickPlay1Trigger = value; }
+
+            [JsonPropertyName("ClipBTrigger")]
+            public string LegacyClipBTrigger { set => QuickPlay2Trigger = value; }
+
+            [JsonPropertyName("ClipCTrigger")]
+            public string LegacyClipCTrigger { set => QuickPlay3Trigger = value; }
         }
 
         private sealed class InputBindingsSettings
