@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Sidekick Control API
-  version: 0.0.2
+  version: 0.0.3
 servers:
 - url: http://127.0.0.1:8765
 paths:

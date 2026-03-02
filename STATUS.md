@@ -10,6 +10,7 @@ E:\g\ownbot\TODO.md also has a section about this Sidekick app.
 
 ## Phase 2 Progress (API SDK Integration)
 - Date: 2026-03-02
+- Bumped OpenAPI contract version from `0.0.2` to `0.0.3` in `E:\g\ownbot\openapi\sidekick.v1.yaml`.
 - Regenerated C# SDK from `E:\g\ownbot\openapi\sidekick.v1.yaml` using `scripts\generate-sidekick-sdk.bat`.
 - SDK contract now includes:
   - `PlayClip` (`POST /v1/clips/play`)
