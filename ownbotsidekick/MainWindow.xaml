@@ -93,7 +93,7 @@
                                              Rows="4"
                                              Columns="3" />
                                 <TextBlock x:Name="NoResultsTextBlock"
-                                           Text="No results"
+                                           Text="No results (press ESC to clear search)"
                                            Foreground="#CCFFFFFF"
                                            FontSize="16"
                                            HorizontalAlignment="Center"
