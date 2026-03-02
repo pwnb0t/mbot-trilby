@@ -21,9 +21,6 @@ namespace ownbotsidekick
     {
         private const int WmHotKey = 0x0312;
         private const int HotkeyId = 1;
-        private const int GwlExStyle = -20;
-        private const int WsExNoActivate = 0x08000000;
-        private const int WsExTransparent = 0x00000020;
         private const int VkBack = 0x08;
         private const int Vk0 = 0x30;
         private const int Vk9 = 0x39;
@@ -32,8 +29,6 @@ namespace ownbotsidekick
         private const int VkNumpad0 = 0x60;
         private const int VkNumpad9 = 0x69;
         private const int MaxVisibleSearchResults = 15;
-        private const int OverlayBottomReserveMinPixels = 56;
-        private const int OverlayBottomReservePaddingPixels = 8;
 
         private readonly string _logFilePath;
         private readonly AppSettings _settings;
@@ -48,10 +43,9 @@ namespace ownbotsidekick
         private SidekickApiClientService? _sidekickApiClient;
         private ClipPlaybackCoordinator? _clipPlaybackCoordinator;
         private OverlayDiagnostics? _diagnostics;
+        private readonly OverlayController _overlayController;
         private TrayController? _trayController;
         private OverlayInputRouter? _overlayInputRouter;
-        private IntPtr _windowHandle = IntPtr.Zero;
-        private bool _overlayVisible;
 
         public MainWindow()
         {
@@ -83,6 +77,13 @@ namespace ownbotsidekick
             Directory.CreateDirectory(logDirectory);
             _logFilePath = Path.Combine(logDirectory, "overlay.log");
             _diagnostics = new OverlayDiagnostics(_logFilePath);
+            _overlayController = new OverlayController(
+                rootOverlayGrid: RootOverlayGrid,
+                overlayPanelBorder: OverlayPanelBorder,
+                diagnostics: _diagnostics,
+                resetSearchState: ResetSearchState,
+                setTopmost: value => Topmost = value
+            );
             _trayController = new TrayController(
                 diagnostics: _diagnostics,
                 showOverlay: ShowOverlayFromTray,
@@ -119,10 +120,10 @@ namespace ownbotsidekick
             }
             else
             {
-                ShowOverlay("Overlay shown.");
+                _overlayController.Show("Overlay shown.", _settings.Overlay.Topmost);
             }
 
-            ApplyOverlayPanelLayout();
+            _overlayController.ApplyOverlayPanelLayout();
         }
 
         private async void QuickPlay1Button_Click(object sender, RoutedEventArgs e)
@@ -152,7 +153,7 @@ namespace ownbotsidekick
 
         private void CloseOverlayButton_Click(object sender, RoutedEventArgs e)
         {
-            HideOverlay("Overlay hidden from close button.");
+            _overlayController.Hide("Overlay hidden from close button.");
         }
 
         private void Log(string message)
@@ -165,19 +166,17 @@ namespace ownbotsidekick
             base.OnSourceInitialized(e);
 
             var helper = new WindowInteropHelper(this);
-            _windowHandle = helper.Handle;
             var source = HwndSource.FromHwnd(helper.Handle);
             source?.AddHook(WndProc);
-            EnableNoActivateMode(helper.Handle);
-            SetOverlayInteractionEnabled(false);
+            _overlayController.InitializeWindowHandle(helper.Handle);
 
             _trayController?.Initialize();
             RegisterOverlayHotkey(helper.Handle);
             _overlayInputRouter = new OverlayInputRouter(
-                isOverlayVisible: () => _overlayVisible,
+                isOverlayVisible: () => _overlayController.IsVisible,
                 handleOverlayVirtualKey: HandleOverlayKeyDown,
-                isPointInsideOverlayPanel: IsPointInsideOverlayPanel,
-                onOutsideClick: () => HideOverlay("Overlay hidden (outside click)."),
+                isPointInsideOverlayPanel: _overlayController.IsPointInsideOverlayPanel,
+                onOutsideClick: () => _overlayController.Hide("Overlay hidden (outside click)."),
                 diagnostics: _diagnostics ?? new OverlayDiagnostics(_logFilePath),
                 dispatcher: Dispatcher
             );
@@ -193,7 +192,7 @@ namespace ownbotsidekick
             }
 
             e.Cancel = true;
-            HideOverlay("Overlay hidden to tray. Use tray icon -> Exit to close app.");
+            _overlayController.Hide("Overlay hidden to tray. Use tray icon -> Exit to close app.");
         }
 
         protected override void OnClosed(EventArgs e)
@@ -282,7 +281,7 @@ namespace ownbotsidekick
 
             if (result.ShouldHideOverlay)
             {
-                HideOverlay("Overlay hidden after clip play.");
+                _overlayController.Hide("Overlay hidden after clip play.");
             }
 
             return result.Success;
@@ -320,41 +319,33 @@ namespace ownbotsidekick
 
         private void ToggleOverlayVisibility()
         {
-            if (_overlayVisible)
+            if (_overlayController.IsVisible)
             {
-                HideOverlay("Overlay hidden.");
+                _overlayController.Hide("Overlay hidden.");
                 return;
             }
 
-            ShowOverlay("Overlay shown.");
+            _overlayController.Show("Overlay shown.", _settings.Overlay.Topmost);
         }
 
         private void ShowOverlayFromTray()
         {
-            if (_overlayVisible)
+            if (_overlayController.IsVisible)
             {
                 return;
             }
 
-            ShowOverlay("Overlay shown from tray.");
-        }
-
-        private void EnableNoActivateMode(IntPtr hwnd)
-        {
-            var currentExStyle = GetWindowLongPtr(hwnd, GwlExStyle).ToInt64();
-            var updatedExStyle = new IntPtr(currentExStyle | WsExNoActivate);
-            SetWindowLongPtr(hwnd, GwlExStyle, updatedExStyle);
-            Log("Overlay no-activate mode enabled.");
+            _overlayController.Show("Overlay shown from tray.", _settings.Overlay.Topmost);
         }
 
         private void HideOverlayFromTray()
         {
-            if (!_overlayVisible)
+            if (!_overlayController.IsVisible)
             {
                 return;
             }
 
-            HideOverlay("Overlay hidden from tray.");
+            _overlayController.Hide("Overlay hidden from tray.");
         }
 
         private void ExitFromTray()
@@ -378,16 +369,6 @@ namespace ownbotsidekick
         private void UpdateClipCountText(int count, string status)
         {
             ClipCountTextBlock.Text = $"Clips: {count} ({status})";
-        }
-
-        private void ApplyOverlayPanelLayout()
-        {
-            var taskbarHeightEstimate = Math.Max(0, SystemParameters.PrimaryScreenHeight - SystemParameters.WorkArea.Height);
-            var reservedBottom = Math.Max(
-                OverlayBottomReserveMinPixels,
-                taskbarHeightEstimate + OverlayBottomReservePaddingPixels
-            );
-            OverlayPanelBorder.Margin = new Thickness(0, 0, 0, reservedBottom);
         }
 
         private void ResetSearchState()
@@ -417,23 +398,11 @@ namespace ownbotsidekick
             await PlayClipAsync(first, first);
         }
 
-        private bool IsPointInsideOverlayPanel(System.Windows.Point screenPoint)
-        {
-            if (OverlayPanelBorder.ActualWidth <= 0 || OverlayPanelBorder.ActualHeight <= 0)
-            {
-                return false;
-            }
-
-            var topLeft = OverlayPanelBorder.PointToScreen(new System.Windows.Point(0, 0));
-            var panelRect = new Rect(topLeft.X, topLeft.Y, OverlayPanelBorder.ActualWidth, OverlayPanelBorder.ActualHeight);
-            return panelRect.Contains(screenPoint);
-        }
-
         private bool HandleOverlayKeyDown(int virtualKey)
         {
             if (virtualKey == _hideOverlayVirtualKey)
             {
-                HideOverlay("Overlay hidden.");
+                _overlayController.Hide("Overlay hidden.");
                 return true;
             }
 
@@ -571,69 +540,11 @@ namespace ownbotsidekick
             return $"{hotkey.Modifiers}+{hotkey.Key}";
         }
 
-        private void HideOverlay(string logMessage)
-        {
-            if (!_overlayVisible)
-            {
-                return;
-            }
-
-            ResetSearchState();
-            RootOverlayGrid.Visibility = Visibility.Collapsed;
-            _overlayVisible = false;
-            SetOverlayInteractionEnabled(false);
-            _diagnostics?.OverlayHidden(logMessage);
-        }
-
-        private void ShowOverlay(string logMessage)
-        {
-            ResetSearchState();
-            RootOverlayGrid.Visibility = Visibility.Visible;
-            _overlayVisible = true;
-            SetOverlayInteractionEnabled(true);
-            Topmost = _settings.Overlay.Topmost;
-            if (logMessage.Contains("from tray", StringComparison.OrdinalIgnoreCase))
-            {
-                _diagnostics?.OverlayShownFromTray();
-            }
-            else
-            {
-                _diagnostics?.OverlayShown();
-            }
-        }
-
-        private void SetOverlayInteractionEnabled(bool enabled)
-        {
-            if (_windowHandle == IntPtr.Zero)
-            {
-                return;
-            }
-
-            var currentExStyle = GetWindowLongPtr(_windowHandle, GwlExStyle).ToInt64();
-            long updatedExStyle;
-            if (enabled)
-            {
-                updatedExStyle = (currentExStyle | WsExNoActivate) & ~WsExTransparent;
-            }
-            else
-            {
-                updatedExStyle = (currentExStyle | WsExNoActivate | WsExTransparent);
-            }
-
-            SetWindowLongPtr(_windowHandle, GwlExStyle, new IntPtr(updatedExStyle));
-        }
-
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-
-        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW", SetLastError = true)]
-        private static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
-        private static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
         [Flags]
         private enum HotkeyModifiers : uint

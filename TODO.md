@@ -7,14 +7,7 @@ Need to see if there are some opportunities for refactoring now that we are at a
 
 ### Refactoring opportunities
 
-1. Extract `OverlayController` from `MainWindow`
-- Move overlay visibility and interaction-style behavior out of `MainWindow.xaml.cs`.
-- Own responsibilities:
-  - show/hide state transitions
-  - no-activate/transparent interaction toggling
-  - bottom reserved strip layout math
-
-2. Evaluate lightweight `OverlayViewModel` after controllers are extracted
+1. Evaluate lightweight `OverlayViewModel` after controllers are extracted
 - Candidate properties:
   - `IsOverlayVisible`
   - `ClipCountText`
