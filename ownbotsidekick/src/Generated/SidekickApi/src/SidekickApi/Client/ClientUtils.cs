@@ -112,8 +112,8 @@ namespace SidekickApi.Client
                 return boolean
                     ? "true"
                     : "false";
-            if (obj is PlayTriggerResponse.StatusEnum playTriggerResponseStatusEnum)
-                return PlayTriggerResponse.StatusEnumToJsonValue(playTriggerResponseStatusEnum);
+            if (obj is PlayClipResponse.StatusEnum playClipResponseStatusEnum)
+                return PlayClipResponse.StatusEnumToJsonValue(playClipResponseStatusEnum);
             if (obj is ICollection collection)
             {
                 List<string?> entries = new();

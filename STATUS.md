@@ -8,6 +8,18 @@ E:\g\ownbot\TODO.md also has a section about this Sidekick app.
 - Phase: Sidekick app Phase 1 (overlay proof-of-concept)
 - Environment note: build/run should be done from Windows/Visual Studio (not WSL).
 
+## Phase 2 Progress (API SDK Integration)
+- Date: 2026-03-02
+- Regenerated C# SDK from `E:\g\ownbot\openapi\sidekick.v1.yaml` using `scripts\generate-sidekick-sdk.bat`.
+- SDK contract now includes:
+  - `PlayClip` (`POST /v1/clips/play`)
+  - `ListClips` (`GET /v1/clips`)
+- Updated app client integration to new SDK names:
+  - `PlayTriggerRequest` -> `PlayClipRequest`
+  - `_api.PlayTriggerAsync(...)` -> `_api.PlayClipAsync(...)`
+  - `SidekickApiClientService.PlayTriggerAsync(...)` -> `PlayClipAsync(...)`
+- Verified `dotnet build ownbotsidekick\ownbotsidekick.csproj -c Debug` succeeds (0 errors).
+
 ## What Is Implemented
 - Transparent, topmost WPF overlay window.
 - 3 clickable buttons (`Clip A`, `Clip B`, `Clip C`).

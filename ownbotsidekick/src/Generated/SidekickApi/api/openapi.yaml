@@ -16,21 +16,65 @@ paths:
                 $ref: "#/components/schemas/HealthResponse"
           description: Successful Response
       summary: Health
-  /v1/triggerables/play:
+  /v1/clips:
+    get:
+      operationId: ListClips
+      parameters:
+      - explode: true
+        in: query
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          maxLength: 64
+          minLength: 1
+          nullable: true
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListClipsResponse"
+          description: Successful Response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      summary: List Clips
+  /v1/clips/play:
     post:
-      operationId: PlayTrigger
+      operationId: PlayClip
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PlayTriggerRequest"
+              $ref: "#/components/schemas/PlayClipRequest"
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PlayTriggerResponse"
+                $ref: "#/components/schemas/PlayClipResponse"
           description: Successful Response
         "400":
           content:
@@ -43,7 +87,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
-          description: Trigger not found error response.
+          description: Clip not found error response.
         "409":
           content:
             application/json:
@@ -62,7 +106,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
-      summary: Play Trigger
+      summary: Play Clip
 components:
   schemas:
     ApiErrorResponse:
@@ -85,6 +129,16 @@ components:
       - message
       - ok
       title: ApiErrorResponse
+    ClipSummary:
+      example:
+        trigger: trigger
+      properties:
+        trigger:
+          title: Trigger
+          type: string
+      required:
+      - trigger
+      title: ClipSummary
     HTTPValidationError:
       example:
         detail:
@@ -129,7 +183,40 @@ components:
       - service
       - version
       title: HealthResponse
-    PlayTriggerRequest:
+    ListClipsResponse:
+      example:
+        total: 6
+        search: search
+        clips:
+        - trigger: trigger
+        - trigger: trigger
+        guild_id: 0
+        ok: true
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          title: Guild Id
+          type: integer
+        clips:
+          items:
+            $ref: "#/components/schemas/ClipSummary"
+          title: Clips
+          type: array
+        total:
+          title: Total
+          type: integer
+        search:
+          nullable: true
+          type: string
+      required:
+      - clips
+      - guild_id
+      - ok
+      - total
+      title: ListClipsResponse
+    PlayClipRequest:
       example:
         guild_id: 0
         trigger: trigger
@@ -137,7 +224,6 @@ components:
       properties:
         guild_id:
           exclusiveMinimum: true
-          format: int64
           minimum: 0.0
           title: Guild Id
           type: integer
@@ -152,8 +238,8 @@ components:
       required:
       - guild_id
       - trigger
-      title: PlayTriggerRequest
-    PlayTriggerResponse:
+      title: PlayClipRequest
+    PlayClipResponse:
       example:
         guild_id: 0
         resolved_trigger: resolved_trigger
@@ -166,7 +252,6 @@ components:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
           title: Guild Id
           type: integer
         trigger:
@@ -189,7 +274,7 @@ components:
       - resolved_trigger
       - status
       - trigger
-      title: PlayTriggerResponse
+      title: PlayClipResponse
     ValidationError:
       example:
         msg: msg

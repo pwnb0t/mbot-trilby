@@ -44,11 +44,13 @@ namespace SidekickApi.Client
             _jsonOptions.Converters.Add(new DateOnlyJsonConverter());
             _jsonOptions.Converters.Add(new DateOnlyNullableJsonConverter());
             _jsonOptions.Converters.Add(new ApiErrorResponseJsonConverter());
+            _jsonOptions.Converters.Add(new ClipSummaryJsonConverter());
             _jsonOptions.Converters.Add(new HTTPValidationErrorJsonConverter());
             _jsonOptions.Converters.Add(new HealthResponseJsonConverter());
+            _jsonOptions.Converters.Add(new ListClipsResponseJsonConverter());
             _jsonOptions.Converters.Add(new LocationInnerJsonConverter());
-            _jsonOptions.Converters.Add(new PlayTriggerRequestJsonConverter());
-            _jsonOptions.Converters.Add(new PlayTriggerResponseJsonConverter());
+            _jsonOptions.Converters.Add(new PlayClipRequestJsonConverter());
+            _jsonOptions.Converters.Add(new PlayClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new ValidationErrorJsonConverter());
             JsonSerializerOptionsProvider jsonSerializerOptionsProvider = new(_jsonOptions);
             _services.AddSingleton(jsonSerializerOptionsProvider);

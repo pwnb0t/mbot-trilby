@@ -193,7 +193,7 @@ namespace ownbotsidekick
 
             try
             {
-                var message = await _sidekickApiClient.PlayTriggerAsync(trigger);
+                var message = await _sidekickApiClient.PlayClipAsync(trigger);
                 Log(message);
             }
             catch (Exception ex)

@@ -33,14 +33,14 @@ namespace ownbotsidekick.Services
             _api = _serviceProvider.GetRequiredService<IDefaultApi>();
         }
 
-        public async Task<string> PlayTriggerAsync(string trigger, CancellationToken cancellationToken = default)
+        public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
         {
-            var request = new PlayTriggerRequest(_guildId, trigger)
+            var request = new PlayClipRequest(_guildId, trigger)
             {
                 RequestId = Guid.NewGuid().ToString("N")
             };
 
-            var response = await _api.PlayTriggerAsync(request, cancellationToken).ConfigureAwait(false);
+            var response = await _api.PlayClipAsync(request, cancellationToken).ConfigureAwait(false);
 
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {

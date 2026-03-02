@@ -59,27 +59,52 @@ namespace SidekickApi.Api
         Task<IGetHealthApiResponse?> GetHealthOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Play Trigger
+        /// List Clips
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="playTriggerRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns><see cref="Task"/>&lt;<see cref="IPlayTriggerApiResponse"/>&gt;</returns>
-        Task<IPlayTriggerApiResponse> PlayTriggerAsync(PlayTriggerRequest playTriggerRequest, System.Threading.CancellationToken cancellationToken = default);
+        /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
+        Task<IListClipsApiResponse> ListClipsAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Play Trigger
+        /// List Clips
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
-        /// <param name="playTriggerRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns><see cref="Task"/>&lt;<see cref="IPlayTriggerApiResponse"/>?&gt;</returns>
-        Task<IPlayTriggerApiResponse?> PlayTriggerOrDefaultAsync(PlayTriggerRequest playTriggerRequest, System.Threading.CancellationToken cancellationToken = default);
+        /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>?&gt;</returns>
+        Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Play Clip
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="playClipRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>&gt;</returns>
+        Task<IPlayClipApiResponse> PlayClipAsync(PlayClipRequest playClipRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Play Clip
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="playClipRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>?&gt;</returns>
+        Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(PlayClipRequest playClipRequest, System.Threading.CancellationToken cancellationToken = default);
     }
 
     /// <summary>
@@ -95,9 +120,33 @@ namespace SidekickApi.Api
     }
 
     /// <summary>
-    /// The <see cref="IPlayTriggerApiResponse"/>
+    /// The <see cref="IListClipsApiResponse"/>
     /// </summary>
-    public interface IPlayTriggerApiResponse : SidekickApi.Client.IApiResponse, IOk<SidekickApi.Model.PlayTriggerResponse?>, IBadRequest<SidekickApi.Model.ApiErrorResponse?>, INotFound<SidekickApi.Model.ApiErrorResponse?>, IConflict<SidekickApi.Model.ApiErrorResponse?>, IInternalServerError<SidekickApi.Model.ApiErrorResponse?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
+    public interface IListClipsApiResponse : SidekickApi.Client.IApiResponse, IOk<SidekickApi.Model.ListClipsResponse?>, IInternalServerError<SidekickApi.Model.ApiErrorResponse?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 500 InternalServerError
+        /// </summary>
+        /// <returns></returns>
+        bool IsInternalServerError { get; }
+
+        /// <summary>
+        /// Returns true if the response is 422 UnprocessableContent
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnprocessableContent { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IPlayClipApiResponse"/>
+    /// </summary>
+    public interface IPlayClipApiResponse : SidekickApi.Client.IApiResponse, IOk<SidekickApi.Model.PlayClipResponse?>, IBadRequest<SidekickApi.Model.ApiErrorResponse?>, INotFound<SidekickApi.Model.ApiErrorResponse?>, IConflict<SidekickApi.Model.ApiErrorResponse?>, IInternalServerError<SidekickApi.Model.ApiErrorResponse?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
@@ -164,21 +213,41 @@ namespace SidekickApi.Api
         /// <summary>
         /// The event raised after the server response
         /// </summary>
-        public event EventHandler<ApiResponseEventArgs>? OnPlayTrigger;
+        public event EventHandler<ApiResponseEventArgs>? OnListClips;
 
         /// <summary>
         /// The event raised after an error querying the server
         /// </summary>
-        public event EventHandler<ExceptionEventArgs>? OnErrorPlayTrigger;
+        public event EventHandler<ExceptionEventArgs>? OnErrorListClips;
 
-        internal void ExecuteOnPlayTrigger(DefaultApi.PlayTriggerApiResponse apiResponse)
+        internal void ExecuteOnListClips(DefaultApi.ListClipsApiResponse apiResponse)
         {
-            OnPlayTrigger?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+            OnListClips?.Invoke(this, new ApiResponseEventArgs(apiResponse));
         }
 
-        internal void ExecuteOnErrorPlayTrigger(Exception exception)
+        internal void ExecuteOnErrorListClips(Exception exception)
         {
-            OnErrorPlayTrigger?.Invoke(this, new ExceptionEventArgs(exception));
+            OnErrorListClips?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnPlayClip;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorPlayClip;
+
+        internal void ExecuteOnPlayClip(DefaultApi.PlayClipApiResponse apiResponse)
+        {
+            OnPlayClip?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorPlayClip(Exception exception)
+        {
+            OnErrorPlayClip?.Invoke(this, new ExceptionEventArgs(exception));
         }
     }
 
@@ -440,28 +509,18 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatPlayTrigger(PlayTriggerRequest playTriggerRequest);
-
-        /// <summary>
-        /// Validates the request parameters
-        /// </summary>
-        /// <param name="playTriggerRequest"></param>
-        /// <returns></returns>
-        private void ValidatePlayTrigger(PlayTriggerRequest playTriggerRequest)
-        {
-            if (playTriggerRequest == null)
-                throw new ArgumentNullException(nameof(playTriggerRequest));
-        }
+        partial void FormatListClips(ref int guildId, ref Option<string?> search);
 
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="playTriggerRequest"></param>
-        private void AfterPlayTriggerDefaultImplementation(IPlayTriggerApiResponse apiResponseLocalVar, PlayTriggerRequest playTriggerRequest)
+        /// <param name="guildId"></param>
+        /// <param name="search"></param>
+        private void AfterListClipsDefaultImplementation(IListClipsApiResponse apiResponseLocalVar, int guildId, Option<string?> search)
         {
             bool suppressDefaultLog = false;
-            AfterPlayTrigger(ref suppressDefaultLog, apiResponseLocalVar, playTriggerRequest);
+            AfterListClips(ref suppressDefaultLog, apiResponseLocalVar, guildId, search);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -471,8 +530,9 @@ namespace SidekickApi.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="playTriggerRequest"></param>
-        partial void AfterPlayTrigger(ref bool suppressDefaultLog, IPlayTriggerApiResponse apiResponseLocalVar, PlayTriggerRequest playTriggerRequest);
+        /// <param name="guildId"></param>
+        /// <param name="search"></param>
+        partial void AfterListClips(ref bool suppressDefaultLog, IListClipsApiResponse apiResponseLocalVar, int guildId, Option<string?> search);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -480,11 +540,12 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="playTriggerRequest"></param>
-        private void OnErrorPlayTriggerDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, PlayTriggerRequest playTriggerRequest)
+        /// <param name="guildId"></param>
+        /// <param name="search"></param>
+        private void OnErrorListClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<string?> search)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorPlayTrigger(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, playTriggerRequest);
+            OnErrorListClips(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, search);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -496,20 +557,22 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="playTriggerRequest"></param>
-        partial void OnErrorPlayTrigger(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, PlayTriggerRequest playTriggerRequest);
+        /// <param name="guildId"></param>
+        /// <param name="search"></param>
+        partial void OnErrorListClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<string?> search);
 
         /// <summary>
-        /// Play Trigger 
+        /// List Clips 
         /// </summary>
-        /// <param name="playTriggerRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns><see cref="Task"/>&lt;<see cref="IPlayTriggerApiResponse"/>&gt;</returns>
-        public async Task<IPlayTriggerApiResponse?> PlayTriggerOrDefaultAsync(PlayTriggerRequest playTriggerRequest, System.Threading.CancellationToken cancellationToken = default)
+        /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
+        public async Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await PlayTriggerAsync(playTriggerRequest, cancellationToken).ConfigureAwait(false);
+                return await ListClipsAsync(guildId, search, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -518,21 +581,20 @@ namespace SidekickApi.Api
         }
 
         /// <summary>
-        /// Play Trigger 
+        /// List Clips 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="playTriggerRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns><see cref="Task"/>&lt;<see cref="IPlayTriggerApiResponse"/>&gt;</returns>
-        public async Task<IPlayTriggerApiResponse> PlayTriggerAsync(PlayTriggerRequest playTriggerRequest, System.Threading.CancellationToken cancellationToken = default)
+        /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
+        public async Task<IListClipsApiResponse> ListClipsAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidatePlayTrigger(playTriggerRequest);
-
-                FormatPlayTrigger(playTriggerRequest);
+                FormatListClips(ref guildId, ref search);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -540,12 +602,338 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/triggerables/play"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/triggerables/play");
+                        ? "/v1/clips"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/clips");
 
-                    httpRequestMessageLocalVar.Content = (playTriggerRequest as object) is System.IO.Stream stream
+                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+                    parseQueryStringLocalVar["guild_id"] = ClientUtils.ParameterToString(guildId);
+
+                    if (search.IsSet)
+                        parseQueryStringLocalVar["search"] = ClientUtils.ParameterToString(search.Value);
+
+                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<ListClipsApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<ListClipsApiResponse>();
+                        ListClipsApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/clips", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterListClipsDefaultImplementation(apiResponseLocalVar, guildId, search);
+
+                        Events.ExecuteOnListClips(apiResponseLocalVar);
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorListClipsDefaultImplementation(e, "/v1/clips", uriBuilderLocalVar.Path, guildId, search);
+                Events.ExecuteOnErrorListClips(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="ListClipsApiResponse"/>
+        /// </summary>
+        public partial class ListClipsApiResponse : SidekickApi.Client.ApiResponse, IListClipsApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<ListClipsApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="ListClipsApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public ListClipsApiResponse(ILogger<ListClipsApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="ListClipsApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public ListClipsApiResponse(ILogger<ListClipsApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ListClipsResponse? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ListClipsResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out SidekickApi.Model.ListClipsResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public bool IsInternalServerError => 500 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? InternalServerError()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsInternalServerError
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryInternalServerError([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = InternalServerError();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)500);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnprocessableContent => 422 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.HTTPValidationError? UnprocessableContent()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnprocessableContent
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.HTTPValidationError>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnprocessableContent([NotNullWhen(true)]out SidekickApi.Model.HTTPValidationError? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = UnprocessableContent();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)422);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatPlayClip(PlayClipRequest playClipRequest);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="playClipRequest"></param>
+        /// <returns></returns>
+        private void ValidatePlayClip(PlayClipRequest playClipRequest)
+        {
+            if (playClipRequest == null)
+                throw new ArgumentNullException(nameof(playClipRequest));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="playClipRequest"></param>
+        private void AfterPlayClipDefaultImplementation(IPlayClipApiResponse apiResponseLocalVar, PlayClipRequest playClipRequest)
+        {
+            bool suppressDefaultLog = false;
+            AfterPlayClip(ref suppressDefaultLog, apiResponseLocalVar, playClipRequest);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="playClipRequest"></param>
+        partial void AfterPlayClip(ref bool suppressDefaultLog, IPlayClipApiResponse apiResponseLocalVar, PlayClipRequest playClipRequest);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="playClipRequest"></param>
+        private void OnErrorPlayClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, PlayClipRequest playClipRequest)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorPlayClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, playClipRequest);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="playClipRequest"></param>
+        partial void OnErrorPlayClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, PlayClipRequest playClipRequest);
+
+        /// <summary>
+        /// Play Clip 
+        /// </summary>
+        /// <param name="playClipRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>&gt;</returns>
+        public async Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(PlayClipRequest playClipRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await PlayClipAsync(playClipRequest, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Play Clip 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="playClipRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>&gt;</returns>
+        public async Task<IPlayClipApiResponse> PlayClipAsync(PlayClipRequest playClipRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidatePlayClip(playClipRequest);
+
+                FormatPlayClip(playClipRequest);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/clips/play"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/clips/play");
+
+                    httpRequestMessageLocalVar.Content = (playClipRequest as object) is System.IO.Stream stream
                         ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
-                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(playTriggerRequest, _jsonSerializerOptions));
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(playClipRequest, _jsonSerializerOptions));
 
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
 
@@ -573,21 +961,21 @@ namespace SidekickApi.Api
 
                     using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
                     {
-                        ILogger<PlayTriggerApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<PlayTriggerApiResponse>();
-                        PlayTriggerApiResponse apiResponseLocalVar;
+                        ILogger<PlayClipApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<PlayClipApiResponse>();
+                        PlayClipApiResponse apiResponseLocalVar;
 
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/triggerables/play", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/clips/play", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
                         }
 
-                        AfterPlayTriggerDefaultImplementation(apiResponseLocalVar, playTriggerRequest);
+                        AfterPlayClipDefaultImplementation(apiResponseLocalVar, playClipRequest);
 
-                        Events.ExecuteOnPlayTrigger(apiResponseLocalVar);
+                        Events.ExecuteOnPlayClip(apiResponseLocalVar);
 
                         return apiResponseLocalVar;
                     }
@@ -595,24 +983,24 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorPlayTriggerDefaultImplementation(e, "/v1/triggerables/play", uriBuilderLocalVar.Path, playTriggerRequest);
-                Events.ExecuteOnErrorPlayTrigger(e);
+                OnErrorPlayClipDefaultImplementation(e, "/v1/clips/play", uriBuilderLocalVar.Path, playClipRequest);
+                Events.ExecuteOnErrorPlayClip(e);
                 throw;
             }
         }
 
         /// <summary>
-        /// The <see cref="PlayTriggerApiResponse"/>
+        /// The <see cref="PlayClipApiResponse"/>
         /// </summary>
-        public partial class PlayTriggerApiResponse : SidekickApi.Client.ApiResponse, IPlayTriggerApiResponse
+        public partial class PlayClipApiResponse : SidekickApi.Client.ApiResponse, IPlayClipApiResponse
         {
             /// <summary>
             /// The logger
             /// </summary>
-            public ILogger<PlayTriggerApiResponse> Logger { get; }
+            public ILogger<PlayClipApiResponse> Logger { get; }
 
             /// <summary>
-            /// The <see cref="PlayTriggerApiResponse"/>
+            /// The <see cref="PlayClipApiResponse"/>
             /// </summary>
             /// <param name="logger"></param>
             /// <param name="httpRequestMessage"></param>
@@ -621,14 +1009,14 @@ namespace SidekickApi.Api
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public PlayTriggerApiResponse(ILogger<PlayTriggerApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            public PlayClipApiResponse(ILogger<PlayClipApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
             }
 
             /// <summary>
-            /// The <see cref="PlayTriggerApiResponse"/>
+            /// The <see cref="PlayClipApiResponse"/>
             /// </summary>
             /// <param name="logger"></param>
             /// <param name="httpRequestMessage"></param>
@@ -637,7 +1025,7 @@ namespace SidekickApi.Api
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public PlayTriggerApiResponse(ILogger<PlayTriggerApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            public PlayClipApiResponse(ILogger<PlayClipApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
@@ -655,11 +1043,11 @@ namespace SidekickApi.Api
             /// Deserializes the response if the response is 200 Ok
             /// </summary>
             /// <returns></returns>
-            public SidekickApi.Model.PlayTriggerResponse? Ok()
+            public SidekickApi.Model.PlayClipResponse? Ok()
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.PlayTriggerResponse>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.PlayClipResponse>(RawContent, _jsonSerializerOptions)
                     : null;
             }
 
@@ -668,7 +1056,7 @@ namespace SidekickApi.Api
             /// </summary>
             /// <param name="result"></param>
             /// <returns></returns>
-            public bool TryOk([NotNullWhen(true)]out SidekickApi.Model.PlayTriggerResponse? result)
+            public bool TryOk([NotNullWhen(true)]out SidekickApi.Model.PlayClipResponse? result)
             {
                 result = null;
 
