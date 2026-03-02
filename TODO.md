@@ -7,18 +7,26 @@ Need to see if there are some opportunities for refactoring now that we are at a
 
 ### Refactoring opportunities
 
-1. Split `MainWindow.xaml.cs` into focused classes
-- Current file owns UI composition, overlay visibility state, search state, API orchestration, and tray behavior.
-- Refactor into:
-  - `OverlayController` (show/hide state, interaction mode, bottom reserved strip)
-  - `TrayController` (notify icon + menu actions)
+1. Extract `TrayController` from `MainWindow`
+- Move notify icon lifecycle and tray menu behavior out of `MainWindow.xaml.cs`.
+- Own responsibilities:
+  - tray icon initialization/disposal
+  - menu items (`Show Overlay`, `Hide Overlay`, `Exit`)
+  - tray double-click toggle behavior
 
-2. Introduce a small ViewModel layer for overlay UI state
+2. Extract `OverlayController` from `MainWindow`
+- Move overlay visibility and interaction-style behavior out of `MainWindow.xaml.cs`.
+- Own responsibilities:
+  - show/hide state transitions
+  - no-activate/transparent interaction toggling
+  - bottom reserved strip layout math
+
+3. Evaluate lightweight `OverlayViewModel` after controllers are extracted
 - Candidate properties:
   - `IsOverlayVisible`
   - `ClipCountText`
   - `SearchQueryDisplay`
   - `NoResultsVisible`
   - `VisibleClips`
-- Reduces imperative UI updates and makes behavior clearer.
+- Only proceed if this clearly reduces imperative UI wiring and shrinks `MainWindow` further.
 
