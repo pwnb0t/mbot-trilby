@@ -90,7 +90,7 @@ Here are a couple of ideas I have:
   - Modern but still practical for iterative tuning.
 - Cons:
   - Less dramatic than full glass.
-
+  
 ### Recommended implementation plan (after option choice)
 1. Define design tokens in XAML resources (colors, spacing, radius, shadow).
 2. Create reusable styles:

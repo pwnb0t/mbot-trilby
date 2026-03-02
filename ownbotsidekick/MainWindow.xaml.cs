@@ -475,9 +475,7 @@ namespace ownbotsidekick
                 var button = new System.Windows.Controls.Button
                 {
                     Content = trigger,
-                    Margin = new Thickness(4),
-                    Padding = new Thickness(8),
-                    MinHeight = 56
+                    Style = (Style)FindResource("ClipButtonStyle")
                 };
                 button.Click += async (_, _) => await PlayClipAsync(trigger, trigger);
                 SearchResultsGrid.Children.Add(button);
