@@ -14,6 +14,7 @@
         WindowState="Maximized"
         Loaded="Window_Loaded">
     <Grid x:Name="RootOverlayGrid"
+          Visibility="Collapsed"
           Background="Transparent">
         <Border x:Name="OverlayPanelBorder"
                 Margin="20"

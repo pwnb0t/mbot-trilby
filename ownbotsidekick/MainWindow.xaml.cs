@@ -21,6 +21,7 @@ namespace ownbotsidekick
         private const int HotkeyId = 1;
         private const int GwlExStyle = -20;
         private const int WsExNoActivate = 0x08000000;
+        private const int WsExTransparent = 0x00000020;
         private const int WhKeyboardLl = 13;
         private const int WhMouseLl = 14;
         private const int WmKeyDown = 0x0100;
@@ -53,6 +54,8 @@ namespace ownbotsidekick
         private LowLevelKeyboardProc? _keyboardHookProc;
         private IntPtr _mouseHookHandle = IntPtr.Zero;
         private LowLevelMouseProc? _mouseHookProc;
+        private IntPtr _windowHandle = IntPtr.Zero;
+        private bool _overlayVisible;
 
         public MainWindow()
         {
@@ -99,8 +102,11 @@ namespace ownbotsidekick
 
             if (_settings.Overlay.StartHidden)
             {
-                Hide();
                 Log("Overlay starts hidden per appsettings.");
+            }
+            else
+            {
+                ShowOverlay("Overlay shown.");
             }
 
             ApplyOverlayPanelLayout();
@@ -153,9 +159,11 @@ namespace ownbotsidekick
             base.OnSourceInitialized(e);
 
             var helper = new WindowInteropHelper(this);
+            _windowHandle = helper.Handle;
             var source = HwndSource.FromHwnd(helper.Handle);
             source?.AddHook(WndProc);
             EnableNoActivateMode(helper.Handle);
+            SetOverlayInteractionEnabled(false);
 
             InitializeTrayIcon();
             RegisterOverlayHotkey(helper.Handle);
@@ -172,8 +180,7 @@ namespace ownbotsidekick
             }
 
             e.Cancel = true;
-            Hide();
-            Log("Overlay hidden to tray. Use tray icon -> Exit to close app.");
+            HideOverlay("Overlay hidden to tray. Use tray icon -> Exit to close app.");
         }
 
         protected override void OnClosed(EventArgs e)
@@ -314,7 +321,7 @@ namespace ownbotsidekick
 
         private void ToggleOverlayVisibility()
         {
-            if (Visibility == Visibility.Visible)
+            if (_overlayVisible)
             {
                 HideOverlay("Overlay hidden.");
                 return;
@@ -367,7 +374,7 @@ namespace ownbotsidekick
 
         private void ShowOverlayFromTray()
         {
-            if (Visibility == Visibility.Visible)
+            if (_overlayVisible)
             {
                 return;
             }
@@ -385,7 +392,7 @@ namespace ownbotsidekick
 
         private void HideOverlayFromTray()
         {
-            if (Visibility != Visibility.Visible)
+            if (!_overlayVisible)
             {
                 return;
             }
@@ -568,7 +575,7 @@ namespace ownbotsidekick
                 return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
             }
 
-            if (Visibility != Visibility.Visible)
+            if (!_overlayVisible)
             {
                 return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
             }
@@ -590,7 +597,7 @@ namespace ownbotsidekick
                 return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
             }
 
-            if (Visibility != Visibility.Visible)
+            if (!_overlayVisible)
             {
                 return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
             }
@@ -762,22 +769,47 @@ namespace ownbotsidekick
 
         private void HideOverlay(string logMessage)
         {
-            if (Visibility != Visibility.Visible)
+            if (!_overlayVisible)
             {
                 return;
             }
 
             ResetSearchState();
-            Hide();
+            RootOverlayGrid.Visibility = Visibility.Collapsed;
+            _overlayVisible = false;
+            SetOverlayInteractionEnabled(false);
             Log(logMessage);
         }
 
         private void ShowOverlay(string logMessage)
         {
             ResetSearchState();
-            Show();
+            RootOverlayGrid.Visibility = Visibility.Visible;
+            _overlayVisible = true;
+            SetOverlayInteractionEnabled(true);
             Topmost = _settings.Overlay.Topmost;
             Log(logMessage);
+        }
+
+        private void SetOverlayInteractionEnabled(bool enabled)
+        {
+            if (_windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            var currentExStyle = GetWindowLongPtr(_windowHandle, GwlExStyle).ToInt64();
+            long updatedExStyle;
+            if (enabled)
+            {
+                updatedExStyle = (currentExStyle | WsExNoActivate) & ~WsExTransparent;
+            }
+            else
+            {
+                updatedExStyle = (currentExStyle | WsExNoActivate | WsExTransparent);
+            }
+
+            SetWindowLongPtr(_windowHandle, GwlExStyle, new IntPtr(updatedExStyle));
         }
 
         [DllImport("user32.dll", SetLastError = true)]
