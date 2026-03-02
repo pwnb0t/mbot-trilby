@@ -21,6 +21,29 @@ E:\g\ownbot\TODO.md also has a section about this Sidekick app.
   - `SidekickApiClientService.PlayTriggerAsync(...)` -> `PlayClipAsync(...)`
 - Verified `dotnet build ownbotsidekick\ownbotsidekick.csproj -c Debug` succeeds (0 errors).
 
+## Phase 2 Progress (Clip Search/Filter UX)
+- Date: 2026-03-02
+- Expanded overlay layout for fullscreen usage while preserving:
+  - top test clip buttons
+  - bottom log panel
+  - tray flow and no-activate behavior
+- Added clip catalog load from `GET /v1/clips` on startup.
+- Added top-right `Refresh` button and loaded clip count/status display.
+- Added center search widget:
+  - placeholder: `Start typing to search...`
+  - 3 columns x 4 rows results grid
+  - prefix filtering, case-insensitive, trigger-only
+- Added keyboard behavior (while overlay visible):
+  - alphanumeric appends to search query
+  - non-alphanumeric ignored
+  - `Backspace` deletes one character
+  - `Enter` or `Space` plays first filtered result (if query is non-empty)
+  - `Escape` clears search; if already empty, hides overlay
+- Added non-blocking startup behavior if clip load fails:
+  - overlay still opens
+  - user can retry with `Refresh`
+- Verified `dotnet build ownbotsidekick\ownbotsidekick.csproj -c Debug` succeeds (0 errors, 0 warnings).
+
 ## What Is Implemented
 - Transparent, topmost WPF overlay window.
 - 3 clickable buttons (`Clip A`, `Clip B`, `Clip C`).

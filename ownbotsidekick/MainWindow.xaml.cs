@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows;
@@ -19,14 +21,32 @@ namespace ownbotsidekick
         private const int HotkeyId = 1;
         private const int GwlExStyle = -20;
         private const int WsExNoActivate = 0x08000000;
+        private const int WhKeyboardLl = 13;
+        private const int WmKeyDown = 0x0100;
+        private const int WmSysKeyDown = 0x0104;
+        private const int VkBack = 0x08;
+        private const int VkReturn = 0x0D;
+        private const int VkEscape = 0x1B;
+        private const int VkSpace = 0x20;
+        private const int Vk0 = 0x30;
+        private const int Vk9 = 0x39;
+        private const int VkA = 0x41;
+        private const int VkZ = 0x5A;
+        private const int VkNumpad0 = 0x60;
+        private const int VkNumpad9 = 0x69;
 
         private readonly string _logFilePath;
         private readonly AppSettings _settings;
+        private readonly List<string> _allClipTriggers = new();
+        private readonly List<string> _filteredClipTriggers = new();
         private bool _hotkeyRegistered;
         private bool _exitRequested;
+        private string _searchQuery = string.Empty;
         private Forms.NotifyIcon? _trayIcon;
         private Icon? _customTrayIcon;
         private SidekickApiClientService? _sidekickApiClient;
+        private IntPtr _keyboardHookHandle = IntPtr.Zero;
+        private LowLevelKeyboardProc? _keyboardHookProc;
 
         public MainWindow()
         {
@@ -53,6 +73,8 @@ namespace ownbotsidekick
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            RenderSearchState();
+
             Log("Overlay loaded.");
             Log($"Hotkey: {DescribeHotkey(_settings.Hotkey)}");
             Log(_settings.SidekickApi.Enabled
@@ -62,6 +84,11 @@ namespace ownbotsidekick
             if (_sidekickApiClient is not null)
             {
                 _ = InitializeHealthCheckAsync();
+                _ = LoadClipCatalogAsync("startup");
+            }
+            else
+            {
+                UpdateClipCountText(0, "API disabled");
             }
 
             if (_settings.Overlay.StartHidden)
@@ -84,6 +111,11 @@ namespace ownbotsidekick
         private async void ClipCButton_Click(object sender, RoutedEventArgs e)
         {
             await PlayClipAsync("Clip C", _settings.SidekickApi.ClipCTrigger);
+        }
+
+        private async void RefreshClipsButton_Click(object sender, RoutedEventArgs e)
+        {
+            await LoadClipCatalogAsync("manual refresh");
         }
 
         private void Log(string message)
@@ -114,6 +146,7 @@ namespace ownbotsidekick
 
             InitializeTrayIcon();
             RegisterOverlayHotkey(helper.Handle);
+            InitializeKeyboardHook();
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -137,6 +170,8 @@ namespace ownbotsidekick
                 UnregisterHotKey(helper.Handle, HotkeyId);
                 _hotkeyRegistered = false;
             }
+
+            DisposeKeyboardHook();
 
             if (_trayIcon is not null)
             {
@@ -172,6 +207,33 @@ namespace ownbotsidekick
             catch (Exception ex)
             {
                 Log($"Health check failed: {ex.Message}");
+            }
+        }
+
+        private async System.Threading.Tasks.Task LoadClipCatalogAsync(string reason)
+        {
+            if (_sidekickApiClient is null)
+            {
+                UpdateClipCountText(0, "API disabled");
+                return;
+            }
+
+            try
+            {
+                Log($"Loading clips ({reason})...");
+                var catalog = await _sidekickApiClient.ListClipsAsync();
+                _allClipTriggers.Clear();
+                _allClipTriggers.AddRange(catalog.Triggers);
+                RebuildFilteredResults();
+                UpdateClipCountText(_allClipTriggers.Count, "loaded");
+                Log($"Loaded {_allClipTriggers.Count} clips (API total={catalog.Total}).");
+            }
+            catch (Exception ex)
+            {
+                _allClipTriggers.Clear();
+                RebuildFilteredResults();
+                UpdateClipCountText(0, "load failed");
+                Log($"Load clips failed: {ex.Message}");
             }
         }
 
@@ -337,6 +399,204 @@ namespace ownbotsidekick
             return IntPtr.Zero;
         }
 
+        private void UpdateClipCountText(int count, string status)
+        {
+            ClipCountTextBlock.Text = $"Clips: {count} ({status})";
+        }
+
+        private void RebuildFilteredResults()
+        {
+            _filteredClipTriggers.Clear();
+
+            if (!string.IsNullOrEmpty(_searchQuery))
+            {
+                _filteredClipTriggers.AddRange(
+                    _allClipTriggers
+                        .Where(trigger => trigger.StartsWith(_searchQuery, StringComparison.OrdinalIgnoreCase))
+                        .Take(12)
+                );
+            }
+
+            RenderSearchState();
+        }
+
+        private void RenderSearchState()
+        {
+            SearchQueryTextBlock.Text = string.IsNullOrEmpty(_searchQuery)
+                ? "Start typing to search..."
+                : _searchQuery;
+
+            SearchResultsGrid.Children.Clear();
+            foreach (var trigger in _filteredClipTriggers)
+            {
+                var button = new System.Windows.Controls.Button
+                {
+                    Content = trigger,
+                    Margin = new Thickness(4),
+                    Padding = new Thickness(8)
+                };
+                button.Click += async (_, _) => await PlayClipAsync(trigger, trigger);
+                SearchResultsGrid.Children.Add(button);
+            }
+
+            for (var i = _filteredClipTriggers.Count; i < 12; i++)
+            {
+                var spacer = new System.Windows.Controls.Border
+                {
+                    Margin = new Thickness(4),
+                    Background = string.IsNullOrEmpty(_searchQuery)
+                        ? null
+                        : new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(24, 255, 255, 255)),
+                    BorderBrush = string.IsNullOrEmpty(_searchQuery)
+                        ? null
+                        : new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(56, 255, 255, 255)),
+                    BorderThickness = string.IsNullOrEmpty(_searchQuery) ? new Thickness(0) : new Thickness(1),
+                    CornerRadius = new CornerRadius(4)
+                };
+                SearchResultsGrid.Children.Add(spacer);
+            }
+        }
+
+        private async System.Threading.Tasks.Task PlayFirstFilteredResultAsync()
+        {
+            if (string.IsNullOrEmpty(_searchQuery) || _filteredClipTriggers.Count == 0)
+            {
+                return;
+            }
+
+            var first = _filteredClipTriggers[0];
+            await PlayClipAsync(first, first);
+        }
+
+        private void InitializeKeyboardHook()
+        {
+            _keyboardHookProc = KeyboardHookCallback;
+            using var currentProcess = Process.GetCurrentProcess();
+            using var currentModule = currentProcess.MainModule;
+            var moduleName = currentModule?.ModuleName;
+            var moduleHandle = moduleName is null ? IntPtr.Zero : GetModuleHandle(moduleName);
+            _keyboardHookHandle = SetWindowsHookEx(WhKeyboardLl, _keyboardHookProc, moduleHandle, 0);
+
+            if (_keyboardHookHandle == IntPtr.Zero)
+            {
+                Log("Failed to initialize keyboard hook.");
+            }
+            else
+            {
+                Log("Keyboard hook initialized.");
+            }
+        }
+
+        private void DisposeKeyboardHook()
+        {
+            if (_keyboardHookHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            UnhookWindowsHookEx(_keyboardHookHandle);
+            _keyboardHookHandle = IntPtr.Zero;
+            _keyboardHookProc = null;
+        }
+
+        private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode < 0)
+            {
+                return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
+            }
+
+            var message = wParam.ToInt32();
+            if (message != WmKeyDown && message != WmSysKeyDown)
+            {
+                return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
+            }
+
+            if (Visibility != Visibility.Visible)
+            {
+                return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
+            }
+
+            var keyboardData = Marshal.PtrToStructure<KbdLlHookStruct>(lParam);
+            var handled = HandleOverlayKeyDown(keyboardData.VkCode);
+            if (handled)
+            {
+                return (IntPtr)1;
+            }
+
+            return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
+        }
+
+        private bool HandleOverlayKeyDown(int virtualKey)
+        {
+            if (virtualKey == VkEscape)
+            {
+                if (!string.IsNullOrEmpty(_searchQuery))
+                {
+                    _searchQuery = string.Empty;
+                    RebuildFilteredResults();
+                    return true;
+                }
+
+                Hide();
+                Log("Overlay hidden.");
+                return true;
+            }
+
+            if (virtualKey == VkBack)
+            {
+                if (string.IsNullOrEmpty(_searchQuery))
+                {
+                    return false;
+                }
+
+                _searchQuery = _searchQuery[..^1];
+                RebuildFilteredResults();
+                return true;
+            }
+
+            if (virtualKey == VkReturn || virtualKey == VkSpace)
+            {
+                if (string.IsNullOrEmpty(_searchQuery))
+                {
+                    return false;
+                }
+
+                _ = PlayFirstFilteredResultAsync();
+                return true;
+            }
+
+            var character = TryGetAlphanumericCharacter(virtualKey);
+            if (character is null)
+            {
+                return false;
+            }
+
+            _searchQuery += character.Value;
+            RebuildFilteredResults();
+            return true;
+        }
+
+        private static char? TryGetAlphanumericCharacter(int virtualKey)
+        {
+            if (virtualKey >= VkA && virtualKey <= VkZ)
+            {
+                return char.ToLowerInvariant((char)virtualKey);
+            }
+
+            if (virtualKey >= Vk0 && virtualKey <= Vk9)
+            {
+                return (char)virtualKey;
+            }
+
+            if (virtualKey >= VkNumpad0 && virtualKey <= VkNumpad9)
+            {
+                return (char)('0' + (virtualKey - VkNumpad0));
+            }
+
+            return null;
+        }
+
         private static AppSettings LoadSettings()
         {
             var settingsPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
@@ -414,6 +674,18 @@ namespace ownbotsidekick
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
         private static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
+
         [Flags]
         private enum HotkeyModifiers : uint
         {
@@ -423,6 +695,18 @@ namespace ownbotsidekick
             Shift = 0x0004,
             Win = 0x0008,
             NoRepeat = 0x4000
+        }
+
+        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct KbdLlHookStruct
+        {
+            public int VkCode;
+            public int ScanCode;
+            public int Flags;
+            public int Time;
+            public IntPtr DwExtraInfo;
         }
 
         private sealed class AppSettings

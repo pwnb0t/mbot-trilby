@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,11 +18,17 @@ namespace ownbotsidekick.Services
     {
         private readonly ServiceProvider _serviceProvider;
         private readonly IDefaultApi _api;
+        private readonly HttpClient _httpClient;
         private readonly long _guildId;
 
         public SidekickApiClientService(string baseUrl, long guildId)
         {
             _guildId = guildId;
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(baseUrl, UriKind.Absolute)
+            };
+
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddApi(options =>
@@ -31,6 +41,41 @@ namespace ownbotsidekick.Services
 
             _serviceProvider = services.BuildServiceProvider();
             _api = _serviceProvider.GetRequiredService<IDefaultApi>();
+        }
+
+        public async Task<ClipCatalog> ListClipsAsync(CancellationToken cancellationToken = default)
+        {
+            var requestUri = $"/v1/clips?guild_id={Uri.EscapeDataString(_guildId.ToString())}";
+            using var response = await _httpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var message = TryReadApiErrorMessage(content) ?? $"HTTP {(int)response.StatusCode} ({response.StatusCode})";
+                throw new InvalidOperationException($"List clips failed: {message}");
+            }
+
+            using var document = JsonDocument.Parse(content);
+            var root = document.RootElement;
+            var clipsElement = root.GetProperty("clips");
+            var triggers = new List<string>(clipsElement.GetArrayLength());
+            foreach (var item in clipsElement.EnumerateArray())
+            {
+                if (item.TryGetProperty("trigger", out var triggerProperty))
+                {
+                    var trigger = triggerProperty.GetString();
+                    if (!string.IsNullOrWhiteSpace(trigger))
+                    {
+                        triggers.Add(trigger);
+                    }
+                }
+            }
+
+            var total = root.TryGetProperty("total", out var totalProperty)
+                ? totalProperty.GetInt32()
+                : triggers.Count;
+
+            return new ClipCatalog(triggers.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList(), total);
         }
 
         public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
@@ -90,7 +135,43 @@ namespace ownbotsidekick.Services
 
         public void Dispose()
         {
+            _httpClient.Dispose();
             _serviceProvider.Dispose();
+        }
+
+        private static string? TryReadApiErrorMessage(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return null;
+            }
+
+            try
+            {
+                using var document = JsonDocument.Parse(content);
+                if (document.RootElement.TryGetProperty("message", out var messageProperty))
+                {
+                    return messageProperty.GetString();
+                }
+            }
+            catch
+            {
+                return null;
+            }
+
+            return null;
+        }
+
+        internal sealed class ClipCatalog
+        {
+            public ClipCatalog(IReadOnlyList<string> triggers, int total)
+            {
+                Triggers = triggers;
+                Total = total;
+            }
+
+            public IReadOnlyList<string> Triggers { get; }
+            public int Total { get; }
         }
     }
 }

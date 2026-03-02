@@ -14,39 +14,94 @@
         WindowState="Maximized"
         Loaded="Window_Loaded">
     <Grid Background="Transparent">
-        <Border HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Margin="24"
+        <Border Margin="20"
                 Background="#CC111111"
                 BorderBrush="#66FFFFFF"
                 BorderThickness="1"
                 CornerRadius="12"
-                Padding="16">
-            <StackPanel Width="320">
-                <TextBlock Text="Sidekick Overlay (Phase 1)"
-                           FontSize="18"
-                           FontWeight="Bold"
-                           Foreground="White"
-                           Margin="0,0,0,12" />
-                <UniformGrid Rows="1" Columns="3" Margin="0,0,0,12">
-                    <Button Content="Clip A" Margin="4" Padding="8" Click="ClipAButton_Click" />
-                    <Button Content="Clip B" Margin="4" Padding="8" Click="ClipBButton_Click" />
-                    <Button Content="Clip C" Margin="4" Padding="8" Click="ClipCButton_Click" />
-                </UniformGrid>
-                <TextBlock Text="Log output"
-                           FontSize="12"
-                           Foreground="#DDFFFFFF"
-                           Margin="0,0,0,6" />
-                <TextBox x:Name="LogTextBox"
-                         Height="150"
-                         IsReadOnly="True"
-                         VerticalScrollBarVisibility="Auto"
-                         TextWrapping="Wrap"
-                         Background="#44000000"
-                         Foreground="White"
-                         BorderBrush="#66FFFFFF"
-                         BorderThickness="1" />
-            </StackPanel>
+                Padding="14">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="220" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Vertical">
+                        <TextBlock Text="Sidekick Overlay"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   Margin="0,0,0,10" />
+                        <UniformGrid Rows="1" Columns="3">
+                            <Button Content="Clip A" Margin="4" Padding="8" Click="ClipAButton_Click" />
+                            <Button Content="Clip B" Margin="4" Padding="8" Click="ClipBButton_Click" />
+                            <Button Content="Clip C" Margin="4" Padding="8" Click="ClipCButton_Click" />
+                        </UniformGrid>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                        <TextBlock x:Name="ClipCountTextBlock"
+                                   Text="Clips: 0"
+                                   Foreground="#DDFFFFFF"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,10,0" />
+                        <Button Content="Refresh"
+                                Padding="12,6"
+                                Click="RefreshClipsButton_Click" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Border HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Width="640"
+                            Background="#66000000"
+                            BorderBrush="#66FFFFFF"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock x:Name="SearchQueryTextBlock"
+                                       Text="Start typing to search..."
+                                       Foreground="#FFFFFFFF"
+                                       FontSize="18"
+                                       Margin="0,0,0,10" />
+
+                            <UniformGrid x:Name="SearchResultsGrid"
+                                         Grid.Row="1"
+                                         Rows="4"
+                                         Columns="3" />
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <StackPanel Grid.Row="2">
+                    <TextBlock Text="Log output"
+                               FontSize="12"
+                               Foreground="#DDFFFFFF"
+                               Margin="0,0,0,6" />
+                    <TextBox x:Name="LogTextBox"
+                             IsReadOnly="True"
+                             VerticalScrollBarVisibility="Auto"
+                             TextWrapping="Wrap"
+                             Background="#44000000"
+                             Foreground="White"
+                             BorderBrush="#66FFFFFF"
+                             BorderThickness="1" />
+                </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </Window>
