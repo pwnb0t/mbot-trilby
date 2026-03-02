@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -15,7 +14,6 @@ using ownbotsidekick.Controls;
 using ownbotsidekick.Input;
 using ownbotsidekick.Search;
 using ownbotsidekick.Services;
-using Forms = System.Windows.Forms;
 
 namespace ownbotsidekick
 {
@@ -47,11 +45,10 @@ namespace ownbotsidekick
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
         private bool _hotkeyRegistered;
         private bool _exitRequested;
-        private Forms.NotifyIcon? _trayIcon;
-        private Icon? _customTrayIcon;
         private SidekickApiClientService? _sidekickApiClient;
         private ClipPlaybackCoordinator? _clipPlaybackCoordinator;
         private OverlayDiagnostics? _diagnostics;
+        private TrayController? _trayController;
         private OverlayInputRouter? _overlayInputRouter;
         private IntPtr _windowHandle = IntPtr.Zero;
         private bool _overlayVisible;
@@ -86,6 +83,14 @@ namespace ownbotsidekick
             Directory.CreateDirectory(logDirectory);
             _logFilePath = Path.Combine(logDirectory, "overlay.log");
             _diagnostics = new OverlayDiagnostics(_logFilePath);
+            _trayController = new TrayController(
+                diagnostics: _diagnostics,
+                showOverlay: ShowOverlayFromTray,
+                hideOverlay: HideOverlayFromTray,
+                toggleOverlay: ToggleOverlayVisibility,
+                exitApp: ExitFromTray,
+                appBaseDirectory: AppContext.BaseDirectory
+            );
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -166,7 +171,7 @@ namespace ownbotsidekick
             EnableNoActivateMode(helper.Handle);
             SetOverlayInteractionEnabled(false);
 
-            InitializeTrayIcon();
+            _trayController?.Initialize();
             RegisterOverlayHotkey(helper.Handle);
             _overlayInputRouter = new OverlayInputRouter(
                 isOverlayVisible: () => _overlayVisible,
@@ -203,18 +208,8 @@ namespace ownbotsidekick
             _overlayInputRouter?.Dispose();
             _overlayInputRouter = null;
 
-            if (_trayIcon is not null)
-            {
-                _trayIcon.Visible = false;
-                _trayIcon.Dispose();
-                _trayIcon = null;
-            }
-
-            if (_customTrayIcon is not null)
-            {
-                _customTrayIcon.Dispose();
-                _customTrayIcon = null;
-            }
+            _trayController?.Dispose();
+            _trayController = null;
 
             _sidekickApiClient?.Dispose();
             _sidekickApiClient = null;
@@ -332,53 +327,6 @@ namespace ownbotsidekick
             }
 
             ShowOverlay("Overlay shown.");
-        }
-
-        private void InitializeTrayIcon()
-        {
-            var trayIconImage = LoadTrayIcon();
-            _trayIcon = new Forms.NotifyIcon
-            {
-                Icon = trayIconImage,
-                Text = "ownbotsidekick",
-                Visible = true
-            };
-
-            var trayMenu = new Forms.ContextMenuStrip();
-            trayMenu.Items.Add("Show Overlay", null, (_, _) => ShowOverlayFromTray());
-            trayMenu.Items.Add("Hide Overlay", null, (_, _) => HideOverlayFromTray());
-            trayMenu.Items.Add(new Forms.ToolStripSeparator());
-            trayMenu.Items.Add("Exit", null, (_, _) => ExitFromTray());
-
-            _trayIcon.ContextMenuStrip = trayMenu;
-            _trayIcon.DoubleClick += (_, _) => ToggleOverlayVisibility();
-            if (trayIconImage == SystemIcons.Application)
-            {
-                _diagnostics?.Info("tray", "Tray icon initialized with fallback icon (mbot.ico not available).");
-            }
-            else
-            {
-                _diagnostics?.Info("tray", "Tray icon initialized from mbot.ico.");
-            }
-        }
-
-        private Icon LoadTrayIcon()
-        {
-            var iconPath = Path.Combine(AppContext.BaseDirectory, "mbot.ico");
-            if (!File.Exists(iconPath))
-            {
-                return SystemIcons.Application;
-            }
-
-            try
-            {
-                _customTrayIcon = new Icon(iconPath);
-                return _customTrayIcon;
-            }
-            catch
-            {
-                return SystemIcons.Application;
-            }
         }
 
         private void ShowOverlayFromTray()
