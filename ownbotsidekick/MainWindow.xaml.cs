@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using ownbotsidekick.Controls;
 using ownbotsidekick.Input;
 using ownbotsidekick.Services;
 using Forms = System.Windows.Forms;
@@ -55,6 +56,7 @@ namespace ownbotsidekick
         public MainWindow()
         {
             InitializeComponent();
+            SearchPanel.ClipSelected += SearchPanel_ClipSelected;
 
             _settings = LoadSettings();
             Topmost = _settings.Overlay.Topmost;
@@ -125,6 +127,11 @@ namespace ownbotsidekick
         private async void RefreshClipsButton_Click(object sender, RoutedEventArgs e)
         {
             await LoadClipCatalogAsync("manual refresh");
+        }
+
+        private async void SearchPanel_ClipSelected(object? sender, string trigger)
+        {
+            await PlayClipAsync(trigger, trigger);
         }
 
         private void CloseOverlayButton_Click(object sender, RoutedEventArgs e)
@@ -456,34 +463,7 @@ namespace ownbotsidekick
 
         private void RenderSearchState()
         {
-            SearchQueryTextBlock.Text = string.IsNullOrEmpty(_searchQuery)
-                ? "Start typing to search..."
-                : _searchQuery;
-
-            SearchResultsGrid.Children.Clear();
-            NoResultsTextBlock.Visibility = Visibility.Collapsed;
-
-            if (string.IsNullOrEmpty(_searchQuery))
-            {
-                return;
-            }
-
-            if (_filteredClipTriggers.Count == 0)
-            {
-                NoResultsTextBlock.Visibility = Visibility.Visible;
-                return;
-            }
-
-            foreach (var trigger in _filteredClipTriggers)
-            {
-                var button = new System.Windows.Controls.Button
-                {
-                    Content = trigger,
-                    Style = (Style)FindResource("ClipButtonStyle")
-                };
-                button.Click += async (_, _) => await PlayClipAsync(trigger, trigger);
-                SearchResultsGrid.Children.Add(button);
-            }
+            SearchPanel.UpdateSearchState(_searchQuery, _filteredClipTriggers);
         }
 
         private async System.Threading.Tasks.Task PlayFirstFilteredResultAsync()
