@@ -12,7 +12,6 @@
         Topmost="True"
         ShowInTaskbar="False"
         WindowState="Maximized"
-        PreviewMouseDown="Window_PreviewMouseDown"
         Loaded="Window_Loaded">
     <Grid x:Name="RootOverlayGrid"
           Background="Transparent">

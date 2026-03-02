@@ -22,8 +22,12 @@ namespace ownbotsidekick
         private const int GwlExStyle = -20;
         private const int WsExNoActivate = 0x08000000;
         private const int WhKeyboardLl = 13;
+        private const int WhMouseLl = 14;
         private const int WmKeyDown = 0x0100;
         private const int WmSysKeyDown = 0x0104;
+        private const int WmLButtonDown = 0x0201;
+        private const int WmRButtonDown = 0x0204;
+        private const int WmMButtonDown = 0x0207;
         private const int VkBack = 0x08;
         private const int VkReturn = 0x0D;
         private const int VkEscape = 0x1B;
@@ -47,6 +51,8 @@ namespace ownbotsidekick
         private SidekickApiClientService? _sidekickApiClient;
         private IntPtr _keyboardHookHandle = IntPtr.Zero;
         private LowLevelKeyboardProc? _keyboardHookProc;
+        private IntPtr _mouseHookHandle = IntPtr.Zero;
+        private LowLevelMouseProc? _mouseHookProc;
 
         public MainWindow()
         {
@@ -123,26 +129,6 @@ namespace ownbotsidekick
             HideOverlay("Overlay hidden from close button.");
         }
 
-        private void Window_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (Visibility != Visibility.Visible)
-            {
-                return;
-            }
-
-            var position = e.GetPosition(OverlayPanelBorder);
-            var isOutsideOverlayPanel =
-                position.X < 0 ||
-                position.Y < 0 ||
-                position.X > OverlayPanelBorder.ActualWidth ||
-                position.Y > OverlayPanelBorder.ActualHeight;
-
-            if (isOutsideOverlayPanel)
-            {
-                HideOverlay("Overlay hidden (background click).");
-            }
-        }
-
         private void Log(string message)
         {
             var timestamped = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} {message}";
@@ -172,6 +158,7 @@ namespace ownbotsidekick
             InitializeTrayIcon();
             RegisterOverlayHotkey(helper.Handle);
             InitializeKeyboardHook();
+            InitializeMouseHook();
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -197,6 +184,7 @@ namespace ownbotsidekick
             }
 
             DisposeKeyboardHook();
+            DisposeMouseHook();
 
             if (_trayIcon is not null)
             {
@@ -525,6 +513,37 @@ namespace ownbotsidekick
             _keyboardHookProc = null;
         }
 
+        private void InitializeMouseHook()
+        {
+            _mouseHookProc = MouseHookCallback;
+            using var currentProcess = Process.GetCurrentProcess();
+            using var currentModule = currentProcess.MainModule;
+            var moduleName = currentModule?.ModuleName;
+            var moduleHandle = moduleName is null ? IntPtr.Zero : GetModuleHandle(moduleName);
+            _mouseHookHandle = SetWindowsHookEx(WhMouseLl, _mouseHookProc, moduleHandle, 0);
+
+            if (_mouseHookHandle == IntPtr.Zero)
+            {
+                Log("Failed to initialize mouse hook.");
+            }
+            else
+            {
+                Log("Mouse hook initialized.");
+            }
+        }
+
+        private void DisposeMouseHook()
+        {
+            if (_mouseHookHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            UnhookWindowsHookEx(_mouseHookHandle);
+            _mouseHookHandle = IntPtr.Zero;
+            _mouseHookProc = null;
+        }
+
         private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode < 0)
@@ -551,6 +570,49 @@ namespace ownbotsidekick
             }
 
             return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
+        }
+
+        private IntPtr MouseHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode < 0)
+            {
+                return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
+            }
+
+            if (Visibility != Visibility.Visible)
+            {
+                return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
+            }
+
+            var message = wParam.ToInt32();
+            if (message != WmLButtonDown && message != WmRButtonDown && message != WmMButtonDown)
+            {
+                return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
+            }
+
+            var mouseData = Marshal.PtrToStructure<MsLlHookStruct>(lParam);
+            var clickPoint = new System.Windows.Point(mouseData.Pt.X, mouseData.Pt.Y);
+            Dispatcher.BeginInvoke(() =>
+            {
+                if (!IsPointInsideOverlayPanel(clickPoint))
+                {
+                    HideOverlay("Overlay hidden (outside click).");
+                }
+            });
+
+            return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
+        }
+
+        private bool IsPointInsideOverlayPanel(System.Windows.Point screenPoint)
+        {
+            if (OverlayPanelBorder.ActualWidth <= 0 || OverlayPanelBorder.ActualHeight <= 0)
+            {
+                return false;
+            }
+
+            var topLeft = OverlayPanelBorder.PointToScreen(new System.Windows.Point(0, 0));
+            var panelRect = new Rect(topLeft.X, topLeft.Y, OverlayPanelBorder.ActualWidth, OverlayPanelBorder.ActualHeight);
+            return panelRect.Contains(screenPoint);
         }
 
         private bool HandleOverlayKeyDown(int virtualKey)
@@ -714,6 +776,9 @@ namespace ownbotsidekick
         private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
         [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+
+        [DllImport("user32.dll", SetLastError = true)]
         private static extern bool UnhookWindowsHookEx(IntPtr hhk);
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -734,12 +799,30 @@ namespace ownbotsidekick
         }
 
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+        private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct KbdLlHookStruct
         {
             public int VkCode;
             public int ScanCode;
+            public int Flags;
+            public int Time;
+            public IntPtr DwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct PointStruct
+        {
+            public int X;
+            public int Y;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MsLlHookStruct
+        {
+            public PointStruct Pt;
+            public int MouseData;
             public int Flags;
             public int Time;
             public IntPtr DwExtraInfo;
