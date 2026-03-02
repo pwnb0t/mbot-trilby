@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Ok** | **bool** |  | 
-**GuildId** | **int** |  | 
+**GuildId** | **long** |  | 
 **Clips** | [**List&lt;ClipSummary&gt;**](ClipSummary.md) |  | 
 **Total** | **int** |  | 
 **Search** | **string** |  | [optional] 

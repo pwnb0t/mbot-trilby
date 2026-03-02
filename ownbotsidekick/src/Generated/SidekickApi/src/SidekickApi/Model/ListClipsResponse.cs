@@ -39,7 +39,7 @@ namespace SidekickApi.Model
         /// <param name="total">total</param>
         /// <param name="search">search</param>
         [JsonConstructor]
-        public ListClipsResponse(bool ok, int guildId, List<ClipSummary> clips, int total, Option<string?> search = default)
+        public ListClipsResponse(bool ok, long guildId, List<ClipSummary> clips, int total, Option<string?> search = default)
         {
             Ok = ok;
             GuildId = guildId;
@@ -61,7 +61,7 @@ namespace SidekickApi.Model
         /// Gets or Sets GuildId
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public int GuildId { get; set; }
+        public long GuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets Clips
@@ -139,7 +139,7 @@ namespace SidekickApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<int?> guildId = default;
+            Option<long?> guildId = default;
             Option<List<ClipSummary>?> clips = default;
             Option<int?> total = default;
             Option<string?> search = default;
@@ -163,7 +163,7 @@ namespace SidekickApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "guild_id":
-                            guildId = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
                             break;
                         case "clips":
                             clips = new Option<List<ClipSummary>?>(JsonSerializer.Deserialize<List<ClipSummary>>(ref utf8JsonReader, jsonSerializerOptions)!);

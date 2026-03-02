@@ -40,7 +40,7 @@ namespace SidekickApi.Model
         /// <param name="status">status</param>
         /// <param name="requestId">requestId</param>
         [JsonConstructor]
-        public PlayClipResponse(bool ok, int guildId, string trigger, string resolvedTrigger, StatusEnum status, Option<string?> requestId = default)
+        public PlayClipResponse(bool ok, long guildId, string trigger, string resolvedTrigger, StatusEnum status, Option<string?> requestId = default)
         {
             Ok = ok;
             GuildId = guildId;
@@ -121,7 +121,7 @@ namespace SidekickApi.Model
         /// Gets or Sets GuildId
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public int GuildId { get; set; }
+        public long GuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets Trigger
@@ -200,7 +200,7 @@ namespace SidekickApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<int?> guildId = default;
+            Option<long?> guildId = default;
             Option<string?> trigger = default;
             Option<string?> resolvedTrigger = default;
             Option<PlayClipResponse.StatusEnum?> status = default;
@@ -225,7 +225,7 @@ namespace SidekickApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "guild_id":
-                            guildId = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
                             break;
                         case "trigger":
                             trigger = new Option<string?>(utf8JsonReader.GetString()!);

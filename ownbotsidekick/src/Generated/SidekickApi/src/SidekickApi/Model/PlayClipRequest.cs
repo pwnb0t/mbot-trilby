@@ -158,7 +158,7 @@ namespace SidekickApi.Model
                     switch (localVarJsonPropertyName)
                     {
                         case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
                             break;
                         case "trigger":
                             trigger = new Option<string?>(utf8JsonReader.GetString()!);
