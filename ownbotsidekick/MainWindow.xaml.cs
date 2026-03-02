@@ -320,10 +320,7 @@ namespace ownbotsidekick
                 return;
             }
 
-            ResetSearchState();
-            Show();
-            Topmost = _settings.Overlay.Topmost;
-            Log("Overlay shown.");
+            ShowOverlay("Overlay shown.");
         }
 
         private void InitializeTrayIcon()
@@ -375,10 +372,7 @@ namespace ownbotsidekick
                 return;
             }
 
-            ResetSearchState();
-            Show();
-            Topmost = _settings.Overlay.Topmost;
-            Log("Overlay shown from tray.");
+            ShowOverlay("Overlay shown from tray.");
         }
 
         private void EnableNoActivateMode(IntPtr hwnd)
@@ -773,7 +767,16 @@ namespace ownbotsidekick
                 return;
             }
 
+            ResetSearchState();
             Hide();
+            Log(logMessage);
+        }
+
+        private void ShowOverlay(string logMessage)
+        {
+            ResetSearchState();
+            Show();
+            Topmost = _settings.Overlay.Topmost;
             Log(logMessage);
         }
 
