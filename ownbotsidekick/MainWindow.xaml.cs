@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using ownbotsidekick.Input;
 using ownbotsidekick.Services;
 using Forms = System.Windows.Forms;
 
@@ -22,13 +23,6 @@ namespace ownbotsidekick
         private const int GwlExStyle = -20;
         private const int WsExNoActivate = 0x08000000;
         private const int WsExTransparent = 0x00000020;
-        private const int WhKeyboardLl = 13;
-        private const int WhMouseLl = 14;
-        private const int WmKeyDown = 0x0100;
-        private const int WmSysKeyDown = 0x0104;
-        private const int WmLButtonDown = 0x0201;
-        private const int WmRButtonDown = 0x0204;
-        private const int WmMButtonDown = 0x0207;
         private const int VkBack = 0x08;
         private const int VkTab = 0x09;
         private const int VkReturn = 0x0D;
@@ -54,10 +48,7 @@ namespace ownbotsidekick
         private Forms.NotifyIcon? _trayIcon;
         private Icon? _customTrayIcon;
         private SidekickApiClientService? _sidekickApiClient;
-        private IntPtr _keyboardHookHandle = IntPtr.Zero;
-        private LowLevelKeyboardProc? _keyboardHookProc;
-        private IntPtr _mouseHookHandle = IntPtr.Zero;
-        private LowLevelMouseProc? _mouseHookProc;
+        private OverlayInputRouter? _overlayInputRouter;
         private IntPtr _windowHandle = IntPtr.Zero;
         private bool _overlayVisible;
 
@@ -168,8 +159,15 @@ namespace ownbotsidekick
 
             InitializeTrayIcon();
             RegisterOverlayHotkey(helper.Handle);
-            InitializeKeyboardHook();
-            InitializeMouseHook();
+            _overlayInputRouter = new OverlayInputRouter(
+                isOverlayVisible: () => _overlayVisible,
+                handleOverlayVirtualKey: HandleOverlayKeyDown,
+                isPointInsideOverlayPanel: IsPointInsideOverlayPanel,
+                onOutsideClick: () => HideOverlay("Overlay hidden (outside click)."),
+                log: Log,
+                dispatcher: Dispatcher
+            );
+            _overlayInputRouter.Start();
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -193,8 +191,8 @@ namespace ownbotsidekick
                 _hotkeyRegistered = false;
             }
 
-            DisposeKeyboardHook();
-            DisposeMouseHook();
+            _overlayInputRouter?.Dispose();
+            _overlayInputRouter = null;
 
             if (_trayIcon is not null)
             {
@@ -499,127 +497,6 @@ namespace ownbotsidekick
             await PlayClipAsync(first, first);
         }
 
-        private void InitializeKeyboardHook()
-        {
-            _keyboardHookProc = KeyboardHookCallback;
-            using var currentProcess = Process.GetCurrentProcess();
-            using var currentModule = currentProcess.MainModule;
-            var moduleName = currentModule?.ModuleName;
-            var moduleHandle = moduleName is null ? IntPtr.Zero : GetModuleHandle(moduleName);
-            _keyboardHookHandle = SetWindowsHookEx(WhKeyboardLl, _keyboardHookProc, moduleHandle, 0);
-
-            if (_keyboardHookHandle == IntPtr.Zero)
-            {
-                Log("Failed to initialize keyboard hook.");
-            }
-            else
-            {
-                Log("Keyboard hook initialized.");
-            }
-        }
-
-        private void DisposeKeyboardHook()
-        {
-            if (_keyboardHookHandle == IntPtr.Zero)
-            {
-                return;
-            }
-
-            UnhookWindowsHookEx(_keyboardHookHandle);
-            _keyboardHookHandle = IntPtr.Zero;
-            _keyboardHookProc = null;
-        }
-
-        private void InitializeMouseHook()
-        {
-            _mouseHookProc = MouseHookCallback;
-            using var currentProcess = Process.GetCurrentProcess();
-            using var currentModule = currentProcess.MainModule;
-            var moduleName = currentModule?.ModuleName;
-            var moduleHandle = moduleName is null ? IntPtr.Zero : GetModuleHandle(moduleName);
-            _mouseHookHandle = SetWindowsHookEx(WhMouseLl, _mouseHookProc, moduleHandle, 0);
-
-            if (_mouseHookHandle == IntPtr.Zero)
-            {
-                Log("Failed to initialize mouse hook.");
-            }
-            else
-            {
-                Log("Mouse hook initialized.");
-            }
-        }
-
-        private void DisposeMouseHook()
-        {
-            if (_mouseHookHandle == IntPtr.Zero)
-            {
-                return;
-            }
-
-            UnhookWindowsHookEx(_mouseHookHandle);
-            _mouseHookHandle = IntPtr.Zero;
-            _mouseHookProc = null;
-        }
-
-        private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            if (nCode < 0)
-            {
-                return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
-            }
-
-            var message = wParam.ToInt32();
-            if (message != WmKeyDown && message != WmSysKeyDown)
-            {
-                return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
-            }
-
-            if (!_overlayVisible)
-            {
-                return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
-            }
-
-            var keyboardData = Marshal.PtrToStructure<KbdLlHookStruct>(lParam);
-            var handled = HandleOverlayKeyDown(keyboardData.VkCode);
-            if (handled)
-            {
-                return (IntPtr)1;
-            }
-
-            return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
-        }
-
-        private IntPtr MouseHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
-        {
-            if (nCode < 0)
-            {
-                return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
-            }
-
-            if (!_overlayVisible)
-            {
-                return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
-            }
-
-            var message = wParam.ToInt32();
-            if (message != WmLButtonDown && message != WmRButtonDown && message != WmMButtonDown)
-            {
-                return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
-            }
-
-            var mouseData = Marshal.PtrToStructure<MsLlHookStruct>(lParam);
-            var clickPoint = new System.Windows.Point(mouseData.Pt.X, mouseData.Pt.Y);
-            Dispatcher.BeginInvoke(() =>
-            {
-                if (!IsPointInsideOverlayPanel(clickPoint))
-                {
-                    HideOverlay("Overlay hidden (outside click).");
-                }
-            });
-
-            return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
-        }
-
         private bool IsPointInsideOverlayPanel(System.Windows.Point screenPoint)
         {
             if (OverlayPanelBorder.ActualWidth <= 0 || OverlayPanelBorder.ActualHeight <= 0)
@@ -822,21 +699,6 @@ namespace ownbotsidekick
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
         private static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern bool UnhookWindowsHookEx(IntPtr hhk);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr GetModuleHandle(string lpModuleName);
-
         [Flags]
         private enum HotkeyModifiers : uint
         {
@@ -846,36 +708,6 @@ namespace ownbotsidekick
             Shift = 0x0004,
             Win = 0x0008,
             NoRepeat = 0x4000
-        }
-
-        private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
-        private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct KbdLlHookStruct
-        {
-            public int VkCode;
-            public int ScanCode;
-            public int Flags;
-            public int Time;
-            public IntPtr DwExtraInfo;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct PointStruct
-        {
-            public int X;
-            public int Y;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct MsLlHookStruct
-        {
-            public PointStruct Pt;
-            public int MouseData;
-            public int Flags;
-            public int Time;
-            public IntPtr DwExtraInfo;
         }
 
         private sealed class AppSettings
