@@ -25,10 +25,6 @@ namespace ownbotsidekick
         private const int WsExNoActivate = 0x08000000;
         private const int WsExTransparent = 0x00000020;
         private const int VkBack = 0x08;
-        private const int VkTab = 0x09;
-        private const int VkReturn = 0x0D;
-        private const int VkEscape = 0x1B;
-        private const int VkSpace = 0x20;
         private const int Vk0 = 0x30;
         private const int Vk9 = 0x39;
         private const int VkA = 0x41;
@@ -41,6 +37,10 @@ namespace ownbotsidekick
 
         private readonly string _logFilePath;
         private readonly AppSettings _settings;
+        private readonly int _hideOverlayVirtualKey;
+        private readonly int _clearSearchVirtualKey;
+        private readonly int _playFirstPrimaryVirtualKey;
+        private readonly int _playFirstSecondaryVirtualKey;
         private readonly List<string> _allClipTriggers = new();
         private readonly List<string> _filteredClipTriggers = new();
         private bool _hotkeyRegistered;
@@ -68,6 +68,12 @@ namespace ownbotsidekick
                     _settings.SidekickApi.GuildId
                 );
             }
+
+            _hideOverlayVirtualKey = ParseBindingVirtualKey(_settings.InputBindings.HideOverlayKey, Key.Escape);
+            _clearSearchVirtualKey = ParseBindingVirtualKey(_settings.InputBindings.ClearSearchKey, Key.Tab);
+            _playFirstPrimaryVirtualKey = ParseBindingVirtualKey(_settings.InputBindings.PlayFirstPrimaryKey, Key.Enter);
+            _playFirstSecondaryVirtualKey = ParseBindingVirtualKey(_settings.InputBindings.PlayFirstSecondaryKey, Key.Space);
+
             _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_sidekickApiClient);
 
             var logDirectory = Path.Combine(
@@ -486,13 +492,13 @@ namespace ownbotsidekick
 
         private bool HandleOverlayKeyDown(int virtualKey)
         {
-            if (virtualKey == VkEscape)
+            if (virtualKey == _hideOverlayVirtualKey)
             {
                 HideOverlay("Overlay hidden.");
                 return true;
             }
 
-            if (virtualKey == VkTab)
+            if (virtualKey == _clearSearchVirtualKey)
             {
                 ResetSearchState();
                 return true;
@@ -510,7 +516,7 @@ namespace ownbotsidekick
                 return true;
             }
 
-            if (virtualKey == VkReturn || virtualKey == VkSpace)
+            if (virtualKey == _playFirstPrimaryVirtualKey || virtualKey == _playFirstSecondaryVirtualKey)
             {
                 if (string.IsNullOrEmpty(_searchQuery))
                 {
@@ -612,6 +618,16 @@ namespace ownbotsidekick
             return Key.Oem3;
         }
 
+        private static int ParseBindingVirtualKey(string configuredKey, Key defaultKey)
+        {
+            if (Enum.TryParse<Key>(configuredKey, true, out var key) && key != Key.None)
+            {
+                return KeyInterop.VirtualKeyFromKey(key);
+            }
+
+            return KeyInterop.VirtualKeyFromKey(defaultKey);
+        }
+
         private static string DescribeHotkey(HotkeySettings hotkey)
         {
             return $"{hotkey.Modifiers}+{hotkey.Key}";
@@ -690,6 +706,7 @@ namespace ownbotsidekick
             public HotkeySettings Hotkey { get; set; } = new();
             public OverlaySettings Overlay { get; set; } = new();
             public SidekickApiSettings SidekickApi { get; set; } = new();
+            public InputBindingsSettings InputBindings { get; set; } = new();
         }
 
         private sealed class HotkeySettings
@@ -712,6 +729,14 @@ namespace ownbotsidekick
             public string ClipATrigger { get; set; } = "clip-a";
             public string ClipBTrigger { get; set; } = "clip-b";
             public string ClipCTrigger { get; set; } = "clip-c";
+        }
+
+        private sealed class InputBindingsSettings
+        {
+            public string HideOverlayKey { get; set; } = "Escape";
+            public string ClearSearchKey { get; set; } = "Tab";
+            public string PlayFirstPrimaryKey { get; set; } = "Enter";
+            public string PlayFirstSecondaryKey { get; set; } = "Space";
         }
     }
 }

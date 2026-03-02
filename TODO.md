@@ -14,11 +14,7 @@ Need to see if there are some opportunities for refactoring now that we are at a
   - `ClipSearchState` (query, filtering, result selection)
   - `TrayController` (notify icon + menu actions)
 
-2. Replace hard-coded key constants with config-backed key map
-- ESC/TAB/ENTER/SPACE are currently fixed in code.
-- Create a small `InputBindings` config model for overlay commands (hide, clear search, play first).
-
-3. Introduce a small ViewModel layer for overlay UI state
+2. Introduce a small ViewModel layer for overlay UI state
 - Candidate properties:
   - `IsOverlayVisible`
   - `ClipCountText`
@@ -27,15 +23,15 @@ Need to see if there are some opportunities for refactoring now that we are at a
   - `VisibleClips`
 - Reduces imperative UI updates and makes behavior clearer.
 
-4. Add lightweight tests for search behavior rules
+3. Add lightweight tests for search behavior rules
 - Unit-test filter/search behavior independent of WPF:
   - case-insensitive prefix matching
   - 15-result cap
   - TAB clear behavior
   - first-result selection logic
 
-5. Add startup/runtime diagnostics wrapper
+4. Add startup/runtime diagnostics wrapper
 - Consolidate debug/file log formatting and key lifecycle logs into one logger helper for consistency.
 
-6. Remove/rename legacy "test button" semantics when transitioning to production flow
+5. Remove/rename legacy "test button" semantics when transitioning to production flow
 - Keep functionality but rename internally to production terms (`PinnedClipButtons`, `QuickPlaySlots`) once behavior is finalized.
