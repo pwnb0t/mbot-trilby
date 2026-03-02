@@ -13,25 +13,25 @@ namespace ownbotsidekick.Services
         private const int OverlayBottomReserveMinPixels = 56;
         private const int OverlayBottomReservePaddingPixels = 8;
 
-        private readonly Grid _rootOverlayGrid;
         private readonly Border _overlayPanelBorder;
         private readonly OverlayDiagnostics _diagnostics;
         private readonly Action _resetSearchState;
+        private readonly Action<bool> _setOverlayVisible;
         private readonly Action<bool> _setTopmost;
         private IntPtr _windowHandle = IntPtr.Zero;
 
         public OverlayController(
-            Grid rootOverlayGrid,
             Border overlayPanelBorder,
             OverlayDiagnostics diagnostics,
             Action resetSearchState,
+            Action<bool> setOverlayVisible,
             Action<bool> setTopmost
         )
         {
-            _rootOverlayGrid = rootOverlayGrid;
             _overlayPanelBorder = overlayPanelBorder;
             _diagnostics = diagnostics;
             _resetSearchState = resetSearchState;
+            _setOverlayVisible = setOverlayVisible;
             _setTopmost = setTopmost;
         }
 
@@ -70,7 +70,7 @@ namespace ownbotsidekick.Services
         public void Show(string logMessage, bool topmost)
         {
             _resetSearchState();
-            _rootOverlayGrid.Visibility = Visibility.Visible;
+            _setOverlayVisible(true);
             IsVisible = true;
             SetOverlayInteractionEnabled(true);
             _setTopmost(topmost);
@@ -92,7 +92,7 @@ namespace ownbotsidekick.Services
             }
 
             _resetSearchState();
-            _rootOverlayGrid.Visibility = Visibility.Collapsed;
+            _setOverlayVisible(false);
             IsVisible = false;
             SetOverlayInteractionEnabled(false);
             _diagnostics.OverlayHidden(logMessage);

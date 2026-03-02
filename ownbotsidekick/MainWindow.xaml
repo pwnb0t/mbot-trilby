@@ -16,7 +16,7 @@
         WindowState="Maximized"
         Loaded="Window_Loaded">
     <Grid x:Name="RootOverlayGrid"
-          Visibility="Collapsed"
+          Visibility="{Binding OverlayVisibility}"
           Background="Transparent">
         <Border x:Name="OverlayPanelBorder"
                 Margin="0"
@@ -68,7 +68,7 @@
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
                         <TextBlock x:Name="ClipCountTextBlock"
-                                   Text="Clips: 0"
+                                   Text="{Binding ClipCountText}"
                                    Foreground="{StaticResource TextSecondaryBrush}"
                                    FontSize="13"
                                    VerticalAlignment="Center"
@@ -90,6 +90,9 @@
                     <controls:SearchPanelControl x:Name="SearchPanel"
                                                  HorizontalAlignment="Center"
                                                  VerticalAlignment="Center"
+                                                 SearchQueryDisplay="{Binding SearchQueryDisplay}"
+                                                 VisibleClips="{Binding VisibleClips}"
+                                                 NoResultsVisible="{Binding NoResultsVisible}"
                                                  Width="640"
                                                  Height="500" />
                 </Grid>

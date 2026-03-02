@@ -14,6 +14,7 @@ using ownbotsidekick.Controls;
 using ownbotsidekick.Input;
 using ownbotsidekick.Search;
 using ownbotsidekick.Services;
+using ownbotsidekick.ViewModels;
 
 namespace ownbotsidekick
 {
@@ -36,6 +37,7 @@ namespace ownbotsidekick
         private readonly int _clearSearchVirtualKey;
         private readonly int _playFirstPrimaryVirtualKey;
         private readonly int _playFirstSecondaryVirtualKey;
+        private readonly OverlayViewModel _viewModel = new();
         private readonly List<string> _allClipTriggers = new();
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
         private bool _hotkeyRegistered;
@@ -50,6 +52,7 @@ namespace ownbotsidekick
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = _viewModel;
             SearchPanel.ClipSelected += SearchPanel_ClipSelected;
 
             _settings = LoadSettings();
@@ -78,10 +81,10 @@ namespace ownbotsidekick
             _logFilePath = Path.Combine(logDirectory, "overlay.log");
             _diagnostics = new OverlayDiagnostics(_logFilePath);
             _overlayController = new OverlayController(
-                rootOverlayGrid: RootOverlayGrid,
                 overlayPanelBorder: OverlayPanelBorder,
                 diagnostics: _diagnostics,
                 resetSearchState: ResetSearchState,
+                setOverlayVisible: value => _viewModel.IsOverlayVisible = value,
                 setTopmost: value => Topmost = value
             );
             _trayController = new TrayController(
@@ -368,7 +371,7 @@ namespace ownbotsidekick
 
         private void UpdateClipCountText(int count, string status)
         {
-            ClipCountTextBlock.Text = $"Clips: {count} ({status})";
+            _viewModel.ClipCountText = $"Clips: {count} ({status})";
         }
 
         private void ResetSearchState()
@@ -379,7 +382,13 @@ namespace ownbotsidekick
 
         private void RenderSearchState()
         {
-            SearchPanel.UpdateSearchState(_clipSearchState.Query, _clipSearchState.FilteredTriggers);
+            var query = _clipSearchState.Query;
+            var filteredTriggers = _clipSearchState.FilteredTriggers;
+            _viewModel.SearchQueryDisplay = string.IsNullOrEmpty(query)
+                ? "Start typing to search..."
+                : query;
+            _viewModel.VisibleClips = filteredTriggers.ToArray();
+            _viewModel.NoResultsVisible = !string.IsNullOrEmpty(query) && filteredTriggers.Count == 0;
         }
 
         private async System.Threading.Tasks.Task PlayFirstFilteredResultAsync()
