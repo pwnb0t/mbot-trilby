@@ -49,6 +49,7 @@ namespace ownbotsidekick
         private Forms.NotifyIcon? _trayIcon;
         private Icon? _customTrayIcon;
         private SidekickApiClientService? _sidekickApiClient;
+        private ClipPlaybackCoordinator? _clipPlaybackCoordinator;
         private OverlayInputRouter? _overlayInputRouter;
         private IntPtr _windowHandle = IntPtr.Zero;
         private bool _overlayVisible;
@@ -67,6 +68,7 @@ namespace ownbotsidekick
                     _settings.SidekickApi.GuildId
                 );
             }
+            _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_sidekickApiClient);
 
             var logDirectory = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -216,6 +218,7 @@ namespace ownbotsidekick
 
             _sidekickApiClient?.Dispose();
             _sidekickApiClient = null;
+            _clipPlaybackCoordinator = null;
 
             base.OnClosed(e);
         }
@@ -240,59 +243,51 @@ namespace ownbotsidekick
 
         private async System.Threading.Tasks.Task LoadClipCatalogAsync(string reason)
         {
-            if (_sidekickApiClient is null)
+            if (_clipPlaybackCoordinator is null)
             {
-                UpdateClipCountText(0, "API disabled");
                 return;
             }
 
-            try
+            var result = await _clipPlaybackCoordinator.LoadClipsAsync(reason);
+            foreach (var logLine in result.LogLines)
             {
-                Log($"Loading clips ({reason})...");
-                var catalog = await _sidekickApiClient.ListClipsAsync();
+                Log(logLine);
+            }
+
+            if (result.Success)
+            {
                 _allClipTriggers.Clear();
-                _allClipTriggers.AddRange(catalog.Triggers);
+                _allClipTriggers.AddRange(result.Triggers);
                 RebuildFilteredResults();
                 UpdateClipCountText(_allClipTriggers.Count, "loaded");
-                Log($"Loaded {_allClipTriggers.Count} clips (API total={catalog.Total}).");
             }
-            catch (Exception ex)
+            else
             {
                 _allClipTriggers.Clear();
                 RebuildFilteredResults();
-                UpdateClipCountText(0, "load failed");
-                Log($"Load clips failed: {ex.Message}");
+                UpdateClipCountText(0, _sidekickApiClient is null ? "API disabled" : "load failed");
             }
         }
 
         private async System.Threading.Tasks.Task<bool> PlayClipAsync(string clipName, string trigger)
         {
-            if (_sidekickApiClient is null)
+            if (_clipPlaybackCoordinator is null)
             {
-                Log($"{clipName} clicked, but Sidekick API is disabled.");
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(trigger))
+            var result = await _clipPlaybackCoordinator.PlayClipAsync(clipName, trigger);
+            foreach (var logLine in result.LogLines)
             {
-                Log($"{clipName} clicked, but trigger is empty.");
-                return false;
+                Log(logLine);
             }
 
-            Log($"{clipName} clicked -> trigger '{trigger}'");
-
-            try
+            if (result.ShouldHideOverlay)
             {
-                var message = await _sidekickApiClient.PlayClipAsync(trigger);
-                Log(message);
                 HideOverlay("Overlay hidden after clip play.");
-                return true;
             }
-            catch (Exception ex)
-            {
-                Log($"Play trigger failed: {ex.Message}");
-                return false;
-            }
+
+            return result.Success;
         }
 
         private void RegisterOverlayHotkey(IntPtr hwnd)
