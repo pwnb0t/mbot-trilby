@@ -13,8 +13,13 @@
         ShowInTaskbar="False"
         WindowState="Maximized"
         Loaded="Window_Loaded">
-    <Grid Background="Transparent">
-        <Border Margin="20"
+    <Grid x:Name="RootOverlayGrid"
+          Background="Transparent"
+          MouseDown="RootOverlayGrid_MouseDown">
+        <Border x:Name="OverlayPanelBorder"
+                HorizontalAlignment="Center"
+                Width="1400"
+                Margin="20"
                 Background="#CC111111"
                 BorderBrush="#66FFFFFF"
                 BorderThickness="1"
@@ -54,7 +59,13 @@
                                    Margin="0,0,10,0" />
                         <Button Content="Refresh"
                                 Padding="12,6"
+                                Margin="0,0,10,0"
                                 Click="RefreshClipsButton_Click" />
+                        <Button Content="X"
+                                Width="32"
+                                Height="28"
+                                Padding="0"
+                                Click="CloseOverlayButton_Click" />
                     </StackPanel>
                 </Grid>
 

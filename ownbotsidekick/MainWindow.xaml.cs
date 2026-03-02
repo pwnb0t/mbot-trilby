@@ -118,6 +118,21 @@ namespace ownbotsidekick
             await LoadClipCatalogAsync("manual refresh");
         }
 
+        private void CloseOverlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            HideOverlay("Overlay hidden from close button.");
+        }
+
+        private void RootOverlayGrid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!ReferenceEquals(e.OriginalSource, RootOverlayGrid))
+            {
+                return;
+            }
+
+            HideOverlay("Overlay hidden (background click).");
+        }
+
         private void Log(string message)
         {
             var timestamped = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} {message}";
@@ -237,18 +252,18 @@ namespace ownbotsidekick
             }
         }
 
-        private async System.Threading.Tasks.Task PlayClipAsync(string clipName, string trigger)
+        private async System.Threading.Tasks.Task<bool> PlayClipAsync(string clipName, string trigger)
         {
             if (_sidekickApiClient is null)
             {
                 Log($"{clipName} clicked, but Sidekick API is disabled.");
-                return;
+                return false;
             }
 
             if (string.IsNullOrWhiteSpace(trigger))
             {
                 Log($"{clipName} clicked, but trigger is empty.");
-                return;
+                return false;
             }
 
             Log($"{clipName} clicked -> trigger '{trigger}'");
@@ -257,10 +272,13 @@ namespace ownbotsidekick
             {
                 var message = await _sidekickApiClient.PlayClipAsync(trigger);
                 Log(message);
+                HideOverlay("Overlay hidden after clip play.");
+                return true;
             }
             catch (Exception ex)
             {
                 Log($"Play trigger failed: {ex.Message}");
+                return false;
             }
         }
 
@@ -298,8 +316,7 @@ namespace ownbotsidekick
         {
             if (Visibility == Visibility.Visible)
             {
-                Hide();
-                Log("Overlay hidden.");
+                HideOverlay("Overlay hidden.");
                 return;
             }
 
@@ -377,8 +394,7 @@ namespace ownbotsidekick
                 return;
             }
 
-            Hide();
-            Log("Overlay hidden from tray.");
+            HideOverlay("Overlay hidden from tray.");
         }
 
         private void ExitFromTray()
@@ -538,8 +554,7 @@ namespace ownbotsidekick
                     return true;
                 }
 
-                Hide();
-                Log("Overlay hidden.");
+                HideOverlay("Overlay hidden.");
                 return true;
             }
 
@@ -660,6 +675,17 @@ namespace ownbotsidekick
         private static string DescribeHotkey(HotkeySettings hotkey)
         {
             return $"{hotkey.Modifiers}+{hotkey.Key}";
+        }
+
+        private void HideOverlay(string logMessage)
+        {
+            if (Visibility != Visibility.Visible)
+            {
+                return;
+            }
+
+            Hide();
+            Log(logMessage);
         }
 
         [DllImport("user32.dll", SetLastError = true)]

@@ -47,7 +47,7 @@ When the user starts typing:
   - Rows 2-5: filtered results as a 3x4 grid of clip buttons.
 - Existing top controls (3 test buttons, plus new Refresh and clip count) and bottom log area should remain.
 - Overlay should become fullscreen for this iteration.
-
+`
 ### Plan (pre-implementation)
 1. Confirm UI behavior contracts
 - Confirm exact key handling while overlay is visible: character keys, Backspace, Escape, Enter.
