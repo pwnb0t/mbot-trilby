@@ -12,10 +12,10 @@
         Topmost="True"
         ShowInTaskbar="False"
         WindowState="Maximized"
+        PreviewMouseDown="Window_PreviewMouseDown"
         Loaded="Window_Loaded">
     <Grid x:Name="RootOverlayGrid"
-          Background="Transparent"
-          MouseDown="RootOverlayGrid_MouseDown">
+          Background="Transparent">
         <Border x:Name="OverlayPanelBorder"
                 HorizontalAlignment="Center"
                 Width="1400"
@@ -98,12 +98,19 @@
                     </Border>
                 </Grid>
 
-                <StackPanel Grid.Row="2">
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
                     <TextBlock Text="Log output"
                                FontSize="12"
                                Foreground="#DDFFFFFF"
                                Margin="0,0,0,6" />
                     <TextBox x:Name="LogTextBox"
+                             Grid.Row="1"
+                             MinHeight="0"
                              IsReadOnly="True"
                              VerticalScrollBarVisibility="Auto"
                              TextWrapping="Wrap"
@@ -111,7 +118,7 @@
                              Foreground="White"
                              BorderBrush="#66FFFFFF"
                              BorderThickness="1" />
-                </StackPanel>
+                </Grid>
             </Grid>
         </Border>
     </Grid>

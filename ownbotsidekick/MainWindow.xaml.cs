@@ -123,14 +123,24 @@ namespace ownbotsidekick
             HideOverlay("Overlay hidden from close button.");
         }
 
-        private void RootOverlayGrid_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Window_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!ReferenceEquals(e.OriginalSource, RootOverlayGrid))
+            if (Visibility != Visibility.Visible)
             {
                 return;
             }
 
-            HideOverlay("Overlay hidden (background click).");
+            var position = e.GetPosition(OverlayPanelBorder);
+            var isOutsideOverlayPanel =
+                position.X < 0 ||
+                position.Y < 0 ||
+                position.X > OverlayPanelBorder.ActualWidth ||
+                position.Y > OverlayPanelBorder.ActualHeight;
+
+            if (isOutsideOverlayPanel)
+            {
+                HideOverlay("Overlay hidden (background click).");
+            }
         }
 
         private void Log(string message)
