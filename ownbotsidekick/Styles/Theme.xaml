@@ -1,0 +1,67 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="OverlayBackgroundBrush" Color="#D90F1217" />
+    <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#D9222A36" />
+    <SolidColorBrush x:Key="PanelBorderBrush" Color="#503A4758" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#E9EDF4" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#A8B2C0" />
+    <SolidColorBrush x:Key="ClipButtonTextBrush" Color="#C6CEDA" />
+    <SolidColorBrush x:Key="AccentBrush" Color="#6A96FF" />
+    <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#24303E" />
+    <SolidColorBrush x:Key="ButtonBackgroundHoverBrush" Color="#2A3950" />
+    <SolidColorBrush x:Key="ButtonBackgroundPressedBrush" Color="#223244" />
+    <SolidColorBrush x:Key="ButtonBorderBrush" Color="#3A4C63" />
+    <SolidColorBrush x:Key="ButtonBorderHoverBrush" Color="#6A96FF" />
+
+    <Style x:Key="TopBarButtonStyle" TargetType="Button">
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,7" />
+        <Setter Property="Margin" Value="0,0,10,0" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Chrome"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
+                            <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Chrome" Property="Background" Value="{StaticResource ButtonBackgroundPressedBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.6" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ClipButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource TopBarButtonStyle}">
+        <Setter Property="Foreground" Value="{StaticResource ClipButtonTextBrush}" />
+        <Setter Property="MinHeight" Value="56" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="Padding" Value="10,8" />
+    </Style>
+</ResourceDictionary>

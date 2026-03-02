@@ -40,6 +40,9 @@ namespace ownbotsidekick
         private const int VkZ = 0x5A;
         private const int VkNumpad0 = 0x60;
         private const int VkNumpad9 = 0x69;
+        private const int MaxVisibleSearchResults = 15;
+        private const int OverlayBottomReserveMinPixels = 56;
+        private const int OverlayBottomReservePaddingPixels = 8;
 
         private readonly string _logFilePath;
         private readonly AppSettings _settings;
@@ -424,7 +427,10 @@ namespace ownbotsidekick
         private void ApplyOverlayPanelLayout()
         {
             var taskbarHeightEstimate = Math.Max(0, SystemParameters.PrimaryScreenHeight - SystemParameters.WorkArea.Height);
-            var reservedBottom = Math.Max(56, taskbarHeightEstimate + 8);
+            var reservedBottom = Math.Max(
+                OverlayBottomReserveMinPixels,
+                taskbarHeightEstimate + OverlayBottomReservePaddingPixels
+            );
             OverlayPanelBorder.Margin = new Thickness(0, 0, 0, reservedBottom);
         }
 
@@ -443,7 +449,7 @@ namespace ownbotsidekick
                 _filteredClipTriggers.AddRange(
                     _allClipTriggers
                         .Where(trigger => trigger.StartsWith(_searchQuery, StringComparison.OrdinalIgnoreCase))
-                        .Take(15)
+                        .Take(MaxVisibleSearchResults)
                 );
             }
 
