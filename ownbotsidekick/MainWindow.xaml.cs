@@ -50,6 +50,7 @@ namespace ownbotsidekick
         private Icon? _customTrayIcon;
         private SidekickApiClientService? _sidekickApiClient;
         private ClipPlaybackCoordinator? _clipPlaybackCoordinator;
+        private OverlayDiagnostics? _diagnostics;
         private OverlayInputRouter? _overlayInputRouter;
         private IntPtr _windowHandle = IntPtr.Zero;
         private bool _overlayVisible;
@@ -83,6 +84,7 @@ namespace ownbotsidekick
             );
             Directory.CreateDirectory(logDirectory);
             _logFilePath = Path.Combine(logDirectory, "overlay.log");
+            _diagnostics = new OverlayDiagnostics(_logFilePath);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -149,16 +151,7 @@ namespace ownbotsidekick
 
         private void Log(string message)
         {
-            var timestamped = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} {message}";
-            Debug.WriteLine(timestamped);
-            try
-            {
-                File.AppendAllText(_logFilePath, timestamped + Environment.NewLine);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Failed to write log file: {ex.Message}");
-            }
+            _diagnostics?.Info("app", message);
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -179,7 +172,7 @@ namespace ownbotsidekick
                 handleOverlayVirtualKey: HandleOverlayKeyDown,
                 isPointInsideOverlayPanel: IsPointInsideOverlayPanel,
                 onOutsideClick: () => HideOverlay("Overlay hidden (outside click)."),
-                log: Log,
+                diagnostics: _diagnostics ?? new OverlayDiagnostics(_logFilePath),
                 dispatcher: Dispatcher
             );
             _overlayInputRouter.Start();
@@ -225,6 +218,7 @@ namespace ownbotsidekick
             _sidekickApiClient?.Dispose();
             _sidekickApiClient = null;
             _clipPlaybackCoordinator = null;
+            _diagnostics = null;
 
             base.OnClosed(e);
         }
@@ -357,9 +351,14 @@ namespace ownbotsidekick
 
             _trayIcon.ContextMenuStrip = trayMenu;
             _trayIcon.DoubleClick += (_, _) => ToggleOverlayVisibility();
-            Log(trayIconImage == SystemIcons.Application
-                ? "Tray icon initialized with fallback icon (mbot.ico not available)."
-                : "Tray icon initialized from mbot.ico.");
+            if (trayIconImage == SystemIcons.Application)
+            {
+                _diagnostics?.Info("tray", "Tray icon initialized with fallback icon (mbot.ico not available).");
+            }
+            else
+            {
+                _diagnostics?.Info("tray", "Tray icon initialized from mbot.ico.");
+            }
         }
 
         private Icon LoadTrayIcon()
@@ -634,7 +633,7 @@ namespace ownbotsidekick
             RootOverlayGrid.Visibility = Visibility.Collapsed;
             _overlayVisible = false;
             SetOverlayInteractionEnabled(false);
-            Log(logMessage);
+            _diagnostics?.OverlayHidden(logMessage);
         }
 
         private void ShowOverlay(string logMessage)
@@ -644,7 +643,14 @@ namespace ownbotsidekick
             _overlayVisible = true;
             SetOverlayInteractionEnabled(true);
             Topmost = _settings.Overlay.Topmost;
-            Log(logMessage);
+            if (logMessage.Contains("from tray", StringComparison.OrdinalIgnoreCase))
+            {
+                _diagnostics?.OverlayShownFromTray();
+            }
+            else
+            {
+                _diagnostics?.OverlayShown();
+            }
         }
 
         private void SetOverlayInteractionEnabled(bool enabled)

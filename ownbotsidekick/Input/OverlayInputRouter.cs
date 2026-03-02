@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
+using ownbotsidekick.Services;
 
 namespace ownbotsidekick.Input
 {
@@ -20,7 +21,7 @@ namespace ownbotsidekick.Input
         private readonly Func<int, bool> _handleOverlayVirtualKey;
         private readonly Func<System.Windows.Point, bool> _isPointInsideOverlayPanel;
         private readonly Action _onOutsideClick;
-        private readonly Action<string> _log;
+        private readonly OverlayDiagnostics _diagnostics;
         private readonly Dispatcher _dispatcher;
         private readonly LowLevelKeyboardProc _keyboardHookProc;
         private readonly LowLevelMouseProc _mouseHookProc;
@@ -33,7 +34,7 @@ namespace ownbotsidekick.Input
             Func<int, bool> handleOverlayVirtualKey,
             Func<System.Windows.Point, bool> isPointInsideOverlayPanel,
             Action onOutsideClick,
-            Action<string> log,
+            OverlayDiagnostics diagnostics,
             Dispatcher dispatcher
         )
         {
@@ -41,7 +42,7 @@ namespace ownbotsidekick.Input
             _handleOverlayVirtualKey = handleOverlayVirtualKey;
             _isPointInsideOverlayPanel = isPointInsideOverlayPanel;
             _onOutsideClick = onOutsideClick;
-            _log = log;
+            _diagnostics = diagnostics;
             _dispatcher = dispatcher;
             _keyboardHookProc = KeyboardHookCallback;
             _mouseHookProc = MouseHookCallback;
@@ -57,21 +58,21 @@ namespace ownbotsidekick.Input
             _keyboardHookHandle = SetWindowsHookEx(WhKeyboardLl, _keyboardHookProc, moduleHandle, 0);
             if (_keyboardHookHandle == IntPtr.Zero)
             {
-                _log("Failed to initialize keyboard hook.");
+                _diagnostics.HookInitFailed("keyboard");
             }
             else
             {
-                _log("Keyboard hook initialized.");
+                _diagnostics.HookInitialized("keyboard");
             }
 
             _mouseHookHandle = SetWindowsHookEx(WhMouseLl, _mouseHookProc, moduleHandle, 0);
             if (_mouseHookHandle == IntPtr.Zero)
             {
-                _log("Failed to initialize mouse hook.");
+                _diagnostics.HookInitFailed("mouse");
             }
             else
             {
-                _log("Mouse hook initialized.");
+                _diagnostics.HookInitialized("mouse");
             }
         }
 

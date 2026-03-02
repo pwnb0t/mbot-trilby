@@ -22,8 +22,5 @@ Need to see if there are some opportunities for refactoring now that we are at a
   - `VisibleClips`
 - Reduces imperative UI updates and makes behavior clearer.
 
-3. Add startup/runtime diagnostics wrapper
-- Consolidate debug/file log formatting and key lifecycle logs into one logger helper for consistency.
-
-4. Remove/rename legacy "test button" semantics when transitioning to production flow
+3. Remove/rename legacy "test button" semantics when transitioning to production flow
 - Keep functionality but rename internally to production terms (`PinnedClipButtons`, `QuickPlaySlots`) once behavior is finalized.
