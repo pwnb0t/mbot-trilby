@@ -427,7 +427,7 @@ namespace ownbotsidekick
         {
             var taskbarHeightEstimate = Math.Max(0, SystemParameters.PrimaryScreenHeight - SystemParameters.WorkArea.Height);
             var reservedBottom = Math.Max(56, taskbarHeightEstimate + 8);
-            OverlayPanelBorder.Margin = new Thickness(20, 20, 20, reservedBottom);
+            OverlayPanelBorder.Margin = new Thickness(0, 0, 0, reservedBottom);
         }
 
         private void ResetSearchState()
