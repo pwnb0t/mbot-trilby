@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using ownbotsidekick.Controls;
 using ownbotsidekick.Input;
+using ownbotsidekick.Search;
 using ownbotsidekick.Services;
 using Forms = System.Windows.Forms;
 
@@ -42,10 +43,9 @@ namespace ownbotsidekick
         private readonly int _playFirstPrimaryVirtualKey;
         private readonly int _playFirstSecondaryVirtualKey;
         private readonly List<string> _allClipTriggers = new();
-        private readonly List<string> _filteredClipTriggers = new();
+        private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
         private bool _hotkeyRegistered;
         private bool _exitRequested;
-        private string _searchQuery = string.Empty;
         private Forms.NotifyIcon? _trayIcon;
         private Icon? _customTrayIcon;
         private SidekickApiClientService? _sidekickApiClient;
@@ -264,13 +264,15 @@ namespace ownbotsidekick
             {
                 _allClipTriggers.Clear();
                 _allClipTriggers.AddRange(result.Triggers);
-                RebuildFilteredResults();
+                _clipSearchState.SetSource(_allClipTriggers);
+                RenderSearchState();
                 UpdateClipCountText(_allClipTriggers.Count, "loaded");
             }
             else
             {
                 _allClipTriggers.Clear();
-                RebuildFilteredResults();
+                _clipSearchState.SetSource(Array.Empty<string>());
+                RenderSearchState();
                 UpdateClipCountText(0, _sidekickApiClient is null ? "API disabled" : "load failed");
             }
         }
@@ -442,39 +444,28 @@ namespace ownbotsidekick
 
         private void ResetSearchState()
         {
-            _searchQuery = string.Empty;
-            RebuildFilteredResults();
-        }
-
-        private void RebuildFilteredResults()
-        {
-            _filteredClipTriggers.Clear();
-
-            if (!string.IsNullOrEmpty(_searchQuery))
-            {
-                _filteredClipTriggers.AddRange(
-                    _allClipTriggers
-                        .Where(trigger => trigger.StartsWith(_searchQuery, StringComparison.OrdinalIgnoreCase))
-                        .Take(MaxVisibleSearchResults)
-                );
-            }
-
+            _clipSearchState.ClearQuery();
             RenderSearchState();
         }
 
         private void RenderSearchState()
         {
-            SearchPanel.UpdateSearchState(_searchQuery, _filteredClipTriggers);
+            SearchPanel.UpdateSearchState(_clipSearchState.Query, _clipSearchState.FilteredTriggers);
         }
 
         private async System.Threading.Tasks.Task PlayFirstFilteredResultAsync()
         {
-            if (string.IsNullOrEmpty(_searchQuery) || _filteredClipTriggers.Count == 0)
+            if (string.IsNullOrEmpty(_clipSearchState.Query))
             {
                 return;
             }
 
-            var first = _filteredClipTriggers[0];
+            var first = _clipSearchState.FirstResultOrDefault();
+            if (string.IsNullOrEmpty(first))
+            {
+                return;
+            }
+
             await PlayClipAsync(first, first);
         }
 
@@ -506,19 +497,18 @@ namespace ownbotsidekick
 
             if (virtualKey == VkBack)
             {
-                if (string.IsNullOrEmpty(_searchQuery))
+                if (!_clipSearchState.Backspace())
                 {
                     return false;
                 }
 
-                _searchQuery = _searchQuery[..^1];
-                RebuildFilteredResults();
+                RenderSearchState();
                 return true;
             }
 
             if (virtualKey == _playFirstPrimaryVirtualKey || virtualKey == _playFirstSecondaryVirtualKey)
             {
-                if (string.IsNullOrEmpty(_searchQuery))
+                if (string.IsNullOrEmpty(_clipSearchState.Query))
                 {
                     return false;
                 }
@@ -533,8 +523,8 @@ namespace ownbotsidekick
                 return false;
             }
 
-            _searchQuery += character.Value;
-            RebuildFilteredResults();
+            _clipSearchState.AppendCharacter(character.Value);
+            RenderSearchState();
             return true;
         }
 
