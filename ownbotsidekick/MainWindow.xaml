@@ -26,7 +26,6 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="220" />
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Margin="0,0,0,12">
@@ -93,7 +92,7 @@
                                              Rows="4"
                                              Columns="3" />
                                 <TextBlock x:Name="NoResultsTextBlock"
-                                           Text="No results (press ESC to clear search)"
+                                           Text="No results (press TAB to clear search)"
                                            Foreground="#CCFFFFFF"
                                            FontSize="16"
                                            HorizontalAlignment="Center"
@@ -104,27 +103,6 @@
                     </Border>
                 </Grid>
 
-                <Grid Grid.Row="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Log output"
-                               FontSize="12"
-                               Foreground="#DDFFFFFF"
-                               Margin="0,0,0,6" />
-                    <TextBox x:Name="LogTextBox"
-                             Grid.Row="1"
-                             MinHeight="0"
-                             IsReadOnly="True"
-                             VerticalScrollBarVisibility="Auto"
-                             TextWrapping="Wrap"
-                             Background="#44000000"
-                             Foreground="White"
-                             BorderBrush="#66FFFFFF"
-                             BorderThickness="1" />
-                </Grid>
             </Grid>
         </Border>
     </Grid>

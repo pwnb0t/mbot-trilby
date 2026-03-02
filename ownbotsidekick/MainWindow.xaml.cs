@@ -30,6 +30,7 @@ namespace ownbotsidekick
         private const int WmRButtonDown = 0x0204;
         private const int WmMButtonDown = 0x0207;
         private const int VkBack = 0x08;
+        private const int VkTab = 0x09;
         private const int VkReturn = 0x0D;
         private const int VkEscape = 0x1B;
         private const int VkSpace = 0x20;
@@ -149,9 +150,6 @@ namespace ownbotsidekick
             {
                 Debug.WriteLine($"Failed to write log file: {ex.Message}");
             }
-
-            LogTextBox.AppendText(timestamped + Environment.NewLine);
-            LogTextBox.ScrollToEnd();
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -634,14 +632,13 @@ namespace ownbotsidekick
         {
             if (virtualKey == VkEscape)
             {
-                if (!string.IsNullOrEmpty(_searchQuery))
-                {
-                    _searchQuery = string.Empty;
-                    RebuildFilteredResults();
-                    return true;
-                }
-
                 HideOverlay("Overlay hidden.");
+                return true;
+            }
+
+            if (virtualKey == VkTab)
+            {
+                ResetSearchState();
                 return true;
             }
 
