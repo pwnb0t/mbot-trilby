@@ -459,33 +459,30 @@ namespace ownbotsidekick
                 : _searchQuery;
 
             SearchResultsGrid.Children.Clear();
+            NoResultsTextBlock.Visibility = Visibility.Collapsed;
+
+            if (string.IsNullOrEmpty(_searchQuery))
+            {
+                return;
+            }
+
+            if (_filteredClipTriggers.Count == 0)
+            {
+                NoResultsTextBlock.Visibility = Visibility.Visible;
+                return;
+            }
+
             foreach (var trigger in _filteredClipTriggers)
             {
                 var button = new System.Windows.Controls.Button
                 {
                     Content = trigger,
                     Margin = new Thickness(4),
-                    Padding = new Thickness(8)
+                    Padding = new Thickness(8),
+                    MinHeight = 56
                 };
                 button.Click += async (_, _) => await PlayClipAsync(trigger, trigger);
                 SearchResultsGrid.Children.Add(button);
-            }
-
-            for (var i = _filteredClipTriggers.Count; i < 12; i++)
-            {
-                var spacer = new System.Windows.Controls.Border
-                {
-                    Margin = new Thickness(4),
-                    Background = string.IsNullOrEmpty(_searchQuery)
-                        ? null
-                        : new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(24, 255, 255, 255)),
-                    BorderBrush = string.IsNullOrEmpty(_searchQuery)
-                        ? null
-                        : new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(56, 255, 255, 255)),
-                    BorderThickness = string.IsNullOrEmpty(_searchQuery) ? new Thickness(0) : new Thickness(1),
-                    CornerRadius = new CornerRadius(4)
-                };
-                SearchResultsGrid.Children.Add(spacer);
             }
         }
 
