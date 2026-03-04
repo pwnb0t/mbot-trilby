@@ -20,11 +20,13 @@ namespace ownbotsidekick.Services
         private readonly IDefaultApi _api;
         private readonly HttpClient _httpClient;
         private readonly long _guildId;
+        private readonly long _requestingUserId;
         private readonly string _apiTokenHeaderValue;
 
-        public SidekickApiClientService(string baseUrl, string apiToken, long guildId)
+        public SidekickApiClientService(string baseUrl, string apiToken, long guildId, long requestingUserId)
         {
             _guildId = guildId;
+            _requestingUserId = requestingUserId;
             _apiTokenHeaderValue = apiToken;
             _httpClient = new HttpClient
             {
@@ -91,7 +93,8 @@ namespace ownbotsidekick.Services
         {
             var request = new PlayClipRequest(_guildId, trigger)
             {
-                RequestId = Guid.NewGuid().ToString("N")
+                RequestId = Guid.NewGuid().ToString("N"),
+                RequesterUserId = _requestingUserId > 0 ? _requestingUserId : null
             };
 
             var response = await _api.PlayClipAsync(request, cancellationToken).ConfigureAwait(false);

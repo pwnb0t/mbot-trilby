@@ -28,6 +28,7 @@ namespace ownbotsidekick.Configuration
         public string BaseUrl { get; set; } = "http://127.0.0.1:28765";
         public string ApiToken { get; set; } = string.Empty;
         public long GuildId { get; set; }
+        public long RequestingUserId { get; set; }
         public string QuickPlay1Trigger { get; set; } = "clip-a";
         public string QuickPlay2Trigger { get; set; } = "clip-b";
         public string QuickPlay3Trigger { get; set; } = "clip-c";

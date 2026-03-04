@@ -244,6 +244,7 @@ components:
     PlayClipRequest:
       example:
         guild_id: 0
+        requester_user_id: 0
         trigger: trigger
         request_id: request_id
       properties:
@@ -261,6 +262,11 @@ components:
         request_id:
           nullable: true
           type: string
+        requester_user_id:
+          exclusiveMinimum: true
+          minimum: 0.0
+          nullable: true
+          type: integer
       required:
       - guild_id
       - trigger

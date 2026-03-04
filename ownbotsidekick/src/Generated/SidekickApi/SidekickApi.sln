@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 VisualStudioVersion = 12.0.0.0
 MinimumVisualStudioVersion = 10.0.0.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SidekickApi", "src\SidekickApi\SidekickApi.csproj", "{B7D8B94A-AA6F-413F-BB72-4CD68DAA4397}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SidekickApi", "src\SidekickApi\SidekickApi.csproj", "{EDB62B0E-D256-4CF4-936C-D8A00BFB9D84}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SidekickApi.Test", "src\SidekickApi.Test\SidekickApi.Test.csproj", "{19F1DEBC-DE5E-4517-8062-F000CD499087}"
 EndProject
@@ -12,10 +12,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B7D8B94A-AA6F-413F-BB72-4CD68DAA4397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B7D8B94A-AA6F-413F-BB72-4CD68DAA4397}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B7D8B94A-AA6F-413F-BB72-4CD68DAA4397}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B7D8B94A-AA6F-413F-BB72-4CD68DAA4397}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDB62B0E-D256-4CF4-936C-D8A00BFB9D84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDB62B0E-D256-4CF4-936C-D8A00BFB9D84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDB62B0E-D256-4CF4-936C-D8A00BFB9D84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDB62B0E-D256-4CF4-936C-D8A00BFB9D84}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19F1DEBC-DE5E-4517-8062-F000CD499087}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -61,7 +61,8 @@ namespace ownbotsidekick
                 _sidekickApiClient = new SidekickApiClientService(
                     _settings.SidekickApi.BaseUrl,
                     _settings.SidekickApi.ApiToken,
-                    _settings.SidekickApi.GuildId
+                    _settings.SidekickApi.GuildId,
+                    _settings.SidekickApi.RequestingUserId
                 );
             }
 
@@ -111,6 +112,7 @@ namespace ownbotsidekick
                 Log("Warning: SidekickApi.ApiToken is empty. API calls will fail with 401.");
             }
             Log($"Quick play triggers: 1={_settings.SidekickApi.QuickPlay1Trigger}, 2={_settings.SidekickApi.QuickPlay2Trigger}, 3={_settings.SidekickApi.QuickPlay3Trigger}");
+            Log($"Sidekick requester user id: {_settings.SidekickApi.RequestingUserId}");
             if (_sidekickApiClient is not null)
             {
                 _ = InitializeHealthCheckAsync();
