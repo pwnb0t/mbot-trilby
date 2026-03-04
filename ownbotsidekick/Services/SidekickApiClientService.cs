@@ -20,19 +20,28 @@ namespace ownbotsidekick.Services
         private readonly IDefaultApi _api;
         private readonly HttpClient _httpClient;
         private readonly long _guildId;
+        private readonly string _apiTokenHeaderValue;
 
-        public SidekickApiClientService(string baseUrl, long guildId)
+        public SidekickApiClientService(string baseUrl, string apiToken, long guildId)
         {
             _guildId = guildId;
+            _apiTokenHeaderValue = apiToken;
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri(baseUrl, UriKind.Absolute)
             };
+            _httpClient.DefaultRequestHeaders.Add("X-Sidekick-Token", _apiTokenHeaderValue);
 
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddApi(options =>
             {
+                var apiKeyToken = new ApiKeyToken(
+                    apiToken,
+                    ClientUtils.ApiKeyHeader.X_Sidekick_Token,
+                    prefix: string.Empty
+                );
+                options.AddTokens(apiKeyToken);
                 options.AddApiHttpClients(client =>
                 {
                     client.BaseAddress = new Uri(baseUrl, UriKind.Absolute);

@@ -241,6 +241,26 @@ namespace SidekickApi.Client
     /// An interface for responses of type 
     /// </summary>
     /// <typeparam name="TType"></typeparam>
+    public interface IUnauthorized<TType> : IApiResponse
+    {
+        /// <summary>
+        /// Deserializes the response if the response is Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        TType Unauthorized();
+
+        /// <summary>
+        /// Returns true if the response is Unauthorized and the deserialized response is not null
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        bool TryUnauthorized([NotNullWhen(true)]out TType? result);
+    }
+
+    /// <summary>
+    /// An interface for responses of type 
+    /// </summary>
+    /// <typeparam name="TType"></typeparam>
     public interface IOk<TType> : IApiResponse
     {
         /// <summary>

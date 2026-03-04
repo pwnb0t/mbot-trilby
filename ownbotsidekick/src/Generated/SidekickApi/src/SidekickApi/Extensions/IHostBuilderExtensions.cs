@@ -25,22 +25,6 @@ namespace SidekickApi.Extensions
         /// Add the api to your host builder.
         /// </summary>
         /// <param name="builder"></param>
-        public static IHostBuilder ConfigureApi(this IHostBuilder builder)
-        {
-            builder.ConfigureServices((context, services) => 
-            {
-                HostConfiguration config = new HostConfiguration(services);
-
-                IServiceCollectionExtensions.AddApi(services, config);
-            });
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Add the api to your host builder.
-        /// </summary>
-        /// <param name="builder"></param>
         /// <param name="options"></param>
         public static IHostBuilder ConfigureApi(this IHostBuilder builder, Action<HostBuilderContext, IServiceCollection, HostConfiguration> options)
         {

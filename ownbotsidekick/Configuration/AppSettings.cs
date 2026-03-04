@@ -25,7 +25,8 @@ namespace ownbotsidekick.Configuration
     internal sealed class SidekickApiSettings
     {
         public bool Enabled { get; set; }
-        public string BaseUrl { get; set; } = "http://127.0.0.1:8765";
+        public string BaseUrl { get; set; } = "http://127.0.0.1:28765";
+        public string ApiToken { get; set; } = string.Empty;
         public long GuildId { get; set; }
         public string QuickPlay1Trigger { get; set; } = "clip-a";
         public string QuickPlay2Trigger { get; set; } = "clip-b";

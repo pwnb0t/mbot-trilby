@@ -1,6 +1,6 @@
 # SidekickApi.Api.DefaultApi
 
-All URIs are relative to *http://127.0.0.1:8765*
+All URIs are relative to *http://127.0.0.1:28765*
 
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
@@ -23,7 +23,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-No authorization required
+[APIKeyHeader](../README.md#APIKeyHeader)
 
 ### HTTP request headers
 
@@ -35,6 +35,7 @@ No authorization required
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -58,7 +59,7 @@ List Clips
 
 ### Authorization
 
-No authorization required
+[APIKeyHeader](../README.md#APIKeyHeader)
 
 ### HTTP request headers
 
@@ -70,6 +71,7 @@ No authorization required
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
 | **500** | Internal error response. |  -  |
 | **422** | Validation Error |  -  |
 
@@ -94,7 +96,7 @@ Play Clip
 
 ### Authorization
 
-No authorization required
+[APIKeyHeader](../README.md#APIKeyHeader)
 
 ### HTTP request headers
 
@@ -106,6 +108,7 @@ No authorization required
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
 | **400** | Bad request error response. |  -  |
 | **404** | Clip not found error response. |  -  |
 | **409** | Voice not connected error response. |  -  |

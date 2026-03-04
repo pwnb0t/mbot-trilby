@@ -3,7 +3,7 @@ info:
   title: Sidekick Control API
   version: 0.0.3
 servers:
-- url: http://127.0.0.1:8765
+- url: http://127.0.0.1:28765
 paths:
   /v1/health:
     get:
@@ -15,6 +15,14 @@ paths:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
           description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+      security:
+      - APIKeyHeader: []
       summary: Health
   /v1/clips:
     get:
@@ -47,6 +55,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ListClipsResponse"
           description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
         "500":
           content:
             application/json:
@@ -59,6 +73,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
+      security:
+      - APIKeyHeader: []
       summary: List Clips
   /v1/clips/play:
     post:
@@ -76,6 +92,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/PlayClipResponse"
           description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
         "400":
           content:
             application/json:
@@ -106,6 +128,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
+      security:
+      - APIKeyHeader: []
       summary: Play Clip
 components:
   schemas:
@@ -313,4 +337,9 @@ components:
       anyOf:
       - type: string
       - type: integer
+  securitySchemes:
+    APIKeyHeader:
+      in: header
+      name: X-Sidekick-Token
+      type: apiKey
 

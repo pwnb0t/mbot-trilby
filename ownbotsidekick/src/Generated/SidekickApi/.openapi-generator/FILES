@@ -22,6 +22,7 @@ src/SidekickApi/Api/DefaultApi.cs
 src/SidekickApi/Api/IApi.cs
 src/SidekickApi/Client/ApiException.cs
 src/SidekickApi/Client/ApiFactory.cs
+src/SidekickApi/Client/ApiKeyToken.cs
 src/SidekickApi/Client/ApiResponseEventArgs.cs
 src/SidekickApi/Client/ApiResponse`1.cs
 src/SidekickApi/Client/ClientUtils.cs
