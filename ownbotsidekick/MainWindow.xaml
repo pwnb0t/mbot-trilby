@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         FontFamily="Segoe UI Variable Text"
-        Title="ownbot Sidekick Overlay"
+        Title="m'bot Trilby"
         WindowStyle="None"
         ResizeMode="NoResize"
         AllowsTransparency="True"
@@ -49,7 +49,7 @@
                                            FontSize="12"
                                            FontWeight="Bold" />
                             </Border>
-                            <TextBlock Text="Sidekick Overlay"
+                            <TextBlock Text="m'bot Trilby"
                                        FontSize="20"
                                        FontWeight="SemiBold"
                                        Foreground="{StaticResource TextPrimaryBrush}"

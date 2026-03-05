@@ -102,7 +102,7 @@ namespace ownbotsidekick
         {
             RenderSearchState();
 
-            Log("Overlay loaded.");
+            Log("m'bot Trilby loaded.");
             Log($"Hotkey: {DescribeHotkey(_settings.Hotkey)}");
             Log(_settings.SidekickApi.Enabled
                 ? "Sidekick API client enabled."
