@@ -142,14 +142,16 @@
                                        Foreground="{StaticResource TextPrimaryBrush}"
                                        FontSize="16"
                                        FontWeight="SemiBold"
+                                       Height="24"
                                        Margin="0,0,0,10" />
 
                             <StackPanel Grid.Row="1" Margin="0,0,0,10">
                                 <TextBlock Text="Filters"
                                            Foreground="{StaticResource TextSecondaryBrush}"
                                            FontSize="12"
+                                           Height="16"
                                            Margin="0,0,0,4" />
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Height="30">
                                     <Button x:Name="RecentStatsScopeMeButton"
                                             Style="{StaticResource StatsFilterButtonStyle}"
                                             Content="Just me"
@@ -160,7 +162,7 @@
                                             Click="RecentStatsScopeEveryoneButton_Click" />
                                 </StackPanel>
 
-                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <StackPanel Orientation="Horizontal" Height="30" Margin="0,6,0,0">
                                     <Button x:Name="RecentStatsIncludeRandomButton"
                                             Style="{StaticResource StatsFilterButtonStyle}"
                                             Content="Include random"
@@ -176,8 +178,8 @@
                                 <Border Height="1"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Top"
-                                        Margin="14,22,14,0"
-                                        Background="{StaticResource PanelBorderBrush}" />
+                                        Margin="14,0,14,0"
+                                        Background="{StaticResource TextSecondaryBrush}" />
                                 <ScrollViewer Margin="0,22,0,0"
                                               VerticalScrollBarVisibility="Auto"
                                               HorizontalScrollBarVisibility="Disabled">
@@ -206,7 +208,7 @@
                                                                    TextTrimming="CharacterEllipsis" />
                                                         <TextBlock Grid.Row="0"
                                                                    Grid.Column="1"
-                                                                   Text="🔀"
+                                                                   Text="&#x1F500;"
                                                                    Foreground="{StaticResource TextSecondaryBrush}"
                                                                    FontSize="12"
                                                                    FontWeight="Normal"
@@ -260,14 +262,16 @@
                                        Foreground="{StaticResource TextPrimaryBrush}"
                                        FontSize="16"
                                        FontWeight="SemiBold"
+                                       Height="24"
                                        Margin="0,0,0,10" />
 
                             <StackPanel Grid.Row="1" Margin="0,0,0,10">
                                 <TextBlock Text="Filters"
                                            Foreground="{StaticResource TextSecondaryBrush}"
                                            FontSize="12"
+                                           Height="16"
                                            Margin="0,0,0,4" />
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Height="30">
                                     <Button x:Name="TopStatsScopeMeButton"
                                             Style="{StaticResource StatsFilterButtonStyle}"
                                             Content="Just me"
@@ -278,7 +282,7 @@
                                             Click="TopStatsScopeGuildButton_Click" />
                                 </StackPanel>
 
-                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <StackPanel Orientation="Horizontal" Height="30" Margin="0,6,0,0">
                                     <Button x:Name="TopStatsDays1Button"
                                             Style="{StaticResource StatsFilterButtonStyle}"
                                             Content="1D"
@@ -306,8 +310,8 @@
                                 <Border Height="1"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Top"
-                                        Margin="14,22,14,0"
-                                        Background="{StaticResource PanelBorderBrush}" />
+                                        Margin="14,0,14,0"
+                                        Background="{StaticResource TextSecondaryBrush}" />
                                 <ScrollViewer Margin="0,22,0,0"
                                               VerticalScrollBarVisibility="Auto"
                                               HorizontalScrollBarVisibility="Disabled">
