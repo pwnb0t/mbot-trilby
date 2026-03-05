@@ -89,12 +89,11 @@ namespace ownbotsidekick.Services
             return new ClipCatalog(triggers.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList(), total);
         }
 
-        public async Task<string> PlayClipAsync(string trigger, bool isRandom = false, CancellationToken cancellationToken = default)
+        public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
         {
-            var requestIdPrefix = isRandom ? "random:" : "play:";
             var request = new PlayClipRequest(_guildId, trigger)
             {
-                RequestId = $"{requestIdPrefix}{Guid.NewGuid():N}",
+                RequestId = $"play:{Guid.NewGuid():N}",
                 RequesterUserId = _requestingUserId > 0 ? _requestingUserId : null
             };
 
@@ -130,6 +129,46 @@ namespace ownbotsidekick.Services
             if (response.IsUnprocessableContent)
             {
                 return "Validation error (422). Check guild_id and trigger values.";
+            }
+
+            return $"Unexpected status: {(int)response.StatusCode} ({response.StatusCode}).";
+        }
+
+        public async Task<string> PlayRandomClipAsync(CancellationToken cancellationToken = default)
+        {
+            var request = new PlayRandomClipRequest(_guildId)
+            {
+                RequestId = $"random:{Guid.NewGuid():N}",
+                RequesterUserId = _requestingUserId > 0 ? _requestingUserId : null
+            };
+
+            var response = await _api.PlayRandomClipAsync(request, cancellationToken).ConfigureAwait(false);
+
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            {
+                return $"Played random '{ok.ResolvedTrigger}' in guild {ok.GuildId}.";
+            }
+
+            if (response.IsConflict && response.TryConflict(out var conflict) && conflict is not null)
+            {
+                return $"Conflict ({conflict.Code}): {conflict.Message}";
+            }
+
+            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            {
+                return $"Not found ({notFound.Code}): {notFound.Message}";
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                return $"Server error ({internalError.Code}): {internalError.Message}";
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                return "Validation error (422). Check guild_id value.";
             }
 
             return $"Unexpected status: {(int)response.StatusCode} ({response.StatusCode}).";

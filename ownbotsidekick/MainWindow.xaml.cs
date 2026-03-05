@@ -162,7 +162,7 @@ namespace ownbotsidekick
                 return;
             }
 
-            var result = await _clipPlaybackCoordinator.PlayRandomAsync(_allClipTriggers);
+            var result = await _clipPlaybackCoordinator.PlayRandomAsync();
             foreach (var logLine in result.LogLines)
             {
                 Log(logLine);

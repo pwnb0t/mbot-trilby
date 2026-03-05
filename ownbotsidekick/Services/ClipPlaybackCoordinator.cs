@@ -74,7 +74,7 @@ namespace ownbotsidekick.Services
 
             try
             {
-                var message = await _sidekickApiClient.PlayClipAsync(trigger, isRandom: false);
+                var message = await _sidekickApiClient.PlayClipAsync(trigger);
                 logLines.Add(message);
                 return new PlayClipResult(success: true, shouldHideOverlay: true, logLines: logLines);
             }
@@ -85,7 +85,7 @@ namespace ownbotsidekick.Services
             }
         }
 
-        public async Task<PlayClipResult> PlayRandomAsync(IReadOnlyList<string> triggers)
+        public async Task<PlayClipResult> PlayRandomAsync()
         {
             var logLines = new List<string>();
 
@@ -95,19 +95,10 @@ namespace ownbotsidekick.Services
                 return new PlayClipResult(success: false, shouldHideOverlay: false, logLines: logLines);
             }
 
-            if (triggers.Count == 0)
-            {
-                logLines.Add("Play random clicked, but no clips are loaded.");
-                return new PlayClipResult(success: false, shouldHideOverlay: false, logLines: logLines);
-            }
-
-            var index = Random.Shared.Next(triggers.Count);
-            var selectedTrigger = triggers[index];
-
-            logLines.Add($"Play Random clicked -> trigger '{selectedTrigger}'");
+            logLines.Add("Play Random clicked.");
             try
             {
-                var message = await _sidekickApiClient.PlayClipAsync(selectedTrigger, isRandom: true);
+                var message = await _sidekickApiClient.PlayRandomClipAsync();
                 logLines.Add(message);
                 return new PlayClipResult(success: true, shouldHideOverlay: true, logLines: logLines);
             }

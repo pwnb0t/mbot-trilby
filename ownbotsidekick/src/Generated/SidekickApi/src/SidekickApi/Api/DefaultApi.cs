@@ -107,6 +107,29 @@ namespace SidekickApi.Api
         Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(PlayClipRequest playClipRequest, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Play Random Clip
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="playRandomClipRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>&gt;</returns>
+        Task<IPlayRandomClipApiResponse> PlayRandomClipAsync(PlayRandomClipRequest playRandomClipRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Play Random Clip
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="playRandomClipRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>?&gt;</returns>
+        Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(PlayRandomClipRequest playRandomClipRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Stop Clip
         /// </summary>
         /// <remarks>
@@ -194,6 +217,48 @@ namespace SidekickApi.Api
         /// </summary>
         /// <returns></returns>
         bool IsBadRequest { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 409 Conflict
+        /// </summary>
+        /// <returns></returns>
+        bool IsConflict { get; }
+
+        /// <summary>
+        /// Returns true if the response is 500 InternalServerError
+        /// </summary>
+        /// <returns></returns>
+        bool IsInternalServerError { get; }
+
+        /// <summary>
+        /// Returns true if the response is 422 UnprocessableContent
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnprocessableContent { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IPlayRandomClipApiResponse"/>
+    /// </summary>
+    public interface IPlayRandomClipApiResponse : SidekickApi.Client.IApiResponse, IOk<SidekickApi.Model.PlayRandomClipResponse?>, IUnauthorized<SidekickApi.Model.ApiErrorResponse?>, INotFound<SidekickApi.Model.ApiErrorResponse?>, IConflict<SidekickApi.Model.ApiErrorResponse?>, IInternalServerError<SidekickApi.Model.ApiErrorResponse?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
 
         /// <summary>
         /// Returns true if the response is 404 NotFound
@@ -325,6 +390,26 @@ namespace SidekickApi.Api
         internal void ExecuteOnErrorPlayClip(Exception exception)
         {
             OnErrorPlayClip?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnPlayRandomClip;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorPlayRandomClip;
+
+        internal void ExecuteOnPlayRandomClip(DefaultApi.PlayRandomClipApiResponse apiResponse)
+        {
+            OnPlayRandomClip?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorPlayRandomClip(Exception exception)
+        {
+            OnErrorPlayRandomClip?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -1302,6 +1387,459 @@ namespace SidekickApi.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 409 Conflict
+            /// </summary>
+            /// <returns></returns>
+            public bool IsConflict => 409 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 409 Conflict
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? Conflict()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsConflict
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 409 Conflict and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryConflict([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Conflict();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)409);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public bool IsInternalServerError => 500 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? InternalServerError()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsInternalServerError
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryInternalServerError([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = InternalServerError();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)500);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnprocessableContent => 422 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.HTTPValidationError? UnprocessableContent()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnprocessableContent
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.HTTPValidationError>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnprocessableContent([NotNullWhen(true)]out SidekickApi.Model.HTTPValidationError? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = UnprocessableContent();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)422);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatPlayRandomClip(PlayRandomClipRequest playRandomClipRequest);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="playRandomClipRequest"></param>
+        /// <returns></returns>
+        private void ValidatePlayRandomClip(PlayRandomClipRequest playRandomClipRequest)
+        {
+            if (playRandomClipRequest == null)
+                throw new ArgumentNullException(nameof(playRandomClipRequest));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="playRandomClipRequest"></param>
+        private void AfterPlayRandomClipDefaultImplementation(IPlayRandomClipApiResponse apiResponseLocalVar, PlayRandomClipRequest playRandomClipRequest)
+        {
+            bool suppressDefaultLog = false;
+            AfterPlayRandomClip(ref suppressDefaultLog, apiResponseLocalVar, playRandomClipRequest);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="playRandomClipRequest"></param>
+        partial void AfterPlayRandomClip(ref bool suppressDefaultLog, IPlayRandomClipApiResponse apiResponseLocalVar, PlayRandomClipRequest playRandomClipRequest);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="playRandomClipRequest"></param>
+        private void OnErrorPlayRandomClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, PlayRandomClipRequest playRandomClipRequest)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorPlayRandomClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, playRandomClipRequest);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="playRandomClipRequest"></param>
+        partial void OnErrorPlayRandomClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, PlayRandomClipRequest playRandomClipRequest);
+
+        /// <summary>
+        /// Play Random Clip 
+        /// </summary>
+        /// <param name="playRandomClipRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>&gt;</returns>
+        public async Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(PlayRandomClipRequest playRandomClipRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await PlayRandomClipAsync(playRandomClipRequest, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Play Random Clip 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="playRandomClipRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>&gt;</returns>
+        public async Task<IPlayRandomClipApiResponse> PlayRandomClipAsync(PlayRandomClipRequest playRandomClipRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidatePlayRandomClip(playRandomClipRequest);
+
+                FormatPlayRandomClip(playRandomClipRequest);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/clips/play-random"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/clips/play-random");
+
+                    httpRequestMessageLocalVar.Content = (playRandomClipRequest as object) is System.IO.Stream stream
+                        ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(playRandomClipRequest, _jsonSerializerOptions));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
+                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
+                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    string[] contentTypes = new string[] {
+                        "application/json"
+                    };
+
+                    string? contentTypeLocalVar = ClientUtils.SelectHeaderContentType(contentTypes);
+
+                    if (contentTypeLocalVar != null && httpRequestMessageLocalVar.Content != null)
+                        httpRequestMessageLocalVar.Content.Headers.ContentType = new MediaTypeHeaderValue(contentTypeLocalVar);
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Post;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<PlayRandomClipApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<PlayRandomClipApiResponse>();
+                        PlayRandomClipApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/clips/play-random", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterPlayRandomClipDefaultImplementation(apiResponseLocalVar, playRandomClipRequest);
+
+                        Events.ExecuteOnPlayRandomClip(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorPlayRandomClipDefaultImplementation(e, "/v1/clips/play-random", uriBuilderLocalVar.Path, playRandomClipRequest);
+                Events.ExecuteOnErrorPlayRandomClip(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="PlayRandomClipApiResponse"/>
+        /// </summary>
+        public partial class PlayRandomClipApiResponse : SidekickApi.Client.ApiResponse, IPlayRandomClipApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<PlayRandomClipApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="PlayRandomClipApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public PlayRandomClipApiResponse(ILogger<PlayRandomClipApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="PlayRandomClipApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public PlayRandomClipApiResponse(ILogger<PlayRandomClipApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.PlayRandomClipResponse? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.PlayRandomClipResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out SidekickApi.Model.PlayRandomClipResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
                 }
 
                 return result != null;

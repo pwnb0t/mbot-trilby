@@ -123,6 +123,55 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Play Clip
+  /v1/clips/play-random:
+    post:
+      operationId: PlayRandomClip
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayRandomClipRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayRandomClipResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Clip not found error response.
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Voice not connected error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - APIKeyHeader: []
+      summary: Play Random Clip
   /v1/clips/stop:
     post:
       operationId: StopClip
@@ -349,6 +398,61 @@ components:
       - status
       - trigger
       title: PlayClipResponse
+    PlayRandomClipRequest:
+      example:
+        guild_id: 0
+        requester_user_id: 0
+        request_id: request_id
+      properties:
+        guild_id:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0.0
+          title: Guild Id
+          type: integer
+        request_id:
+          nullable: true
+          type: string
+        requester_user_id:
+          exclusiveMinimum: true
+          minimum: 0.0
+          nullable: true
+          type: integer
+      required:
+      - guild_id
+      title: PlayRandomClipRequest
+    PlayRandomClipResponse:
+      example:
+        guild_id: 0
+        resolved_trigger: resolved_trigger
+        ok: true
+        request_id: request_id
+        status: playing
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        resolved_trigger:
+          title: Resolved Trigger
+          type: string
+        status:
+          enum:
+          - playing
+          title: Status
+          type: string
+        request_id:
+          nullable: true
+          type: string
+      required:
+      - guild_id
+      - ok
+      - resolved_trigger
+      - status
+      title: PlayRandomClipResponse
     StopClipRequest:
       example:
         guild_id: 0

@@ -51,6 +51,8 @@ namespace SidekickApi.Client
             _jsonOptions.Converters.Add(new LocationInnerJsonConverter());
             _jsonOptions.Converters.Add(new PlayClipRequestJsonConverter());
             _jsonOptions.Converters.Add(new PlayClipResponseJsonConverter());
+            _jsonOptions.Converters.Add(new PlayRandomClipRequestJsonConverter());
+            _jsonOptions.Converters.Add(new PlayRandomClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new StopClipRequestJsonConverter());
             _jsonOptions.Converters.Add(new StopClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new ValidationErrorJsonConverter());
