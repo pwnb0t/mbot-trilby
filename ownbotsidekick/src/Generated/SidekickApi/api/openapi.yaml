@@ -313,6 +313,78 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Top Clip Stats
+  /v1/clips/stats/recent:
+    get:
+      operationId: GetRecentClipStats
+      parameters:
+      - explode: true
+        in: query
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: requester_user_id
+        required: false
+        schema:
+          exclusiveMinimum: true
+          minimum: 0
+          nullable: true
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          maximum: 50
+          minimum: 1
+          title: Limit
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: include_random
+        required: false
+        schema:
+          default: true
+          title: Include Random
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecentClipStatsResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - APIKeyHeader: []
+      summary: Recent Clip Stats
 components:
   schemas:
     ApiErrorResponse:
@@ -545,6 +617,79 @@ components:
       - resolved_trigger
       - status
       title: PlayRandomClipResponse
+    RecentClipStatsItem:
+      example:
+        mode: direct
+        played_at_utc: played_at_utc
+        clip_id: 5
+        trigger: trigger
+      properties:
+        clip_id:
+          title: Clip Id
+          type: integer
+        trigger:
+          title: Trigger
+          type: string
+        mode:
+          enum:
+          - direct
+          - random
+          title: Mode
+          type: string
+        played_at_utc:
+          title: Played At Utc
+          type: string
+      required:
+      - clip_id
+      - mode
+      - played_at_utc
+      - trigger
+      title: RecentClipStatsItem
+    RecentClipStatsResponse:
+      example:
+        include_random: true
+        guild_id: 0
+        limit: 1
+        requester_user_id: 6
+        ok: true
+        rows:
+        - mode: direct
+          played_at_utc: played_at_utc
+          clip_id: 5
+          trigger: trigger
+        - mode: direct
+          played_at_utc: played_at_utc
+          clip_id: 5
+          trigger: trigger
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        requester_user_id:
+          nullable: true
+          type: integer
+        limit:
+          title: Limit
+          type: integer
+        include_random:
+          title: Include Random
+          type: boolean
+        rows:
+          items:
+            $ref: "#/components/schemas/RecentClipStatsItem"
+          title: Rows
+          type: array
+      required:
+      - guild_id
+      - include_random
+      - limit
+      - ok
+      - rows
+      title: RecentClipStatsResponse
     StopClipRequest:
       example:
         guild_id: 0

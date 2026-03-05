@@ -147,6 +147,62 @@ namespace ownbotsidekick.Services
             return new TopClipStatsCatalog(rows, days, includeRandom, guildWide);
         }
 
+        public async Task<RecentClipStatsCatalog> GetRecentClipStatsAsync(
+            int limit = 10,
+            bool includeRandom = true,
+            bool guildWide = false,
+            CancellationToken cancellationToken = default)
+        {
+            var queryParts = new List<string>
+            {
+                $"guild_id={Uri.EscapeDataString(_guildId.ToString())}",
+                $"limit={Uri.EscapeDataString(limit.ToString())}",
+                $"include_random={Uri.EscapeDataString(includeRandom ? "true" : "false")}"
+            };
+
+            if (!guildWide && _requestingUserId > 0)
+            {
+                queryParts.Add($"requester_user_id={Uri.EscapeDataString(_requestingUserId.ToString())}");
+            }
+
+            var requestUri = $"/v1/clips/stats/recent?{string.Join("&", queryParts)}";
+            using var response = await _httpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var message = TryReadApiErrorMessage(content) ?? $"HTTP {(int)response.StatusCode} ({response.StatusCode})";
+                throw new InvalidOperationException($"Recent clip stats failed: {message}");
+            }
+
+            using var document = JsonDocument.Parse(content);
+            var root = document.RootElement;
+
+            var rows = new List<RecentClipStatsRow>();
+            if (root.TryGetProperty("rows", out var rowsElement))
+            {
+                foreach (var rowElement in rowsElement.EnumerateArray())
+                {
+                    var trigger = rowElement.TryGetProperty("trigger", out var triggerProperty)
+                        ? triggerProperty.GetString() ?? string.Empty
+                        : string.Empty;
+                    var mode = rowElement.TryGetProperty("mode", out var modeProperty)
+                        ? modeProperty.GetString() ?? "direct"
+                        : "direct";
+                    var playedAtUtc = rowElement.TryGetProperty("played_at_utc", out var playedAtProperty)
+                        ? playedAtProperty.GetString() ?? string.Empty
+                        : string.Empty;
+
+                    if (!string.IsNullOrWhiteSpace(trigger))
+                    {
+                        rows.Add(new RecentClipStatsRow(trigger, mode, playedAtUtc));
+                    }
+                }
+            }
+
+            return new RecentClipStatsCatalog(rows, includeRandom, guildWide);
+        }
+
         public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
         {
             var request = new PlayClipRequest(_guildId, trigger)
@@ -355,6 +411,37 @@ namespace ownbotsidekick.Services
             public string Trigger { get; }
             public int PlayCount { get; }
             public string LastPlayedAtUtc { get; }
+        }
+
+        internal sealed class RecentClipStatsCatalog
+        {
+            public RecentClipStatsCatalog(
+                IReadOnlyList<RecentClipStatsRow> rows,
+                bool includeRandom,
+                bool guildWide)
+            {
+                Rows = rows;
+                IncludeRandom = includeRandom;
+                GuildWide = guildWide;
+            }
+
+            public IReadOnlyList<RecentClipStatsRow> Rows { get; }
+            public bool IncludeRandom { get; }
+            public bool GuildWide { get; }
+        }
+
+        internal sealed class RecentClipStatsRow
+        {
+            public RecentClipStatsRow(string trigger, string mode, string playedAtUtc)
+            {
+                Trigger = trigger;
+                Mode = mode;
+                PlayedAtUtc = playedAtUtc;
+            }
+
+            public string Trigger { get; }
+            public string Mode { get; }
+            public string PlayedAtUtc { get; }
         }
     }
 }

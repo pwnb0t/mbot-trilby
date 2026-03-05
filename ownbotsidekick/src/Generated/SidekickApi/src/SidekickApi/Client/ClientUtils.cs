@@ -142,6 +142,8 @@ namespace SidekickApi.Client
                 return PlayClipResponse.StatusEnumToJsonValue(playClipResponseStatusEnum);
             if (obj is PlayRandomClipResponse.StatusEnum playRandomClipResponseStatusEnum)
                 return PlayRandomClipResponse.StatusEnumToJsonValue(playRandomClipResponseStatusEnum);
+            if (obj is RecentClipStatsItem.ModeEnum recentClipStatsItemModeEnum)
+                return RecentClipStatsItem.ModeEnumToJsonValue(recentClipStatsItemModeEnum);
             if (obj is StopClipResponse.StatusEnum stopClipResponseStatusEnum)
                 return StopClipResponse.StatusEnumToJsonValue(stopClipResponseStatusEnum);
             if (obj is TopClipStatsResponse.DaysEnum topClipStatsResponseDaysEnum)

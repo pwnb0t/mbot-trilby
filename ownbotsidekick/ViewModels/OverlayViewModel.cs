@@ -15,6 +15,9 @@ namespace ownbotsidekick.ViewModels
         private string _topStatsTitle = "Top Clips";
         private string _topStatsStatusText = "Loading...";
         private IReadOnlyList<TopClipStatEntryViewModel> _topClipStats = new List<TopClipStatEntryViewModel>();
+        private string _recentStatsTitle = "Recently Played";
+        private string _recentStatsStatusText = "Loading...";
+        private IReadOnlyList<RecentClipEntryViewModel> _recentClipStats = new List<RecentClipEntryViewModel>();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -74,6 +77,24 @@ namespace ownbotsidekick.ViewModels
         {
             get => _topClipStats;
             set => SetField(ref _topClipStats, value);
+        }
+
+        public string RecentStatsTitle
+        {
+            get => _recentStatsTitle;
+            set => SetField(ref _recentStatsTitle, value);
+        }
+
+        public string RecentStatsStatusText
+        {
+            get => _recentStatsStatusText;
+            set => SetField(ref _recentStatsStatusText, value);
+        }
+
+        public IReadOnlyList<RecentClipEntryViewModel> RecentClipStats
+        {
+            get => _recentClipStats;
+            set => SetField(ref _recentClipStats, value);
         }
 
         private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

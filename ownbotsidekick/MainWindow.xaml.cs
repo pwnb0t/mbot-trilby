@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -30,6 +30,7 @@ namespace ownbotsidekick
         private const int VkNumpad9 = 0x69;
         private const int MaxVisibleSearchResults = 15;
         private const int TopClipStatsLimit = 10;
+        private const int RecentClipStatsLimit = 10;
 
         private readonly string _logFilePath;
         private readonly AppSettings _settings;
@@ -42,6 +43,8 @@ namespace ownbotsidekick
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
         private string _topClipStatsDays = "7";
         private bool _topClipStatsGuildWide;
+        private bool _recentStatsGuildWide;
+        private bool _recentStatsIncludeRandom = true;
         private bool _hotkeyRegistered;
         private bool _exitRequested;
         private SidekickApiClientService? _sidekickApiClient;
@@ -120,11 +123,13 @@ namespace ownbotsidekick
                 _ = InitializeHealthCheckAsync();
                 _ = LoadClipCatalogAsync("startup");
                 _ = LoadTopClipStatsAsync("startup");
+                _ = LoadRecentClipStatsAsync("startup");
             }
             else
             {
                 UpdateClipCountText(0, "API disabled");
                 _viewModel.TopStatsStatusText = "API disabled";
+                _viewModel.RecentStatsStatusText = "API disabled";
             }
 
             if (_settings.Overlay.StartHidden)
@@ -138,6 +143,7 @@ namespace ownbotsidekick
 
             _overlayController.ApplyOverlayPanelLayout();
             UpdateTopStatsFilterButtonVisuals();
+            UpdateRecentStatsFilterButtonVisuals();
         }
 
         private async void QuickPlay1Button_Click(object sender, RoutedEventArgs e)
@@ -159,6 +165,7 @@ namespace ownbotsidekick
         {
             await LoadClipCatalogAsync("manual refresh");
             await LoadTopClipStatsAsync("manual refresh");
+            await LoadRecentClipStatsAsync("manual refresh");
         }
 
         private async void PlayRandomButton_Click(object sender, RoutedEventArgs e)
@@ -183,6 +190,7 @@ namespace ownbotsidekick
             if (result.Success)
             {
                 _ = LoadTopClipStatsAsync("after random play");
+                _ = LoadRecentClipStatsAsync("after random play");
             }
         }
 
@@ -206,6 +214,18 @@ namespace ownbotsidekick
         }
 
         private async void TopClipStatsItemButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not System.Windows.Controls.Button button ||
+                button.Tag is not string trigger ||
+                string.IsNullOrWhiteSpace(trigger))
+            {
+                return;
+            }
+
+            await PlayClipAsync(trigger, trigger);
+        }
+
+        private async void RecentClipStatsItemButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not System.Windows.Controls.Button button ||
                 button.Tag is not string trigger ||
@@ -251,6 +271,24 @@ namespace ownbotsidekick
         {
             _topClipStatsDays = "all";
             await LoadTopClipStatsAsync("window all");
+        }
+
+        private async void RecentStatsScopeMeButton_Click(object sender, RoutedEventArgs e)
+        {
+            _recentStatsGuildWide = false;
+            await LoadRecentClipStatsAsync("recent scope me");
+        }
+
+        private async void RecentStatsScopeEveryoneButton_Click(object sender, RoutedEventArgs e)
+        {
+            _recentStatsGuildWide = true;
+            await LoadRecentClipStatsAsync("recent scope everyone");
+        }
+
+        private async void RecentStatsIncludeRandomButton_Click(object sender, RoutedEventArgs e)
+        {
+            _recentStatsIncludeRandom = !_recentStatsIncludeRandom;
+            await LoadRecentClipStatsAsync("recent include random toggled");
         }
 
         private void CloseOverlayButton_Click(object sender, RoutedEventArgs e)
@@ -390,6 +428,7 @@ namespace ownbotsidekick
             if (result.Success)
             {
                 _ = LoadTopClipStatsAsync("after clip play");
+                _ = LoadRecentClipStatsAsync("after clip play");
             }
 
             return result.Success;
@@ -448,6 +487,56 @@ namespace ownbotsidekick
             TopStatsDays7Button.Style = _topClipStatsDays == "7" ? selectedStyle : defaultStyle;
             TopStatsDays30Button.Style = _topClipStatsDays == "30" ? selectedStyle : defaultStyle;
             TopStatsDaysAllButton.Style = _topClipStatsDays == "all" ? selectedStyle : defaultStyle;
+        }
+
+        private async System.Threading.Tasks.Task LoadRecentClipStatsAsync(string reason)
+        {
+            UpdateRecentStatsFilterButtonVisuals();
+
+            if (_sidekickApiClient is null)
+            {
+                _viewModel.RecentClipStats = Array.Empty<RecentClipEntryViewModel>();
+                _viewModel.RecentStatsStatusText = "API disabled";
+                return;
+            }
+
+            try
+            {
+                Log($"Loading recent clip stats ({reason})...");
+                var catalog = await _sidekickApiClient.GetRecentClipStatsAsync(
+                    limit: RecentClipStatsLimit,
+                    includeRandom: _recentStatsIncludeRandom,
+                    guildWide: _recentStatsGuildWide
+                );
+
+                var rows = catalog.Rows
+                    .Select(row => new RecentClipEntryViewModel(
+                        row.Trigger,
+                        row.Trigger,
+                        FormatTimeAgo(row.PlayedAtUtc),
+                        row.Mode == "random"
+                    ))
+                    .ToArray();
+
+                _viewModel.RecentClipStats = rows;
+                _viewModel.RecentStatsStatusText = rows.Length == 0 ? "No recent plays yet." : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                _viewModel.RecentClipStats = Array.Empty<RecentClipEntryViewModel>();
+                _viewModel.RecentStatsStatusText = "Failed to load recents";
+                Log($"Load recent clip stats failed: {ex.Message}");
+            }
+        }
+
+        private void UpdateRecentStatsFilterButtonVisuals()
+        {
+            var defaultStyle = (Style)FindResource("StatsFilterButtonStyle");
+            var selectedStyle = (Style)FindResource("StatsFilterButtonSelectedStyle");
+
+            RecentStatsScopeMeButton.Style = _recentStatsGuildWide ? defaultStyle : selectedStyle;
+            RecentStatsScopeEveryoneButton.Style = _recentStatsGuildWide ? selectedStyle : defaultStyle;
+            RecentStatsIncludeRandomButton.Style = _recentStatsIncludeRandom ? selectedStyle : defaultStyle;
         }
 
         private void RegisterOverlayHotkey(IntPtr hwnd)
@@ -632,6 +721,42 @@ namespace ownbotsidekick
             }
 
             return null;
+        }
+
+        private static string FormatTimeAgo(string playedAtUtc)
+        {
+            if (!DateTimeOffset.TryParse(playedAtUtc, out var playedAt))
+            {
+                return string.Empty;
+            }
+
+            var delta = DateTimeOffset.UtcNow - playedAt.ToUniversalTime();
+            if (delta < TimeSpan.Zero)
+            {
+                delta = TimeSpan.Zero;
+            }
+
+            if (delta.TotalMinutes < 1)
+            {
+                return "just now";
+            }
+
+            if (delta.TotalHours < 1)
+            {
+                return $"{Math.Max(1, (int)delta.TotalMinutes)}m ago";
+            }
+
+            if (delta.TotalDays < 1)
+            {
+                return $"{Math.Max(1, (int)delta.TotalHours)}h ago";
+            }
+
+            if (delta.TotalDays < 30)
+            {
+                return $"{Math.Max(1, (int)delta.TotalDays)}d ago";
+            }
+
+            return $"{Math.Max(1, (int)(delta.TotalDays / 30))}mo ago";
         }
 
         private void HideOverlayWithConditionalSearchReset(string logMessage)
