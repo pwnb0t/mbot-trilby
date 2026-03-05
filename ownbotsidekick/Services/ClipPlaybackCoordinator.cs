@@ -74,7 +74,7 @@ namespace ownbotsidekick.Services
 
             try
             {
-                var message = await _sidekickApiClient.PlayClipAsync(trigger);
+                var message = await _sidekickApiClient.PlayClipAsync(trigger, isRandom: false);
                 logLines.Add(message);
                 return new PlayClipResult(success: true, shouldHideOverlay: true, logLines: logLines);
             }
@@ -89,6 +89,12 @@ namespace ownbotsidekick.Services
         {
             var logLines = new List<string>();
 
+            if (_sidekickApiClient is null)
+            {
+                logLines.Add("Play random clicked, but Sidekick API is disabled.");
+                return new PlayClipResult(success: false, shouldHideOverlay: false, logLines: logLines);
+            }
+
             if (triggers.Count == 0)
             {
                 logLines.Add("Play random clicked, but no clips are loaded.");
@@ -97,7 +103,19 @@ namespace ownbotsidekick.Services
 
             var index = Random.Shared.Next(triggers.Count);
             var selectedTrigger = triggers[index];
-            return await PlayClipAsync("Play Random", selectedTrigger);
+
+            logLines.Add($"Play Random clicked -> trigger '{selectedTrigger}'");
+            try
+            {
+                var message = await _sidekickApiClient.PlayClipAsync(selectedTrigger, isRandom: true);
+                logLines.Add(message);
+                return new PlayClipResult(success: true, shouldHideOverlay: true, logLines: logLines);
+            }
+            catch (Exception ex)
+            {
+                logLines.Add($"Play trigger failed: {ex.Message}");
+                return new PlayClipResult(success: false, shouldHideOverlay: false, logLines: logLines);
+            }
         }
 
         public async Task<StopClipResult> StopClipAsync()

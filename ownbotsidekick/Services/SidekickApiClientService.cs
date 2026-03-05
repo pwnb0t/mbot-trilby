@@ -89,11 +89,12 @@ namespace ownbotsidekick.Services
             return new ClipCatalog(triggers.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList(), total);
         }
 
-        public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
+        public async Task<string> PlayClipAsync(string trigger, bool isRandom = false, CancellationToken cancellationToken = default)
         {
+            var requestIdPrefix = isRandom ? "random:" : "play:";
             var request = new PlayClipRequest(_guildId, trigger)
             {
-                RequestId = Guid.NewGuid().ToString("N"),
+                RequestId = $"{requestIdPrefix}{Guid.NewGuid():N}",
                 RequesterUserId = _requestingUserId > 0 ? _requestingUserId : null
             };
 
