@@ -85,6 +85,46 @@ namespace ownbotsidekick.Services
             }
         }
 
+        public async Task<PlayClipResult> PlayRandomAsync(IReadOnlyList<string> triggers)
+        {
+            var logLines = new List<string>();
+
+            if (triggers.Count == 0)
+            {
+                logLines.Add("Play random clicked, but no clips are loaded.");
+                return new PlayClipResult(success: false, shouldHideOverlay: false, logLines: logLines);
+            }
+
+            var index = Random.Shared.Next(triggers.Count);
+            var selectedTrigger = triggers[index];
+            return await PlayClipAsync("Play Random", selectedTrigger);
+        }
+
+        public async Task<StopClipResult> StopClipAsync()
+        {
+            var logLines = new List<string>();
+
+            if (_sidekickApiClient is null)
+            {
+                logLines.Add("Stop clicked, but Sidekick API is disabled.");
+                return new StopClipResult(success: false, logLines: logLines);
+            }
+
+            logLines.Add("Stop clicked.");
+
+            try
+            {
+                var message = await _sidekickApiClient.StopClipAsync();
+                logLines.Add(message);
+                return new StopClipResult(success: true, logLines: logLines);
+            }
+            catch (Exception ex)
+            {
+                logLines.Add($"Stop failed: {ex.Message}");
+                return new StopClipResult(success: false, logLines: logLines);
+            }
+        }
+
         internal sealed class LoadClipsResult
         {
             public LoadClipsResult(bool success, IReadOnlyList<string> triggers, int total, IReadOnlyList<string> logLines)
@@ -112,6 +152,18 @@ namespace ownbotsidekick.Services
 
             public bool Success { get; }
             public bool ShouldHideOverlay { get; }
+            public IReadOnlyList<string> LogLines { get; }
+        }
+
+        internal sealed class StopClipResult
+        {
+            public StopClipResult(bool success, IReadOnlyList<string> logLines)
+            {
+                Success = success;
+                LogLines = logLines;
+            }
+
+            public bool Success { get; }
             public IReadOnlyList<string> LogLines { get; }
         }
     }

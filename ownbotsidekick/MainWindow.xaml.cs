@@ -155,6 +155,39 @@ namespace ownbotsidekick
             await LoadClipCatalogAsync("manual refresh");
         }
 
+        private async void PlayRandomButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_clipPlaybackCoordinator is null)
+            {
+                return;
+            }
+
+            var result = await _clipPlaybackCoordinator.PlayRandomAsync(_allClipTriggers);
+            foreach (var logLine in result.LogLines)
+            {
+                Log(logLine);
+            }
+
+            if (result.ShouldHideOverlay)
+            {
+                _overlayController.Hide("Overlay hidden after random clip play.");
+            }
+        }
+
+        private async void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_clipPlaybackCoordinator is null)
+            {
+                return;
+            }
+
+            var result = await _clipPlaybackCoordinator.StopClipAsync();
+            foreach (var logLine in result.LogLines)
+            {
+                Log(logLine);
+            }
+        }
+
         private async void SearchPanel_ClipSelected(object? sender, string trigger)
         {
             await PlayClipAsync(trigger, trigger);

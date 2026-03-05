@@ -12,10 +12,14 @@ docs/models/ListClipsResponse.md
 docs/models/LocationInner.md
 docs/models/PlayClipRequest.md
 docs/models/PlayClipResponse.md
+docs/models/StopClipRequest.md
+docs/models/StopClipResponse.md
 docs/models/ValidationError.md
 docs/scripts/git_push.ps1
 docs/scripts/git_push.sh
 src/SidekickApi.Test/Api/DependencyInjectionTests.cs
+src/SidekickApi.Test/Model/StopClipRequestTests.cs
+src/SidekickApi.Test/Model/StopClipResponseTests.cs
 src/SidekickApi.Test/README.md
 src/SidekickApi.Test/SidekickApi.Test.csproj
 src/SidekickApi/Api/DefaultApi.cs
@@ -50,6 +54,8 @@ src/SidekickApi/Model/ListClipsResponse.cs
 src/SidekickApi/Model/LocationInner.cs
 src/SidekickApi/Model/PlayClipRequest.cs
 src/SidekickApi/Model/PlayClipResponse.cs
+src/SidekickApi/Model/StopClipRequest.cs
+src/SidekickApi/Model/StopClipResponse.cs
 src/SidekickApi/Model/ValidationError.cs
 src/SidekickApi/README.md
 src/SidekickApi/SidekickApi.csproj
