@@ -221,6 +221,98 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Stop Clip
+  /v1/clips/stats/top:
+    get:
+      operationId: GetTopClipStats
+      parameters:
+      - explode: true
+        in: query
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: requester_user_id
+        required: false
+        schema:
+          exclusiveMinimum: true
+          minimum: 0
+          nullable: true
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: days
+        required: false
+        schema:
+          default: "7"
+          enum:
+          - "1"
+          - "7"
+          - "30"
+          - all
+          title: Days
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          maximum: 50
+          minimum: 1
+          title: Limit
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: include_random
+        required: false
+        schema:
+          default: false
+          title: Include Random
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopClipStatsResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad request error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - APIKeyHeader: []
+      summary: Top Clip Stats
 components:
   schemas:
     ApiErrorResponse:
@@ -497,6 +589,86 @@ components:
       - ok
       - status
       title: StopClipResponse
+    TopClipStatsItem:
+      example:
+        clip_id: 5
+        trigger: trigger
+        play_count: 5
+        last_played_at_utc: last_played_at_utc
+      properties:
+        clip_id:
+          title: Clip Id
+          type: integer
+        trigger:
+          title: Trigger
+          type: string
+        play_count:
+          title: Play Count
+          type: integer
+        last_played_at_utc:
+          title: Last Played At Utc
+          type: string
+      required:
+      - clip_id
+      - last_played_at_utc
+      - play_count
+      - trigger
+      title: TopClipStatsItem
+    TopClipStatsResponse:
+      example:
+        include_random: true
+        guild_id: 0
+        limit: 1
+        requester_user_id: 6
+        days: "1"
+        ok: true
+        rows:
+        - clip_id: 5
+          trigger: trigger
+          play_count: 5
+          last_played_at_utc: last_played_at_utc
+        - clip_id: 5
+          trigger: trigger
+          play_count: 5
+          last_played_at_utc: last_played_at_utc
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        requester_user_id:
+          nullable: true
+          type: integer
+        days:
+          enum:
+          - "1"
+          - "7"
+          - "30"
+          - all
+          title: Days
+          type: string
+        limit:
+          title: Limit
+          type: integer
+        include_random:
+          title: Include Random
+          type: boolean
+        rows:
+          items:
+            $ref: "#/components/schemas/TopClipStatsItem"
+          title: Rows
+          type: array
+      required:
+      - days
+      - guild_id
+      - include_random
+      - limit
+      - ok
+      - rows
+      title: TopClipStatsResponse
     ValidationError:
       example:
         msg: msg

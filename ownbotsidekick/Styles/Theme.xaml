@@ -64,4 +64,23 @@
         <Setter Property="Margin" Value="4" />
         <Setter Property="Padding" Value="10,8" />
     </Style>
+
+    <Style x:Key="StatsFilterButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource TopBarButtonStyle}">
+        <Setter Property="Padding" Value="8,4" />
+        <Setter Property="Margin" Value="0,0,6,6" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="MinWidth" Value="38" />
+    </Style>
+
+    <Style x:Key="TopClipStatButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource TopBarButtonStyle}">
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource ClipButtonTextBrush}" />
+    </Style>
 </ResourceDictionary>

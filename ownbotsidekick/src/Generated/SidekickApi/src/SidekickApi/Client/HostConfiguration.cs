@@ -55,6 +55,8 @@ namespace SidekickApi.Client
             _jsonOptions.Converters.Add(new PlayRandomClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new StopClipRequestJsonConverter());
             _jsonOptions.Converters.Add(new StopClipResponseJsonConverter());
+            _jsonOptions.Converters.Add(new TopClipStatsItemJsonConverter());
+            _jsonOptions.Converters.Add(new TopClipStatsResponseJsonConverter());
             _jsonOptions.Converters.Add(new ValidationErrorJsonConverter());
             JsonSerializerOptionsProvider jsonSerializerOptionsProvider = new(_jsonOptions);
             _services.AddSingleton(jsonSerializerOptionsProvider);

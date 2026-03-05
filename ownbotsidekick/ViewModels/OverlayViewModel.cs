@@ -12,6 +12,9 @@ namespace ownbotsidekick.ViewModels
         private string _searchQueryDisplay = "Start typing to search...";
         private bool _noResultsVisible;
         private IReadOnlyList<string> _visibleClips = new List<string>();
+        private string _topStatsTitle = "Top Clips";
+        private string _topStatsStatusText = "Loading...";
+        private IReadOnlyList<TopClipStatEntryViewModel> _topClipStats = new List<TopClipStatEntryViewModel>();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -53,6 +56,24 @@ namespace ownbotsidekick.ViewModels
         {
             get => _visibleClips;
             set => SetField(ref _visibleClips, value);
+        }
+
+        public string TopStatsTitle
+        {
+            get => _topStatsTitle;
+            set => SetField(ref _topStatsTitle, value);
+        }
+
+        public string TopStatsStatusText
+        {
+            get => _topStatsStatusText;
+            set => SetField(ref _topStatsStatusText, value);
+        }
+
+        public IReadOnlyList<TopClipStatEntryViewModel> TopClipStats
+        {
+            get => _topClipStats;
+            set => SetField(ref _topClipStats, value);
         }
 
         private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

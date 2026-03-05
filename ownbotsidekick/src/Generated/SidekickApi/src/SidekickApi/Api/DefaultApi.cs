@@ -59,6 +59,37 @@ namespace SidekickApi.Api
         Task<IGetHealthApiResponse?> GetHealthOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Top Clip Stats
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="guildId"></param>
+        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="days"> (optional, default to 7)</param>
+        /// <param name="limit"> (optional, default to 10)</param>
+        /// <param name="includeRandom"> (optional, default to false)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
+        Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(int guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Top Clip Stats
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="guildId"></param>
+        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="days"> (optional, default to 7)</param>
+        /// <param name="limit"> (optional, default to 10)</param>
+        /// <param name="includeRandom"> (optional, default to false)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>?&gt;</returns>
+        Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(int guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// List Clips
         /// </summary>
         /// <remarks>
@@ -163,6 +194,42 @@ namespace SidekickApi.Api
         /// </summary>
         /// <returns></returns>
         bool IsOk { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IGetTopClipStatsApiResponse"/>
+    /// </summary>
+    public interface IGetTopClipStatsApiResponse : SidekickApi.Client.IApiResponse, IOk<SidekickApi.Model.TopClipStatsResponse?>, IUnauthorized<SidekickApi.Model.ApiErrorResponse?>, IBadRequest<SidekickApi.Model.ApiErrorResponse?>, IInternalServerError<SidekickApi.Model.ApiErrorResponse?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 400 BadRequest
+        /// </summary>
+        /// <returns></returns>
+        bool IsBadRequest { get; }
+
+        /// <summary>
+        /// Returns true if the response is 500 InternalServerError
+        /// </summary>
+        /// <returns></returns>
+        bool IsInternalServerError { get; }
+
+        /// <summary>
+        /// Returns true if the response is 422 UnprocessableContent
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnprocessableContent { get; }
     }
 
     /// <summary>
@@ -350,6 +417,26 @@ namespace SidekickApi.Api
         internal void ExecuteOnErrorGetHealth(Exception exception)
         {
             OnErrorGetHealth?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnGetTopClipStats;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorGetTopClipStats;
+
+        internal void ExecuteOnGetTopClipStats(DefaultApi.GetTopClipStatsApiResponse apiResponse)
+        {
+            OnGetTopClipStats?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorGetTopClipStats(Exception exception)
+        {
+            OnErrorGetTopClipStats?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -682,6 +769,450 @@ namespace SidekickApi.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatGetTopClipStats(ref int guildId, ref Option<int?> requesterUserId, ref Option<string> days, ref Option<int> limit, ref Option<bool> includeRandom);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="days"></param>
+        /// <returns></returns>
+        private void ValidateGetTopClipStats(Option<string> days)
+        {
+            if (days.IsSet && days.Value == null)
+                throw new ArgumentNullException(nameof(days));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="guildId"></param>
+        /// <param name="requesterUserId"></param>
+        /// <param name="days"></param>
+        /// <param name="limit"></param>
+        /// <param name="includeRandom"></param>
+        private void AfterGetTopClipStatsDefaultImplementation(IGetTopClipStatsApiResponse apiResponseLocalVar, int guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
+        {
+            bool suppressDefaultLog = false;
+            AfterGetTopClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, requesterUserId, days, limit, includeRandom);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="guildId"></param>
+        /// <param name="requesterUserId"></param>
+        /// <param name="days"></param>
+        /// <param name="limit"></param>
+        /// <param name="includeRandom"></param>
+        partial void AfterGetTopClipStats(ref bool suppressDefaultLog, IGetTopClipStatsApiResponse apiResponseLocalVar, int guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="guildId"></param>
+        /// <param name="requesterUserId"></param>
+        /// <param name="days"></param>
+        /// <param name="limit"></param>
+        /// <param name="includeRandom"></param>
+        private void OnErrorGetTopClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorGetTopClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, requesterUserId, days, limit, includeRandom);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="guildId"></param>
+        /// <param name="requesterUserId"></param>
+        /// <param name="days"></param>
+        /// <param name="limit"></param>
+        /// <param name="includeRandom"></param>
+        partial void OnErrorGetTopClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
+
+        /// <summary>
+        /// Top Clip Stats 
+        /// </summary>
+        /// <param name="guildId"></param>
+        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="days"> (optional, default to 7)</param>
+        /// <param name="limit"> (optional, default to 10)</param>
+        /// <param name="includeRandom"> (optional, default to false)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
+        public async Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(int guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await GetTopClipStatsAsync(guildId, requesterUserId, days, limit, includeRandom, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Top Clip Stats 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="guildId"></param>
+        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="days"> (optional, default to 7)</param>
+        /// <param name="limit"> (optional, default to 10)</param>
+        /// <param name="includeRandom"> (optional, default to false)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
+        public async Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(int guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateGetTopClipStats(days);
+
+                FormatGetTopClipStats(ref guildId, ref requesterUserId, ref days, ref limit, ref includeRandom);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/clips/stats/top"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/clips/stats/top");
+
+                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+                    parseQueryStringLocalVar["guild_id"] = ClientUtils.ParameterToString(guildId);
+
+                    if (requesterUserId.IsSet)
+                        parseQueryStringLocalVar["requester_user_id"] = ClientUtils.ParameterToString(requesterUserId.Value);
+
+                    if (days.IsSet)
+                        parseQueryStringLocalVar["days"] = ClientUtils.ParameterToString(days.Value);
+
+                    if (limit.IsSet)
+                        parseQueryStringLocalVar["limit"] = ClientUtils.ParameterToString(limit.Value);
+
+                    if (includeRandom.IsSet)
+                        parseQueryStringLocalVar["include_random"] = ClientUtils.ParameterToString(includeRandom.Value);
+
+                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
+                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
+                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<GetTopClipStatsApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetTopClipStatsApiResponse>();
+                        GetTopClipStatsApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/clips/stats/top", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterGetTopClipStatsDefaultImplementation(apiResponseLocalVar, guildId, requesterUserId, days, limit, includeRandom);
+
+                        Events.ExecuteOnGetTopClipStats(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorGetTopClipStatsDefaultImplementation(e, "/v1/clips/stats/top", uriBuilderLocalVar.Path, guildId, requesterUserId, days, limit, includeRandom);
+                Events.ExecuteOnErrorGetTopClipStats(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GetTopClipStatsApiResponse"/>
+        /// </summary>
+        public partial class GetTopClipStatsApiResponse : SidekickApi.Client.ApiResponse, IGetTopClipStatsApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<GetTopClipStatsApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="GetTopClipStatsApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetTopClipStatsApiResponse(ILogger<GetTopClipStatsApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="GetTopClipStatsApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetTopClipStatsApiResponse(ILogger<GetTopClipStatsApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.TopClipStatsResponse? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.TopClipStatsResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out SidekickApi.Model.TopClipStatsResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public bool IsBadRequest => 400 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 400 BadRequest
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? BadRequest()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsBadRequest
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 400 BadRequest and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryBadRequest([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = BadRequest();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)400);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public bool IsInternalServerError => 500 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? InternalServerError()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsInternalServerError
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryInternalServerError([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = InternalServerError();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)500);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnprocessableContent => 422 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.HTTPValidationError? UnprocessableContent()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnprocessableContent
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.HTTPValidationError>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnprocessableContent([NotNullWhen(true)]out SidekickApi.Model.HTTPValidationError? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = UnprocessableContent();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)422);
                 }
 
                 return result != null;

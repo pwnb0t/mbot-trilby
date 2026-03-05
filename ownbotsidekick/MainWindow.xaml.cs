@@ -29,6 +29,7 @@ namespace ownbotsidekick
         private const int VkNumpad0 = 0x60;
         private const int VkNumpad9 = 0x69;
         private const int MaxVisibleSearchResults = 15;
+        private const int TopClipStatsLimit = 10;
 
         private readonly string _logFilePath;
         private readonly AppSettings _settings;
@@ -39,6 +40,8 @@ namespace ownbotsidekick
         private readonly OverlayViewModel _viewModel = new();
         private readonly List<string> _allClipTriggers = new();
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
+        private string _topClipStatsDays = "7";
+        private bool _topClipStatsGuildWide;
         private bool _hotkeyRegistered;
         private bool _exitRequested;
         private SidekickApiClientService? _sidekickApiClient;
@@ -117,10 +120,12 @@ namespace ownbotsidekick
             {
                 _ = InitializeHealthCheckAsync();
                 _ = LoadClipCatalogAsync("startup");
+                _ = LoadTopClipStatsAsync("startup");
             }
             else
             {
                 UpdateClipCountText(0, "API disabled");
+                _viewModel.TopStatsStatusText = "API disabled";
             }
 
             if (_settings.Overlay.StartHidden)
@@ -153,6 +158,7 @@ namespace ownbotsidekick
         private async void RefreshClipsButton_Click(object sender, RoutedEventArgs e)
         {
             await LoadClipCatalogAsync("manual refresh");
+            await LoadTopClipStatsAsync("manual refresh");
         }
 
         private async void PlayRandomButton_Click(object sender, RoutedEventArgs e)
@@ -171,6 +177,11 @@ namespace ownbotsidekick
             if (result.ShouldHideOverlay)
             {
                 _overlayController.Hide("Overlay hidden after random clip play.");
+            }
+
+            if (result.Success)
+            {
+                _ = LoadTopClipStatsAsync("after random play");
             }
         }
 
@@ -191,6 +202,54 @@ namespace ownbotsidekick
         private async void SearchPanel_ClipSelected(object? sender, string trigger)
         {
             await PlayClipAsync(trigger, trigger);
+        }
+
+        private async void TopClipStatsItemButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not System.Windows.Controls.Button button ||
+                button.Tag is not string trigger ||
+                string.IsNullOrWhiteSpace(trigger))
+            {
+                return;
+            }
+
+            await PlayClipAsync(trigger, trigger);
+        }
+
+        private async void TopStatsScopeMeButton_Click(object sender, RoutedEventArgs e)
+        {
+            _topClipStatsGuildWide = false;
+            await LoadTopClipStatsAsync("scope me");
+        }
+
+        private async void TopStatsScopeGuildButton_Click(object sender, RoutedEventArgs e)
+        {
+            _topClipStatsGuildWide = true;
+            await LoadTopClipStatsAsync("scope guild");
+        }
+
+        private async void TopStatsDays1Button_Click(object sender, RoutedEventArgs e)
+        {
+            _topClipStatsDays = "1";
+            await LoadTopClipStatsAsync("window 1d");
+        }
+
+        private async void TopStatsDays7Button_Click(object sender, RoutedEventArgs e)
+        {
+            _topClipStatsDays = "7";
+            await LoadTopClipStatsAsync("window 7d");
+        }
+
+        private async void TopStatsDays30Button_Click(object sender, RoutedEventArgs e)
+        {
+            _topClipStatsDays = "30";
+            await LoadTopClipStatsAsync("window 30d");
+        }
+
+        private async void TopStatsDaysAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            _topClipStatsDays = "all";
+            await LoadTopClipStatsAsync("window all");
         }
 
         private void CloseOverlayButton_Click(object sender, RoutedEventArgs e)
@@ -326,7 +385,66 @@ namespace ownbotsidekick
                 _overlayController.Hide("Overlay hidden after clip play.");
             }
 
+            if (result.Success)
+            {
+                _ = LoadTopClipStatsAsync("after clip play");
+            }
+
             return result.Success;
+        }
+
+        private async System.Threading.Tasks.Task LoadTopClipStatsAsync(string reason)
+        {
+            UpdateTopStatsHeader();
+
+            if (_sidekickApiClient is null)
+            {
+                _viewModel.TopClipStats = Array.Empty<TopClipStatEntryViewModel>();
+                _viewModel.TopStatsStatusText = "API disabled";
+                return;
+            }
+
+            try
+            {
+                Log($"Loading top clip stats ({reason})...");
+                var catalog = await _sidekickApiClient.GetTopClipStatsAsync(
+                    days: _topClipStatsDays,
+                    limit: TopClipStatsLimit,
+                    includeRandom: false,
+                    guildWide: _topClipStatsGuildWide
+                );
+
+                var rows = catalog.Rows
+                    .Select((row, index) => new TopClipStatEntryViewModel(
+                        row.Trigger,
+                        $"{index + 1}. {row.Trigger}  ({row.PlayCount})"
+                    ))
+                    .ToArray();
+
+                _viewModel.TopClipStats = rows;
+                _viewModel.TopStatsStatusText = rows.Length == 0
+                    ? "No plays in this window yet."
+                    : $"{rows.Length} of top {TopClipStatsLimit} shown";
+            }
+            catch (Exception ex)
+            {
+                _viewModel.TopClipStats = Array.Empty<TopClipStatEntryViewModel>();
+                _viewModel.TopStatsStatusText = "Failed to load top clips";
+                Log($"Load top clip stats failed: {ex.Message}");
+            }
+        }
+
+        private void UpdateTopStatsHeader()
+        {
+            var scope = _topClipStatsGuildWide ? "Guild" : "Me";
+            var window = _topClipStatsDays switch
+            {
+                "1" => "1D",
+                "7" => "7D",
+                "30" => "30D",
+                _ => "All"
+            };
+            _viewModel.TopStatsTitle = $"Top Clips ({scope}, {window})";
         }
 
         private void RegisterOverlayHotkey(IntPtr hwnd)

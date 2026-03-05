@@ -144,6 +144,8 @@ namespace SidekickApi.Client
                 return PlayRandomClipResponse.StatusEnumToJsonValue(playRandomClipResponseStatusEnum);
             if (obj is StopClipResponse.StatusEnum stopClipResponseStatusEnum)
                 return StopClipResponse.StatusEnumToJsonValue(stopClipResponseStatusEnum);
+            if (obj is TopClipStatsResponse.DaysEnum topClipStatsResponseDaysEnum)
+                return TopClipStatsResponse.DaysEnumToJsonValue(topClipStatsResponseDaysEnum);
             if (obj is ICollection collection)
             {
                 List<string?> entries = new();

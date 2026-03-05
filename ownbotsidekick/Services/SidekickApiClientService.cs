@@ -89,6 +89,64 @@ namespace ownbotsidekick.Services
             return new ClipCatalog(triggers.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList(), total);
         }
 
+        public async Task<TopClipStatsCatalog> GetTopClipStatsAsync(
+            string days,
+            int limit = 10,
+            bool includeRandom = false,
+            bool guildWide = false,
+            CancellationToken cancellationToken = default)
+        {
+            var queryParts = new List<string>
+            {
+                $"guild_id={Uri.EscapeDataString(_guildId.ToString())}",
+                $"days={Uri.EscapeDataString(days)}",
+                $"limit={Uri.EscapeDataString(limit.ToString())}",
+                $"include_random={Uri.EscapeDataString(includeRandom ? "true" : "false")}"
+            };
+
+            if (!guildWide && _requestingUserId > 0)
+            {
+                queryParts.Add($"requester_user_id={Uri.EscapeDataString(_requestingUserId.ToString())}");
+            }
+
+            var requestUri = $"/v1/clips/stats/top?{string.Join("&", queryParts)}";
+            using var response = await _httpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var message = TryReadApiErrorMessage(content) ?? $"HTTP {(int)response.StatusCode} ({response.StatusCode})";
+                throw new InvalidOperationException($"Top clip stats failed: {message}");
+            }
+
+            using var document = JsonDocument.Parse(content);
+            var root = document.RootElement;
+
+            var rows = new List<TopClipStatsRow>();
+            if (root.TryGetProperty("rows", out var rowsElement))
+            {
+                foreach (var rowElement in rowsElement.EnumerateArray())
+                {
+                    var trigger = rowElement.TryGetProperty("trigger", out var triggerProperty)
+                        ? triggerProperty.GetString() ?? string.Empty
+                        : string.Empty;
+                    var playCount = rowElement.TryGetProperty("play_count", out var countProperty)
+                        ? countProperty.GetInt32()
+                        : 0;
+                    var lastPlayedAtUtc = rowElement.TryGetProperty("last_played_at_utc", out var lastPlayedProperty)
+                        ? lastPlayedProperty.GetString() ?? string.Empty
+                        : string.Empty;
+
+                    if (!string.IsNullOrWhiteSpace(trigger))
+                    {
+                        rows.Add(new TopClipStatsRow(trigger, playCount, lastPlayedAtUtc));
+                    }
+                }
+            }
+
+            return new TopClipStatsCatalog(rows, days, includeRandom, guildWide);
+        }
+
         public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
         {
             var request = new PlayClipRequest(_guildId, trigger)
@@ -263,6 +321,40 @@ namespace ownbotsidekick.Services
 
             public IReadOnlyList<string> Triggers { get; }
             public int Total { get; }
+        }
+
+        internal sealed class TopClipStatsCatalog
+        {
+            public TopClipStatsCatalog(
+                IReadOnlyList<TopClipStatsRow> rows,
+                string days,
+                bool includeRandom,
+                bool guildWide)
+            {
+                Rows = rows;
+                Days = days;
+                IncludeRandom = includeRandom;
+                GuildWide = guildWide;
+            }
+
+            public IReadOnlyList<TopClipStatsRow> Rows { get; }
+            public string Days { get; }
+            public bool IncludeRandom { get; }
+            public bool GuildWide { get; }
+        }
+
+        internal sealed class TopClipStatsRow
+        {
+            public TopClipStatsRow(string trigger, int playCount, string lastPlayedAtUtc)
+            {
+                Trigger = trigger;
+                PlayCount = playCount;
+                LastPlayedAtUtc = lastPlayedAtUtc;
+            }
+
+            public string Trigger { get; }
+            public int PlayCount { get; }
+            public string LastPlayedAtUtc { get; }
         }
     }
 }

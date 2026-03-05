@@ -107,7 +107,13 @@
                 </Grid>
 
                 <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="320" />
+                    </Grid.ColumnDefinitions>
+
                     <controls:SearchPanelControl x:Name="SearchPanel"
+                                                 Grid.Column="0"
                                                  HorizontalAlignment="Center"
                                                  VerticalAlignment="Center"
                                                  SearchQueryDisplay="{Binding SearchQueryDisplay}"
@@ -115,6 +121,72 @@
                                                  NoResultsVisible="{Binding NoResultsVisible}"
                                                  Width="640"
                                                  Height="500" />
+
+                    <Border Grid.Column="1"
+                            Background="{StaticResource PanelBackgroundBrush}"
+                            BorderBrush="{StaticResource PanelBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12"
+                            Margin="12,0,0,0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       Text="{Binding TopStatsTitle}"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,10" />
+
+                            <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                                <TextBlock Text="Scope"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           Margin="0,0,0,4" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="Me" Click="TopStatsScopeMeButton_Click" />
+                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="Guild" Click="TopStatsScopeGuildButton_Click" />
+                                </StackPanel>
+
+                                <TextBlock Text="Window"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           Margin="0,6,0,4" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="1D" Click="TopStatsDays1Button_Click" />
+                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="7D" Click="TopStatsDays7Button_Click" />
+                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="30D" Click="TopStatsDays30Button_Click" />
+                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="All" Click="TopStatsDaysAllButton_Click" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Grid Grid.Row="2">
+                                <TextBlock Text="{Binding TopStatsStatusText}"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           Margin="0,0,0,8" />
+                                <ScrollViewer Margin="0,22,0,0"
+                                              VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding TopClipStats}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button Style="{StaticResource TopClipStatButtonStyle}"
+                                                        Content="{Binding DisplayText}"
+                                                        Tag="{Binding Trigger}"
+                                                        Click="TopClipStatsItemButton_Click" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
+                        </Grid>
+                    </Border>
                 </Grid>
 
             </Grid>
