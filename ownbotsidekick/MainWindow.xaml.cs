@@ -87,7 +87,6 @@ namespace ownbotsidekick
             _overlayController = new OverlayController(
                 overlayPanelBorder: OverlayPanelBorder,
                 diagnostics: _diagnostics,
-                resetSearchState: ResetSearchState,
                 setOverlayVisible: value => _viewModel.IsOverlayVisible = value,
                 setTopmost: value => Topmost = value
             );
@@ -177,6 +176,7 @@ namespace ownbotsidekick
 
             if (result.ShouldHideOverlay)
             {
+                ResetSearchState();
                 _overlayController.Hide("Overlay hidden after random clip play.");
             }
 
@@ -383,6 +383,7 @@ namespace ownbotsidekick
 
             if (result.ShouldHideOverlay)
             {
+                ResetSearchState();
                 _overlayController.Hide("Overlay hidden after clip play.");
             }
 
@@ -483,7 +484,7 @@ namespace ownbotsidekick
         {
             if (_overlayController.IsVisible)
             {
-                _overlayController.Hide("Overlay hidden.");
+                HideOverlayWithConditionalSearchReset("Overlay hidden.");
                 return;
             }
 
@@ -570,7 +571,7 @@ namespace ownbotsidekick
         {
             if (virtualKey == _hideOverlayVirtualKey)
             {
-                _overlayController.Hide("Overlay hidden.");
+                HideOverlayWithConditionalSearchReset("Overlay hidden.");
                 return true;
             }
 
@@ -631,6 +632,18 @@ namespace ownbotsidekick
             }
 
             return null;
+        }
+
+        private void HideOverlayWithConditionalSearchReset(string logMessage)
+        {
+            var hasQuery = !string.IsNullOrEmpty(_clipSearchState.Query);
+            var hasResults = _clipSearchState.FilteredTriggers.Count > 0;
+            if (!hasQuery || !hasResults)
+            {
+                ResetSearchState();
+            }
+
+            _overlayController.Hide(logMessage);
         }
 
         private static HotkeyModifiers ParseModifiers(string configuredModifiers)

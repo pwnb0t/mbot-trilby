@@ -21,7 +21,6 @@ namespace ownbotsidekick.Services
 
         private readonly Border _overlayPanelBorder;
         private readonly OverlayDiagnostics _diagnostics;
-        private readonly Action _resetSearchState;
         private readonly Action<bool> _setOverlayVisible;
         private readonly Action<bool> _setTopmost;
         private IntPtr _windowHandle = IntPtr.Zero;
@@ -29,14 +28,12 @@ namespace ownbotsidekick.Services
         public OverlayController(
             Border overlayPanelBorder,
             OverlayDiagnostics diagnostics,
-            Action resetSearchState,
             Action<bool> setOverlayVisible,
             Action<bool> setTopmost
         )
         {
             _overlayPanelBorder = overlayPanelBorder;
             _diagnostics = diagnostics;
-            _resetSearchState = resetSearchState;
             _setOverlayVisible = setOverlayVisible;
             _setTopmost = setTopmost;
         }
@@ -75,7 +72,6 @@ namespace ownbotsidekick.Services
 
         public void Show(OverlayShowSource source, bool topmost)
         {
-            _resetSearchState();
             _setOverlayVisible(true);
             IsVisible = true;
             SetOverlayInteractionEnabled(true);
@@ -97,7 +93,6 @@ namespace ownbotsidekick.Services
                 return;
             }
 
-            _resetSearchState();
             _setOverlayVisible(false);
             IsVisible = false;
             SetOverlayInteractionEnabled(false);
