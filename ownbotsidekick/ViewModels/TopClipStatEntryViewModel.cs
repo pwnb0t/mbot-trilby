@@ -2,13 +2,13 @@ namespace ownbotsidekick.ViewModels
 {
     internal sealed class TopClipStatEntryViewModel
     {
-        public TopClipStatEntryViewModel(string trigger, string displayText)
+        public TopClipStatEntryViewModel(string trigger, string playCountText)
         {
             Trigger = trigger;
-            DisplayText = displayText;
+            PlayCountText = playCountText;
         }
 
         public string Trigger { get; }
-        public string DisplayText { get; }
+        public string PlayCountText { get; }
     }
 }

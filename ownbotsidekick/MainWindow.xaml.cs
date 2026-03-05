@@ -138,6 +138,7 @@ namespace ownbotsidekick
             }
 
             _overlayController.ApplyOverlayPanelLayout();
+            UpdateTopStatsFilterButtonVisuals();
         }
 
         private async void QuickPlay1Button_Click(object sender, RoutedEventArgs e)
@@ -395,7 +396,7 @@ namespace ownbotsidekick
 
         private async System.Threading.Tasks.Task LoadTopClipStatsAsync(string reason)
         {
-            UpdateTopStatsHeader();
+            UpdateTopStatsFilterButtonVisuals();
 
             if (_sidekickApiClient is null)
             {
@@ -415,16 +416,16 @@ namespace ownbotsidekick
                 );
 
                 var rows = catalog.Rows
-                    .Select((row, index) => new TopClipStatEntryViewModel(
+                    .Select(row => new TopClipStatEntryViewModel(
                         row.Trigger,
-                        $"{index + 1}. {row.Trigger}  ({row.PlayCount})"
+                        row.PlayCount == 1 ? "1 play" : $"{row.PlayCount} plays"
                     ))
                     .ToArray();
 
                 _viewModel.TopClipStats = rows;
                 _viewModel.TopStatsStatusText = rows.Length == 0
                     ? "No plays in this window yet."
-                    : $"{rows.Length} of top {TopClipStatsLimit} shown";
+                    : string.Empty;
             }
             catch (Exception ex)
             {
@@ -434,17 +435,18 @@ namespace ownbotsidekick
             }
         }
 
-        private void UpdateTopStatsHeader()
+        private void UpdateTopStatsFilterButtonVisuals()
         {
-            var scope = _topClipStatsGuildWide ? "Guild" : "Me";
-            var window = _topClipStatsDays switch
-            {
-                "1" => "1D",
-                "7" => "7D",
-                "30" => "30D",
-                _ => "All"
-            };
-            _viewModel.TopStatsTitle = $"Top Clips ({scope}, {window})";
+            var defaultStyle = (Style)FindResource("StatsFilterButtonStyle");
+            var selectedStyle = (Style)FindResource("StatsFilterButtonSelectedStyle");
+
+            TopStatsScopeMeButton.Style = _topClipStatsGuildWide ? defaultStyle : selectedStyle;
+            TopStatsScopeServerButton.Style = _topClipStatsGuildWide ? selectedStyle : defaultStyle;
+
+            TopStatsDays1Button.Style = _topClipStatsDays == "1" ? selectedStyle : defaultStyle;
+            TopStatsDays7Button.Style = _topClipStatsDays == "7" ? selectedStyle : defaultStyle;
+            TopStatsDays30Button.Style = _topClipStatsDays == "30" ? selectedStyle : defaultStyle;
+            TopStatsDaysAllButton.Style = _topClipStatsDays == "all" ? selectedStyle : defaultStyle;
         }
 
         private void RegisterOverlayHotkey(IntPtr hwnd)

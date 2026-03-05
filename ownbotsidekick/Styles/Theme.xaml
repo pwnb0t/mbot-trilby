@@ -31,8 +31,8 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="8">
-                        <ContentPresenter HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                           Margin="{TemplateBinding Padding}" />
                     </Border>
                     <ControlTemplate.Triggers>
@@ -74,13 +74,23 @@
         <Setter Property="MinWidth" Value="38" />
     </Style>
 
+    <Style x:Key="StatsFilterButtonSelectedStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource StatsFilterButtonStyle}">
+        <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    </Style>
+
     <Style x:Key="TopClipStatButtonStyle"
            TargetType="Button"
-           BasedOn="{StaticResource TopBarButtonStyle}">
-        <Setter Property="HorizontalContentAlignment" Value="Left" />
-        <Setter Property="Padding" Value="10,7" />
+           BasedOn="{StaticResource ClipButtonStyle}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="10,9" />
         <Setter Property="Margin" Value="0,0,0,6" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Foreground" Value="{StaticResource ClipButtonTextBrush}" />
+        <Setter Property="MinHeight" Value="62" />
     </Style>
 </ResourceDictionary>

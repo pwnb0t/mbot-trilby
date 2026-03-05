@@ -149,8 +149,14 @@
                                            FontSize="12"
                                            Margin="0,0,0,4" />
                                 <StackPanel Orientation="Horizontal">
-                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="Me" Click="TopStatsScopeMeButton_Click" />
-                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="Guild" Click="TopStatsScopeGuildButton_Click" />
+                                    <Button x:Name="TopStatsScopeMeButton"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="Just me"
+                                            Click="TopStatsScopeMeButton_Click" />
+                                    <Button x:Name="TopStatsScopeServerButton"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="Everyone"
+                                            Click="TopStatsScopeGuildButton_Click" />
                                 </StackPanel>
 
                                 <TextBlock Text="Window"
@@ -158,10 +164,22 @@
                                            FontSize="12"
                                            Margin="0,6,0,4" />
                                 <StackPanel Orientation="Horizontal">
-                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="1D" Click="TopStatsDays1Button_Click" />
-                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="7D" Click="TopStatsDays7Button_Click" />
-                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="30D" Click="TopStatsDays30Button_Click" />
-                                    <Button Style="{StaticResource StatsFilterButtonStyle}" Content="All" Click="TopStatsDaysAllButton_Click" />
+                                    <Button x:Name="TopStatsDays1Button"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="1D"
+                                            Click="TopStatsDays1Button_Click" />
+                                    <Button x:Name="TopStatsDays7Button"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="7D"
+                                            Click="TopStatsDays7Button_Click" />
+                                    <Button x:Name="TopStatsDays30Button"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="30D"
+                                            Click="TopStatsDays30Button_Click" />
+                                    <Button x:Name="TopStatsDaysAllButton"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="All time"
+                                            Click="TopStatsDaysAllButton_Click" />
                                 </StackPanel>
                             </StackPanel>
 
@@ -170,6 +188,12 @@
                                            Foreground="{StaticResource TextSecondaryBrush}"
                                            FontSize="12"
                                            Margin="0,0,0,8" />
+                                <Border Height="1"
+                                        Width="90"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Top"
+                                        Margin="0,22,0,0"
+                                        Background="{StaticResource PanelBorderBrush}" />
                                 <ScrollViewer Margin="0,22,0,0"
                                               VerticalScrollBarVisibility="Auto"
                                               HorizontalScrollBarVisibility="Disabled">
@@ -177,9 +201,28 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Button Style="{StaticResource TopClipStatButtonStyle}"
-                                                        Content="{Binding DisplayText}"
                                                         Tag="{Binding Trigger}"
-                                                        Click="TopClipStatsItemButton_Click" />
+                                                        Click="TopClipStatsItemButton_Click">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <TextBlock Grid.Row="0"
+                                                                   Text="{Binding Trigger}"
+                                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                                   FontSize="14"
+                                                                   FontWeight="SemiBold"
+                                                                   VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Grid.Row="1"
+                                                                   Text="{Binding PlayCountText}"
+                                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                                   FontSize="11"
+                                                                   FontWeight="Normal"
+                                                                   HorizontalAlignment="Right" />
+                                                    </Grid>
+                                                </Button>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
