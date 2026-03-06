@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Documents;
+using ownbotsidekick.Search;
 
 namespace ownbotsidekick.Controls
 {
@@ -15,9 +17,9 @@ namespace ownbotsidekick.Controls
 
         public static readonly DependencyProperty VisibleClipsProperty = DependencyProperty.Register(
             nameof(VisibleClips),
-            typeof(IReadOnlyList<string>),
+            typeof(IReadOnlyList<ClipSearchResult>),
             typeof(SearchPanelControl),
-            new PropertyMetadata(Array.Empty<string>(), OnVisibleClipsChanged)
+            new PropertyMetadata(Array.Empty<ClipSearchResult>(), OnVisibleClipsChanged)
         );
 
         public static readonly DependencyProperty NoResultsVisibleProperty = DependencyProperty.Register(
@@ -40,9 +42,9 @@ namespace ownbotsidekick.Controls
             set => SetValue(SearchQueryDisplayProperty, value);
         }
 
-        public IReadOnlyList<string> VisibleClips
+        public IReadOnlyList<ClipSearchResult> VisibleClips
         {
-            get => (IReadOnlyList<string>)GetValue(VisibleClipsProperty);
+            get => (IReadOnlyList<ClipSearchResult>)GetValue(VisibleClipsProperty);
             set => SetValue(VisibleClipsProperty, value);
         }
 
@@ -62,20 +64,20 @@ namespace ownbotsidekick.Controls
         {
             var control = (SearchPanelControl)d;
             control.SearchResultsGrid.Children.Clear();
-            var clips = e.NewValue as IReadOnlyList<string>;
+            var clips = e.NewValue as IReadOnlyList<ClipSearchResult>;
             if (clips is null)
             {
                 return;
             }
 
-            foreach (var trigger in clips)
+            foreach (var clip in clips)
             {
                 var button = new System.Windows.Controls.Button
                 {
-                    Content = trigger,
+                    Content = CreateHighlightedContent(clip),
                     Style = (Style)control.FindResource("ClipButtonStyle")
                 };
-                button.Click += (_, _) => control.ClipSelected?.Invoke(control, trigger);
+                button.Click += (_, _) => control.ClipSelected?.Invoke(control, clip.Trigger);
                 control.SearchResultsGrid.Children.Add(button);
             }
         }
@@ -85,6 +87,25 @@ namespace ownbotsidekick.Controls
             var control = (SearchPanelControl)d;
             var isVisible = e.NewValue is bool b && b;
             control.NoResultsTextBlock.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private static System.Windows.Controls.TextBlock CreateHighlightedContent(ClipSearchResult clip)
+        {
+            var textBlock = new System.Windows.Controls.TextBlock();
+            var accentBrush = (System.Windows.Media.Brush)System.Windows.Application.Current.FindResource("AccentBrush");
+            foreach (var segment in clip.Segments)
+            {
+                var run = new Run(segment.Text);
+                if (segment.IsMatch)
+                {
+                    run.FontWeight = FontWeights.SemiBold;
+                    run.Foreground = accentBrush;
+                }
+
+                textBlock.Inlines.Add(run);
+            }
+
+            return textBlock;
         }
     }
 }

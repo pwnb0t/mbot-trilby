@@ -632,12 +632,12 @@ namespace ownbotsidekick
         private void RenderSearchState()
         {
             var query = _clipSearchState.Query;
-            var filteredTriggers = _clipSearchState.FilteredTriggers;
+            var filteredResults = _clipSearchState.FilteredResults;
             _viewModel.SearchQueryDisplay = string.IsNullOrEmpty(query)
                 ? "Start typing to search..."
                 : query;
-            _viewModel.VisibleClips = filteredTriggers.ToArray();
-            _viewModel.NoResultsVisible = !string.IsNullOrEmpty(query) && filteredTriggers.Count == 0;
+            _viewModel.VisibleClips = filteredResults.ToArray();
+            _viewModel.NoResultsVisible = !string.IsNullOrEmpty(query) && filteredResults.Count == 0;
         }
 
         private async System.Threading.Tasks.Task PlayFirstFilteredResultAsync()
@@ -762,7 +762,7 @@ namespace ownbotsidekick
         private void HideOverlayWithConditionalSearchReset(string logMessage)
         {
             var hasQuery = !string.IsNullOrEmpty(_clipSearchState.Query);
-            var hasResults = _clipSearchState.FilteredTriggers.Count > 0;
+            var hasResults = _clipSearchState.FilteredResults.Count > 0;
             if (!hasQuery || !hasResults)
             {
                 ResetSearchState();

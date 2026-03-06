@@ -15,9 +15,9 @@ namespace ownbotsidekick.Tests.Search
             state.AppendCharacter('t');
             state.AppendCharacter('e');
 
-            Assert.Equal(2, state.FilteredTriggers.Count);
-            Assert.Contains("TestOne", state.FilteredTriggers);
-            Assert.Contains("testTwo", state.FilteredTriggers);
+            Assert.Equal(2, state.FilteredResults.Count);
+            Assert.Contains(state.FilteredResults, result => result.Trigger == "TestOne");
+            Assert.Contains(state.FilteredResults, result => result.Trigger == "testTwo");
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace ownbotsidekick.Tests.Search
 
             state.AppendCharacter('t');
 
-            Assert.Equal(15, state.FilteredTriggers.Count);
+            Assert.Equal(15, state.FilteredResults.Count);
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace ownbotsidekick.Tests.Search
             state.ClearQuery();
 
             Assert.Equal(string.Empty, state.Query);
-            Assert.Empty(state.FilteredTriggers);
+            Assert.Empty(state.FilteredResults);
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace ownbotsidekick.Tests.Search
 
             Assert.True(removed);
             Assert.Equal("a", state.Query);
-            Assert.Equal(3, state.FilteredTriggers.Count);
+            Assert.Equal(3, state.FilteredResults.Count);
         }
 
         [Fact]
@@ -68,6 +68,49 @@ namespace ownbotsidekick.Tests.Search
             state.AppendCharacter('t');
 
             Assert.Equal("test-a", state.FirstResultOrDefault());
+        }
+
+        [Fact]
+        public void Ranks_StartsWith_Matches_Before_Substring_Matches()
+        {
+            var state = new ClipSearchState(maxVisibleResults: 15);
+            state.SetSource(new[] { "zest", "test", "best", "esther" });
+
+            state.AppendCharacter('e');
+            state.AppendCharacter('s');
+            state.AppendCharacter('t');
+
+            var triggers = state.FilteredResults.Select(result => result.Trigger).ToArray();
+
+            Assert.Equal(new[] { "esther", "best", "test", "zest" }, triggers);
+        }
+
+        [Fact]
+        public void Highlights_Only_First_Matching_Substring()
+        {
+            var state = new ClipSearchState(maxVisibleResults: 15);
+            state.SetSource(new[] { "testtest" });
+
+            state.AppendCharacter('t');
+            state.AppendCharacter('e');
+            state.AppendCharacter('s');
+            state.AppendCharacter('t');
+
+            var result = Assert.Single(state.FilteredResults);
+
+            Assert.Collection(
+                result.Segments,
+                segment =>
+                {
+                    Assert.Equal("test", segment.Text);
+                    Assert.True(segment.IsMatch);
+                },
+                segment =>
+                {
+                    Assert.Equal("test", segment.Text);
+                    Assert.False(segment.IsMatch);
+                }
+            );
         }
     }
 }

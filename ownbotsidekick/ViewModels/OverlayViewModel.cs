@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using ownbotsidekick.Search;
 
 namespace ownbotsidekick.ViewModels
 {
@@ -11,7 +12,7 @@ namespace ownbotsidekick.ViewModels
         private string _clipCountText = "Clips: 0";
         private string _searchQueryDisplay = "Start typing to search...";
         private bool _noResultsVisible;
-        private IReadOnlyList<string> _visibleClips = new List<string>();
+        private IReadOnlyList<ClipSearchResult> _visibleClips = new List<ClipSearchResult>();
         private string _topStatsTitle = "Top Clips";
         private string _topStatsStatusText = "Loading...";
         private IReadOnlyList<TopClipStatEntryViewModel> _topClipStats = new List<TopClipStatEntryViewModel>();
@@ -55,7 +56,7 @@ namespace ownbotsidekick.ViewModels
             set => SetField(ref _noResultsVisible, value);
         }
 
-        public IReadOnlyList<string> VisibleClips
+        public IReadOnlyList<ClipSearchResult> VisibleClips
         {
             get => _visibleClips;
             set => SetField(ref _visibleClips, value);
