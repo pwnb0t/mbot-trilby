@@ -19,6 +19,7 @@ namespace ownbotsidekick.ViewModels
         private string _recentStatsTitle = "Recently Played";
         private string _recentStatsStatusText = "Loading...";
         private IReadOnlyList<RecentClipEntryViewModel> _recentClipStats = new List<RecentClipEntryViewModel>();
+        private IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots = new List<QuickPlaySlotViewModel>();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -96,6 +97,12 @@ namespace ownbotsidekick.ViewModels
         {
             get => _recentClipStats;
             set => SetField(ref _recentClipStats, value);
+        }
+
+        public IReadOnlyList<QuickPlaySlotViewModel> QuickPlaySlots
+        {
+            get => _quickPlaySlots;
+            set => SetField(ref _quickPlaySlots, value);
         }
 
         private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

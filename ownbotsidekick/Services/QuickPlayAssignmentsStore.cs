@@ -9,6 +9,11 @@ namespace ownbotsidekick.Services
         public string? Slot1Trigger { get; set; }
         public string? Slot2Trigger { get; set; }
         public string? Slot3Trigger { get; set; }
+        public string? Slot4Trigger { get; set; }
+        public string? Slot5Trigger { get; set; }
+        public string? Slot6Trigger { get; set; }
+        public string? Slot7Trigger { get; set; }
+        public string? Slot8Trigger { get; set; }
 
         public static QuickPlayAssignments CreateEmpty()
         {
@@ -16,8 +21,60 @@ namespace ownbotsidekick.Services
             {
                 Slot1Trigger = null,
                 Slot2Trigger = null,
-                Slot3Trigger = null
+                Slot3Trigger = null,
+                Slot4Trigger = null,
+                Slot5Trigger = null,
+                Slot6Trigger = null,
+                Slot7Trigger = null,
+                Slot8Trigger = null
             };
+        }
+
+        public string? GetTrigger(int slotIndex)
+        {
+            return slotIndex switch
+            {
+                1 => Slot1Trigger,
+                2 => Slot2Trigger,
+                3 => Slot3Trigger,
+                4 => Slot4Trigger,
+                5 => Slot5Trigger,
+                6 => Slot6Trigger,
+                7 => Slot7Trigger,
+                8 => Slot8Trigger,
+                _ => null
+            };
+        }
+
+        public void SetTrigger(int slotIndex, string? trigger)
+        {
+            switch (slotIndex)
+            {
+                case 1:
+                    Slot1Trigger = trigger;
+                    break;
+                case 2:
+                    Slot2Trigger = trigger;
+                    break;
+                case 3:
+                    Slot3Trigger = trigger;
+                    break;
+                case 4:
+                    Slot4Trigger = trigger;
+                    break;
+                case 5:
+                    Slot5Trigger = trigger;
+                    break;
+                case 6:
+                    Slot6Trigger = trigger;
+                    break;
+                case 7:
+                    Slot7Trigger = trigger;
+                    break;
+                case 8:
+                    Slot8Trigger = trigger;
+                    break;
+            }
         }
     }
 

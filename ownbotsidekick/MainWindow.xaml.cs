@@ -45,6 +45,7 @@ namespace ownbotsidekick
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
         private readonly QuickPlayAssignmentsStore _quickPlayAssignmentsStore;
         private readonly QuickPlayAssignments _quickPlayAssignments;
+        private readonly IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots;
         private string _topClipStatsDays = "7";
         private bool _topClipStatsGuildWide;
         private bool _quickPlayDragActive;
@@ -97,6 +98,10 @@ namespace ownbotsidekick
             var userStateDirectory = Path.GetDirectoryName(logDirectory) ?? logDirectory;
             _quickPlayAssignmentsStore = new QuickPlayAssignmentsStore(userStateDirectory);
             _quickPlayAssignments = _quickPlayAssignmentsStore.Load();
+            _quickPlaySlots = Enumerable.Range(1, 8)
+                .Select(slotIndex => new QuickPlaySlotViewModel(slotIndex))
+                .ToArray();
+            _viewModel.QuickPlaySlots = _quickPlaySlots;
             _diagnostics = new OverlayDiagnostics(_logFilePath);
             _overlayController = new OverlayController(
                 overlayPanelBorder: OverlayPanelBorder,
@@ -122,7 +127,7 @@ namespace ownbotsidekick
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             RenderSearchState();
-            UpdateQuickPlayButtons();
+            UpdateQuickPlaySlots();
 
             Log("m'bot Trilby loaded.");
             Log($"Hotkey: {DescribeHotkey(_settings.Hotkey)}");
@@ -134,9 +139,10 @@ namespace ownbotsidekick
                 Log("Warning: SidekickApi.ApiToken is empty. API calls will fail with 401.");
             }
             Log(
-                $"Quick play triggers: 1={DescribeQuickPlaySlot(_quickPlayAssignments.Slot1Trigger)}, " +
-                $"2={DescribeQuickPlaySlot(_quickPlayAssignments.Slot2Trigger)}, " +
-                $"3={DescribeQuickPlaySlot(_quickPlayAssignments.Slot3Trigger)}"
+                string.Join(
+                    ", ",
+                    _quickPlaySlots.Select(slot => $"{slot.SlotIndex}={DescribeQuickPlaySlot(slot.Trigger)}")
+                )
             );
             Log($"Sidekick requester user id: {_settings.SidekickApi.RequestingUserId}");
             if (_sidekickApiClient is not null)
@@ -168,19 +174,15 @@ namespace ownbotsidekick
             UpdateRecentClipTimeTexts();
         }
 
-        private async void QuickPlay1Button_Click(object sender, RoutedEventArgs e)
+        private async void QuickPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            await PlayQuickPlaySlotAsync("Quick Play 1", _quickPlayAssignments.Slot1Trigger);
-        }
+            var slot = TryGetQuickPlaySlot(sender);
+            if (slot is null)
+            {
+                return;
+            }
 
-        private async void QuickPlay2Button_Click(object sender, RoutedEventArgs e)
-        {
-            await PlayQuickPlaySlotAsync("Quick Play 2", _quickPlayAssignments.Slot2Trigger);
-        }
-
-        private async void QuickPlay3Button_Click(object sender, RoutedEventArgs e)
-        {
-            await PlayQuickPlaySlotAsync("Quick Play 3", _quickPlayAssignments.Slot3Trigger);
+            await PlayQuickPlaySlotAsync($"Quick Play {slot.SlotIndex}", slot.Trigger);
         }
 
         private async void RefreshClipsButton_Click(object sender, RoutedEventArgs e)
@@ -243,7 +245,7 @@ namespace ownbotsidekick
                 _quickPlayDragHoverSlot = 0;
             }
 
-            UpdateQuickPlayButtons();
+            UpdateQuickPlaySlots();
         }
 
         private async void TopClipStatsItemButton_Click(object sender, RoutedEventArgs e)
@@ -339,13 +341,13 @@ namespace ownbotsidekick
 
             _quickPlayDragHoverSlot = GetQuickPlaySlotIndex(sender);
             e.Effects = System.Windows.DragDropEffects.Copy;
-            UpdateQuickPlayButtons();
+            UpdateQuickPlaySlots();
         }
 
         private void QuickPlayButton_DragLeave(object sender, System.Windows.DragEventArgs e)
         {
             _quickPlayDragHoverSlot = 0;
-            UpdateQuickPlayButtons();
+            UpdateQuickPlaySlots();
         }
 
         private void QuickPlayButton_DragOver(object sender, System.Windows.DragEventArgs e)
@@ -356,19 +358,9 @@ namespace ownbotsidekick
             e.Handled = true;
         }
 
-        private void QuickPlay1Button_Drop(object sender, System.Windows.DragEventArgs e)
+        private void QuickPlayButton_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            HandleQuickPlayDrop(1, e);
-        }
-
-        private void QuickPlay2Button_Drop(object sender, System.Windows.DragEventArgs e)
-        {
-            HandleQuickPlayDrop(2, e);
-        }
-
-        private void QuickPlay3Button_Drop(object sender, System.Windows.DragEventArgs e)
-        {
-            HandleQuickPlayDrop(3, e);
+            HandleQuickPlayDrop(GetQuickPlaySlotIndex(sender), e);
         }
 
         private void Log(string message)
@@ -872,20 +864,20 @@ namespace ownbotsidekick
             _quickPlayDragHoverSlot = 0;
             if (!e.Data.GetDataPresent(QuickPlayDragDrop.ClipTriggerFormat))
             {
-                UpdateQuickPlayButtons();
+                UpdateQuickPlaySlots();
                 return;
             }
 
             var trigger = e.Data.GetData(QuickPlayDragDrop.ClipTriggerFormat) as string;
             if (string.IsNullOrWhiteSpace(trigger))
             {
-                UpdateQuickPlayButtons();
+                UpdateQuickPlaySlots();
                 return;
             }
 
             SetQuickPlayTrigger(slotIndex, trigger.Trim());
             SaveQuickPlayAssignments();
-            UpdateQuickPlayButtons();
+            UpdateQuickPlaySlots();
             Log($"Assigned quick play slot {slotIndex} -> {trigger.Trim()}");
         }
 
@@ -915,70 +907,14 @@ namespace ownbotsidekick
             }
         }
 
-        private void UpdateQuickPlayButtons()
+        private void UpdateQuickPlaySlots()
         {
-            UpdateQuickPlayButton(
-                slotIndex: 1,
-                button: QuickPlay1Button,
-                triggerTextBlock: QuickPlay1TriggerTextBlock,
-                trigger: _quickPlayAssignments.Slot1Trigger
-            );
-            UpdateQuickPlayButton(
-                slotIndex: 2,
-                button: QuickPlay2Button,
-                triggerTextBlock: QuickPlay2TriggerTextBlock,
-                trigger: _quickPlayAssignments.Slot2Trigger
-            );
-            UpdateQuickPlayButton(
-                slotIndex: 3,
-                button: QuickPlay3Button,
-                triggerTextBlock: QuickPlay3TriggerTextBlock,
-                trigger: _quickPlayAssignments.Slot3Trigger
-            );
-        }
-
-        private void UpdateQuickPlayButton(
-            int slotIndex,
-            System.Windows.Controls.Button button,
-            System.Windows.Controls.TextBlock triggerTextBlock,
-            string? trigger
-        )
-        {
-            var hasTrigger = !string.IsNullOrWhiteSpace(trigger);
-            var isHoveredDropTarget = _quickPlayDragActive && _quickPlayDragHoverSlot == slotIndex;
-            var isAvailableDropTarget = _quickPlayDragActive && !isHoveredDropTarget;
-
-            triggerTextBlock.Text = hasTrigger ? trigger : "Drop a clip here";
-
-            if (isHoveredDropTarget)
+            foreach (var slot in _quickPlaySlots)
             {
-                button.Background = (System.Windows.Media.Brush)FindResource("ButtonBackgroundHoverBrush");
-                button.BorderBrush = (System.Windows.Media.Brush)FindResource("AccentBrush");
-                triggerTextBlock.Foreground = (System.Windows.Media.Brush)FindResource("TextPrimaryBrush");
-                return;
+                slot.Trigger = _quickPlayAssignments.GetTrigger(slot.SlotIndex);
+                slot.IsDragHoverTarget = _quickPlayDragActive && _quickPlayDragHoverSlot == slot.SlotIndex;
+                slot.IsDragAvailableTarget = _quickPlayDragActive && _quickPlayDragHoverSlot != slot.SlotIndex;
             }
-
-            if (isAvailableDropTarget)
-            {
-                button.Background = (System.Windows.Media.Brush)FindResource("ButtonBackgroundBrush");
-                button.BorderBrush = (System.Windows.Media.Brush)FindResource("ButtonBorderHoverBrush");
-                triggerTextBlock.Foreground = (System.Windows.Media.Brush)FindResource("TextPrimaryBrush");
-                return;
-            }
-
-            if (hasTrigger)
-            {
-                button.Background = (System.Windows.Media.Brush)FindResource("ButtonBackgroundBrush");
-                button.BorderBrush = (System.Windows.Media.Brush)FindResource("ButtonBorderBrush");
-                triggerTextBlock.Foreground = (System.Windows.Media.Brush)FindResource("TextPrimaryBrush");
-                return;
-            }
-
-            button.Background = new System.Windows.Media.SolidColorBrush(
-                System.Windows.Media.Color.FromArgb(0xAA, 0x1C, 0x24, 0x30)
-            );
-            button.BorderBrush = (System.Windows.Media.Brush)FindResource("PanelBorderBrush");
-            triggerTextBlock.Foreground = (System.Windows.Media.Brush)FindResource("TextSecondaryBrush");
         }
 
         private void SaveQuickPlayAssignments()
@@ -988,18 +924,7 @@ namespace ownbotsidekick
 
         private void SetQuickPlayTrigger(int slotIndex, string trigger)
         {
-            switch (slotIndex)
-            {
-                case 1:
-                    _quickPlayAssignments.Slot1Trigger = trigger;
-                    break;
-                case 2:
-                    _quickPlayAssignments.Slot2Trigger = trigger;
-                    break;
-                case 3:
-                    _quickPlayAssignments.Slot3Trigger = trigger;
-                    break;
-            }
+            _quickPlayAssignments.SetTrigger(slotIndex, trigger);
         }
 
         private static int GetQuickPlaySlotIndex(object sender)
@@ -1011,11 +936,21 @@ namespace ownbotsidekick
 
             return button.Name switch
             {
-                nameof(QuickPlay1Button) => 1,
-                nameof(QuickPlay2Button) => 2,
-                nameof(QuickPlay3Button) => 3,
+                _ when button.Tag is int slotIndex => slotIndex,
+                _ when button.Tag is string slotIndexText && int.TryParse(slotIndexText, out var parsedSlotIndex) => parsedSlotIndex,
                 _ => 0
             };
+        }
+
+        private QuickPlaySlotViewModel? TryGetQuickPlaySlot(object sender)
+        {
+            var slotIndex = GetQuickPlaySlotIndex(sender);
+            if (slotIndex <= 0)
+            {
+                return null;
+            }
+
+            return _quickPlaySlots.FirstOrDefault(slot => slot.SlotIndex == slotIndex);
         }
 
         private static string DescribeQuickPlaySlot(string? trigger)
