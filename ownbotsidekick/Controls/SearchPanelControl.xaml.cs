@@ -10,6 +10,9 @@ namespace ownbotsidekick.Controls
 {
     public partial class SearchPanelControl : System.Windows.Controls.UserControl
     {
+        private System.Windows.Point? _dragStartPoint;
+        private System.Windows.Controls.Button? _dragSourceButton;
+
         public static readonly DependencyProperty SearchQueryDisplayProperty = DependencyProperty.Register(
             nameof(SearchQueryDisplay),
             typeof(string),
@@ -82,6 +85,8 @@ namespace ownbotsidekick.Controls
                     Tag = clip.Trigger
                 };
                 button.Click += (_, _) => control.ClipSelected?.Invoke(control, clip.Trigger);
+                button.PreviewMouseLeftButtonDown += control.SearchResultButton_PreviewMouseLeftButtonDown;
+                button.PreviewMouseLeftButtonUp += control.SearchResultButton_PreviewMouseLeftButtonUp;
                 button.PreviewMouseMove += control.SearchResultButton_PreviewMouseMove;
                 control.SearchResultsGrid.Children.Add(button);
             }
@@ -113,6 +118,23 @@ namespace ownbotsidekick.Controls
             return textBlock;
         }
 
+        private void SearchResultButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not System.Windows.Controls.Button button)
+            {
+                return;
+            }
+
+            _dragSourceButton = button;
+            _dragStartPoint = e.GetPosition(this);
+        }
+
+        private void SearchResultButton_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _dragSourceButton = null;
+            _dragStartPoint = null;
+        }
+
         private void SearchResultButton_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed)
@@ -122,8 +144,21 @@ namespace ownbotsidekick.Controls
 
             if (
                 sender is not System.Windows.Controls.Button button ||
+                _dragSourceButton != button ||
+                _dragStartPoint is null ||
                 button.Tag is not string trigger ||
                 string.IsNullOrWhiteSpace(trigger)
+            )
+            {
+                return;
+            }
+
+            var currentPosition = e.GetPosition(this);
+            var horizontalDistance = Math.Abs(currentPosition.X - _dragStartPoint.Value.X);
+            var verticalDistance = Math.Abs(currentPosition.Y - _dragStartPoint.Value.Y);
+            if (
+                horizontalDistance < SystemParameters.MinimumHorizontalDragDistance &&
+                verticalDistance < SystemParameters.MinimumVerticalDragDistance
             )
             {
                 return;
@@ -137,6 +172,8 @@ namespace ownbotsidekick.Controls
             }
             finally
             {
+                _dragSourceButton = null;
+                _dragStartPoint = null;
                 ClipDragStateChanged?.Invoke(this, false);
             }
         }
