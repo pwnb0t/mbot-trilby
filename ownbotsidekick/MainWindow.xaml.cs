@@ -514,6 +514,17 @@ namespace ownbotsidekick
             await PlayClipAsync(slotName, trigger);
         }
 
+        private async System.Threading.Tasks.Task PlayQuickPlaySlotByIndexAsync(int slotIndex)
+        {
+            var slot = _quickPlaySlots.FirstOrDefault(item => item.SlotIndex == slotIndex);
+            if (slot is null)
+            {
+                return;
+            }
+
+            await PlayQuickPlaySlotAsync($"Quick Play {slot.SlotIndex}", slot.Trigger);
+        }
+
         private async System.Threading.Tasks.Task LoadTopClipStatsAsync(string reason)
         {
             UpdateTopStatsFilterButtonVisuals();
@@ -738,8 +749,18 @@ namespace ownbotsidekick
             await PlayClipAsync(first, first);
         }
 
-        private bool HandleOverlayKeyDown(int virtualKey)
+        private bool HandleOverlayKeyDown(int virtualKey, bool isAltDown)
         {
+            if (isAltDown)
+            {
+                var quickPlaySlotIndex = TryGetQuickPlaySlotIndexFromAltHotkey(virtualKey);
+                if (quickPlaySlotIndex > 0)
+                {
+                    _ = PlayQuickPlaySlotByIndexAsync(quickPlaySlotIndex);
+                    return true;
+                }
+            }
+
             if (virtualKey == _hideOverlayVirtualKey)
             {
                 HideOverlayWithConditionalSearchReset("Overlay hidden.");
@@ -803,6 +824,16 @@ namespace ownbotsidekick
             }
 
             return null;
+        }
+
+        private static int TryGetQuickPlaySlotIndexFromAltHotkey(int virtualKey)
+        {
+            if (virtualKey >= 0x31 && virtualKey <= 0x38)
+            {
+                return virtualKey - 0x30;
+            }
+
+            return 0;
         }
 
         private static string FormatTimeAgo(string playedAtUtc)

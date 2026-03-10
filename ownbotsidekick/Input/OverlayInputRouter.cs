@@ -13,12 +13,13 @@ namespace ownbotsidekick.Input
         private const int WhMouseLl = 14;
         private const int WmKeyDown = 0x0100;
         private const int WmSysKeyDown = 0x0104;
+        private const int LlkhfAltdown = 0x20;
         private const int WmLButtonDown = 0x0201;
         private const int WmRButtonDown = 0x0204;
         private const int WmMButtonDown = 0x0207;
 
         private readonly Func<bool> _isOverlayVisible;
-        private readonly Func<int, bool> _handleOverlayVirtualKey;
+        private readonly Func<int, bool, bool> _handleOverlayVirtualKey;
         private readonly Func<System.Windows.Point, bool> _isPointInsideOverlayPanel;
         private readonly Action _onOutsideClick;
         private readonly OverlayDiagnostics _diagnostics;
@@ -31,7 +32,7 @@ namespace ownbotsidekick.Input
 
         public OverlayInputRouter(
             Func<bool> isOverlayVisible,
-            Func<int, bool> handleOverlayVirtualKey,
+            Func<int, bool, bool> handleOverlayVirtualKey,
             Func<System.Windows.Point, bool> isPointInsideOverlayPanel,
             Action onOutsideClick,
             OverlayDiagnostics diagnostics,
@@ -110,7 +111,8 @@ namespace ownbotsidekick.Input
             }
 
             var keyboardData = Marshal.PtrToStructure<KbdLlHookStruct>(lParam);
-            var handled = _handleOverlayVirtualKey(keyboardData.VkCode);
+            var isAltDown = message == WmSysKeyDown || (keyboardData.Flags & LlkhfAltdown) != 0;
+            var handled = _handleOverlayVirtualKey(keyboardData.VkCode, isAltDown);
             if (handled)
             {
                 return (IntPtr)1;
