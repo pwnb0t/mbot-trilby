@@ -124,7 +124,7 @@ namespace ownbotsidekick
             {
                 Log("Warning: SidekickApi.ApiToken is empty. API calls will fail with 401.");
             }
-            Log($"Quick play triggers: 1={_settings.SidekickApi.QuickPlay1Trigger}, 2={_settings.SidekickApi.QuickPlay2Trigger}, 3={_settings.SidekickApi.QuickPlay3Trigger}");
+            Log($"Quick play triggers: 1={_settings.QuickPlay.Trigger1}, 2={_settings.QuickPlay.Trigger2}, 3={_settings.QuickPlay.Trigger3}");
             Log($"Sidekick requester user id: {_settings.SidekickApi.RequestingUserId}");
             if (_sidekickApiClient is not null)
             {
@@ -157,17 +157,17 @@ namespace ownbotsidekick
 
         private async void QuickPlay1Button_Click(object sender, RoutedEventArgs e)
         {
-            await PlayClipAsync("Quick Play 1", _settings.SidekickApi.QuickPlay1Trigger);
+            await PlayClipAsync("Quick Play 1", _settings.QuickPlay.Trigger1);
         }
 
         private async void QuickPlay2Button_Click(object sender, RoutedEventArgs e)
         {
-            await PlayClipAsync("Quick Play 2", _settings.SidekickApi.QuickPlay2Trigger);
+            await PlayClipAsync("Quick Play 2", _settings.QuickPlay.Trigger2);
         }
 
         private async void QuickPlay3Button_Click(object sender, RoutedEventArgs e)
         {
-            await PlayClipAsync("Quick Play 3", _settings.SidekickApi.QuickPlay3Trigger);
+            await PlayClipAsync("Quick Play 3", _settings.QuickPlay.Trigger3);
         }
 
         private async void RefreshClipsButton_Click(object sender, RoutedEventArgs e)
