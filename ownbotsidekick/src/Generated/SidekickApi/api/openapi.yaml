@@ -518,11 +518,13 @@ components:
           type: string
         requester_user_id:
           exclusiveMinimum: true
+          format: int64
           minimum: 0.0
-          nullable: true
+          title: Requester User Id
           type: integer
       required:
       - guild_id
+      - requester_user_id
       - trigger
       title: PlayClipRequest
     PlayClipResponse:
@@ -579,11 +581,13 @@ components:
           type: string
         requester_user_id:
           exclusiveMinimum: true
+          format: int64
           minimum: 0.0
-          nullable: true
+          title: Requester User Id
           type: integer
       required:
       - guild_id
+      - requester_user_id
       title: PlayRandomClipRequest
     PlayRandomClipResponse:
       example:
@@ -693,6 +697,7 @@ components:
     StopClipRequest:
       example:
         guild_id: 0
+        requester_user_id: 0
         request_id: request_id
       properties:
         guild_id:
@@ -704,8 +709,15 @@ components:
         request_id:
           nullable: true
           type: string
+        requester_user_id:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0.0
+          title: Requester User Id
+          type: integer
       required:
       - guild_id
+      - requester_user_id
       title: StopClipRequest
     StopClipResponse:
       example:

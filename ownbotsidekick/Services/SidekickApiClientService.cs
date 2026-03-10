@@ -28,6 +28,13 @@ namespace ownbotsidekick.Services
             _guildId = guildId;
             _requestingUserId = requestingUserId;
             _apiTokenHeaderValue = apiToken;
+            if (_requestingUserId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(requestingUserId),
+                    "Sidekick RequestingUserId must be configured to a positive Discord user id.");
+            }
+
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri(baseUrl, UriKind.Absolute)
@@ -205,10 +212,9 @@ namespace ownbotsidekick.Services
 
         public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
         {
-            var request = new PlayClipRequest(_guildId, trigger)
+            var request = new PlayClipRequest(_guildId, trigger, _requestingUserId)
             {
-                RequestId = $"play:{Guid.NewGuid():N}",
-                RequesterUserId = _requestingUserId > 0 ? _requestingUserId : null
+                RequestId = $"play:{Guid.NewGuid():N}"
             };
 
             var response = await _api.PlayClipAsync(request, cancellationToken).ConfigureAwait(false);
@@ -250,10 +256,9 @@ namespace ownbotsidekick.Services
 
         public async Task<string> PlayRandomClipAsync(CancellationToken cancellationToken = default)
         {
-            var request = new PlayRandomClipRequest(_guildId)
+            var request = new PlayRandomClipRequest(_guildId, _requestingUserId)
             {
-                RequestId = $"random:{Guid.NewGuid():N}",
-                RequesterUserId = _requestingUserId > 0 ? _requestingUserId : null
+                RequestId = $"random:{Guid.NewGuid():N}"
             };
 
             var response = await _api.PlayRandomClipAsync(request, cancellationToken).ConfigureAwait(false);
@@ -290,7 +295,7 @@ namespace ownbotsidekick.Services
 
         public async Task<string> StopClipAsync(CancellationToken cancellationToken = default)
         {
-            var request = new StopClipRequest(_guildId)
+            var request = new StopClipRequest(_guildId, _requestingUserId)
             {
                 RequestId = Guid.NewGuid().ToString("N")
             };

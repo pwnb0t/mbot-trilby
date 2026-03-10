@@ -34,14 +34,14 @@ namespace SidekickApi.Model
         /// Initializes a new instance of the <see cref="PlayRandomClipRequest" /> class.
         /// </summary>
         /// <param name="guildId">guildId</param>
-        /// <param name="requestId">requestId</param>
         /// <param name="requesterUserId">requesterUserId</param>
+        /// <param name="requestId">requestId</param>
         [JsonConstructor]
-        public PlayRandomClipRequest(long guildId, Option<string?> requestId = default, Option<long?> requesterUserId = default)
+        public PlayRandomClipRequest(long guildId, long requesterUserId, Option<string?> requestId = default)
         {
             GuildId = guildId;
+            RequesterUserId = requesterUserId;
             RequestIdOption = requestId;
-            RequesterUserIdOption = requesterUserId;
             OnCreated();
         }
 
@@ -52,6 +52,12 @@ namespace SidekickApi.Model
         /// </summary>
         [JsonPropertyName("guild_id")]
         public long GuildId { get; set; }
+
+        /// <summary>
+        /// Gets or Sets RequesterUserId
+        /// </summary>
+        [JsonPropertyName("requester_user_id")]
+        public long RequesterUserId { get; set; }
 
         /// <summary>
         /// Used to track the state of RequestId
@@ -67,19 +73,6 @@ namespace SidekickApi.Model
         public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
-        /// Used to track the state of RequesterUserId
-        /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<long?> RequesterUserIdOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets RequesterUserId
-        /// </summary>
-        [JsonPropertyName("requester_user_id")]
-        public long? RequesterUserId { get { return this.RequesterUserIdOption; } set { this.RequesterUserIdOption = new(value); } }
-
-        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -88,8 +81,8 @@ namespace SidekickApi.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class PlayRandomClipRequest {\n");
             sb.Append("  GuildId: ").Append(GuildId).Append("\n");
-            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("  RequesterUserId: ").Append(RequesterUserId).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -108,7 +101,7 @@ namespace SidekickApi.Model
             }
 
             // RequesterUserId (long) minimum
-            if (this.RequesterUserIdOption.IsSet && this.RequesterUserIdOption.Value < (long)0)
+            if (this.RequesterUserId < (long)0)
             {
                 yield return new ValidationResult("Invalid value for RequesterUserId, must be a value greater than 0.", new [] { "RequesterUserId" });
             }
@@ -140,8 +133,8 @@ namespace SidekickApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<long?> guildId = default;
-            Option<string?> requestId = default;
             Option<long?> requesterUserId = default;
+            Option<string?> requestId = default;
 
             while (utf8JsonReader.Read())
             {
@@ -161,11 +154,11 @@ namespace SidekickApi.Model
                         case "guild_id":
                             guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
                             break;
+                        case "requester_user_id":
+                            requesterUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            break;
                         case "request_id":
                             requestId = new Option<string?>(utf8JsonReader.GetString());
-                            break;
-                        case "requester_user_id":
-                            requesterUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
                         default:
                             break;
@@ -176,10 +169,16 @@ namespace SidekickApi.Model
             if (!guildId.IsSet)
                 throw new ArgumentException("Property is required for class PlayRandomClipRequest.", nameof(guildId));
 
+            if (!requesterUserId.IsSet)
+                throw new ArgumentException("Property is required for class PlayRandomClipRequest.", nameof(requesterUserId));
+
             if (guildId.IsSet && guildId.Value == null)
                 throw new ArgumentNullException(nameof(guildId), "Property is not nullable for class PlayRandomClipRequest.");
 
-            return new PlayRandomClipRequest(guildId.Value!.Value!, requestId, requesterUserId);
+            if (requesterUserId.IsSet && requesterUserId.Value == null)
+                throw new ArgumentNullException(nameof(requesterUserId), "Property is not nullable for class PlayRandomClipRequest.");
+
+            return new PlayRandomClipRequest(guildId.Value!.Value!, requesterUserId.Value!.Value!, requestId);
         }
 
         /// <summary>
@@ -208,17 +207,13 @@ namespace SidekickApi.Model
         {
             writer.WriteNumber("guild_id", playRandomClipRequest.GuildId);
 
+            writer.WriteNumber("requester_user_id", playRandomClipRequest.RequesterUserId);
+
             if (playRandomClipRequest.RequestIdOption.IsSet)
                 if (playRandomClipRequest.RequestIdOption.Value != null)
                     writer.WriteString("request_id", playRandomClipRequest.RequestId);
                 else
                     writer.WriteNull("request_id");
-
-            if (playRandomClipRequest.RequesterUserIdOption.IsSet)
-                if (playRandomClipRequest.RequesterUserIdOption.Value != null)
-                    writer.WriteNumber("requester_user_id", playRandomClipRequest.RequesterUserIdOption.Value!.Value);
-                else
-                    writer.WriteNull("requester_user_id");
         }
     }
 }
