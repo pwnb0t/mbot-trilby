@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Threading;
 using ownbotsidekick.Configuration;
 using ownbotsidekick.Controls;
 using ownbotsidekick.Input;
@@ -31,6 +32,7 @@ namespace ownbotsidekick
         private const int MaxVisibleSearchResults = 15;
         private const int TopClipStatsLimit = 10;
         private const int RecentClipStatsLimit = 10;
+        private static readonly TimeSpan RecentClipTimeRefreshInterval = TimeSpan.FromSeconds(15);
 
         private readonly string _logFilePath;
         private readonly AppSettings _settings;
@@ -51,6 +53,7 @@ namespace ownbotsidekick
         private ClipPlaybackCoordinator? _clipPlaybackCoordinator;
         private OverlayDiagnostics? _diagnostics;
         private readonly OverlayController _overlayController;
+        private readonly DispatcherTimer _recentClipTimeRefreshTimer;
         private TrayController? _trayController;
         private OverlayInputRouter? _overlayInputRouter;
 
@@ -93,6 +96,11 @@ namespace ownbotsidekick
                 setOverlayVisible: value => _viewModel.IsOverlayVisible = value,
                 setTopmost: value => Topmost = value
             );
+            _recentClipTimeRefreshTimer = new DispatcherTimer
+            {
+                Interval = RecentClipTimeRefreshInterval
+            };
+            _recentClipTimeRefreshTimer.Tick += RecentClipTimeRefreshTimer_Tick;
             _trayController = new TrayController(
                 diagnostics: _diagnostics,
                 showOverlay: ShowOverlayFromTray,
@@ -144,6 +152,7 @@ namespace ownbotsidekick
             _overlayController.ApplyOverlayPanelLayout();
             UpdateTopStatsFilterButtonVisuals();
             UpdateRecentStatsFilterButtonVisuals();
+            UpdateRecentClipTimeTexts();
         }
 
         private async void QuickPlay1Button_Click(object sender, RoutedEventArgs e)
@@ -349,6 +358,8 @@ namespace ownbotsidekick
 
             _trayController?.Dispose();
             _trayController = null;
+            _recentClipTimeRefreshTimer.Stop();
+            _recentClipTimeRefreshTimer.Tick -= RecentClipTimeRefreshTimer_Tick;
 
             _sidekickApiClient?.Dispose();
             _sidekickApiClient = null;
@@ -513,6 +524,7 @@ namespace ownbotsidekick
                     .Select(row => new RecentClipEntryViewModel(
                         row.Trigger,
                         row.Trigger,
+                        row.PlayedAtUtc,
                         FormatTimeAgo(row.PlayedAtUtc),
                         row.Mode == "random"
                     ))
@@ -520,6 +532,7 @@ namespace ownbotsidekick
 
                 _viewModel.RecentClipStats = rows;
                 _viewModel.RecentStatsStatusText = rows.Length == 0 ? "No recent plays yet." : string.Empty;
+                UpdateRecentClipTimeTexts();
             }
             catch (Exception ex)
             {
@@ -577,7 +590,7 @@ namespace ownbotsidekick
                 return;
             }
 
-            _overlayController.Show(OverlayShowSource.Standard, _settings.Overlay.Topmost);
+            ShowOverlay(OverlayShowSource.Standard);
         }
 
         private void ShowOverlayFromTray()
@@ -587,7 +600,7 @@ namespace ownbotsidekick
                 return;
             }
 
-            _overlayController.Show(OverlayShowSource.Tray, _settings.Overlay.Topmost);
+            ShowOverlay(OverlayShowSource.Tray);
         }
 
         private void HideOverlayFromTray()
@@ -736,9 +749,14 @@ namespace ownbotsidekick
                 delta = TimeSpan.Zero;
             }
 
+            if (delta.TotalSeconds < 15)
+            {
+                return "Just now";
+            }
+
             if (delta.TotalMinutes < 1)
             {
-                return "just now";
+                return "<1m ago";
             }
 
             if (delta.TotalHours < 1)
@@ -768,7 +786,34 @@ namespace ownbotsidekick
                 ResetSearchState();
             }
 
+            _recentClipTimeRefreshTimer.Stop();
             _overlayController.Hide(logMessage);
+        }
+
+        private void ShowOverlay(OverlayShowSource source)
+        {
+            UpdateRecentClipTimeTexts();
+            _overlayController.Show(source, _settings.Overlay.Topmost);
+            _recentClipTimeRefreshTimer.Start();
+        }
+
+        private void RecentClipTimeRefreshTimer_Tick(object? sender, EventArgs e)
+        {
+            if (!_overlayController.IsVisible)
+            {
+                _recentClipTimeRefreshTimer.Stop();
+                return;
+            }
+
+            UpdateRecentClipTimeTexts();
+        }
+
+        private void UpdateRecentClipTimeTexts()
+        {
+            foreach (var row in _viewModel.RecentClipStats)
+            {
+                row.PlayedAgoText = FormatTimeAgo(row.PlayedAtUtc);
+            }
         }
 
         private static HotkeyModifiers ParseModifiers(string configuredModifiers)
