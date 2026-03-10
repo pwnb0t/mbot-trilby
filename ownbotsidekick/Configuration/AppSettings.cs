@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace ownbotsidekick.Configuration
 {
     internal sealed class AppSettings
@@ -7,7 +5,6 @@ namespace ownbotsidekick.Configuration
         public HotkeySettings Hotkey { get; set; } = new();
         public OverlaySettings Overlay { get; set; } = new();
         public SidekickApiSettings SidekickApi { get; set; } = new();
-        public QuickPlaySettings QuickPlay { get; set; } = new();
         public InputBindingsSettings InputBindings { get; set; } = new();
     }
 
@@ -30,22 +27,6 @@ namespace ownbotsidekick.Configuration
         public string ApiToken { get; set; } = string.Empty;
         public long GuildId { get; set; }
         public long RequestingUserId { get; set; }
-    }
-
-    internal sealed class QuickPlaySettings
-    {
-        public string Trigger1 { get; set; } = "clip-a";
-        public string Trigger2 { get; set; } = "clip-b";
-        public string Trigger3 { get; set; } = "clip-c";
-
-        [JsonPropertyName("ClipATrigger")]
-        public string LegacyClipATrigger { set => Trigger1 = value; }
-
-        [JsonPropertyName("ClipBTrigger")]
-        public string LegacyClipBTrigger { set => Trigger2 = value; }
-
-        [JsonPropertyName("ClipCTrigger")]
-        public string LegacyClipCTrigger { set => Trigger3 = value; }
     }
 
     internal sealed class InputBindingsSettings

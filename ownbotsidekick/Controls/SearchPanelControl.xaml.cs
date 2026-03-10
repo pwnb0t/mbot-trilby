@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Input;
 using ownbotsidekick.Search;
+using ownbotsidekick.Services;
 
 namespace ownbotsidekick.Controls
 {
@@ -30,6 +32,7 @@ namespace ownbotsidekick.Controls
         );
 
         public event EventHandler<string>? ClipSelected;
+        public event EventHandler<bool>? ClipDragStateChanged;
 
         public SearchPanelControl()
         {
@@ -75,9 +78,11 @@ namespace ownbotsidekick.Controls
                 var button = new System.Windows.Controls.Button
                 {
                     Content = CreateHighlightedContent(clip),
-                    Style = (Style)control.FindResource("ClipButtonStyle")
+                    Style = (Style)control.FindResource("ClipButtonStyle"),
+                    Tag = clip.Trigger
                 };
                 button.Click += (_, _) => control.ClipSelected?.Invoke(control, clip.Trigger);
+                button.PreviewMouseMove += control.SearchResultButton_PreviewMouseMove;
                 control.SearchResultsGrid.Children.Add(button);
             }
         }
@@ -106,6 +111,34 @@ namespace ownbotsidekick.Controls
             }
 
             return textBlock;
+        }
+
+        private void SearchResultButton_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                return;
+            }
+
+            if (
+                sender is not System.Windows.Controls.Button button ||
+                button.Tag is not string trigger ||
+                string.IsNullOrWhiteSpace(trigger)
+            )
+            {
+                return;
+            }
+
+            ClipDragStateChanged?.Invoke(this, true);
+            try
+            {
+                var dragData = new System.Windows.DataObject(QuickPlayDragDrop.ClipTriggerFormat, trigger);
+                DragDrop.DoDragDrop(button, dragData, System.Windows.DragDropEffects.Copy);
+            }
+            finally
+            {
+                ClipDragStateChanged?.Invoke(this, false);
+            }
         }
     }
 }

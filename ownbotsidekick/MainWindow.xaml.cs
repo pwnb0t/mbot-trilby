@@ -43,8 +43,12 @@ namespace ownbotsidekick
         private readonly OverlayViewModel _viewModel = new();
         private readonly List<string> _allClipTriggers = new();
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
+        private readonly QuickPlayAssignmentsStore _quickPlayAssignmentsStore;
+        private readonly QuickPlayAssignments _quickPlayAssignments;
         private string _topClipStatsDays = "7";
         private bool _topClipStatsGuildWide;
+        private bool _quickPlayDragActive;
+        private int _quickPlayDragHoverSlot;
         private bool _recentStatsGuildWide;
         private bool _recentStatsIncludeRandom = true;
         private bool _hotkeyRegistered;
@@ -62,6 +66,7 @@ namespace ownbotsidekick
             InitializeComponent();
             DataContext = _viewModel;
             SearchPanel.ClipSelected += SearchPanel_ClipSelected;
+            SearchPanel.ClipDragStateChanged += SearchPanel_ClipDragStateChanged;
 
             _settings = AppSettingsLoader.LoadFromBaseDirectory(AppContext.BaseDirectory);
             Topmost = _settings.Overlay.Topmost;
@@ -89,6 +94,9 @@ namespace ownbotsidekick
             );
             Directory.CreateDirectory(logDirectory);
             _logFilePath = Path.Combine(logDirectory, "overlay.log");
+            var userStateDirectory = Path.GetDirectoryName(logDirectory) ?? logDirectory;
+            _quickPlayAssignmentsStore = new QuickPlayAssignmentsStore(userStateDirectory);
+            _quickPlayAssignments = _quickPlayAssignmentsStore.Load();
             _diagnostics = new OverlayDiagnostics(_logFilePath);
             _overlayController = new OverlayController(
                 overlayPanelBorder: OverlayPanelBorder,
@@ -114,6 +122,7 @@ namespace ownbotsidekick
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             RenderSearchState();
+            UpdateQuickPlayButtons();
 
             Log("m'bot Trilby loaded.");
             Log($"Hotkey: {DescribeHotkey(_settings.Hotkey)}");
@@ -124,7 +133,11 @@ namespace ownbotsidekick
             {
                 Log("Warning: SidekickApi.ApiToken is empty. API calls will fail with 401.");
             }
-            Log($"Quick play triggers: 1={_settings.QuickPlay.Trigger1}, 2={_settings.QuickPlay.Trigger2}, 3={_settings.QuickPlay.Trigger3}");
+            Log(
+                $"Quick play triggers: 1={DescribeQuickPlaySlot(_quickPlayAssignments.Slot1Trigger)}, " +
+                $"2={DescribeQuickPlaySlot(_quickPlayAssignments.Slot2Trigger)}, " +
+                $"3={DescribeQuickPlaySlot(_quickPlayAssignments.Slot3Trigger)}"
+            );
             Log($"Sidekick requester user id: {_settings.SidekickApi.RequestingUserId}");
             if (_sidekickApiClient is not null)
             {
@@ -157,17 +170,17 @@ namespace ownbotsidekick
 
         private async void QuickPlay1Button_Click(object sender, RoutedEventArgs e)
         {
-            await PlayClipAsync("Quick Play 1", _settings.QuickPlay.Trigger1);
+            await PlayQuickPlaySlotAsync("Quick Play 1", _quickPlayAssignments.Slot1Trigger);
         }
 
         private async void QuickPlay2Button_Click(object sender, RoutedEventArgs e)
         {
-            await PlayClipAsync("Quick Play 2", _settings.QuickPlay.Trigger2);
+            await PlayQuickPlaySlotAsync("Quick Play 2", _quickPlayAssignments.Slot2Trigger);
         }
 
         private async void QuickPlay3Button_Click(object sender, RoutedEventArgs e)
         {
-            await PlayClipAsync("Quick Play 3", _settings.QuickPlay.Trigger3);
+            await PlayQuickPlaySlotAsync("Quick Play 3", _quickPlayAssignments.Slot3Trigger);
         }
 
         private async void RefreshClipsButton_Click(object sender, RoutedEventArgs e)
@@ -220,6 +233,17 @@ namespace ownbotsidekick
         private async void SearchPanel_ClipSelected(object? sender, string trigger)
         {
             await PlayClipAsync(trigger, trigger);
+        }
+
+        private void SearchPanel_ClipDragStateChanged(object? sender, bool isDragging)
+        {
+            _quickPlayDragActive = isDragging;
+            if (!isDragging)
+            {
+                _quickPlayDragHoverSlot = 0;
+            }
+
+            UpdateQuickPlayButtons();
         }
 
         private async void TopClipStatsItemButton_Click(object sender, RoutedEventArgs e)
@@ -303,6 +327,48 @@ namespace ownbotsidekick
         private void CloseOverlayButton_Click(object sender, RoutedEventArgs e)
         {
             _overlayController.Hide("Overlay hidden from close button.");
+        }
+
+        private void QuickPlayButton_DragEnter(object sender, System.Windows.DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(QuickPlayDragDrop.ClipTriggerFormat))
+            {
+                e.Effects = System.Windows.DragDropEffects.None;
+                return;
+            }
+
+            _quickPlayDragHoverSlot = GetQuickPlaySlotIndex(sender);
+            e.Effects = System.Windows.DragDropEffects.Copy;
+            UpdateQuickPlayButtons();
+        }
+
+        private void QuickPlayButton_DragLeave(object sender, System.Windows.DragEventArgs e)
+        {
+            _quickPlayDragHoverSlot = 0;
+            UpdateQuickPlayButtons();
+        }
+
+        private void QuickPlayButton_DragOver(object sender, System.Windows.DragEventArgs e)
+        {
+            e.Effects = e.Data.GetDataPresent(QuickPlayDragDrop.ClipTriggerFormat)
+                ? System.Windows.DragDropEffects.Copy
+                : System.Windows.DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void QuickPlay1Button_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            HandleQuickPlayDrop(1, e);
+        }
+
+        private void QuickPlay2Button_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            HandleQuickPlayDrop(2, e);
+        }
+
+        private void QuickPlay3Button_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            HandleQuickPlayDrop(3, e);
         }
 
         private void Log(string message)
@@ -443,6 +509,17 @@ namespace ownbotsidekick
             }
 
             return result.Success;
+        }
+
+        private async System.Threading.Tasks.Task PlayQuickPlaySlotAsync(string slotName, string? trigger)
+        {
+            if (string.IsNullOrWhiteSpace(trigger))
+            {
+                Log($"{slotName} is unassigned.");
+                return;
+            }
+
+            await PlayClipAsync(slotName, trigger);
         }
 
         private async System.Threading.Tasks.Task LoadTopClipStatsAsync(string reason)
@@ -790,6 +867,28 @@ namespace ownbotsidekick
             _overlayController.Hide(logMessage);
         }
 
+        private void HandleQuickPlayDrop(int slotIndex, System.Windows.DragEventArgs e)
+        {
+            _quickPlayDragHoverSlot = 0;
+            if (!e.Data.GetDataPresent(QuickPlayDragDrop.ClipTriggerFormat))
+            {
+                UpdateQuickPlayButtons();
+                return;
+            }
+
+            var trigger = e.Data.GetData(QuickPlayDragDrop.ClipTriggerFormat) as string;
+            if (string.IsNullOrWhiteSpace(trigger))
+            {
+                UpdateQuickPlayButtons();
+                return;
+            }
+
+            SetQuickPlayTrigger(slotIndex, trigger.Trim());
+            SaveQuickPlayAssignments();
+            UpdateQuickPlayButtons();
+            Log($"Assigned quick play slot {slotIndex} -> {trigger.Trim()}");
+        }
+
         private void ShowOverlay(OverlayShowSource source)
         {
             UpdateRecentClipTimeTexts();
@@ -814,6 +913,114 @@ namespace ownbotsidekick
             {
                 row.PlayedAgoText = FormatTimeAgo(row.PlayedAtUtc);
             }
+        }
+
+        private void UpdateQuickPlayButtons()
+        {
+            UpdateQuickPlayButton(
+                slotIndex: 1,
+                button: QuickPlay1Button,
+                triggerTextBlock: QuickPlay1TriggerTextBlock,
+                trigger: _quickPlayAssignments.Slot1Trigger
+            );
+            UpdateQuickPlayButton(
+                slotIndex: 2,
+                button: QuickPlay2Button,
+                triggerTextBlock: QuickPlay2TriggerTextBlock,
+                trigger: _quickPlayAssignments.Slot2Trigger
+            );
+            UpdateQuickPlayButton(
+                slotIndex: 3,
+                button: QuickPlay3Button,
+                triggerTextBlock: QuickPlay3TriggerTextBlock,
+                trigger: _quickPlayAssignments.Slot3Trigger
+            );
+        }
+
+        private void UpdateQuickPlayButton(
+            int slotIndex,
+            System.Windows.Controls.Button button,
+            System.Windows.Controls.TextBlock triggerTextBlock,
+            string? trigger
+        )
+        {
+            var hasTrigger = !string.IsNullOrWhiteSpace(trigger);
+            var isHoveredDropTarget = _quickPlayDragActive && _quickPlayDragHoverSlot == slotIndex;
+            var isAvailableDropTarget = _quickPlayDragActive && !isHoveredDropTarget;
+
+            triggerTextBlock.Text = hasTrigger ? trigger : "Drop a clip here";
+
+            if (isHoveredDropTarget)
+            {
+                button.Background = (System.Windows.Media.Brush)FindResource("ButtonBackgroundHoverBrush");
+                button.BorderBrush = (System.Windows.Media.Brush)FindResource("AccentBrush");
+                triggerTextBlock.Foreground = (System.Windows.Media.Brush)FindResource("TextPrimaryBrush");
+                return;
+            }
+
+            if (isAvailableDropTarget)
+            {
+                button.Background = (System.Windows.Media.Brush)FindResource("ButtonBackgroundBrush");
+                button.BorderBrush = (System.Windows.Media.Brush)FindResource("ButtonBorderHoverBrush");
+                triggerTextBlock.Foreground = (System.Windows.Media.Brush)FindResource("TextPrimaryBrush");
+                return;
+            }
+
+            if (hasTrigger)
+            {
+                button.Background = (System.Windows.Media.Brush)FindResource("ButtonBackgroundBrush");
+                button.BorderBrush = (System.Windows.Media.Brush)FindResource("ButtonBorderBrush");
+                triggerTextBlock.Foreground = (System.Windows.Media.Brush)FindResource("TextPrimaryBrush");
+                return;
+            }
+
+            button.Background = new System.Windows.Media.SolidColorBrush(
+                System.Windows.Media.Color.FromArgb(0xAA, 0x1C, 0x24, 0x30)
+            );
+            button.BorderBrush = (System.Windows.Media.Brush)FindResource("PanelBorderBrush");
+            triggerTextBlock.Foreground = (System.Windows.Media.Brush)FindResource("TextSecondaryBrush");
+        }
+
+        private void SaveQuickPlayAssignments()
+        {
+            _quickPlayAssignmentsStore.Save(_quickPlayAssignments);
+        }
+
+        private void SetQuickPlayTrigger(int slotIndex, string trigger)
+        {
+            switch (slotIndex)
+            {
+                case 1:
+                    _quickPlayAssignments.Slot1Trigger = trigger;
+                    break;
+                case 2:
+                    _quickPlayAssignments.Slot2Trigger = trigger;
+                    break;
+                case 3:
+                    _quickPlayAssignments.Slot3Trigger = trigger;
+                    break;
+            }
+        }
+
+        private static int GetQuickPlaySlotIndex(object sender)
+        {
+            if (sender is not System.Windows.Controls.Button button)
+            {
+                return 0;
+            }
+
+            return button.Name switch
+            {
+                nameof(QuickPlay1Button) => 1,
+                nameof(QuickPlay2Button) => 2,
+                nameof(QuickPlay3Button) => 3,
+                _ => 0
+            };
+        }
+
+        private static string DescribeQuickPlaySlot(string? trigger)
+        {
+            return string.IsNullOrWhiteSpace(trigger) ? "<empty>" : trigger;
         }
 
         private static HotkeyModifiers ParseModifiers(string configuredModifiers)

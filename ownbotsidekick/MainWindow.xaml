@@ -58,11 +58,85 @@
                         <UniformGrid Rows="1"
                                      Columns="3"
                                      Width="640"
-                                     Height="86"
                                      HorizontalAlignment="Left">
-                            <Button Style="{StaticResource ClipButtonStyle}" Content="Quick Play 1" Click="QuickPlay1Button_Click" />
-                            <Button Style="{StaticResource ClipButtonStyle}" Content="Quick Play 2" Click="QuickPlay2Button_Click" />
-                            <Button Style="{StaticResource ClipButtonStyle}" Content="Quick Play 3" Click="QuickPlay3Button_Click" />
+                            <StackPanel Margin="4,0">
+                                <TextBlock Text="Alt+1"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,6"
+                                           TextAlignment="Center" />
+                                <Button x:Name="QuickPlay1Button"
+                                        Style="{StaticResource ClipButtonStyle}"
+                                        Height="86"
+                                        Click="QuickPlay1Button_Click"
+                                        AllowDrop="True"
+                                        DragEnter="QuickPlayButton_DragEnter"
+                                        DragLeave="QuickPlayButton_DragLeave"
+                                        DragOver="QuickPlayButton_DragOver"
+                                        Drop="QuickPlay1Button_Drop">
+                                    <StackPanel>
+                                        <TextBlock x:Name="QuickPlay1TriggerTextBlock"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="15"
+                                                   FontWeight="SemiBold"
+                                                   TextAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Margin="4,0">
+                                <TextBlock Text="Alt+2"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,6"
+                                           TextAlignment="Center" />
+                                <Button x:Name="QuickPlay2Button"
+                                        Style="{StaticResource ClipButtonStyle}"
+                                        Height="86"
+                                        Click="QuickPlay2Button_Click"
+                                        AllowDrop="True"
+                                        DragEnter="QuickPlayButton_DragEnter"
+                                        DragLeave="QuickPlayButton_DragLeave"
+                                        DragOver="QuickPlayButton_DragOver"
+                                        Drop="QuickPlay2Button_Drop">
+                                    <StackPanel>
+                                        <TextBlock x:Name="QuickPlay2TriggerTextBlock"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="15"
+                                                   FontWeight="SemiBold"
+                                                   TextAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Margin="4,0">
+                                <TextBlock Text="Alt+3"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,6"
+                                           TextAlignment="Center" />
+                                <Button x:Name="QuickPlay3Button"
+                                        Style="{StaticResource ClipButtonStyle}"
+                                        Height="86"
+                                        Click="QuickPlay3Button_Click"
+                                        AllowDrop="True"
+                                        DragEnter="QuickPlayButton_DragEnter"
+                                        DragLeave="QuickPlayButton_DragLeave"
+                                        DragOver="QuickPlayButton_DragOver"
+                                        Drop="QuickPlay3Button_Drop">
+                                    <StackPanel>
+                                        <TextBlock x:Name="QuickPlay3TriggerTextBlock"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="15"
+                                                   FontWeight="SemiBold"
+                                                   TextAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
                         </UniformGrid>
                     </StackPanel>
 
