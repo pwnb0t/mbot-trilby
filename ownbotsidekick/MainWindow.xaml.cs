@@ -199,16 +199,13 @@ namespace ownbotsidekick
                 return;
             }
 
+            ResetSearchState();
+            _overlayController.Hide("Overlay hidden after random clip play request.");
+
             var result = await _clipPlaybackCoordinator.PlayRandomAsync();
             foreach (var logLine in result.LogLines)
             {
                 Log(logLine);
-            }
-
-            if (result.ShouldHideOverlay)
-            {
-                ResetSearchState();
-                _overlayController.Hide("Overlay hidden after random clip play.");
             }
 
             if (result.Success)
@@ -482,16 +479,13 @@ namespace ownbotsidekick
                 return false;
             }
 
+            ResetSearchState();
+            _overlayController.Hide("Overlay hidden after clip play request.");
+
             var result = await _clipPlaybackCoordinator.PlayClipAsync(clipName, trigger);
             foreach (var logLine in result.LogLines)
             {
                 Log(logLine);
-            }
-
-            if (result.ShouldHideOverlay)
-            {
-                ResetSearchState();
-                _overlayController.Hide("Overlay hidden after clip play.");
             }
 
             if (result.Success)
