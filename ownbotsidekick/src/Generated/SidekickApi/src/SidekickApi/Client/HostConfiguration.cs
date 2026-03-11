@@ -45,6 +45,7 @@ namespace SidekickApi.Client
             _jsonOptions.Converters.Add(new DateOnlyNullableJsonConverter());
             _jsonOptions.Converters.Add(new ApiErrorResponseJsonConverter());
             _jsonOptions.Converters.Add(new ClipSummaryJsonConverter());
+            _jsonOptions.Converters.Add(new GetCurrentIntroResponseJsonConverter());
             _jsonOptions.Converters.Add(new HTTPValidationErrorJsonConverter());
             _jsonOptions.Converters.Add(new HealthResponseJsonConverter());
             _jsonOptions.Converters.Add(new ListClipsResponseJsonConverter());
@@ -55,6 +56,8 @@ namespace SidekickApi.Client
             _jsonOptions.Converters.Add(new PlayRandomClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new RecentClipStatsItemJsonConverter());
             _jsonOptions.Converters.Add(new RecentClipStatsResponseJsonConverter());
+            _jsonOptions.Converters.Add(new SetCurrentIntroRequestJsonConverter());
+            _jsonOptions.Converters.Add(new SetCurrentIntroResponseJsonConverter());
             _jsonOptions.Converters.Add(new StopClipRequestJsonConverter());
             _jsonOptions.Converters.Add(new StopClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new TopClipStatsItemJsonConverter());

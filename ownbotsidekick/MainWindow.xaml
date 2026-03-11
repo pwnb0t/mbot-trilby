@@ -86,7 +86,7 @@
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="420" />
+                            <ColumnDefinition Width="660" />
                         </Grid.ColumnDefinitions>
 
                         <ItemsControl Grid.Column="0"
@@ -166,8 +166,8 @@
 
                             <UniformGrid Grid.Row="0"
                                          Rows="1"
-                                         Columns="2"
-                                         Width="420"
+                                         Columns="3"
+                                         Width="660"
                                          Margin="0,0,0,6">
                                 <TextBlock Text="Alt+-"
                                            Foreground="{StaticResource TextSecondaryBrush}"
@@ -181,16 +181,59 @@
                                            FontWeight="SemiBold"
                                            TextAlignment="Center"
                                            VerticalAlignment="Center" />
+                                <TextBlock Text="Current Intro"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           TextAlignment="Center"
+                                           VerticalAlignment="Center" />
                             </UniformGrid>
 
                             <UniformGrid Grid.Row="1"
                                          Rows="1"
-                                         Columns="2"
-                                         Width="420"
+                                         Columns="3"
+                                         Width="660"
                                          Height="86"
                                          HorizontalAlignment="Right">
                                 <Button Style="{StaticResource ClipButtonStyle}" Content="Play Random" Click="PlayRandomButton_Click" />
                                 <Button Style="{StaticResource ClipButtonStyle}" Content="Stop" Click="StopButton_Click" />
+                                <Button x:Name="CurrentIntroButton"
+                                        DataContext="{Binding CurrentIntroSlot}"
+                                        Click="CurrentIntroButton_Click"
+                                        AllowDrop="True"
+                                        DragEnter="CurrentIntroButton_DragEnter"
+                                        DragLeave="CurrentIntroButton_DragLeave"
+                                        DragOver="CurrentIntroButton_DragOver"
+                                        Drop="CurrentIntroButton_Drop">
+                                    <TextBlock Text="{Binding DisplayText}"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               TextAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <Button.Style>
+                                        <Style TargetType="Button"
+                                               BasedOn="{StaticResource ClipButtonStyle}">
+                                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+                                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+                                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDragHoverTarget}" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsDragAvailableTarget}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsAssigned}" Value="False">
+                                                    <Setter Property="Background" Value="#AA1C2430" />
+                                                    <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}" />
+                                                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </UniformGrid>
                         </Grid>
                     </Grid>

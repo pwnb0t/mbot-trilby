@@ -332,6 +332,64 @@ namespace ownbotsidekick.Services
             return $"Unexpected status: {(int)response.StatusCode} ({response.StatusCode}).";
         }
 
+        public async Task<CurrentIntroState> GetCurrentIntroAsync(CancellationToken cancellationToken = default)
+        {
+            var requestUri =
+                $"/v1/intros/current?guild_id={Uri.EscapeDataString(_guildId.ToString())}&requester_user_id={Uri.EscapeDataString(_requestingUserId.ToString())}";
+            using var response = await _httpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var message = TryReadApiErrorMessage(content) ?? $"HTTP {(int)response.StatusCode} ({response.StatusCode})";
+                throw new InvalidOperationException($"Get current intro failed: {message}");
+            }
+
+            using var document = JsonDocument.Parse(content);
+            var root = document.RootElement;
+            var trigger = root.TryGetProperty("trigger", out var triggerProperty) && triggerProperty.ValueKind != JsonValueKind.Null
+                ? triggerProperty.GetString()
+                : null;
+
+            return new CurrentIntroState(trigger);
+        }
+
+        public async Task<CurrentIntroState> SetCurrentIntroAsync(string trigger, CancellationToken cancellationToken = default)
+        {
+            var request = new SetCurrentIntroRequest(_guildId, _requestingUserId, trigger);
+            var response = await _api.SetCurrentIntroAsync(request, cancellationToken).ConfigureAwait(false);
+
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            {
+                return new CurrentIntroState(ok.Trigger);
+            }
+
+            if (response.IsBadRequest && response.TryBadRequest(out var badRequest) && badRequest is not null)
+            {
+                throw new InvalidOperationException($"Set current intro failed: {badRequest.Message}");
+            }
+
+            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            {
+                throw new InvalidOperationException($"Set current intro failed: {notFound.Message}");
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"Set current intro failed: {internalError.Message}");
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("Set current intro failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"Set current intro failed: unexpected status {(int)response.StatusCode} ({response.StatusCode}).");
+        }
+
         public async Task<string> GetHealthSummaryAsync(CancellationToken cancellationToken = default)
         {
             var response = await _api.GetHealthAsync(cancellationToken).ConfigureAwait(false);
@@ -447,6 +505,17 @@ namespace ownbotsidekick.Services
             public string Trigger { get; }
             public string Mode { get; }
             public string PlayedAtUtc { get; }
+        }
+
+        internal sealed class CurrentIntroState
+        {
+            public CurrentIntroState(string? trigger)
+            {
+                Trigger = string.IsNullOrWhiteSpace(trigger) ? null : trigger.Trim();
+            }
+
+            public string? Trigger { get; }
+            public bool IsAssigned => !string.IsNullOrWhiteSpace(Trigger);
         }
     }
 }

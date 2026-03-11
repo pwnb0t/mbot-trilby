@@ -4,13 +4,55 @@ All URIs are relative to *http://127.0.0.1:28765*
 
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
+| [**GetCurrentIntro**](DefaultApi.md#getcurrentintro) | **GET** /v1/intros/current | Get Current Intro |
 | [**GetHealth**](DefaultApi.md#gethealth) | **GET** /v1/health | Health |
 | [**GetRecentClipStats**](DefaultApi.md#getrecentclipstats) | **GET** /v1/clips/stats/recent | Recent Clip Stats |
 | [**GetTopClipStats**](DefaultApi.md#gettopclipstats) | **GET** /v1/clips/stats/top | Top Clip Stats |
 | [**ListClips**](DefaultApi.md#listclips) | **GET** /v1/clips | List Clips |
 | [**PlayClip**](DefaultApi.md#playclip) | **POST** /v1/clips/play | Play Clip |
 | [**PlayRandomClip**](DefaultApi.md#playrandomclip) | **POST** /v1/clips/play-random | Play Random Clip |
+| [**SetCurrentIntro**](DefaultApi.md#setcurrentintro) | **PUT** /v1/intros/current | Set Current Intro |
 | [**StopClip**](DefaultApi.md#stopclip) | **POST** /v1/clips/stop | Stop Clip |
+
+<a id="getcurrentintro"></a>
+# **GetCurrentIntro**
+> GetCurrentIntroResponse GetCurrentIntro (int guildId, int requesterUserId)
+
+Get Current Intro
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **guildId** | **int** |  |  |
+| **requesterUserId** | **int** |  |  |
+
+### Return type
+
+[**GetCurrentIntroResponse**](GetCurrentIntroResponse.md)
+
+### Authorization
+
+[APIKeyHeader](../README.md#APIKeyHeader)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
+| **400** | Bad request error response. |  -  |
+| **404** | Not found error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
 <a id="gethealth"></a>
 # **GetHealth**
@@ -236,6 +278,45 @@ Play Random Clip
 | **401** | Unauthorized error response. |  -  |
 | **404** | Clip not found error response. |  -  |
 | **409** | Voice not connected error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="setcurrentintro"></a>
+# **SetCurrentIntro**
+> SetCurrentIntroResponse SetCurrentIntro (SetCurrentIntroRequest setCurrentIntroRequest)
+
+Set Current Intro
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **setCurrentIntroRequest** | [**SetCurrentIntroRequest**](SetCurrentIntroRequest.md) |  |  |
+
+### Return type
+
+[**SetCurrentIntroResponse**](SetCurrentIntroResponse.md)
+
+### Authorization
+
+[APIKeyHeader](../README.md#APIKeyHeader)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
+| **400** | Bad request error response. |  -  |
+| **404** | Not found error response. |  -  |
 | **500** | Internal error response. |  -  |
 | **422** | Validation Error |  -  |
 

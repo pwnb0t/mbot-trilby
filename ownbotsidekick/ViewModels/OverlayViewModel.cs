@@ -20,6 +20,7 @@ namespace ownbotsidekick.ViewModels
         private string _recentStatsStatusText = "Loading...";
         private IReadOnlyList<RecentClipEntryViewModel> _recentClipStats = new List<RecentClipEntryViewModel>();
         private IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots = new List<QuickPlaySlotViewModel>();
+        private CurrentIntroSlotViewModel _currentIntroSlot = new();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -103,6 +104,12 @@ namespace ownbotsidekick.ViewModels
         {
             get => _quickPlaySlots;
             set => SetField(ref _quickPlaySlots, value);
+        }
+
+        public CurrentIntroSlotViewModel CurrentIntroSlot
+        {
+            get => _currentIntroSlot;
+            set => SetField(ref _currentIntroSlot, value);
         }
 
         private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

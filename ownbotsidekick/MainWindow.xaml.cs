@@ -50,10 +50,12 @@ namespace ownbotsidekick
         private readonly QuickPlayAssignmentsStore _quickPlayAssignmentsStore;
         private readonly QuickPlayAssignments _quickPlayAssignments;
         private readonly IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots;
+        private readonly CurrentIntroSlotViewModel _currentIntroSlot = new();
         private string _topClipStatsDays = "7";
         private bool _topClipStatsGuildWide;
         private bool _quickPlayDragActive;
         private int _quickPlayDragHoverSlot;
+        private bool _currentIntroDragHover;
         private bool _recentStatsGuildWide;
         private bool _recentStatsIncludeRandom = true;
         private bool _hotkeyRegistered;
@@ -106,6 +108,7 @@ namespace ownbotsidekick
                 .Select(slotIndex => new QuickPlaySlotViewModel(slotIndex))
                 .ToArray();
             _viewModel.QuickPlaySlots = _quickPlaySlots;
+            _viewModel.CurrentIntroSlot = _currentIntroSlot;
             _diagnostics = new OverlayDiagnostics(_logFilePath);
             _overlayController = new OverlayController(
                 overlayPanelBorder: OverlayPanelBorder,
@@ -155,6 +158,7 @@ namespace ownbotsidekick
                 _ = LoadClipCatalogAsync("startup");
                 _ = LoadTopClipStatsAsync("startup");
                 _ = LoadRecentClipStatsAsync("startup");
+                _ = LoadCurrentIntroAsync("startup");
             }
             else
             {
@@ -194,6 +198,7 @@ namespace ownbotsidekick
             await LoadClipCatalogAsync("manual refresh");
             await LoadTopClipStatsAsync("manual refresh");
             await LoadRecentClipStatsAsync("manual refresh");
+            await LoadCurrentIntroAsync("manual refresh");
         }
 
         private async void PlayRandomButton_Click(object sender, RoutedEventArgs e)
@@ -233,6 +238,16 @@ namespace ownbotsidekick
             }
         }
 
+        private async void CurrentIntroButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_currentIntroSlot.IsAssigned || string.IsNullOrWhiteSpace(_currentIntroSlot.Trigger))
+            {
+                return;
+            }
+
+            await PlayClipAsync("Current Intro", _currentIntroSlot.Trigger);
+        }
+
         private async void SearchPanel_ClipSelected(object? sender, string trigger)
         {
             await PlayClipAsync(trigger, trigger);
@@ -244,9 +259,11 @@ namespace ownbotsidekick
             if (!isDragging)
             {
                 _quickPlayDragHoverSlot = 0;
+                _currentIntroDragHover = false;
             }
 
             UpdateQuickPlaySlots();
+            UpdateCurrentIntroSlot();
         }
 
         private async void TopClipStatsItemButton_Click(object sender, RoutedEventArgs e)
@@ -334,7 +351,7 @@ namespace ownbotsidekick
 
         private void QuickPlayButton_DragEnter(object sender, System.Windows.DragEventArgs e)
         {
-            if (!e.Data.GetDataPresent(QuickPlayDragDrop.ClipTriggerFormat))
+            if (!HasClipTriggerDragData(e))
             {
                 e.Effects = System.Windows.DragDropEffects.None;
                 return;
@@ -353,10 +370,69 @@ namespace ownbotsidekick
 
         private void QuickPlayButton_DragOver(object sender, System.Windows.DragEventArgs e)
         {
-            e.Effects = e.Data.GetDataPresent(QuickPlayDragDrop.ClipTriggerFormat)
+            e.Effects = HasClipTriggerDragData(e)
                 ? System.Windows.DragDropEffects.Copy
                 : System.Windows.DragDropEffects.None;
             e.Handled = true;
+        }
+
+        private void CurrentIntroButton_DragEnter(object sender, System.Windows.DragEventArgs e)
+        {
+            if (!HasClipTriggerDragData(e))
+            {
+                e.Effects = System.Windows.DragDropEffects.None;
+                return;
+            }
+
+            _currentIntroDragHover = true;
+            e.Effects = System.Windows.DragDropEffects.Copy;
+            UpdateCurrentIntroSlot();
+        }
+
+        private void CurrentIntroButton_DragLeave(object sender, System.Windows.DragEventArgs e)
+        {
+            _currentIntroDragHover = false;
+            UpdateCurrentIntroSlot();
+        }
+
+        private void CurrentIntroButton_DragOver(object sender, System.Windows.DragEventArgs e)
+        {
+            e.Effects = HasClipTriggerDragData(e)
+                ? System.Windows.DragDropEffects.Copy
+                : System.Windows.DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private async void CurrentIntroButton_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            _currentIntroDragHover = false;
+            var trigger = TryGetDroppedClipTrigger(e);
+            if (string.IsNullOrWhiteSpace(trigger))
+            {
+                UpdateCurrentIntroSlot();
+                return;
+            }
+
+            if (_sidekickApiClient is null)
+            {
+                UpdateCurrentIntroSlot();
+                return;
+            }
+
+            try
+            {
+                var currentIntro = await _sidekickApiClient.SetCurrentIntroAsync(trigger);
+                _currentIntroSlot.Trigger = currentIntro.Trigger;
+                Log($"Assigned current intro -> {trigger}");
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to assign current intro: {ex.Message}");
+            }
+            finally
+            {
+                UpdateCurrentIntroSlot();
+            }
         }
 
         private void QuickPlayButton_Drop(object sender, System.Windows.DragEventArgs e)
@@ -618,6 +694,29 @@ namespace ownbotsidekick
                 _viewModel.RecentStatsStatusText = "Failed to load recents";
                 Log($"Load recent clip stats failed: {ex.Message}");
             }
+        }
+
+        private async System.Threading.Tasks.Task LoadCurrentIntroAsync(string reason)
+        {
+            if (_sidekickApiClient is null)
+            {
+                _currentIntroSlot.Trigger = null;
+                UpdateCurrentIntroSlot();
+                return;
+            }
+
+            try
+            {
+                Log($"Loading current intro ({reason})...");
+                var currentIntro = await _sidekickApiClient.GetCurrentIntroAsync();
+                _currentIntroSlot.Trigger = currentIntro.Trigger;
+            }
+            catch (Exception ex)
+            {
+                Log($"Load current intro failed: {ex.Message}");
+            }
+
+            UpdateCurrentIntroSlot();
         }
 
         private void UpdateRecentStatsFilterButtonVisuals()
@@ -913,23 +1012,17 @@ namespace ownbotsidekick
         private void HandleQuickPlayDrop(int slotIndex, System.Windows.DragEventArgs e)
         {
             _quickPlayDragHoverSlot = 0;
-            if (!e.Data.GetDataPresent(QuickPlayDragDrop.ClipTriggerFormat))
-            {
-                UpdateQuickPlaySlots();
-                return;
-            }
-
-            var trigger = e.Data.GetData(QuickPlayDragDrop.ClipTriggerFormat) as string;
+            var trigger = TryGetDroppedClipTrigger(e);
             if (string.IsNullOrWhiteSpace(trigger))
             {
                 UpdateQuickPlaySlots();
                 return;
             }
 
-            SetQuickPlayTrigger(slotIndex, trigger.Trim());
+            SetQuickPlayTrigger(slotIndex, trigger);
             SaveQuickPlayAssignments();
             UpdateQuickPlaySlots();
-            Log($"Assigned quick play slot {slotIndex} -> {trigger.Trim()}");
+            Log($"Assigned quick play slot {slotIndex} -> {trigger}");
         }
 
         private void ShowOverlay(OverlayShowSource source)
@@ -937,6 +1030,10 @@ namespace ownbotsidekick
             UpdateRecentClipTimeTexts();
             _overlayController.Show(source, _settings.Overlay.Topmost);
             _recentClipTimeRefreshTimer.Start();
+            if (_sidekickApiClient is not null)
+            {
+                _ = LoadCurrentIntroAsync("overlay shown");
+            }
         }
 
         private void RecentClipTimeRefreshTimer_Tick(object? sender, EventArgs e)
@@ -966,6 +1063,12 @@ namespace ownbotsidekick
                 slot.IsDragHoverTarget = _quickPlayDragActive && _quickPlayDragHoverSlot == slot.SlotIndex;
                 slot.IsDragAvailableTarget = _quickPlayDragActive && _quickPlayDragHoverSlot != slot.SlotIndex;
             }
+        }
+
+        private void UpdateCurrentIntroSlot()
+        {
+            _currentIntroSlot.IsDragHoverTarget = _quickPlayDragActive && _currentIntroDragHover;
+            _currentIntroSlot.IsDragAvailableTarget = _quickPlayDragActive && !_currentIntroDragHover;
         }
 
         private void SaveQuickPlayAssignments()
@@ -1007,6 +1110,22 @@ namespace ownbotsidekick
         private static string DescribeQuickPlaySlot(string? trigger)
         {
             return string.IsNullOrWhiteSpace(trigger) ? "<empty>" : trigger;
+        }
+
+        private static bool HasClipTriggerDragData(System.Windows.DragEventArgs e)
+        {
+            return e.Data.GetDataPresent(QuickPlayDragDrop.ClipTriggerFormat);
+        }
+
+        private static string? TryGetDroppedClipTrigger(System.Windows.DragEventArgs e)
+        {
+            if (!HasClipTriggerDragData(e))
+            {
+                return null;
+            }
+
+            var trigger = e.Data.GetData(QuickPlayDragDrop.ClipTriggerFormat) as string;
+            return string.IsNullOrWhiteSpace(trigger) ? null : trigger.Trim();
         }
 
         private static HotkeyModifiers ParseModifiers(string configuredModifiers)

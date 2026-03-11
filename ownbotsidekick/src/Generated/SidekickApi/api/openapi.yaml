@@ -385,6 +385,118 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Recent Clip Stats
+  /v1/intros/current:
+    get:
+      operationId: GetCurrentIntro
+      parameters:
+      - explode: true
+        in: query
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: requester_user_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          minimum: 0
+          title: Requester User Id
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCurrentIntroResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad request error response.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not found error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - APIKeyHeader: []
+      summary: Get Current Intro
+    put:
+      operationId: SetCurrentIntro
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetCurrentIntroRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SetCurrentIntroResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad request error response.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not found error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - APIKeyHeader: []
+      summary: Set Current Intro
 components:
   schemas:
     ApiErrorResponse:
@@ -417,6 +529,32 @@ components:
       required:
       - trigger
       title: ClipSummary
+    GetCurrentIntroResponse:
+      example:
+        guild_id: 0
+        requester_user_id: 6
+        trigger: trigger
+        ok: true
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        requester_user_id:
+          format: int64
+          title: Requester User Id
+          type: integer
+        trigger:
+          nullable: true
+          type: string
+      required:
+      - guild_id
+      - ok
+      - requester_user_id
+      title: GetCurrentIntroResponse
     HTTPValidationError:
       example:
         detail:
@@ -694,6 +832,61 @@ components:
       - ok
       - rows
       title: RecentClipStatsResponse
+    SetCurrentIntroRequest:
+      example:
+        guild_id: 0
+        requester_user_id: 0
+        trigger: trigger
+      properties:
+        guild_id:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0.0
+          title: Guild Id
+          type: integer
+        requester_user_id:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0.0
+          title: Requester User Id
+          type: integer
+        trigger:
+          maxLength: 64
+          minLength: 1
+          title: Trigger
+          type: string
+      required:
+      - guild_id
+      - requester_user_id
+      - trigger
+      title: SetCurrentIntroRequest
+    SetCurrentIntroResponse:
+      example:
+        guild_id: 0
+        requester_user_id: 6
+        trigger: trigger
+        ok: true
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        requester_user_id:
+          format: int64
+          title: Requester User Id
+          type: integer
+        trigger:
+          title: Trigger
+          type: string
+      required:
+      - guild_id
+      - ok
+      - requester_user_id
+      - trigger
+      title: SetCurrentIntroResponse
     StopClipRequest:
       example:
         guild_id: 0
