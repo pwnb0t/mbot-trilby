@@ -23,6 +23,10 @@ namespace ownbotsidekick
         private const int WmHotKey = 0x0312;
         private const int HotkeyId = 1;
         private const int VkBack = 0x08;
+        private const int VkMinus = 0xBD;
+        private const int VkOemMinus = 0xBD;
+        private const int VkEquals = 0xBB;
+        private const int VkOemPlus = 0xBB;
         private const int Vk0 = 0x30;
         private const int Vk9 = 0x39;
         private const int VkA = 0x41;
@@ -753,6 +757,18 @@ namespace ownbotsidekick
                     _ = PlayQuickPlaySlotByIndexAsync(quickPlaySlotIndex);
                     return true;
                 }
+
+                if (IsPlayRandomAltHotkey(virtualKey))
+                {
+                    PlayRandomButton_Click(this, new RoutedEventArgs());
+                    return true;
+                }
+
+                if (IsStopAltHotkey(virtualKey))
+                {
+                    StopButton_Click(this, new RoutedEventArgs());
+                    return true;
+                }
             }
 
             if (virtualKey == _hideOverlayVirtualKey)
@@ -828,6 +844,16 @@ namespace ownbotsidekick
             }
 
             return 0;
+        }
+
+        private static bool IsPlayRandomAltHotkey(int virtualKey)
+        {
+            return virtualKey == VkMinus || virtualKey == VkOemMinus;
+        }
+
+        private static bool IsStopAltHotkey(int virtualKey)
+        {
+            return virtualKey == VkEquals || virtualKey == VkOemPlus;
         }
 
         private static string FormatTimeAgo(string playedAtUtc)

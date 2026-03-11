@@ -164,9 +164,24 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <Grid Grid.Row="0"
-                                  Height="20"
-                                  Margin="0,0,0,6" />
+                            <UniformGrid Grid.Row="0"
+                                         Rows="1"
+                                         Columns="2"
+                                         Width="420"
+                                         Margin="0,0,0,6">
+                                <TextBlock Text="Alt+-"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           TextAlignment="Center"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="Alt+="
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           TextAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </UniformGrid>
 
                             <UniformGrid Grid.Row="1"
                                          Rows="1"
