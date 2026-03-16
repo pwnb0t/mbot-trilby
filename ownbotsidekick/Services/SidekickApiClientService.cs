@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,7 +53,7 @@ namespace ownbotsidekick.Services
 
         public async Task<ClipCatalog> ListClipsAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.ListClipsAsync((int)_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var response = await _api.ListClipsAsync(_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
                 var triggers = ok.Clips
@@ -87,7 +88,7 @@ namespace ownbotsidekick.Services
 
         public async Task<TagCatalog> ListTagsAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.ListTagsAsync((int)_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var response = await _api.ListTagsAsync(_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
                 var tagNames = ok.Tags
@@ -127,50 +128,48 @@ namespace ownbotsidekick.Services
             bool guildWide = false,
             CancellationToken cancellationToken = default)
         {
-            var requesterUserId = guildWide
-                ? default(Option<int?>)
-                : new Option<int?>((int)_requestingUserId);
-            var response = await _api.GetTopClipStatsAsync(
-                (int)_guildId,
-                requesterUserId,
-                days,
-                limit,
-                includeRandom,
+            var queryParts = new List<string>
+            {
+                $"guild_id={Uri.EscapeDataString(_guildId.ToString())}",
+                $"days={Uri.EscapeDataString(days)}",
+                $"limit={Uri.EscapeDataString(limit.ToString())}",
+                $"include_random={Uri.EscapeDataString(includeRandom ? "true" : "false")}"
+            };
+
+            if (!guildWide)
+            {
+                queryParts.Add($"requester_user_id={Uri.EscapeDataString(_requestingUserId.ToString())}");
+            }
+
+            using var document = await GetJsonDocumentAsync(
+                $"/v1/clips/stats/top?{string.Join("&", queryParts)}",
+                "Top clip stats",
                 cancellationToken).ConfigureAwait(false);
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
-            {
-                var rows = ok.Rows
-                    .Where(row => !string.IsNullOrWhiteSpace(row.Trigger))
-                    .Select(row => new TopClipStatsRow(row.Trigger, row.PlayCount, row.LastPlayedAtUtc))
-                    .ToList();
+            var root = document.RootElement;
 
-                return new TopClipStatsCatalog(rows, days, includeRandom, guildWide);
+            var rows = new List<TopClipStatsRow>();
+            if (root.TryGetProperty("rows", out var rowsElement))
+            {
+                foreach (var rowElement in rowsElement.EnumerateArray())
+                {
+                    var trigger = rowElement.TryGetProperty("trigger", out var triggerProperty)
+                        ? triggerProperty.GetString() ?? string.Empty
+                        : string.Empty;
+                    var playCount = rowElement.TryGetProperty("play_count", out var countProperty)
+                        ? countProperty.GetInt32()
+                        : 0;
+                    var lastPlayedAtUtc = rowElement.TryGetProperty("last_played_at_utc", out var lastPlayedProperty)
+                        ? lastPlayedProperty.GetString() ?? string.Empty
+                        : string.Empty;
+
+                    if (!string.IsNullOrWhiteSpace(trigger))
+                    {
+                        rows.Add(new TopClipStatsRow(trigger, playCount, lastPlayedAtUtc));
+                    }
+                }
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
-            {
-                throw new InvalidOperationException($"Top clip stats failed: {unauthorized.Message}");
-            }
-
-            if (response.IsBadRequest && response.TryBadRequest(out var badRequest) && badRequest is not null)
-            {
-                throw new InvalidOperationException($"Top clip stats failed: {badRequest.Message}");
-            }
-
-            if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
-                internalError is not null)
-            {
-                throw new InvalidOperationException($"Top clip stats failed: {internalError.Message}");
-            }
-
-            if (response.IsUnprocessableContent)
-            {
-                throw new InvalidOperationException("Top clip stats failed: validation error (422).");
-            }
-
-            throw new InvalidOperationException(
-                $"Top clip stats failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
+            return new TopClipStatsCatalog(rows, days, includeRandom, guildWide);
         }
 
         public async Task<RecentClipStatsCatalog> GetRecentClipStatsAsync(
@@ -179,47 +178,47 @@ namespace ownbotsidekick.Services
             bool guildWide = false,
             CancellationToken cancellationToken = default)
         {
-            var requesterUserId = guildWide
-                ? default(Option<int?>)
-                : new Option<int?>((int)_requestingUserId);
-            var response = await _api.GetRecentClipStatsAsync(
-                (int)_guildId,
-                requesterUserId,
-                limit,
-                includeRandom,
+            var queryParts = new List<string>
+            {
+                $"guild_id={Uri.EscapeDataString(_guildId.ToString())}",
+                $"limit={Uri.EscapeDataString(limit.ToString())}",
+                $"include_random={Uri.EscapeDataString(includeRandom ? "true" : "false")}"
+            };
+
+            if (!guildWide)
+            {
+                queryParts.Add($"requester_user_id={Uri.EscapeDataString(_requestingUserId.ToString())}");
+            }
+
+            using var document = await GetJsonDocumentAsync(
+                $"/v1/clips/stats/recent?{string.Join("&", queryParts)}",
+                "Recent clip stats",
                 cancellationToken).ConfigureAwait(false);
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
-            {
-                var rows = ok.Rows
-                    .Where(row => !string.IsNullOrWhiteSpace(row.Trigger))
-                    .Select(row => new RecentClipStatsRow(
-                        row.Trigger,
-                        RecentClipStatsItem.ModeEnumToJsonValue(row.Mode),
-                        row.PlayedAtUtc))
-                    .ToList();
+            var root = document.RootElement;
 
-                return new RecentClipStatsCatalog(rows, includeRandom, guildWide);
+            var rows = new List<RecentClipStatsRow>();
+            if (root.TryGetProperty("rows", out var rowsElement))
+            {
+                foreach (var rowElement in rowsElement.EnumerateArray())
+                {
+                    var trigger = rowElement.TryGetProperty("trigger", out var triggerProperty)
+                        ? triggerProperty.GetString() ?? string.Empty
+                        : string.Empty;
+                    var mode = rowElement.TryGetProperty("mode", out var modeProperty)
+                        ? modeProperty.GetString() ?? "direct"
+                        : "direct";
+                    var playedAtUtc = rowElement.TryGetProperty("played_at_utc", out var playedAtProperty)
+                        ? playedAtProperty.GetString() ?? string.Empty
+                        : string.Empty;
+
+                    if (!string.IsNullOrWhiteSpace(trigger))
+                    {
+                        rows.Add(new RecentClipStatsRow(trigger, mode, playedAtUtc));
+                    }
+                }
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
-            {
-                throw new InvalidOperationException($"Recent clip stats failed: {unauthorized.Message}");
-            }
-
-            if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
-                internalError is not null)
-            {
-                throw new InvalidOperationException($"Recent clip stats failed: {internalError.Message}");
-            }
-
-            if (response.IsUnprocessableContent)
-            {
-                throw new InvalidOperationException("Recent clip stats failed: validation error (422).");
-            }
-
-            throw new InvalidOperationException(
-                $"Recent clip stats failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
+            return new RecentClipStatsCatalog(rows, includeRandom, guildWide);
         }
 
         public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
@@ -347,8 +346,8 @@ namespace ownbotsidekick.Services
         public async Task<CurrentIntroState> GetCurrentIntroAsync(CancellationToken cancellationToken = default)
         {
             var response = await _api.GetCurrentIntroAsync(
-                (int)_guildId,
-                (int)_requestingUserId,
+                _guildId,
+                _requestingUserId,
                 cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
@@ -436,6 +435,46 @@ namespace ownbotsidekick.Services
         public void Dispose()
         {
             _serviceProvider.Dispose();
+        }
+
+        private async Task<JsonDocument> GetJsonDocumentAsync(
+            string requestUri,
+            string operationName,
+            CancellationToken cancellationToken)
+        {
+            using var response = await _api.HttpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
+            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var message = TryReadApiErrorMessage(content) ?? $"HTTP {(int)response.StatusCode} ({response.StatusCode})";
+                throw new InvalidOperationException($"{operationName} failed: {message}");
+            }
+
+            return JsonDocument.Parse(content);
+        }
+
+        private static string? TryReadApiErrorMessage(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return null;
+            }
+
+            try
+            {
+                using var document = JsonDocument.Parse(content);
+                if (document.RootElement.TryGetProperty("message", out var messageProperty))
+                {
+                    return messageProperty.GetString();
+                }
+            }
+            catch
+            {
+                return null;
+            }
+
+            return null;
         }
 
         internal sealed class ClipCatalog
