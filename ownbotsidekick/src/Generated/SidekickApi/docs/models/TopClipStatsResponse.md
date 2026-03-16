@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **Limit** | **int** |  | 
 **IncludeRandom** | **bool** |  | 
 **Rows** | [**List&lt;TopClipStatsItem&gt;**](TopClipStatsItem.md) |  | 
-**RequesterUserId** | **int** |  | [optional] 
+**RequesterUserId** | **long** |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

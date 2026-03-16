@@ -243,6 +243,7 @@ paths:
         required: false
         schema:
           exclusiveMinimum: true
+          format: int64
           minimum: 0
           nullable: true
           type: integer
@@ -332,6 +333,7 @@ paths:
         required: false
         schema:
           exclusiveMinimum: true
+          format: int64
           minimum: 0
           nullable: true
           type: integer
@@ -994,6 +996,7 @@ components:
           title: Guild Id
           type: integer
         requester_user_id:
+          format: int64
           nullable: true
           type: integer
         limit:
@@ -1192,6 +1195,7 @@ components:
           title: Guild Id
           type: integer
         requester_user_id:
+          format: int64
           nullable: true
           type: integer
         days:

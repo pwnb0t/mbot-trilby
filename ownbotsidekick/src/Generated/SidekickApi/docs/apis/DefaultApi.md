@@ -88,7 +88,7 @@ No authorization required
 
 <a id="getrecentclipstats"></a>
 # **GetRecentClipStats**
-> RecentClipStatsResponse GetRecentClipStats (long guildId, int requesterUserId = null, int limit = null, bool includeRandom = null)
+> RecentClipStatsResponse GetRecentClipStats (long guildId, long requesterUserId = null, int limit = null, bool includeRandom = null)
 
 Recent Clip Stats
 
@@ -98,7 +98,7 @@ Recent Clip Stats
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **guildId** | **long** |  |  |
-| **requesterUserId** | **int** |  | [optional]  |
+| **requesterUserId** | **long** |  | [optional]  |
 | **limit** | **int** |  | [optional] [default to 10] |
 | **includeRandom** | **bool** |  | [optional] [default to true] |
 
@@ -128,7 +128,7 @@ Recent Clip Stats
 
 <a id="gettopclipstats"></a>
 # **GetTopClipStats**
-> TopClipStatsResponse GetTopClipStats (long guildId, int requesterUserId = null, string days = null, int limit = null, bool includeRandom = null)
+> TopClipStatsResponse GetTopClipStats (long guildId, long requesterUserId = null, string days = null, int limit = null, bool includeRandom = null)
 
 Top Clip Stats
 
@@ -138,7 +138,7 @@ Top Clip Stats
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **guildId** | **long** |  |  |
-| **requesterUserId** | **int** |  | [optional]  |
+| **requesterUserId** | **long** |  | [optional]  |
 | **days** | **string** |  | [optional] [default to &quot;7&quot;] |
 | **limit** | **int** |  | [optional] [default to 10] |
 | **includeRandom** | **bool** |  | [optional] [default to false] |

@@ -40,7 +40,7 @@ namespace SidekickApi.Model
         /// <param name="rows">rows</param>
         /// <param name="requesterUserId">requesterUserId</param>
         [JsonConstructor]
-        public RecentClipStatsResponse(bool ok, long guildId, int limit, bool includeRandom, List<RecentClipStatsItem> rows, Option<int?> requesterUserId = default)
+        public RecentClipStatsResponse(bool ok, long guildId, int limit, bool includeRandom, List<RecentClipStatsItem> rows, Option<long?> requesterUserId = default)
         {
             Ok = ok;
             GuildId = guildId;
@@ -88,13 +88,13 @@ namespace SidekickApi.Model
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<int?> RequesterUserIdOption { get; private set; }
+        public Option<long?> RequesterUserIdOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets RequesterUserId
         /// </summary>
         [JsonPropertyName("requester_user_id")]
-        public int? RequesterUserId { get { return this.RequesterUserIdOption; } set { this.RequesterUserIdOption = new(value); } }
+        public long? RequesterUserId { get { return this.RequesterUserIdOption; } set { this.RequesterUserIdOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -152,7 +152,7 @@ namespace SidekickApi.Model
             Option<int?> limit = default;
             Option<bool?> includeRandom = default;
             Option<List<RecentClipStatsItem>?> rows = default;
-            Option<int?> requesterUserId = default;
+            Option<long?> requesterUserId = default;
 
             while (utf8JsonReader.Read())
             {
@@ -185,7 +185,7 @@ namespace SidekickApi.Model
                             rows = new Option<List<RecentClipStatsItem>?>(JsonSerializer.Deserialize<List<RecentClipStatsItem>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "requester_user_id":
-                            requesterUserId = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            requesterUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
                             break;
                         default:
                             break;
