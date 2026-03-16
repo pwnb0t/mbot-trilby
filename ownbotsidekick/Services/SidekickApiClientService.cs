@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,28 +16,19 @@ namespace ownbotsidekick.Services
     {
         private readonly ServiceProvider _serviceProvider;
         private readonly IDefaultApi _api;
-        private readonly HttpClient _httpClient;
         private readonly long _guildId;
         private readonly long _requestingUserId;
-        private readonly string _apiTokenHeaderValue;
 
         public SidekickApiClientService(string baseUrl, string apiToken, long guildId, long requestingUserId)
         {
             _guildId = guildId;
             _requestingUserId = requestingUserId;
-            _apiTokenHeaderValue = apiToken;
             if (_requestingUserId <= 0)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(requestingUserId),
                     "Sidekick RequestingUserId must be configured to a positive Discord user id.");
             }
-
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(baseUrl, UriKind.Absolute)
-            };
-            _httpClient.DefaultRequestHeaders.Add("X-Sidekick-Token", _apiTokenHeaderValue);
 
             var services = new ServiceCollection();
             services.AddLogging();
@@ -138,55 +127,50 @@ namespace ownbotsidekick.Services
             bool guildWide = false,
             CancellationToken cancellationToken = default)
         {
-            var queryParts = new List<string>
+            var requesterUserId = guildWide
+                ? default(Option<int?>)
+                : new Option<int?>((int)_requestingUserId);
+            var response = await _api.GetTopClipStatsAsync(
+                (int)_guildId,
+                requesterUserId,
+                days,
+                limit,
+                includeRandom,
+                cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
-                $"guild_id={Uri.EscapeDataString(_guildId.ToString())}",
-                $"days={Uri.EscapeDataString(days)}",
-                $"limit={Uri.EscapeDataString(limit.ToString())}",
-                $"include_random={Uri.EscapeDataString(includeRandom ? "true" : "false")}"
-            };
+                var rows = ok.Rows
+                    .Where(row => !string.IsNullOrWhiteSpace(row.Trigger))
+                    .Select(row => new TopClipStatsRow(row.Trigger, row.PlayCount, row.LastPlayedAtUtc))
+                    .ToList();
 
-            if (!guildWide && _requestingUserId > 0)
-            {
-                queryParts.Add($"requester_user_id={Uri.EscapeDataString(_requestingUserId.ToString())}");
+                return new TopClipStatsCatalog(rows, days, includeRandom, guildWide);
             }
 
-            var requestUri = $"/v1/clips/stats/top?{string.Join("&", queryParts)}";
-            using var response = await _httpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-            if (!response.IsSuccessStatusCode)
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
             {
-                var message = TryReadApiErrorMessage(content) ?? $"HTTP {(int)response.StatusCode} ({response.StatusCode})";
-                throw new InvalidOperationException($"Top clip stats failed: {message}");
+                throw new InvalidOperationException($"Top clip stats failed: {unauthorized.Message}");
             }
 
-            using var document = JsonDocument.Parse(content);
-            var root = document.RootElement;
-
-            var rows = new List<TopClipStatsRow>();
-            if (root.TryGetProperty("rows", out var rowsElement))
+            if (response.IsBadRequest && response.TryBadRequest(out var badRequest) && badRequest is not null)
             {
-                foreach (var rowElement in rowsElement.EnumerateArray())
-                {
-                    var trigger = rowElement.TryGetProperty("trigger", out var triggerProperty)
-                        ? triggerProperty.GetString() ?? string.Empty
-                        : string.Empty;
-                    var playCount = rowElement.TryGetProperty("play_count", out var countProperty)
-                        ? countProperty.GetInt32()
-                        : 0;
-                    var lastPlayedAtUtc = rowElement.TryGetProperty("last_played_at_utc", out var lastPlayedProperty)
-                        ? lastPlayedProperty.GetString() ?? string.Empty
-                        : string.Empty;
-
-                    if (!string.IsNullOrWhiteSpace(trigger))
-                    {
-                        rows.Add(new TopClipStatsRow(trigger, playCount, lastPlayedAtUtc));
-                    }
-                }
+                throw new InvalidOperationException($"Top clip stats failed: {badRequest.Message}");
             }
 
-            return new TopClipStatsCatalog(rows, days, includeRandom, guildWide);
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"Top clip stats failed: {internalError.Message}");
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("Top clip stats failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"Top clip stats failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
         }
 
         public async Task<RecentClipStatsCatalog> GetRecentClipStatsAsync(
@@ -195,54 +179,47 @@ namespace ownbotsidekick.Services
             bool guildWide = false,
             CancellationToken cancellationToken = default)
         {
-            var queryParts = new List<string>
+            var requesterUserId = guildWide
+                ? default(Option<int?>)
+                : new Option<int?>((int)_requestingUserId);
+            var response = await _api.GetRecentClipStatsAsync(
+                (int)_guildId,
+                requesterUserId,
+                limit,
+                includeRandom,
+                cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
-                $"guild_id={Uri.EscapeDataString(_guildId.ToString())}",
-                $"limit={Uri.EscapeDataString(limit.ToString())}",
-                $"include_random={Uri.EscapeDataString(includeRandom ? "true" : "false")}"
-            };
+                var rows = ok.Rows
+                    .Where(row => !string.IsNullOrWhiteSpace(row.Trigger))
+                    .Select(row => new RecentClipStatsRow(
+                        row.Trigger,
+                        RecentClipStatsItem.ModeEnumToJsonValue(row.Mode),
+                        row.PlayedAtUtc))
+                    .ToList();
 
-            if (!guildWide && _requestingUserId > 0)
-            {
-                queryParts.Add($"requester_user_id={Uri.EscapeDataString(_requestingUserId.ToString())}");
+                return new RecentClipStatsCatalog(rows, includeRandom, guildWide);
             }
 
-            var requestUri = $"/v1/clips/stats/recent?{string.Join("&", queryParts)}";
-            using var response = await _httpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-            if (!response.IsSuccessStatusCode)
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
             {
-                var message = TryReadApiErrorMessage(content) ?? $"HTTP {(int)response.StatusCode} ({response.StatusCode})";
-                throw new InvalidOperationException($"Recent clip stats failed: {message}");
+                throw new InvalidOperationException($"Recent clip stats failed: {unauthorized.Message}");
             }
 
-            using var document = JsonDocument.Parse(content);
-            var root = document.RootElement;
-
-            var rows = new List<RecentClipStatsRow>();
-            if (root.TryGetProperty("rows", out var rowsElement))
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
             {
-                foreach (var rowElement in rowsElement.EnumerateArray())
-                {
-                    var trigger = rowElement.TryGetProperty("trigger", out var triggerProperty)
-                        ? triggerProperty.GetString() ?? string.Empty
-                        : string.Empty;
-                    var mode = rowElement.TryGetProperty("mode", out var modeProperty)
-                        ? modeProperty.GetString() ?? "direct"
-                        : "direct";
-                    var playedAtUtc = rowElement.TryGetProperty("played_at_utc", out var playedAtProperty)
-                        ? playedAtProperty.GetString() ?? string.Empty
-                        : string.Empty;
-
-                    if (!string.IsNullOrWhiteSpace(trigger))
-                    {
-                        rows.Add(new RecentClipStatsRow(trigger, mode, playedAtUtc));
-                    }
-                }
+                throw new InvalidOperationException($"Recent clip stats failed: {internalError.Message}");
             }
 
-            return new RecentClipStatsCatalog(rows, includeRandom, guildWide);
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("Recent clip stats failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"Recent clip stats failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
         }
 
         public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
@@ -369,24 +346,44 @@ namespace ownbotsidekick.Services
 
         public async Task<CurrentIntroState> GetCurrentIntroAsync(CancellationToken cancellationToken = default)
         {
-            var requestUri =
-                $"/v1/intros/current?guild_id={Uri.EscapeDataString(_guildId.ToString())}&requester_user_id={Uri.EscapeDataString(_requestingUserId.ToString())}";
-            using var response = await _httpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-            if (!response.IsSuccessStatusCode)
+            var response = await _api.GetCurrentIntroAsync(
+                (int)_guildId,
+                (int)_requestingUserId,
+                cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
-                var message = TryReadApiErrorMessage(content) ?? $"HTTP {(int)response.StatusCode} ({response.StatusCode})";
-                throw new InvalidOperationException($"Get current intro failed: {message}");
+                return new CurrentIntroState(ok.Trigger);
             }
 
-            using var document = JsonDocument.Parse(content);
-            var root = document.RootElement;
-            var trigger = root.TryGetProperty("trigger", out var triggerProperty) && triggerProperty.ValueKind != JsonValueKind.Null
-                ? triggerProperty.GetString()
-                : null;
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            {
+                throw new InvalidOperationException($"Get current intro failed: {unauthorized.Message}");
+            }
 
-            return new CurrentIntroState(trigger);
+            if (response.IsBadRequest && response.TryBadRequest(out var badRequest) && badRequest is not null)
+            {
+                throw new InvalidOperationException($"Get current intro failed: {badRequest.Message}");
+            }
+
+            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            {
+                throw new InvalidOperationException($"Get current intro failed: {notFound.Message}");
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"Get current intro failed: {internalError.Message}");
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("Get current intro failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"Get current intro failed: unexpected status {(int)response.StatusCode} ({response.StatusCode}).");
         }
 
         public async Task<CurrentIntroState> SetCurrentIntroAsync(string trigger, CancellationToken cancellationToken = default)
@@ -438,31 +435,7 @@ namespace ownbotsidekick.Services
 
         public void Dispose()
         {
-            _httpClient.Dispose();
             _serviceProvider.Dispose();
-        }
-
-        private static string? TryReadApiErrorMessage(string content)
-        {
-            if (string.IsNullOrWhiteSpace(content))
-            {
-                return null;
-            }
-
-            try
-            {
-                using var document = JsonDocument.Parse(content);
-                if (document.RootElement.TryGetProperty("message", out var messageProperty))
-                {
-                    return messageProperty.GetString();
-                }
-            }
-            catch
-            {
-                return null;
-            }
-
-            return null;
         }
 
         internal sealed class ClipCatalog
