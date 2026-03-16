@@ -63,37 +63,72 @@ namespace ownbotsidekick.Services
 
         public async Task<ClipCatalog> ListClipsAsync(CancellationToken cancellationToken = default)
         {
-            var requestUri = $"/v1/clips?guild_id={Uri.EscapeDataString(_guildId.ToString())}";
-            using var response = await _httpClient.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
-            var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-            if (!response.IsSuccessStatusCode)
+            var response = await _api.ListClipsAsync((int)_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
-                var message = TryReadApiErrorMessage(content) ?? $"HTTP {(int)response.StatusCode} ({response.StatusCode})";
-                throw new InvalidOperationException($"List clips failed: {message}");
+                var triggers = ok.Clips
+                    .Select(clip => clip.Trigger)
+                    .Where(trigger => !string.IsNullOrWhiteSpace(trigger))
+                    .OrderBy(trigger => trigger, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                return new ClipCatalog(triggers, ok.Total);
             }
 
-            using var document = JsonDocument.Parse(content);
-            var root = document.RootElement;
-            var clipsElement = root.GetProperty("clips");
-            var triggers = new List<string>(clipsElement.GetArrayLength());
-            foreach (var item in clipsElement.EnumerateArray())
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
             {
-                if (item.TryGetProperty("trigger", out var triggerProperty))
-                {
-                    var trigger = triggerProperty.GetString();
-                    if (!string.IsNullOrWhiteSpace(trigger))
-                    {
-                        triggers.Add(trigger);
-                    }
-                }
+                throw new InvalidOperationException($"List clips failed: {unauthorized.Message}");
             }
 
-            var total = root.TryGetProperty("total", out var totalProperty)
-                ? totalProperty.GetInt32()
-                : triggers.Count;
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"List clips failed: {internalError.Message}");
+            }
 
-            return new ClipCatalog(triggers.OrderBy(x => x, StringComparer.OrdinalIgnoreCase).ToList(), total);
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("List clips failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"List clips failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
+        }
+
+        public async Task<TagCatalog> ListTagsAsync(CancellationToken cancellationToken = default)
+        {
+            var response = await _api.ListTagsAsync((int)_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            {
+                var tagNames = ok.Tags
+                    .Select(tag => tag.Name)
+                    .Where(tagName => !string.IsNullOrWhiteSpace(tagName))
+                    .OrderBy(tagName => tagName, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                return new TagCatalog(tagNames, ok.Total);
+            }
+
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            {
+                throw new InvalidOperationException($"List tags failed: {unauthorized.Message}");
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"List tags failed: {internalError.Message}");
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("List tags failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"List tags failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
         }
 
         public async Task<TopClipStatsCatalog> GetTopClipStatsAsync(
@@ -439,6 +474,18 @@ namespace ownbotsidekick.Services
             }
 
             public IReadOnlyList<string> Triggers { get; }
+            public int Total { get; }
+        }
+
+        internal sealed class TagCatalog
+        {
+            public TagCatalog(IReadOnlyList<string> tagNames, int total)
+            {
+                TagNames = tagNames;
+                Total = total;
+            }
+
+            public IReadOnlyList<string> TagNames { get; }
             public int Total { get; }
         }
 

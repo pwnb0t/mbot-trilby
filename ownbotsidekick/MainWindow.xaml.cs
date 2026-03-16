@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -28,8 +28,10 @@ namespace ownbotsidekick
         private const int VkEquals = 0xBB;
         private const int VkOemPlus = 0xBB;
         private const int Vk0 = 0x30;
+        private const int Vk7 = 0x37;
         private const int Vk9 = 0x39;
         private const int VkA = 0x41;
+        private const int VkShift = 0x10;
         private const int VkZ = 0x5A;
         private const int VkNumpad0 = 0x60;
         private const int VkNumpad9 = 0x69;
@@ -46,6 +48,7 @@ namespace ownbotsidekick
         private readonly int _playFirstSecondaryVirtualKey;
         private readonly OverlayViewModel _viewModel = new();
         private readonly List<string> _allClipTriggers = new();
+        private readonly List<string> _allTagNames = new();
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
         private readonly QuickPlayAssignmentsStore _quickPlayAssignmentsStore;
         private readonly QuickPlayAssignments _quickPlayAssignments;
@@ -72,7 +75,7 @@ namespace ownbotsidekick
         {
             InitializeComponent();
             DataContext = _viewModel;
-            SearchPanel.ClipSelected += SearchPanel_ClipSelected;
+            SearchPanel.SearchResultSelected += SearchPanel_SearchResultSelected;
             SearchPanel.ClipDragStateChanged += SearchPanel_ClipDragStateChanged;
 
             _settings = AppSettingsLoader.LoadFromBaseDirectory(AppContext.BaseDirectory);
@@ -156,6 +159,7 @@ namespace ownbotsidekick
             {
                 _ = InitializeHealthCheckAsync();
                 _ = LoadClipCatalogAsync("startup");
+                _ = LoadTagCatalogAsync("startup");
                 _ = LoadTopClipStatsAsync("startup");
                 _ = LoadRecentClipStatsAsync("startup");
                 _ = LoadCurrentIntroAsync("startup");
@@ -196,6 +200,7 @@ namespace ownbotsidekick
         private async void RefreshClipsButton_Click(object sender, RoutedEventArgs e)
         {
             await LoadClipCatalogAsync("manual refresh");
+            await LoadTagCatalogAsync("manual refresh");
             await LoadTopClipStatsAsync("manual refresh");
             await LoadRecentClipStatsAsync("manual refresh");
             await LoadCurrentIntroAsync("manual refresh");
@@ -248,9 +253,15 @@ namespace ownbotsidekick
             await PlayClipAsync("Current Intro", _currentIntroSlot.Trigger);
         }
 
-        private async void SearchPanel_ClipSelected(object? sender, string trigger)
+        private async void SearchPanel_SearchResultSelected(object? sender, ClipSearchResult searchResult)
         {
-            await PlayClipAsync(trigger, trigger);
+            if (searchResult.Kind == SearchResultKind.Clip)
+            {
+                await PlayClipAsync(searchResult.Value, searchResult.Value);
+                return;
+            }
+
+            Log($"Tag search result selected: &{searchResult.Value}. Tag widget is not implemented yet.");
         }
 
         private void SearchPanel_ClipDragStateChanged(object? sender, bool isDragging)
@@ -539,17 +550,44 @@ namespace ownbotsidekick
             {
                 _allClipTriggers.Clear();
                 _allClipTriggers.AddRange(result.Triggers);
-                _clipSearchState.SetSource(_allClipTriggers);
+                _clipSearchState.SetSource(_allClipTriggers, _allTagNames);
                 RenderSearchState();
                 UpdateClipCountText(_allClipTriggers.Count, "loaded");
             }
             else
             {
                 _allClipTriggers.Clear();
-                _clipSearchState.SetSource(Array.Empty<string>());
+                _clipSearchState.SetSource(Array.Empty<string>(), _allTagNames);
                 RenderSearchState();
                 UpdateClipCountText(0, _sidekickApiClient is null ? "API disabled" : "load failed");
             }
+        }
+
+        private async System.Threading.Tasks.Task LoadTagCatalogAsync(string reason)
+        {
+            if (_clipPlaybackCoordinator is null)
+            {
+                return;
+            }
+
+            var result = await _clipPlaybackCoordinator.LoadTagsAsync(reason);
+            foreach (var logLine in result.LogLines)
+            {
+                Log(logLine);
+            }
+
+            if (result.Success)
+            {
+                _allTagNames.Clear();
+                _allTagNames.AddRange(result.TagNames);
+            }
+            else
+            {
+                _allTagNames.Clear();
+            }
+
+            _clipSearchState.SetSource(_allClipTriggers, _allTagNames);
+            RenderSearchState();
         }
 
         private async System.Threading.Tasks.Task<bool> PlayClipAsync(string clipName, string trigger)
@@ -826,7 +864,7 @@ namespace ownbotsidekick
             _viewModel.SearchQueryDisplay = string.IsNullOrEmpty(query)
                 ? "Start typing to search..."
                 : query;
-            _viewModel.VisibleClips = filteredResults.ToArray();
+            _viewModel.VisibleSearchResults = filteredResults.ToArray();
             _viewModel.NoResultsVisible = !string.IsNullOrEmpty(query) && filteredResults.Count == 0;
         }
 
@@ -838,12 +876,18 @@ namespace ownbotsidekick
             }
 
             var first = _clipSearchState.FirstResultOrDefault();
-            if (string.IsNullOrEmpty(first))
+            if (first is null)
             {
                 return;
             }
 
-            await PlayClipAsync(first, first);
+            if (first.Kind == SearchResultKind.Clip)
+            {
+                await PlayClipAsync(first.Value, first.Value);
+                return;
+            }
+
+            Log($"Primary search action selected tag &{first.Value}. Tag widget is not implemented yet.");
         }
 
         private bool HandleOverlayKeyDown(int virtualKey, bool isAltDown)
@@ -904,7 +948,7 @@ namespace ownbotsidekick
                 return true;
             }
 
-            var character = TryGetAlphanumericCharacter(virtualKey);
+            var character = TryGetSearchCharacter(virtualKey);
             if (character is null)
             {
                 return false;
@@ -915,8 +959,13 @@ namespace ownbotsidekick
             return true;
         }
 
-        private static char? TryGetAlphanumericCharacter(int virtualKey)
+        private static char? TryGetSearchCharacter(int virtualKey)
         {
+            if (virtualKey == Vk7 && IsShiftPressed())
+            {
+                return '&';
+            }
+
             if (virtualKey >= VkA && virtualKey <= VkZ)
             {
                 return char.ToLowerInvariant((char)virtualKey);
@@ -933,6 +982,11 @@ namespace ownbotsidekick
             }
 
             return null;
+        }
+
+        private static bool IsShiftPressed()
+        {
+            return (GetKeyState(VkShift) & 0x8000) != 0;
         }
 
         private static int TryGetQuickPlaySlotIndexFromAltHotkey(int virtualKey)
@@ -1185,6 +1239,9 @@ namespace ownbotsidekick
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        [DllImport("user32.dll")]
+        private static extern short GetKeyState(int virtualKey);
 
         [Flags]
         private enum HotkeyModifiers : uint

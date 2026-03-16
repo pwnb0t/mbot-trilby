@@ -54,6 +54,47 @@ namespace ownbotsidekick.Services
             }
         }
 
+        public async Task<LoadTagsResult> LoadTagsAsync(string reason)
+        {
+            var logLines = new List<string>
+            {
+                $"Loading tags ({reason})..."
+            };
+
+            if (_sidekickApiClient is null)
+            {
+                logLines.Add("Load tags skipped: Sidekick API is disabled.");
+                return new LoadTagsResult(
+                    success: false,
+                    tagNames: Array.Empty<string>(),
+                    total: 0,
+                    logLines: logLines
+                );
+            }
+
+            try
+            {
+                var catalog = await _sidekickApiClient.ListTagsAsync();
+                logLines.Add($"Loaded {catalog.TagNames.Count} tags (API total={catalog.Total}).");
+                return new LoadTagsResult(
+                    success: true,
+                    tagNames: catalog.TagNames,
+                    total: catalog.Total,
+                    logLines: logLines
+                );
+            }
+            catch (Exception ex)
+            {
+                logLines.Add($"Load tags failed: {ex.Message}");
+                return new LoadTagsResult(
+                    success: false,
+                    tagNames: Array.Empty<string>(),
+                    total: 0,
+                    logLines: logLines
+                );
+            }
+        }
+
         public async Task<PlayClipResult> PlayClipAsync(string clipName, string trigger)
         {
             var logLines = new List<string>();
@@ -161,6 +202,22 @@ namespace ownbotsidekick.Services
 
             public bool Success { get; }
             public bool ShouldHideOverlay { get; }
+            public IReadOnlyList<string> LogLines { get; }
+        }
+
+        internal sealed class LoadTagsResult
+        {
+            public LoadTagsResult(bool success, IReadOnlyList<string> tagNames, int total, IReadOnlyList<string> logLines)
+            {
+                Success = success;
+                TagNames = tagNames;
+                Total = total;
+                LogLines = logLines;
+            }
+
+            public bool Success { get; }
+            public IReadOnlyList<string> TagNames { get; }
+            public int Total { get; }
             public IReadOnlyList<string> LogLines { get; }
         }
 

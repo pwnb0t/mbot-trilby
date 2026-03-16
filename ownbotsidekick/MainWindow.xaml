@@ -251,7 +251,7 @@
                                                  HorizontalAlignment="Center"
                                                  VerticalAlignment="Center"
                                                  SearchQueryDisplay="{Binding SearchQueryDisplay}"
-                                                 VisibleClips="{Binding VisibleClips}"
+                                                 VisibleSearchResults="{Binding VisibleSearchResults}"
                                                  NoResultsVisible="{Binding NoResultsVisible}"
                                                  Width="640"
                                                  Height="500" />

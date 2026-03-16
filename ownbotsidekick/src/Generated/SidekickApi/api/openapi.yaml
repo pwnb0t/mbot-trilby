@@ -497,6 +497,116 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Set Current Intro
+  /v1/tags:
+    get:
+      operationId: ListTags
+      parameters:
+      - explode: true
+        in: query
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          maxLength: 64
+          minLength: 1
+          nullable: true
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListTagsResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - APIKeyHeader: []
+      summary: List Tags
+  /v1/tags/{tag_name}/clips:
+    get:
+      operationId: ListTagClips
+      parameters:
+      - explode: false
+        in: path
+        name: tag_name
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          title: Tag Name
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListTagClipsResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not found error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - APIKeyHeader: []
+      summary: List Tag Clips
 components:
   schemas:
     ApiErrorResponse:
@@ -633,6 +743,75 @@ components:
       - ok
       - total
       title: ListClipsResponse
+    ListTagClipsResponse:
+      example:
+        total: 6
+        tag_name: tag_name
+        clips:
+        - trigger: trigger
+        - trigger: trigger
+        guild_id: 0
+        ok: true
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        tag_name:
+          title: Tag Name
+          type: string
+        clips:
+          items:
+            $ref: "#/components/schemas/TagClipSummary"
+          title: Clips
+          type: array
+        total:
+          title: Total
+          type: integer
+      required:
+      - clips
+      - guild_id
+      - ok
+      - tag_name
+      - total
+      title: ListTagClipsResponse
+    ListTagsResponse:
+      example:
+        total: 6
+        search: search
+        guild_id: 0
+        ok: true
+        tags:
+        - name: name
+        - name: name
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        tags:
+          items:
+            $ref: "#/components/schemas/TagSummary"
+          title: Tags
+          type: array
+        total:
+          title: Total
+          type: integer
+        search:
+          nullable: true
+          type: string
+      required:
+      - guild_id
+      - ok
+      - tags
+      - total
+      title: ListTagsResponse
     PlayClipRequest:
       example:
         guild_id: 0
@@ -939,6 +1118,26 @@ components:
       - ok
       - status
       title: StopClipResponse
+    TagClipSummary:
+      example:
+        trigger: trigger
+      properties:
+        trigger:
+          title: Trigger
+          type: string
+      required:
+      - trigger
+      title: TagClipSummary
+    TagSummary:
+      example:
+        name: name
+      properties:
+        name:
+          title: Name
+          type: string
+      required:
+      - name
+      title: TagSummary
     TopClipStatsItem:
       example:
         clip_id: 5

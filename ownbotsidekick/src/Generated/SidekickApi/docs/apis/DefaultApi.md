@@ -9,6 +9,8 @@ All URIs are relative to *http://127.0.0.1:28765*
 | [**GetRecentClipStats**](DefaultApi.md#getrecentclipstats) | **GET** /v1/clips/stats/recent | Recent Clip Stats |
 | [**GetTopClipStats**](DefaultApi.md#gettopclipstats) | **GET** /v1/clips/stats/top | Top Clip Stats |
 | [**ListClips**](DefaultApi.md#listclips) | **GET** /v1/clips | List Clips |
+| [**ListTagClips**](DefaultApi.md#listtagclips) | **GET** /v1/tags/{tag_name}/clips | List Tag Clips |
+| [**ListTags**](DefaultApi.md#listtags) | **GET** /v1/tags | List Tags |
 | [**PlayClip**](DefaultApi.md#playclip) | **POST** /v1/clips/play | Play Clip |
 | [**PlayRandomClip**](DefaultApi.md#playrandomclip) | **POST** /v1/clips/play-random | Play Random Clip |
 | [**SetCurrentIntro**](DefaultApi.md#setcurrentintro) | **PUT** /v1/intros/current | Set Current Intro |
@@ -183,6 +185,83 @@ List Clips
 ### Return type
 
 [**ListClipsResponse**](ListClipsResponse.md)
+
+### Authorization
+
+[APIKeyHeader](../README.md#APIKeyHeader)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="listtagclips"></a>
+# **ListTagClips**
+> ListTagClipsResponse ListTagClips (string tagName, int guildId)
+
+List Tag Clips
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **tagName** | **string** |  |  |
+| **guildId** | **int** |  |  |
+
+### Return type
+
+[**ListTagClipsResponse**](ListTagClipsResponse.md)
+
+### Authorization
+
+[APIKeyHeader](../README.md#APIKeyHeader)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
+| **404** | Not found error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="listtags"></a>
+# **ListTags**
+> ListTagsResponse ListTags (int guildId, string search = null)
+
+List Tags
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **guildId** | **int** |  |  |
+| **search** | **string** |  | [optional]  |
+
+### Return type
+
+[**ListTagsResponse**](ListTagsResponse.md)
 
 ### Authorization
 

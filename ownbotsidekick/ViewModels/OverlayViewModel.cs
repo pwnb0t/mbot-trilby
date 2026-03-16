@@ -12,7 +12,7 @@ namespace ownbotsidekick.ViewModels
         private string _clipCountText = "Clips: 0";
         private string _searchQueryDisplay = "Start typing to search...";
         private bool _noResultsVisible;
-        private IReadOnlyList<ClipSearchResult> _visibleClips = new List<ClipSearchResult>();
+        private IReadOnlyList<ClipSearchResult> _visibleSearchResults = new List<ClipSearchResult>();
         private string _topStatsTitle = "Top Clips";
         private string _topStatsStatusText = "Loading...";
         private IReadOnlyList<TopClipStatEntryViewModel> _topClipStats = new List<TopClipStatEntryViewModel>();
@@ -58,10 +58,10 @@ namespace ownbotsidekick.ViewModels
             set => SetField(ref _noResultsVisible, value);
         }
 
-        public IReadOnlyList<ClipSearchResult> VisibleClips
+        public IReadOnlyList<ClipSearchResult> VisibleSearchResults
         {
-            get => _visibleClips;
-            set => SetField(ref _visibleClips, value);
+            get => _visibleSearchResults;
+            set => SetField(ref _visibleSearchResults, value);
         }
 
         public string TopStatsTitle

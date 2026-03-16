@@ -21,7 +21,7 @@ namespace ownbotsidekick.Controls
         );
 
         public static readonly DependencyProperty VisibleClipsProperty = DependencyProperty.Register(
-            nameof(VisibleClips),
+            nameof(VisibleSearchResults),
             typeof(IReadOnlyList<ClipSearchResult>),
             typeof(SearchPanelControl),
             new PropertyMetadata(Array.Empty<ClipSearchResult>(), OnVisibleClipsChanged)
@@ -34,7 +34,7 @@ namespace ownbotsidekick.Controls
             new PropertyMetadata(false, OnNoResultsVisibleChanged)
         );
 
-        public event EventHandler<string>? ClipSelected;
+        public event EventHandler<ClipSearchResult>? SearchResultSelected;
         public event EventHandler<bool>? ClipDragStateChanged;
 
         public SearchPanelControl()
@@ -48,7 +48,7 @@ namespace ownbotsidekick.Controls
             set => SetValue(SearchQueryDisplayProperty, value);
         }
 
-        public IReadOnlyList<ClipSearchResult> VisibleClips
+        public IReadOnlyList<ClipSearchResult> VisibleSearchResults
         {
             get => (IReadOnlyList<ClipSearchResult>)GetValue(VisibleClipsProperty);
             set => SetValue(VisibleClipsProperty, value);
@@ -70,21 +70,21 @@ namespace ownbotsidekick.Controls
         {
             var control = (SearchPanelControl)d;
             control.SearchResultsGrid.Children.Clear();
-            var clips = e.NewValue as IReadOnlyList<ClipSearchResult>;
-            if (clips is null)
+            var searchResults = e.NewValue as IReadOnlyList<ClipSearchResult>;
+            if (searchResults is null)
             {
                 return;
             }
 
-            foreach (var clip in clips)
+            foreach (var searchResult in searchResults)
             {
                 var button = new System.Windows.Controls.Button
                 {
-                    Content = CreateHighlightedContent(clip),
+                    Content = CreateHighlightedContent(searchResult),
                     Style = (Style)control.FindResource("ClipButtonStyle"),
-                    Tag = clip.Trigger
+                    Tag = searchResult
                 };
-                button.Click += (_, _) => control.ClipSelected?.Invoke(control, clip.Trigger);
+                button.Click += (_, _) => control.SearchResultSelected?.Invoke(control, searchResult);
                 button.PreviewMouseLeftButtonDown += control.SearchResultButton_PreviewMouseLeftButtonDown;
                 button.PreviewMouseLeftButtonUp += control.SearchResultButton_PreviewMouseLeftButtonUp;
                 button.PreviewMouseMove += control.SearchResultButton_PreviewMouseMove;
@@ -146,8 +146,9 @@ namespace ownbotsidekick.Controls
                 sender is not System.Windows.Controls.Button button ||
                 _dragSourceButton != button ||
                 _dragStartPoint is null ||
-                button.Tag is not string trigger ||
-                string.IsNullOrWhiteSpace(trigger)
+                button.Tag is not ClipSearchResult searchResult ||
+                searchResult.Kind != SearchResultKind.Clip ||
+                string.IsNullOrWhiteSpace(searchResult.Value)
             )
             {
                 return;
@@ -167,7 +168,7 @@ namespace ownbotsidekick.Controls
             ClipDragStateChanged?.Invoke(this, true);
             try
             {
-                var dragData = new System.Windows.DataObject(QuickPlayDragDrop.ClipTriggerFormat, trigger);
+                var dragData = new System.Windows.DataObject(QuickPlayDragDrop.ClipTriggerFormat, searchResult.Value);
                 DragDrop.DoDragDrop(button, dragData, System.Windows.DragDropEffects.Copy);
             }
             finally

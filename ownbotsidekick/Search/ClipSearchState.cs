@@ -7,7 +7,8 @@ namespace ownbotsidekick.Search
     public sealed class ClipSearchState
     {
         private readonly int _maxVisibleResults;
-        private readonly List<string> _allTriggers = new();
+        private readonly List<string> _allClipTriggers = new();
+        private readonly List<string> _allTagNames = new();
         private readonly List<ClipSearchResult> _filteredResults = new();
         private string _query = string.Empty;
 
@@ -19,10 +20,12 @@ namespace ownbotsidekick.Search
         public string Query => _query;
         public IReadOnlyList<ClipSearchResult> FilteredResults => _filteredResults;
 
-        public void SetSource(IEnumerable<string> triggers)
+        public void SetSource(IEnumerable<string> clipTriggers, IEnumerable<string> tagNames)
         {
-            _allTriggers.Clear();
-            _allTriggers.AddRange(triggers);
+            _allClipTriggers.Clear();
+            _allClipTriggers.AddRange(clipTriggers);
+            _allTagNames.Clear();
+            _allTagNames.AddRange(tagNames);
             Rebuild();
         }
 
@@ -50,9 +53,9 @@ namespace ownbotsidekick.Search
             return true;
         }
 
-        public string? FirstResultOrDefault()
+        public ClipSearchResult? FirstResultOrDefault()
         {
-            return _filteredResults.Count > 0 ? _filteredResults[0].Trigger : null;
+            return _filteredResults.Count > 0 ? _filteredResults[0] : null;
         }
 
         private void Rebuild()
@@ -64,53 +67,94 @@ namespace ownbotsidekick.Search
             }
 
             _filteredResults.AddRange(
-                _allTriggers
-                    .Select(CreateResultOrDefault)
+                _allClipTriggers
+                    .Select(trigger => CreateResultOrDefault(SearchResultKind.Clip, trigger))
+                    .Concat(_allTagNames.Select(tagName => CreateResultOrDefault(SearchResultKind.Tag, tagName)))
                     .Where(result => result is not null)
                     .Select(result => result!)
-                    .OrderBy(result => GetSearchBucket(result.Trigger), Comparer<int>.Default)
-                    .ThenBy(result => result.Trigger, StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(GetSearchBucket, Comparer<int>.Default)
+                    .ThenBy(result => result.DisplayText, StringComparer.OrdinalIgnoreCase)
                     .Take(_maxVisibleResults)
             );
         }
 
-        private int GetSearchBucket(string trigger)
+        private int GetSearchBucket(ClipSearchResult result)
         {
-            return trigger.StartsWith(_query, StringComparison.OrdinalIgnoreCase) ? 0 : 1;
+            var comparableText = GetComparableSearchText(result.Kind, result.Value, result.DisplayText);
+            var isExactMatch = string.Equals(comparableText, _query, StringComparison.OrdinalIgnoreCase);
+            var isStartsWithMatch = comparableText.StartsWith(_query, StringComparison.OrdinalIgnoreCase);
+
+            if (isExactMatch && result.Kind == SearchResultKind.Clip)
+            {
+                return 0;
+            }
+
+            if (isExactMatch && result.Kind == SearchResultKind.Tag)
+            {
+                return 1;
+            }
+
+            if (isStartsWithMatch && result.Kind == SearchResultKind.Clip)
+            {
+                return 2;
+            }
+
+            if (isStartsWithMatch && result.Kind == SearchResultKind.Tag)
+            {
+                return 3;
+            }
+
+            if (result.Kind == SearchResultKind.Clip)
+            {
+                return 4;
+            }
+
+            return 5;
         }
 
-        private ClipSearchResult? CreateResultOrDefault(string trigger)
+        private ClipSearchResult? CreateResultOrDefault(SearchResultKind kind, string value)
         {
-            var matchIndex = trigger.IndexOf(_query, StringComparison.OrdinalIgnoreCase);
+            var displayText = kind == SearchResultKind.Tag ? $"&{value}" : value;
+            var comparableText = GetComparableSearchText(kind, value, displayText);
+            var matchIndex = comparableText.IndexOf(_query, StringComparison.OrdinalIgnoreCase);
             if (matchIndex < 0)
             {
                 return null;
             }
 
+            var displayMatchIndex = matchIndex + (displayText.Length - comparableText.Length);
+
             var segments = new List<ClipSearchMatchSegment>();
-            if (matchIndex > 0)
+            if (displayMatchIndex > 0)
             {
                 segments.Add(new ClipSearchMatchSegment(
-                    trigger[..matchIndex],
+                    displayText[..displayMatchIndex],
                     isMatch: false
                 ));
             }
 
             segments.Add(new ClipSearchMatchSegment(
-                trigger.Substring(matchIndex, _query.Length),
+                displayText.Substring(displayMatchIndex, _query.Length),
                 isMatch: true
             ));
 
-            var remainingStartIndex = matchIndex + _query.Length;
-            if (remainingStartIndex < trigger.Length)
+            var remainingStartIndex = displayMatchIndex + _query.Length;
+            if (remainingStartIndex < displayText.Length)
             {
                 segments.Add(new ClipSearchMatchSegment(
-                    trigger[remainingStartIndex..],
+                    displayText[remainingStartIndex..],
                     isMatch: false
                 ));
             }
 
-            return new ClipSearchResult(trigger, segments);
+            return new ClipSearchResult(kind, value, displayText, segments);
+        }
+
+        private string GetComparableSearchText(SearchResultKind kind, string value, string displayText)
+        {
+            return kind == SearchResultKind.Tag && !_query.StartsWith('&')
+                ? value
+                : displayText;
         }
     }
 }

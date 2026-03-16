@@ -10,14 +10,14 @@ namespace ownbotsidekick.Tests.Search
         public void Filters_By_CaseInsensitive_Prefix()
         {
             var state = new ClipSearchState(maxVisibleResults: 15);
-            state.SetSource(new[] { "TestOne", "testTwo", "alpha" });
+            state.SetSource(new[] { "TestOne", "testTwo", "alpha" }, new[] { "topic" });
 
             state.AppendCharacter('t');
             state.AppendCharacter('e');
 
             Assert.Equal(2, state.FilteredResults.Count);
-            Assert.Contains(state.FilteredResults, result => result.Trigger == "TestOne");
-            Assert.Contains(state.FilteredResults, result => result.Trigger == "testTwo");
+            Assert.Contains(state.FilteredResults, result => result.Value == "TestOne");
+            Assert.Contains(state.FilteredResults, result => result.Value == "testTwo");
         }
 
         [Fact]
@@ -25,7 +25,7 @@ namespace ownbotsidekick.Tests.Search
         {
             var source = Enumerable.Range(1, 30).Select(i => $"t{i:D2}").ToArray();
             var state = new ClipSearchState(maxVisibleResults: 15);
-            state.SetSource(source);
+            state.SetSource(source, new[] { "tag" });
 
             state.AppendCharacter('t');
 
@@ -36,7 +36,7 @@ namespace ownbotsidekick.Tests.Search
         public void ClearQuery_Resets_Query_And_Results()
         {
             var state = new ClipSearchState(maxVisibleResults: 15);
-            state.SetSource(new[] { "abc", "abd" });
+            state.SetSource(new[] { "abc", "abd" }, new[] { "atest" });
             state.AppendCharacter('a');
 
             state.ClearQuery();
@@ -49,7 +49,7 @@ namespace ownbotsidekick.Tests.Search
         public void Backspace_Removes_Last_Character_And_Rebuilds()
         {
             var state = new ClipSearchState(maxVisibleResults: 15);
-            state.SetSource(new[] { "abc", "abd", "axz" });
+            state.SetSource(new[] { "abc", "abd", "axz" }, new[] { "atest" });
             state.AppendCharacter('a');
             state.AppendCharacter('b');
 
@@ -57,39 +57,41 @@ namespace ownbotsidekick.Tests.Search
 
             Assert.True(removed);
             Assert.Equal("a", state.Query);
-            Assert.Equal(3, state.FilteredResults.Count);
+            Assert.Equal(4, state.FilteredResults.Count);
         }
 
         [Fact]
         public void FirstResultOrDefault_Returns_First_Filtered_Result()
         {
             var state = new ClipSearchState(maxVisibleResults: 15);
-            state.SetSource(new[] { "test-a", "test-b" });
+            state.SetSource(new[] { "test-a", "test-b" }, new[] { "test" });
             state.AppendCharacter('t');
 
-            Assert.Equal("test-a", state.FirstResultOrDefault());
+            var result = Assert.IsType<ClipSearchResult>(state.FirstResultOrDefault());
+            Assert.Equal(SearchResultKind.Clip, result.Kind);
+            Assert.Equal("test-a", result.Value);
         }
 
         [Fact]
         public void Ranks_StartsWith_Matches_Before_Substring_Matches()
         {
             var state = new ClipSearchState(maxVisibleResults: 15);
-            state.SetSource(new[] { "zest", "test", "best", "esther" });
+            state.SetSource(new[] { "zest", "test", "best", "esther" }, new[] { "atest" });
 
             state.AppendCharacter('e');
             state.AppendCharacter('s');
             state.AppendCharacter('t');
 
-            var triggers = state.FilteredResults.Select(result => result.Trigger).ToArray();
+            var triggers = state.FilteredResults.Select(result => result.DisplayText).ToArray();
 
-            Assert.Equal(new[] { "esther", "best", "test", "zest" }, triggers);
+            Assert.Equal(new[] { "esther", "best", "test", "zest", "&atest" }, triggers);
         }
 
         [Fact]
         public void Highlights_Only_First_Matching_Substring()
         {
             var state = new ClipSearchState(maxVisibleResults: 15);
-            state.SetSource(new[] { "testtest" });
+            state.SetSource(new[] { "testtest" }, new[] { "topic" });
 
             state.AppendCharacter('t');
             state.AppendCharacter('e');
@@ -111,6 +113,42 @@ namespace ownbotsidekick.Tests.Search
                     Assert.False(segment.IsMatch);
                 }
             );
+        }
+
+        [Fact]
+        public void Ranks_Clip_Results_Before_Tag_Results_By_Todo_Order()
+        {
+            var state = new ClipSearchState(maxVisibleResults: 15);
+            state.SetSource(
+                new[] { "test", "test1", "test2", "atest", "btest" },
+                new[] { "test", "test1", "atest", "btest" }
+            );
+
+            state.AppendCharacter('t');
+            state.AppendCharacter('e');
+            state.AppendCharacter('s');
+            state.AppendCharacter('t');
+
+            var results = state.FilteredResults.Select(result => result.DisplayText).ToArray();
+
+            Assert.Equal(
+                new[] { "test", "&test", "test1", "test2", "&test1", "atest", "btest", "&atest", "&btest" },
+                results
+            );
+        }
+
+        [Fact]
+        public void Supports_Searching_For_Tags_With_Ampersand()
+        {
+            var state = new ClipSearchState(maxVisibleResults: 15);
+            state.SetSource(new[] { "test" }, new[] { "test", "team" });
+
+            state.AppendCharacter('&');
+            state.AppendCharacter('t');
+
+            var results = state.FilteredResults.Select(result => result.DisplayText).ToArray();
+
+            Assert.Equal(new[] { "&team", "&test" }, results);
         }
     }
 }
