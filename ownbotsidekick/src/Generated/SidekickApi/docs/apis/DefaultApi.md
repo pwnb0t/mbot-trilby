@@ -18,7 +18,7 @@ All URIs are relative to *http://127.0.0.1:28765*
 
 <a id="getcurrentintro"></a>
 # **GetCurrentIntro**
-> GetCurrentIntroResponse GetCurrentIntro (int guildId, int requesterUserId)
+> GetCurrentIntroResponse GetCurrentIntro (long guildId, long requesterUserId)
 
 Get Current Intro
 
@@ -27,8 +27,8 @@ Get Current Intro
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **int** |  |  |
-| **requesterUserId** | **int** |  |  |
+| **guildId** | **long** |  |  |
+| **requesterUserId** | **long** |  |  |
 
 ### Return type
 
@@ -88,7 +88,7 @@ No authorization required
 
 <a id="getrecentclipstats"></a>
 # **GetRecentClipStats**
-> RecentClipStatsResponse GetRecentClipStats (int guildId, int requesterUserId = null, int limit = null, bool includeRandom = null)
+> RecentClipStatsResponse GetRecentClipStats (long guildId, int requesterUserId = null, int limit = null, bool includeRandom = null)
 
 Recent Clip Stats
 
@@ -97,7 +97,7 @@ Recent Clip Stats
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **int** |  |  |
+| **guildId** | **long** |  |  |
 | **requesterUserId** | **int** |  | [optional]  |
 | **limit** | **int** |  | [optional] [default to 10] |
 | **includeRandom** | **bool** |  | [optional] [default to true] |
@@ -128,7 +128,7 @@ Recent Clip Stats
 
 <a id="gettopclipstats"></a>
 # **GetTopClipStats**
-> TopClipStatsResponse GetTopClipStats (int guildId, int requesterUserId = null, string days = null, int limit = null, bool includeRandom = null)
+> TopClipStatsResponse GetTopClipStats (long guildId, int requesterUserId = null, string days = null, int limit = null, bool includeRandom = null)
 
 Top Clip Stats
 
@@ -137,9 +137,9 @@ Top Clip Stats
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **int** |  |  |
+| **guildId** | **long** |  |  |
 | **requesterUserId** | **int** |  | [optional]  |
-| **days** | **string** |  | [optional] [default to 7] |
+| **days** | **string** |  | [optional] [default to &quot;7&quot;] |
 | **limit** | **int** |  | [optional] [default to 10] |
 | **includeRandom** | **bool** |  | [optional] [default to false] |
 
@@ -170,7 +170,7 @@ Top Clip Stats
 
 <a id="listclips"></a>
 # **ListClips**
-> ListClipsResponse ListClips (int guildId, string search = null)
+> ListClipsResponse ListClips (long guildId, string search = null)
 
 List Clips
 
@@ -179,7 +179,7 @@ List Clips
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **int** |  |  |
+| **guildId** | **long** |  |  |
 | **search** | **string** |  | [optional]  |
 
 ### Return type
@@ -208,7 +208,7 @@ List Clips
 
 <a id="listtagclips"></a>
 # **ListTagClips**
-> ListTagClipsResponse ListTagClips (string tagName, int guildId)
+> ListTagClipsResponse ListTagClips (string tagName, long guildId)
 
 List Tag Clips
 
@@ -218,7 +218,7 @@ List Tag Clips
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **tagName** | **string** |  |  |
-| **guildId** | **int** |  |  |
+| **guildId** | **long** |  |  |
 
 ### Return type
 
@@ -247,7 +247,7 @@ List Tag Clips
 
 <a id="listtags"></a>
 # **ListTags**
-> ListTagsResponse ListTags (int guildId, string search = null)
+> ListTagsResponse ListTags (long guildId, string search = null)
 
 List Tags
 
@@ -256,7 +256,7 @@ List Tags
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **int** |  |  |
+| **guildId** | **long** |  |  |
 | **search** | **string** |  | [optional]  |
 
 ### Return type

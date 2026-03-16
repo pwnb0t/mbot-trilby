@@ -26,6 +26,7 @@ paths:
         required: true
         schema:
           exclusiveMinimum: true
+          format: int64
           minimum: 0
           title: Guild Id
           type: integer
@@ -231,6 +232,7 @@ paths:
         required: true
         schema:
           exclusiveMinimum: true
+          format: int64
           minimum: 0
           title: Guild Id
           type: integer
@@ -251,11 +253,7 @@ paths:
         required: false
         schema:
           default: "7"
-          enum:
-          - "1"
-          - "7"
-          - "30"
-          - all
+          pattern: ^(1|7|30|all)$
           title: Days
           type: string
         style: form
@@ -323,6 +321,7 @@ paths:
         required: true
         schema:
           exclusiveMinimum: true
+          format: int64
           minimum: 0
           title: Guild Id
           type: integer
@@ -395,6 +394,7 @@ paths:
         required: true
         schema:
           exclusiveMinimum: true
+          format: int64
           minimum: 0
           title: Guild Id
           type: integer
@@ -405,6 +405,7 @@ paths:
         required: true
         schema:
           exclusiveMinimum: true
+          format: int64
           minimum: 0
           title: Requester User Id
           type: integer
@@ -507,6 +508,7 @@ paths:
         required: true
         schema:
           exclusiveMinimum: true
+          format: int64
           minimum: 0
           title: Guild Id
           type: integer
@@ -569,6 +571,7 @@ paths:
         required: true
         schema:
           exclusiveMinimum: true
+          format: int64
           minimum: 0
           title: Guild Id
           type: integer

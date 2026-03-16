@@ -48,7 +48,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>&gt;</returns>
-        Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(int guildId, int requesterUserId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(long guildId, long requesterUserId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get Current Intro
@@ -60,7 +60,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>?&gt;</returns>
-        Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(int guildId, int requesterUserId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(long guildId, long requesterUserId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Health
@@ -96,7 +96,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(int guildId, Option<int?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<int?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Recent Clip Stats
@@ -110,7 +110,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>?&gt;</returns>
-        Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(int guildId, Option<int?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<int?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Top Clip Stats
@@ -121,12 +121,12 @@ namespace SidekickApi.Api
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="guildId"></param>
         /// <param name="requesterUserId"> (optional)</param>
-        /// <param name="days"> (optional, default to 7)</param>
+        /// <param name="days"> (optional, default to &quot;7&quot;)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(int guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Top Clip Stats
@@ -136,12 +136,12 @@ namespace SidekickApi.Api
         /// </remarks>
         /// <param name="guildId"></param>
         /// <param name="requesterUserId"> (optional)</param>
-        /// <param name="days"> (optional, default to 7)</param>
+        /// <param name="days"> (optional, default to &quot;7&quot;)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>?&gt;</returns>
-        Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(int guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Clips
@@ -154,7 +154,7 @@ namespace SidekickApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
-        Task<IListClipsApiResponse> ListClipsAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListClipsApiResponse> ListClipsAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Clips
@@ -166,7 +166,7 @@ namespace SidekickApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>?&gt;</returns>
-        Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Tag Clips
@@ -179,7 +179,7 @@ namespace SidekickApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagClipsApiResponse"/>&gt;</returns>
-        Task<IListTagClipsApiResponse> ListTagClipsAsync(string tagName, int guildId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTagClipsApiResponse> ListTagClipsAsync(string tagName, long guildId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Tag Clips
@@ -191,7 +191,7 @@ namespace SidekickApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagClipsApiResponse"/>?&gt;</returns>
-        Task<IListTagClipsApiResponse?> ListTagClipsOrDefaultAsync(string tagName, int guildId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTagClipsApiResponse?> ListTagClipsOrDefaultAsync(string tagName, long guildId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Tags
@@ -204,7 +204,7 @@ namespace SidekickApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>&gt;</returns>
-        Task<IListTagsApiResponse> ListTagsAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTagsApiResponse> ListTagsAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Tags
@@ -216,7 +216,7 @@ namespace SidekickApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>?&gt;</returns>
-        Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Play Clip
@@ -974,7 +974,7 @@ namespace SidekickApi.Api
             ApiKeyProvider = apiKeyProvider;
         }
 
-        partial void FormatGetCurrentIntro(ref int guildId, ref int requesterUserId);
+        partial void FormatGetCurrentIntro(ref long guildId, ref long requesterUserId);
 
         /// <summary>
         /// Processes the server response
@@ -982,7 +982,7 @@ namespace SidekickApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="requesterUserId"></param>
-        private void AfterGetCurrentIntroDefaultImplementation(IGetCurrentIntroApiResponse apiResponseLocalVar, int guildId, int requesterUserId)
+        private void AfterGetCurrentIntroDefaultImplementation(IGetCurrentIntroApiResponse apiResponseLocalVar, long guildId, long requesterUserId)
         {
             bool suppressDefaultLog = false;
             AfterGetCurrentIntro(ref suppressDefaultLog, apiResponseLocalVar, guildId, requesterUserId);
@@ -997,7 +997,7 @@ namespace SidekickApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="requesterUserId"></param>
-        partial void AfterGetCurrentIntro(ref bool suppressDefaultLog, IGetCurrentIntroApiResponse apiResponseLocalVar, int guildId, int requesterUserId);
+        partial void AfterGetCurrentIntro(ref bool suppressDefaultLog, IGetCurrentIntroApiResponse apiResponseLocalVar, long guildId, long requesterUserId);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1007,7 +1007,7 @@ namespace SidekickApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="requesterUserId"></param>
-        private void OnErrorGetCurrentIntroDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, int requesterUserId)
+        private void OnErrorGetCurrentIntroDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, long requesterUserId)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorGetCurrentIntro(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, requesterUserId);
@@ -1024,7 +1024,7 @@ namespace SidekickApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="requesterUserId"></param>
-        partial void OnErrorGetCurrentIntro(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, int requesterUserId);
+        partial void OnErrorGetCurrentIntro(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, long requesterUserId);
 
         /// <summary>
         /// Get Current Intro 
@@ -1033,7 +1033,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>&gt;</returns>
-        public async Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(int guildId, int requesterUserId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(long guildId, long requesterUserId, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -1053,7 +1053,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>&gt;</returns>
-        public async Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(int guildId, int requesterUserId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(long guildId, long requesterUserId, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
@@ -1632,7 +1632,7 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetRecentClipStats(ref int guildId, ref Option<int?> requesterUserId, ref Option<int> limit, ref Option<bool> includeRandom);
+        partial void FormatGetRecentClipStats(ref long guildId, ref Option<int?> requesterUserId, ref Option<int> limit, ref Option<bool> includeRandom);
 
         /// <summary>
         /// Processes the server response
@@ -1642,7 +1642,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void AfterGetRecentClipStatsDefaultImplementation(IGetRecentClipStatsApiResponse apiResponseLocalVar, int guildId, Option<int?> requesterUserId, Option<int> limit, Option<bool> includeRandom)
+        private void AfterGetRecentClipStatsDefaultImplementation(IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<int?> requesterUserId, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLog = false;
             AfterGetRecentClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, requesterUserId, limit, includeRandom);
@@ -1659,7 +1659,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void AfterGetRecentClipStats(ref bool suppressDefaultLog, IGetRecentClipStatsApiResponse apiResponseLocalVar, int guildId, Option<int?> requesterUserId, Option<int> limit, Option<bool> includeRandom);
+        partial void AfterGetRecentClipStats(ref bool suppressDefaultLog, IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<int?> requesterUserId, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1671,7 +1671,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void OnErrorGetRecentClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<int?> requesterUserId, Option<int> limit, Option<bool> includeRandom)
+        private void OnErrorGetRecentClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<int?> requesterUserId, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorGetRecentClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, requesterUserId, limit, includeRandom);
@@ -1690,7 +1690,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void OnErrorGetRecentClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<int?> requesterUserId, Option<int> limit, Option<bool> includeRandom);
+        partial void OnErrorGetRecentClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<int?> requesterUserId, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Recent Clip Stats 
@@ -1701,7 +1701,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(int guildId, Option<int?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<int?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -1723,7 +1723,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(int guildId, Option<int?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<int?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
@@ -2016,7 +2016,7 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetTopClipStats(ref int guildId, ref Option<int?> requesterUserId, ref Option<string> days, ref Option<int> limit, ref Option<bool> includeRandom);
+        partial void FormatGetTopClipStats(ref long guildId, ref Option<int?> requesterUserId, ref Option<string> days, ref Option<int> limit, ref Option<bool> includeRandom);
 
         /// <summary>
         /// Validates the request parameters
@@ -2038,7 +2038,7 @@ namespace SidekickApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void AfterGetTopClipStatsDefaultImplementation(IGetTopClipStatsApiResponse apiResponseLocalVar, int guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
+        private void AfterGetTopClipStatsDefaultImplementation(IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLog = false;
             AfterGetTopClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, requesterUserId, days, limit, includeRandom);
@@ -2056,7 +2056,7 @@ namespace SidekickApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void AfterGetTopClipStats(ref bool suppressDefaultLog, IGetTopClipStatsApiResponse apiResponseLocalVar, int guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
+        partial void AfterGetTopClipStats(ref bool suppressDefaultLog, IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -2069,7 +2069,7 @@ namespace SidekickApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void OnErrorGetTopClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
+        private void OnErrorGetTopClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorGetTopClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, requesterUserId, days, limit, includeRandom);
@@ -2089,19 +2089,19 @@ namespace SidekickApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void OnErrorGetTopClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
+        partial void OnErrorGetTopClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<int?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Top Clip Stats 
         /// </summary>
         /// <param name="guildId"></param>
         /// <param name="requesterUserId"> (optional)</param>
-        /// <param name="days"> (optional, default to 7)</param>
+        /// <param name="days"> (optional, default to &quot;7&quot;)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(int guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -2119,12 +2119,12 @@ namespace SidekickApi.Api
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="guildId"></param>
         /// <param name="requesterUserId"> (optional)</param>
-        /// <param name="days"> (optional, default to 7)</param>
+        /// <param name="days"> (optional, default to &quot;7&quot;)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(int guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<int?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
@@ -2460,7 +2460,7 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListClips(ref int guildId, ref Option<string?> search);
+        partial void FormatListClips(ref long guildId, ref Option<string?> search);
 
         /// <summary>
         /// Processes the server response
@@ -2468,7 +2468,7 @@ namespace SidekickApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void AfterListClipsDefaultImplementation(IListClipsApiResponse apiResponseLocalVar, int guildId, Option<string?> search)
+        private void AfterListClipsDefaultImplementation(IListClipsApiResponse apiResponseLocalVar, long guildId, Option<string?> search)
         {
             bool suppressDefaultLog = false;
             AfterListClips(ref suppressDefaultLog, apiResponseLocalVar, guildId, search);
@@ -2483,7 +2483,7 @@ namespace SidekickApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void AfterListClips(ref bool suppressDefaultLog, IListClipsApiResponse apiResponseLocalVar, int guildId, Option<string?> search);
+        partial void AfterListClips(ref bool suppressDefaultLog, IListClipsApiResponse apiResponseLocalVar, long guildId, Option<string?> search);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -2493,7 +2493,7 @@ namespace SidekickApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void OnErrorListClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<string?> search)
+        private void OnErrorListClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string?> search)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorListClips(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, search);
@@ -2510,7 +2510,7 @@ namespace SidekickApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void OnErrorListClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<string?> search);
+        partial void OnErrorListClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string?> search);
 
         /// <summary>
         /// List Clips 
@@ -2519,7 +2519,7 @@ namespace SidekickApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
-        public async Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -2539,7 +2539,7 @@ namespace SidekickApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
-        public async Task<IListClipsApiResponse> ListClipsAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListClipsApiResponse> ListClipsAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
@@ -2826,7 +2826,7 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListTagClips(ref string tagName, ref int guildId);
+        partial void FormatListTagClips(ref string tagName, ref long guildId);
 
         /// <summary>
         /// Validates the request parameters
@@ -2845,7 +2845,7 @@ namespace SidekickApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="tagName"></param>
         /// <param name="guildId"></param>
-        private void AfterListTagClipsDefaultImplementation(IListTagClipsApiResponse apiResponseLocalVar, string tagName, int guildId)
+        private void AfterListTagClipsDefaultImplementation(IListTagClipsApiResponse apiResponseLocalVar, string tagName, long guildId)
         {
             bool suppressDefaultLog = false;
             AfterListTagClips(ref suppressDefaultLog, apiResponseLocalVar, tagName, guildId);
@@ -2860,7 +2860,7 @@ namespace SidekickApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="tagName"></param>
         /// <param name="guildId"></param>
-        partial void AfterListTagClips(ref bool suppressDefaultLog, IListTagClipsApiResponse apiResponseLocalVar, string tagName, int guildId);
+        partial void AfterListTagClips(ref bool suppressDefaultLog, IListTagClipsApiResponse apiResponseLocalVar, string tagName, long guildId);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -2870,7 +2870,7 @@ namespace SidekickApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="tagName"></param>
         /// <param name="guildId"></param>
-        private void OnErrorListTagClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, int guildId)
+        private void OnErrorListTagClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, long guildId)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorListTagClips(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, tagName, guildId);
@@ -2887,7 +2887,7 @@ namespace SidekickApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="tagName"></param>
         /// <param name="guildId"></param>
-        partial void OnErrorListTagClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, int guildId);
+        partial void OnErrorListTagClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, long guildId);
 
         /// <summary>
         /// List Tag Clips 
@@ -2896,7 +2896,7 @@ namespace SidekickApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagClipsApiResponse"/>&gt;</returns>
-        public async Task<IListTagClipsApiResponse?> ListTagClipsOrDefaultAsync(string tagName, int guildId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTagClipsApiResponse?> ListTagClipsOrDefaultAsync(string tagName, long guildId, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -2916,7 +2916,7 @@ namespace SidekickApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagClipsApiResponse"/>&gt;</returns>
-        public async Task<IListTagClipsApiResponse> ListTagClipsAsync(string tagName, int guildId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTagClipsApiResponse> ListTagClipsAsync(string tagName, long guildId, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
@@ -3241,7 +3241,7 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListTags(ref int guildId, ref Option<string?> search);
+        partial void FormatListTags(ref long guildId, ref Option<string?> search);
 
         /// <summary>
         /// Processes the server response
@@ -3249,7 +3249,7 @@ namespace SidekickApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void AfterListTagsDefaultImplementation(IListTagsApiResponse apiResponseLocalVar, int guildId, Option<string?> search)
+        private void AfterListTagsDefaultImplementation(IListTagsApiResponse apiResponseLocalVar, long guildId, Option<string?> search)
         {
             bool suppressDefaultLog = false;
             AfterListTags(ref suppressDefaultLog, apiResponseLocalVar, guildId, search);
@@ -3264,7 +3264,7 @@ namespace SidekickApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void AfterListTags(ref bool suppressDefaultLog, IListTagsApiResponse apiResponseLocalVar, int guildId, Option<string?> search);
+        partial void AfterListTags(ref bool suppressDefaultLog, IListTagsApiResponse apiResponseLocalVar, long guildId, Option<string?> search);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -3274,7 +3274,7 @@ namespace SidekickApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void OnErrorListTagsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<string?> search)
+        private void OnErrorListTagsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string?> search)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorListTags(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, search);
@@ -3291,7 +3291,7 @@ namespace SidekickApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void OnErrorListTags(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, int guildId, Option<string?> search);
+        partial void OnErrorListTags(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string?> search);
 
         /// <summary>
         /// List Tags 
@@ -3300,7 +3300,7 @@ namespace SidekickApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>&gt;</returns>
-        public async Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -3320,7 +3320,7 @@ namespace SidekickApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>&gt;</returns>
-        public async Task<IListTagsApiResponse> ListTagsAsync(int guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTagsApiResponse> ListTagsAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
