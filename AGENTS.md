@@ -1,4 +1,6 @@
-# ownbotsidekick
+# ownbotsidekick / Trilby
+
+Originally codenamed "sidekick" but is now named Trilby
 
 1. Use Windows line endings (CRLF) for all text/code files.
 2. Build and run from Windows/Visual Studio, not WSL.
