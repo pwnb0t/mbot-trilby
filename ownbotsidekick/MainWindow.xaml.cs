@@ -50,8 +50,8 @@ namespace ownbotsidekick
         private readonly List<string> _allClipTriggers = new();
         private readonly List<string> _allTagNames = new();
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
-        private readonly QuickPlayAssignmentsStore _quickPlayAssignmentsStore;
-        private readonly QuickPlayAssignments _quickPlayAssignments;
+        private readonly UserSettingsStateStore _userSettingsStore;
+        private readonly UserSettingsState _userSettings;
         private readonly IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots;
         private readonly CurrentIntroSlotViewModel _currentIntroSlot = new();
         private readonly TagWidgetViewModel _tagWidget = new();
@@ -106,14 +106,18 @@ namespace ownbotsidekick
             Directory.CreateDirectory(logDirectory);
             _logFilePath = Path.Combine(logDirectory, "overlay.log");
             var userStateDirectory = Path.GetDirectoryName(logDirectory) ?? logDirectory;
-            _quickPlayAssignmentsStore = new QuickPlayAssignmentsStore(userStateDirectory);
-            _quickPlayAssignments = _quickPlayAssignmentsStore.Load();
+            _userSettingsStore = new UserSettingsStateStore(userStateDirectory);
+            _userSettings = _userSettingsStore.Load();
             _quickPlaySlots = Enumerable.Range(1, 8)
                 .Select(slotIndex => new QuickPlaySlotViewModel(slotIndex))
                 .ToArray();
             _viewModel.QuickPlaySlots = _quickPlaySlots;
             _viewModel.CurrentIntroSlot = _currentIntroSlot;
             _viewModel.TagWidget = _tagWidget;
+            if (!string.IsNullOrWhiteSpace(_userSettings.SelectedTagName))
+            {
+                _tagWidget.SetLoading(_userSettings.SelectedTagName);
+            }
             _diagnostics = new OverlayDiagnostics(_logFilePath);
             _overlayController = new OverlayController(
                 overlayPanelBorder: OverlayPanelBorder,
@@ -318,6 +322,8 @@ namespace ownbotsidekick
         private void ClearSelectedTagButton_Click(object sender, RoutedEventArgs e)
         {
             _tagWidget.ClearSelection();
+            _userSettings.SelectedTagName = null;
+            SaveUserSettings();
         }
 
         private async void TopStatsScopeMeButton_Click(object sender, RoutedEventArgs e)
@@ -633,6 +639,8 @@ namespace ownbotsidekick
                     .Select(trigger => new TagClipEntryViewModel(trigger))
                     .ToArray();
                 _tagWidget.SetLoaded(catalog.TagName, clips);
+                _userSettings.SelectedTagName = catalog.TagName;
+                SaveUserSettings();
                 Log($"Loaded {clips.Length} clips for &{catalog.TagName}.");
             }
             catch (Exception ex)
@@ -1165,7 +1173,7 @@ namespace ownbotsidekick
         {
             foreach (var slot in _quickPlaySlots)
             {
-                slot.Trigger = _quickPlayAssignments.GetTrigger(slot.SlotIndex);
+                slot.Trigger = _userSettings.GetTrigger(slot.SlotIndex);
                 slot.IsDragHoverTarget = _quickPlayDragActive && _quickPlayDragHoverSlot == slot.SlotIndex;
                 slot.IsDragAvailableTarget = _quickPlayDragActive && _quickPlayDragHoverSlot != slot.SlotIndex;
             }
@@ -1177,14 +1185,19 @@ namespace ownbotsidekick
             _currentIntroSlot.IsDragAvailableTarget = _quickPlayDragActive && !_currentIntroDragHover;
         }
 
+        private void SaveUserSettings()
+        {
+            _userSettingsStore.Save(_userSettings);
+        }
+
         private void SaveQuickPlayAssignments()
         {
-            _quickPlayAssignmentsStore.Save(_quickPlayAssignments);
+            SaveUserSettings();
         }
 
         private void SetQuickPlayTrigger(int slotIndex, string trigger)
         {
-            _quickPlayAssignments.SetTrigger(slotIndex, trigger);
+            _userSettings.SetTrigger(slotIndex, trigger);
         }
 
         private static int GetQuickPlaySlotIndex(object sender)
