@@ -119,6 +119,48 @@ namespace ownbotsidekick.Services
                 $"List tags failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
         }
 
+        public async Task<TagClipCatalog> ListTagClipsAsync(
+            string tagName,
+            CancellationToken cancellationToken = default)
+        {
+            var response = await _api.ListTagClipsAsync(tagName, _guildId, cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            {
+                var triggers = ok.Clips
+                    .Select(clip => clip.Trigger)
+                    .Where(trigger => !string.IsNullOrWhiteSpace(trigger))
+                    .OrderBy(trigger => trigger, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                return new TagClipCatalog(ok.TagName, triggers, ok.Total);
+            }
+
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            {
+                throw new InvalidOperationException($"List tag clips failed: {unauthorized.Message}");
+            }
+
+            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            {
+                throw new InvalidOperationException($"List tag clips failed: {notFound.Message}");
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"List tag clips failed: {internalError.Message}");
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("List tag clips failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"List tag clips failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
+        }
+
         public async Task<TopClipStatsCatalog> GetTopClipStatsAsync(
             string days,
             int limit = 10,
@@ -466,6 +508,20 @@ namespace ownbotsidekick.Services
             }
 
             public IReadOnlyList<string> TagNames { get; }
+            public int Total { get; }
+        }
+
+        internal sealed class TagClipCatalog
+        {
+            public TagClipCatalog(string tagName, IReadOnlyList<string> triggers, int total)
+            {
+                TagName = tagName;
+                Triggers = triggers;
+                Total = total;
+            }
+
+            public string TagName { get; }
+            public IReadOnlyList<string> Triggers { get; }
             public int Total { get; }
         }
 

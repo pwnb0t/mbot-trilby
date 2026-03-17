@@ -54,6 +54,7 @@ namespace ownbotsidekick
         private readonly QuickPlayAssignments _quickPlayAssignments;
         private readonly IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots;
         private readonly CurrentIntroSlotViewModel _currentIntroSlot = new();
+        private readonly TagWidgetViewModel _tagWidget = new();
         private string _topClipStatsDays = "7";
         private bool _topClipStatsGuildWide;
         private bool _quickPlayDragActive;
@@ -112,6 +113,7 @@ namespace ownbotsidekick
                 .ToArray();
             _viewModel.QuickPlaySlots = _quickPlaySlots;
             _viewModel.CurrentIntroSlot = _currentIntroSlot;
+            _viewModel.TagWidget = _tagWidget;
             _diagnostics = new OverlayDiagnostics(_logFilePath);
             _overlayController = new OverlayController(
                 overlayPanelBorder: OverlayPanelBorder,
@@ -261,7 +263,7 @@ namespace ownbotsidekick
                 return;
             }
 
-            Log($"Tag search result selected: &{searchResult.Value}. Tag widget is not implemented yet.");
+            await SelectTagAsync(searchResult.Value, "search result");
         }
 
         private void SearchPanel_ClipDragStateChanged(object? sender, bool isDragging)
@@ -299,6 +301,23 @@ namespace ownbotsidekick
             }
 
             await PlayClipAsync(trigger, trigger);
+        }
+
+        private async void TagClipItemButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not System.Windows.Controls.Button button ||
+                button.Tag is not string trigger ||
+                string.IsNullOrWhiteSpace(trigger))
+            {
+                return;
+            }
+
+            await PlayClipAsync(trigger, trigger);
+        }
+
+        private void ClearSelectedTagButton_Click(object sender, RoutedEventArgs e)
+        {
+            _tagWidget.ClearSelection();
         }
 
         private async void TopStatsScopeMeButton_Click(object sender, RoutedEventArgs e)
@@ -588,6 +607,39 @@ namespace ownbotsidekick
 
             _clipSearchState.SetSource(_allClipTriggers, _allTagNames);
             RenderSearchState();
+
+            if (_tagWidget.HasSelectedTag && !string.IsNullOrWhiteSpace(_tagWidget.SelectedTagName))
+            {
+                await SelectTagAsync(_tagWidget.SelectedTagName, $"{reason} tag refresh");
+            }
+        }
+
+        private async System.Threading.Tasks.Task SelectTagAsync(string tagName, string reason)
+        {
+            if (_sidekickApiClient is null)
+            {
+                _tagWidget.SetFailed(tagName, "API disabled");
+                return;
+            }
+
+            ResetSearchState();
+            _tagWidget.SetLoading(tagName);
+
+            try
+            {
+                Log($"Loading tag clips ({reason}) for &{tagName}...");
+                var catalog = await _sidekickApiClient.ListTagClipsAsync(tagName);
+                var clips = catalog.Triggers
+                    .Select(trigger => new TagClipEntryViewModel(trigger))
+                    .ToArray();
+                _tagWidget.SetLoaded(catalog.TagName, clips);
+                Log($"Loaded {clips.Length} clips for &{catalog.TagName}.");
+            }
+            catch (Exception ex)
+            {
+                _tagWidget.SetFailed(tagName, $"Failed to load &{tagName}");
+                Log($"Load tag clips failed for &{tagName}: {ex.Message}");
+            }
         }
 
         private async System.Threading.Tasks.Task<bool> PlayClipAsync(string clipName, string trigger)
@@ -887,7 +939,7 @@ namespace ownbotsidekick
                 return;
             }
 
-            Log($"Primary search action selected tag &{first.Value}. Tag widget is not implemented yet.");
+            await SelectTagAsync(first.Value, "primary search action");
         }
 
         private bool HandleOverlayKeyDown(int virtualKey, bool isAltDown)

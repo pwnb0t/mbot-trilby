@@ -21,6 +21,7 @@ namespace ownbotsidekick.ViewModels
         private IReadOnlyList<RecentClipEntryViewModel> _recentClipStats = new List<RecentClipEntryViewModel>();
         private IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots = new List<QuickPlaySlotViewModel>();
         private CurrentIntroSlotViewModel _currentIntroSlot = new();
+        private TagWidgetViewModel _tagWidget = new();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -110,6 +111,12 @@ namespace ownbotsidekick.ViewModels
         {
             get => _currentIntroSlot;
             set => SetField(ref _currentIntroSlot, value);
+        }
+
+        public TagWidgetViewModel TagWidget
+        {
+            get => _tagWidget;
+            set => SetField(ref _tagWidget, value);
         }
 
         private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
