@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ownbotsidekick.Services
 {
@@ -83,41 +84,6 @@ namespace ownbotsidekick.Services
         public string? SelectedTagName { get; set; }
     }
 
-    internal sealed class LegacyFlatUserSettingsState
-    {
-        public string? Slot1Trigger { get; set; }
-        public string? Slot2Trigger { get; set; }
-        public string? Slot3Trigger { get; set; }
-        public string? Slot4Trigger { get; set; }
-        public string? Slot5Trigger { get; set; }
-        public string? Slot6Trigger { get; set; }
-        public string? Slot7Trigger { get; set; }
-        public string? Slot8Trigger { get; set; }
-        public string? SelectedTagName { get; set; }
-
-        public UserSettingsState ToUserSettingsState()
-        {
-            return new UserSettingsState
-            {
-                QuickPlay = new QuickPlaySettings
-                {
-                    Slot1Trigger = Slot1Trigger,
-                    Slot2Trigger = Slot2Trigger,
-                    Slot3Trigger = Slot3Trigger,
-                    Slot4Trigger = Slot4Trigger,
-                    Slot5Trigger = Slot5Trigger,
-                    Slot6Trigger = Slot6Trigger,
-                    Slot7Trigger = Slot7Trigger,
-                    Slot8Trigger = Slot8Trigger
-                },
-                Tags = new TagSettings
-                {
-                    SelectedTagName = SelectedTagName
-                }
-            };
-        }
-    }
-
     internal sealed class UserSettingsState
     {
         public QuickPlaySettings QuickPlay { get; set; } = QuickPlaySettings.CreateEmpty();
@@ -142,6 +108,7 @@ namespace ownbotsidekick.Services
             QuickPlay.SetTrigger(slotIndex, trigger);
         }
 
+        [JsonIgnore]
         public string? SelectedTagName
         {
             get => Tags.SelectedTagName;
@@ -152,7 +119,6 @@ namespace ownbotsidekick.Services
     internal sealed class UserSettingsStateStore
     {
         private readonly string _userSettingsPath;
-        private readonly string _legacyQuickPlayPath;
         private readonly JsonSerializerOptions _serializerOptions = new()
         {
             PropertyNameCaseInsensitive = true,
@@ -164,7 +130,6 @@ namespace ownbotsidekick.Services
         {
             Directory.CreateDirectory(baseDirectoryPath);
             _userSettingsPath = Path.Combine(baseDirectoryPath, "user-settings.json");
-            _legacyQuickPlayPath = Path.Combine(baseDirectoryPath, "quickplay.json");
         }
 
         public UserSettingsState Load()
@@ -174,14 +139,6 @@ namespace ownbotsidekick.Services
             if (File.Exists(_userSettingsPath))
             {
                 return LoadUserSettings(fallback);
-            }
-
-            if (File.Exists(_legacyQuickPlayPath))
-            {
-                var migrated = LoadLegacyQuickPlaySettings(fallback);
-                Save(migrated);
-                TryDeleteLegacyQuickPlayFile();
-                return migrated;
             }
 
             Save(fallback);
@@ -199,49 +156,8 @@ namespace ownbotsidekick.Services
             try
             {
                 var json = File.ReadAllText(_userSettingsPath);
-                using var document = JsonDocument.Parse(json);
-                if (document.RootElement.ValueKind == JsonValueKind.Object)
-                {
-                    if (document.RootElement.TryGetProperty("quickPlay", out _) ||
-                        document.RootElement.TryGetProperty("tags", out _))
-                    {
-                        var nestedSettings = JsonSerializer.Deserialize<UserSettingsState>(json, _serializerOptions);
-                        return Normalize(nestedSettings) ?? fallback;
-                    }
-                }
-
-                var flatSettings = JsonSerializer.Deserialize<LegacyFlatUserSettingsState>(json, _serializerOptions);
-                if (flatSettings is null)
-                {
-                    return fallback;
-                }
-
-                var migratedSettings = flatSettings.ToUserSettingsState();
-                Save(migratedSettings);
-                return migratedSettings;
-            }
-            catch
-            {
-                return fallback;
-            }
-        }
-
-        private UserSettingsState LoadLegacyQuickPlaySettings(UserSettingsState fallback)
-        {
-            try
-            {
-                var json = File.ReadAllText(_legacyQuickPlayPath);
-                var legacySettings = JsonSerializer.Deserialize<QuickPlaySettings>(json, _serializerOptions);
-                if (legacySettings is null)
-                {
-                    return fallback;
-                }
-
-                return new UserSettingsState
-                {
-                    QuickPlay = legacySettings,
-                    Tags = new TagSettings()
-                };
+                var settings = JsonSerializer.Deserialize<UserSettingsState>(json, _serializerOptions);
+                return Normalize(settings) ?? fallback;
             }
             catch
             {
@@ -259,18 +175,6 @@ namespace ownbotsidekick.Services
             settings.QuickPlay ??= QuickPlaySettings.CreateEmpty();
             settings.Tags ??= new TagSettings();
             return settings;
-        }
-
-        private void TryDeleteLegacyQuickPlayFile()
-        {
-            try
-            {
-                File.Delete(_legacyQuickPlayPath);
-            }
-            catch
-            {
-                // Ignore deletion failure; the new canonical file is already written.
-            }
         }
     }
 }

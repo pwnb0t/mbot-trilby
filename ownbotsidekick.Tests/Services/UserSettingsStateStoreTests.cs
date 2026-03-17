@@ -34,28 +34,6 @@ namespace ownbotsidekick.Tests.Services
         }
 
         [Fact]
-        public void Load_Migrates_Legacy_QuickPlayFile_Once()
-        {
-            var legacyPath = Path.Combine(_tempDirectory, "quickplay.json");
-            File.WriteAllText(
-                legacyPath,
-                """
-                {
-                  "slot1Trigger": "alpha",
-                  "slot2Trigger": "beta"
-                }
-                """);
-            var store = new UserSettingsStateStore(_tempDirectory);
-
-            var state = store.Load();
-
-            Assert.Equal("alpha", state.GetTrigger(1));
-            Assert.Equal("beta", state.GetTrigger(2));
-            Assert.True(File.Exists(Path.Combine(_tempDirectory, "user-settings.json")));
-            Assert.False(File.Exists(legacyPath));
-        }
-
-        [Fact]
         public void Save_Persists_SelectedTag_And_QuickPlayAssignments()
         {
             var store = new UserSettingsStateStore(_tempDirectory);
@@ -68,31 +46,11 @@ namespace ownbotsidekick.Tests.Services
             var reloaded = store.Load();
             Assert.Equal("alpha", reloaded.GetTrigger(1));
             Assert.Equal("test", reloaded.SelectedTagName);
-        }
-
-        [Fact]
-        public void Load_Upgrades_Flat_UserSettingsFile_To_Sectioned_Shape()
-        {
-            var userSettingsPath = Path.Combine(_tempDirectory, "user-settings.json");
-            File.WriteAllText(
-                userSettingsPath,
-                """
-                {
-                  "slot1Trigger": "alpha",
-                  "selectedTagName": "test"
-                }
-                """);
-            var store = new UserSettingsStateStore(_tempDirectory);
-
-            var state = store.Load();
-
-            Assert.Equal("alpha", state.GetTrigger(1));
-            Assert.Equal("test", state.SelectedTagName);
-
-            var rewrittenJson = File.ReadAllText(userSettingsPath);
-            Assert.Contains("\"quickPlay\"", rewrittenJson);
-            Assert.Contains("\"tags\"", rewrittenJson);
-            Assert.Contains("\"selectedTagName\"", rewrittenJson);
+            var json = File.ReadAllText(Path.Combine(_tempDirectory, "user-settings.json"));
+            Assert.Contains("\"quickPlay\"", json);
+            Assert.Contains("\"tags\"", json);
+            Assert.Contains("\"selectedTagName\"", json);
+            Assert.DoesNotContain("\n  \"selectedTagName\":", json.Replace("\r", string.Empty), StringComparison.Ordinal);
         }
 
         public void Dispose()
