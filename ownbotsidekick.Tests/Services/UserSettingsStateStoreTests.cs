@@ -34,7 +34,7 @@ namespace ownbotsidekick.Tests.Services
         }
 
         [Fact]
-        public void Save_Persists_SelectedTag_And_QuickPlayAssignments()
+        public void Save_Persists_SelectedTag_And_QuickPlayState()
         {
             var store = new UserSettingsStateStore(_tempDirectory);
             var state = UserSettingsState.CreateEmpty();

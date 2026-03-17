@@ -1134,7 +1134,7 @@ namespace ownbotsidekick
             }
 
             SetQuickPlayTrigger(slotIndex, trigger);
-            SaveQuickPlayAssignments();
+            SaveUserSettings();
             UpdateQuickPlaySlots();
             Log($"Assigned quick play slot {slotIndex} -> {trigger}");
         }
@@ -1188,11 +1188,6 @@ namespace ownbotsidekick
         private void SaveUserSettings()
         {
             _userSettingsStore.Save(_userSettings);
-        }
-
-        private void SaveQuickPlayAssignments()
-        {
-            SaveUserSettings();
         }
 
         private void SetQuickPlayTrigger(int slotIndex, string trigger)
