@@ -60,6 +60,7 @@ namespace ownbotsidekick
         private bool _quickPlayDragActive;
         private int _quickPlayDragHoverSlot;
         private bool _currentIntroDragHover;
+        private bool _tagDropZoneHover;
         private bool _recentStatsGuildWide;
         private bool _recentStatsIncludeRandom = true;
         private bool _hotkeyRegistered;
@@ -277,10 +278,12 @@ namespace ownbotsidekick
             {
                 _quickPlayDragHoverSlot = 0;
                 _currentIntroDragHover = false;
+                _tagDropZoneHover = false;
             }
 
             UpdateQuickPlaySlots();
             UpdateCurrentIntroSlot();
+            UpdateTagDropZone();
         }
 
         private async void TopClipStatsItemButton_Click(object sender, RoutedEventArgs e)
@@ -324,6 +327,63 @@ namespace ownbotsidekick
             _tagWidget.ClearSelection();
             _userSettings.SelectedTagName = null;
             SaveUserSettings();
+        }
+
+        private void TagDropZone_DragEnter(object sender, System.Windows.DragEventArgs e)
+        {
+            if (!_tagWidget.HasSelectedTag || !HasClipTriggerDragData(e))
+            {
+                e.Effects = System.Windows.DragDropEffects.None;
+                return;
+            }
+
+            _tagDropZoneHover = true;
+            e.Effects = System.Windows.DragDropEffects.Copy;
+            UpdateTagDropZone();
+        }
+
+        private void TagDropZone_DragLeave(object sender, System.Windows.DragEventArgs e)
+        {
+            _tagDropZoneHover = false;
+            UpdateTagDropZone();
+        }
+
+        private void TagDropZone_DragOver(object sender, System.Windows.DragEventArgs e)
+        {
+            e.Effects = _tagWidget.HasSelectedTag && HasClipTriggerDragData(e)
+                ? System.Windows.DragDropEffects.Copy
+                : System.Windows.DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private async void TagDropZone_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            _tagDropZoneHover = false;
+            var trigger = TryGetDroppedClipTrigger(e);
+            var selectedTagName = _tagWidget.SelectedTagName;
+            if (string.IsNullOrWhiteSpace(trigger) || string.IsNullOrWhiteSpace(selectedTagName))
+            {
+                UpdateTagDropZone();
+                return;
+            }
+
+            if (_sidekickApiClient is null)
+            {
+                UpdateTagDropZone();
+                return;
+            }
+
+            try
+            {
+                await _sidekickApiClient.AddClipToTagAsync(selectedTagName, trigger);
+                Log($"Added clip '{trigger}' to &{selectedTagName}");
+                await SelectTagAsync(selectedTagName, "tag drop refresh");
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to add clip '{trigger}' to &{selectedTagName}: {ex.Message}");
+                UpdateTagDropZone();
+            }
         }
 
         private async void TopStatsScopeMeButton_Click(object sender, RoutedEventArgs e)
@@ -1183,6 +1243,12 @@ namespace ownbotsidekick
         {
             _currentIntroSlot.IsDragHoverTarget = _quickPlayDragActive && _currentIntroDragHover;
             _currentIntroSlot.IsDragAvailableTarget = _quickPlayDragActive && !_currentIntroDragHover;
+        }
+
+        private void UpdateTagDropZone()
+        {
+            _tagWidget.IsDragHoverTarget = _quickPlayDragActive && _tagDropZoneHover && _tagWidget.HasSelectedTag;
+            _tagWidget.IsDragAvailableTarget = _quickPlayDragActive && !_tagDropZoneHover && _tagWidget.HasSelectedTag;
         }
 
         private void SaveUserSettings()

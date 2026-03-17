@@ -10,6 +10,8 @@ namespace ownbotsidekick.ViewModels
         private string _statusText = "Search for an existing &tag";
         private IReadOnlyList<TagClipEntryViewModel> _clips = new List<TagClipEntryViewModel>();
         private string? _selectedTagName;
+        private bool _isDragHoverTarget;
+        private bool _isDragAvailableTarget;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -42,10 +44,27 @@ namespace ownbotsidekick.ViewModels
                 }
 
                 OnPropertyChanged(nameof(HasSelectedTag));
+                OnPropertyChanged(nameof(DropHintText));
             }
         }
 
         public bool HasSelectedTag => !string.IsNullOrWhiteSpace(SelectedTagName);
+
+        public bool IsDragHoverTarget
+        {
+            get => _isDragHoverTarget;
+            set => SetField(ref _isDragHoverTarget, value);
+        }
+
+        public bool IsDragAvailableTarget
+        {
+            get => _isDragAvailableTarget;
+            set => SetField(ref _isDragAvailableTarget, value);
+        }
+
+        public string DropHintText => HasSelectedTag
+            ? $"Drag clips here to add to &{SelectedTagName}"
+            : "Search for an existing &tag";
 
         public void ClearSelection()
         {
@@ -53,6 +72,8 @@ namespace ownbotsidekick.ViewModels
             TitleText = "Tag: no &tag selected";
             StatusText = "Search for an existing &tag";
             Clips = new List<TagClipEntryViewModel>();
+            IsDragHoverTarget = false;
+            IsDragAvailableTarget = false;
         }
 
         public void SetLoading(string tagName)

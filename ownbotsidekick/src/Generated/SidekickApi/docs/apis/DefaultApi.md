@@ -4,6 +4,7 @@ All URIs are relative to *http://127.0.0.1:28765*
 
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
+| [**AddTagClip**](DefaultApi.md#addtagclip) | **POST** /v1/tags/{tag_name}/clips | Add Tag Clip |
 | [**GetCurrentIntro**](DefaultApi.md#getcurrentintro) | **GET** /v1/intros/current | Get Current Intro |
 | [**GetHealth**](DefaultApi.md#gethealth) | **GET** /v1/health | Health |
 | [**GetRecentClipStats**](DefaultApi.md#getrecentclipstats) | **GET** /v1/clips/stats/recent | Recent Clip Stats |
@@ -15,6 +16,45 @@ All URIs are relative to *http://127.0.0.1:28765*
 | [**PlayRandomClip**](DefaultApi.md#playrandomclip) | **POST** /v1/clips/play-random | Play Random Clip |
 | [**SetCurrentIntro**](DefaultApi.md#setcurrentintro) | **PUT** /v1/intros/current | Set Current Intro |
 | [**StopClip**](DefaultApi.md#stopclip) | **POST** /v1/clips/stop | Stop Clip |
+
+<a id="addtagclip"></a>
+# **AddTagClip**
+> AddTagClipResponse AddTagClip (string tagName, AddTagClipBody addTagClipBody)
+
+Add Tag Clip
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **tagName** | **string** |  |  |
+| **addTagClipBody** | [**AddTagClipBody**](AddTagClipBody.md) |  |  |
+
+### Return type
+
+[**AddTagClipResponse**](AddTagClipResponse.md)
+
+### Authorization
+
+[APIKeyHeader](../README.md#APIKeyHeader)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
+| **404** | Not found error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
 <a id="getcurrentintro"></a>
 # **GetCurrentIntro**

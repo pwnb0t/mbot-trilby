@@ -223,6 +223,9 @@ namespace SidekickApi.Model
             if (rows.IsSet && rows.Value == null)
                 throw new ArgumentNullException(nameof(rows), "Property is not nullable for class RecentClipStatsResponse.");
 
+            if (requesterUserId.IsSet && requesterUserId.Value == null)
+                throw new ArgumentNullException(nameof(requesterUserId), "Property is not nullable for class RecentClipStatsResponse.");
+
             return new RecentClipStatsResponse(ok.Value!.Value!, guildId.Value!.Value!, limit.Value!.Value!, includeRandom.Value!.Value!, rows.Value!, requesterUserId);
         }
 
@@ -264,10 +267,7 @@ namespace SidekickApi.Model
             writer.WritePropertyName("rows");
             JsonSerializer.Serialize(writer, recentClipStatsResponse.Rows, jsonSerializerOptions);
             if (recentClipStatsResponse.RequesterUserIdOption.IsSet)
-                if (recentClipStatsResponse.RequesterUserIdOption.Value != null)
-                    writer.WriteNumber("requester_user_id", recentClipStatsResponse.RequesterUserIdOption.Value!.Value);
-                else
-                    writer.WriteNull("requester_user_id");
+                writer.WriteNumber("requester_user_id", recentClipStatsResponse.RequesterUserIdOption.Value!.Value);
         }
     }
 }

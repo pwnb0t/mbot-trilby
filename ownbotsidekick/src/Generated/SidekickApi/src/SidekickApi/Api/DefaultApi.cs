@@ -38,6 +38,31 @@ namespace SidekickApi.Api
         DefaultApiEvents Events { get; }
 
         /// <summary>
+        /// Add Tag Clip
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="tagName"></param>
+        /// <param name="addTagClipBody"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>&gt;</returns>
+        Task<IAddTagClipApiResponse> AddTagClipAsync(string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Add Tag Clip
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="tagName"></param>
+        /// <param name="addTagClipBody"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>?&gt;</returns>
+        Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get Current Intro
         /// </summary>
         /// <remarks>
@@ -96,7 +121,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<long?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<long> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Recent Clip Stats
@@ -110,7 +135,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>?&gt;</returns>
-        Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<long?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<long> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Top Clip Stats
@@ -126,7 +151,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<long?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<long> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Top Clip Stats
@@ -141,7 +166,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>?&gt;</returns>
-        Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<long?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<long> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Clips
@@ -309,6 +334,42 @@ namespace SidekickApi.Api
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IStopClipApiResponse"/>?&gt;</returns>
         Task<IStopClipApiResponse?> StopClipOrDefaultAsync(StopClipRequest stopClipRequest, System.Threading.CancellationToken cancellationToken = default);
+    }
+
+    /// <summary>
+    /// The <see cref="IAddTagClipApiResponse"/>
+    /// </summary>
+    public interface IAddTagClipApiResponse : SidekickApi.Client.IApiResponse, IOk<SidekickApi.Model.AddTagClipResponse?>, IUnauthorized<SidekickApi.Model.ApiErrorResponse?>, INotFound<SidekickApi.Model.ApiErrorResponse?>, IInternalServerError<SidekickApi.Model.ApiErrorResponse?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 500 InternalServerError
+        /// </summary>
+        /// <returns></returns>
+        bool IsInternalServerError { get; }
+
+        /// <summary>
+        /// Returns true if the response is 422 UnprocessableContent
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnprocessableContent { get; }
     }
 
     /// <summary>
@@ -709,6 +770,26 @@ namespace SidekickApi.Api
         /// <summary>
         /// The event raised after the server response
         /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnAddTagClip;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorAddTagClip;
+
+        internal void ExecuteOnAddTagClip(DefaultApi.AddTagClipApiResponse apiResponse)
+        {
+            OnAddTagClip?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorAddTagClip(Exception exception)
+        {
+            OnErrorAddTagClip?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
         public event EventHandler<ApiResponseEventArgs>? OnGetCurrentIntro;
 
         /// <summary>
@@ -972,6 +1053,432 @@ namespace SidekickApi.Api
             HttpClient = httpClient;
             Events = defaultApiEvents;
             ApiKeyProvider = apiKeyProvider;
+        }
+
+        partial void FormatAddTagClip(ref string tagName, AddTagClipBody addTagClipBody);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <param name="addTagClipBody"></param>
+        /// <returns></returns>
+        private void ValidateAddTagClip(string tagName, AddTagClipBody addTagClipBody)
+        {
+            if (tagName == null)
+                throw new ArgumentNullException(nameof(tagName));
+
+            if (addTagClipBody == null)
+                throw new ArgumentNullException(nameof(addTagClipBody));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="tagName"></param>
+        /// <param name="addTagClipBody"></param>
+        private void AfterAddTagClipDefaultImplementation(IAddTagClipApiResponse apiResponseLocalVar, string tagName, AddTagClipBody addTagClipBody)
+        {
+            bool suppressDefaultLog = false;
+            AfterAddTagClip(ref suppressDefaultLog, apiResponseLocalVar, tagName, addTagClipBody);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="tagName"></param>
+        /// <param name="addTagClipBody"></param>
+        partial void AfterAddTagClip(ref bool suppressDefaultLog, IAddTagClipApiResponse apiResponseLocalVar, string tagName, AddTagClipBody addTagClipBody);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="tagName"></param>
+        /// <param name="addTagClipBody"></param>
+        private void OnErrorAddTagClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, AddTagClipBody addTagClipBody)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorAddTagClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, tagName, addTagClipBody);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="tagName"></param>
+        /// <param name="addTagClipBody"></param>
+        partial void OnErrorAddTagClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, AddTagClipBody addTagClipBody);
+
+        /// <summary>
+        /// Add Tag Clip 
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <param name="addTagClipBody"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>&gt;</returns>
+        public async Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await AddTagClipAsync(tagName, addTagClipBody, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Add Tag Clip 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="tagName"></param>
+        /// <param name="addTagClipBody"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>&gt;</returns>
+        public async Task<IAddTagClipApiResponse> AddTagClipAsync(string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateAddTagClip(tagName, addTagClipBody);
+
+                FormatAddTagClip(ref tagName, addTagClipBody);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/tags/{tag_name}/clips"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/tags/{tag_name}/clips");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Btag_name%7D", Uri.EscapeDataString(tagName.ToString()));
+
+                    httpRequestMessageLocalVar.Content = (addTagClipBody as object) is System.IO.Stream stream
+                        ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(addTagClipBody, _jsonSerializerOptions));
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
+                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
+                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    string[] contentTypes = new string[] {
+                        "application/json"
+                    };
+
+                    string? contentTypeLocalVar = ClientUtils.SelectHeaderContentType(contentTypes);
+
+                    if (contentTypeLocalVar != null && httpRequestMessageLocalVar.Content != null)
+                        httpRequestMessageLocalVar.Content.Headers.ContentType = new MediaTypeHeaderValue(contentTypeLocalVar);
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Post;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<AddTagClipApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<AddTagClipApiResponse>();
+                        AddTagClipApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/tags/{tag_name}/clips", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterAddTagClipDefaultImplementation(apiResponseLocalVar, tagName, addTagClipBody);
+
+                        Events.ExecuteOnAddTagClip(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorAddTagClipDefaultImplementation(e, "/v1/tags/{tag_name}/clips", uriBuilderLocalVar.Path, tagName, addTagClipBody);
+                Events.ExecuteOnErrorAddTagClip(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="AddTagClipApiResponse"/>
+        /// </summary>
+        public partial class AddTagClipApiResponse : SidekickApi.Client.ApiResponse, IAddTagClipApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<AddTagClipApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="AddTagClipApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public AddTagClipApiResponse(ILogger<AddTagClipApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="AddTagClipApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public AddTagClipApiResponse(ILogger<AddTagClipApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.AddTagClipResponse? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.AddTagClipResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out SidekickApi.Model.AddTagClipResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public bool IsInternalServerError => 500 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? InternalServerError()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsInternalServerError
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryInternalServerError([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = InternalServerError();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)500);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnprocessableContent => 422 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.HTTPValidationError? UnprocessableContent()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnprocessableContent
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.HTTPValidationError>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnprocessableContent([NotNullWhen(true)]out SidekickApi.Model.HTTPValidationError? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = UnprocessableContent();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)422);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
         partial void FormatGetCurrentIntro(ref long guildId, ref long requesterUserId);
@@ -1632,7 +2139,7 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetRecentClipStats(ref long guildId, ref Option<long?> requesterUserId, ref Option<int> limit, ref Option<bool> includeRandom);
+        partial void FormatGetRecentClipStats(ref long guildId, ref Option<long> requesterUserId, ref Option<int> limit, ref Option<bool> includeRandom);
 
         /// <summary>
         /// Processes the server response
@@ -1642,7 +2149,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void AfterGetRecentClipStatsDefaultImplementation(IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long?> requesterUserId, Option<int> limit, Option<bool> includeRandom)
+        private void AfterGetRecentClipStatsDefaultImplementation(IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long> requesterUserId, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLog = false;
             AfterGetRecentClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, requesterUserId, limit, includeRandom);
@@ -1659,7 +2166,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void AfterGetRecentClipStats(ref bool suppressDefaultLog, IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long?> requesterUserId, Option<int> limit, Option<bool> includeRandom);
+        partial void AfterGetRecentClipStats(ref bool suppressDefaultLog, IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long> requesterUserId, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1671,7 +2178,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void OnErrorGetRecentClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long?> requesterUserId, Option<int> limit, Option<bool> includeRandom)
+        private void OnErrorGetRecentClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long> requesterUserId, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorGetRecentClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, requesterUserId, limit, includeRandom);
@@ -1690,7 +2197,7 @@ namespace SidekickApi.Api
         /// <param name="requesterUserId"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void OnErrorGetRecentClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long?> requesterUserId, Option<int> limit, Option<bool> includeRandom);
+        partial void OnErrorGetRecentClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long> requesterUserId, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Recent Clip Stats 
@@ -1701,7 +2208,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<long?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<long> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -1723,7 +2230,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<long?> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<long> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
@@ -2016,7 +2523,7 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetTopClipStats(ref long guildId, ref Option<long?> requesterUserId, ref Option<string> days, ref Option<int> limit, ref Option<bool> includeRandom);
+        partial void FormatGetTopClipStats(ref long guildId, ref Option<long> requesterUserId, ref Option<string> days, ref Option<int> limit, ref Option<bool> includeRandom);
 
         /// <summary>
         /// Validates the request parameters
@@ -2038,7 +2545,7 @@ namespace SidekickApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void AfterGetTopClipStatsDefaultImplementation(IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
+        private void AfterGetTopClipStatsDefaultImplementation(IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLog = false;
             AfterGetTopClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, requesterUserId, days, limit, includeRandom);
@@ -2056,7 +2563,7 @@ namespace SidekickApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void AfterGetTopClipStats(ref bool suppressDefaultLog, IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
+        partial void AfterGetTopClipStats(ref bool suppressDefaultLog, IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -2069,7 +2576,7 @@ namespace SidekickApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void OnErrorGetTopClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
+        private void OnErrorGetTopClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorGetTopClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, requesterUserId, days, limit, includeRandom);
@@ -2089,7 +2596,7 @@ namespace SidekickApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void OnErrorGetTopClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long?> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
+        partial void OnErrorGetTopClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Top Clip Stats 
@@ -2101,7 +2608,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<long?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<long> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -2124,7 +2631,7 @@ namespace SidekickApi.Api
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<long?> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<long> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 

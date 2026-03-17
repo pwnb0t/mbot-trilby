@@ -11,6 +11,8 @@ namespace ownbotsidekick.Tests.ViewModels
         {
             var viewModel = new TagWidgetViewModel();
             viewModel.SetLoaded("test", new[] { new TagClipEntryViewModel("alpha") });
+            viewModel.IsDragAvailableTarget = true;
+            viewModel.IsDragHoverTarget = true;
 
             viewModel.ClearSelection();
 
@@ -19,6 +21,9 @@ namespace ownbotsidekick.Tests.ViewModels
             Assert.Equal("Tag: no &tag selected", viewModel.TitleText);
             Assert.Equal("Search for an existing &tag", viewModel.StatusText);
             Assert.Empty(viewModel.Clips);
+            Assert.False(viewModel.IsDragAvailableTarget);
+            Assert.False(viewModel.IsDragHoverTarget);
+            Assert.Equal("Search for an existing &tag", viewModel.DropHintText);
         }
 
         [Fact]
@@ -33,6 +38,7 @@ namespace ownbotsidekick.Tests.ViewModels
             Assert.Equal("Tag: &test", viewModel.TitleText);
             Assert.Equal("Loading clips for &test...", viewModel.StatusText);
             Assert.Empty(viewModel.Clips);
+            Assert.Equal("Drag clips here to add to &test", viewModel.DropHintText);
         }
 
         [Fact]

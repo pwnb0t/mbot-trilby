@@ -245,8 +245,9 @@ paths:
           exclusiveMinimum: true
           format: int64
           minimum: 0
-          nullable: true
+          title: Requester User Id
           type: integer
+          nullable: true
         style: form
       - explode: true
         in: query
@@ -335,8 +336,9 @@ paths:
           exclusiveMinimum: true
           format: int64
           minimum: 0
-          nullable: true
+          title: Requester User Id
           type: integer
+          nullable: true
         style: form
       - explode: true
         in: query
@@ -612,8 +614,107 @@ paths:
       security:
       - APIKeyHeader: []
       summary: List Tag Clips
+    post:
+      operationId: AddTagClip
+      parameters:
+      - explode: false
+        in: path
+        name: tag_name
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          title: Tag Name
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddTagClipBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddTagClipResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not found error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - APIKeyHeader: []
+      summary: Add Tag Clip
 components:
   schemas:
+    AddTagClipBody:
+      example:
+        guild_id: 0
+        clip_trigger: clip_trigger
+      properties:
+        guild_id:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0.0
+          title: Guild Id
+          type: integer
+        clip_trigger:
+          maxLength: 64
+          minLength: 1
+          title: Clip Trigger
+          type: string
+      required:
+      - clip_trigger
+      - guild_id
+      title: AddTagClipBody
+    AddTagClipResponse:
+      example:
+        tag_name: tag_name
+        guild_id: 0
+        clip_trigger: clip_trigger
+        ok: true
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        tag_name:
+          title: Tag Name
+          type: string
+        clip_trigger:
+          title: Clip Trigger
+          type: string
+      required:
+      - clip_trigger
+      - guild_id
+      - ok
+      - tag_name
+      title: AddTagClipResponse
     ApiErrorResponse:
       example:
         code: code
@@ -997,8 +1098,9 @@ components:
           type: integer
         requester_user_id:
           format: int64
-          nullable: true
+          title: Requester User Id
           type: integer
+          nullable: true
         limit:
           title: Limit
           type: integer
@@ -1196,8 +1298,9 @@ components:
           type: integer
         requester_user_id:
           format: int64
-          nullable: true
+          title: Requester User Id
           type: integer
+          nullable: true
         days:
           enum:
           - "1"

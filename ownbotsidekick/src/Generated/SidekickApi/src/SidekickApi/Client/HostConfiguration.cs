@@ -43,6 +43,8 @@ namespace SidekickApi.Client
             _jsonOptions.Converters.Add(new DateTimeNullableJsonConverter());
             _jsonOptions.Converters.Add(new DateOnlyJsonConverter());
             _jsonOptions.Converters.Add(new DateOnlyNullableJsonConverter());
+            _jsonOptions.Converters.Add(new AddTagClipBodyJsonConverter());
+            _jsonOptions.Converters.Add(new AddTagClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new ApiErrorResponseJsonConverter());
             _jsonOptions.Converters.Add(new ClipSummaryJsonConverter());
             _jsonOptions.Converters.Add(new GetCurrentIntroResponseJsonConverter());

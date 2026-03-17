@@ -260,6 +260,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0"
@@ -298,7 +299,40 @@
                                 </ItemsControl>
                             </ScrollViewer>
 
-                            <Button Grid.Row="3"
+                            <Border Grid.Row="3"
+                                    Margin="0,10,0,0"
+                                    Padding="10"
+                                    CornerRadius="8"
+                                    AllowDrop="True"
+                                    DragEnter="TagDropZone_DragEnter"
+                                    DragLeave="TagDropZone_DragLeave"
+                                    DragOver="TagDropZone_DragOver"
+                                    Drop="TagDropZone_Drop">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#AA1C2430" />
+                                        <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDragHoverTarget}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
+                                                <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsDragAvailableTarget}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="{Binding DropHintText}"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center" />
+                            </Border>
+
+                            <Button Grid.Row="4"
                                     Content="Clear Tag"
                                     HorizontalAlignment="Left"
                                     Margin="0,10,0,0"

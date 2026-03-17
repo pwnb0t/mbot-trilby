@@ -20,6 +20,7 @@ namespace ownbotsidekick.Services
 
         public SidekickApiClientService(string baseUrl, string apiToken, long guildId, long requestingUserId)
         {
+            _ = apiToken ?? throw new ArgumentNullException(nameof(apiToken));
             _guildId = guildId;
             _requestingUserId = requestingUserId;
             if (_requestingUserId <= 0)
@@ -161,6 +162,44 @@ namespace ownbotsidekick.Services
                 $"List tag clips failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
         }
 
+        public async Task AddClipToTagAsync(
+            string tagName,
+            string clipTrigger,
+            CancellationToken cancellationToken = default)
+        {
+            var request = new AddTagClipBody(_guildId, clipTrigger);
+            var response = await _api.AddTagClipAsync(tagName, request, cancellationToken).ConfigureAwait(false);
+            if (response.IsOk)
+            {
+                return;
+            }
+
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            {
+                throw new InvalidOperationException($"Add clip to tag failed: {unauthorized.Message}");
+            }
+
+            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            {
+                throw new InvalidOperationException($"Add clip to tag failed: {notFound.Message}");
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"Add clip to tag failed: {internalError.Message}");
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("Add clip to tag failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"Add clip to tag failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
+        }
+
         public async Task<TopClipStatsCatalog> GetTopClipStatsAsync(
             string days,
             int limit = 10,
@@ -170,7 +209,7 @@ namespace ownbotsidekick.Services
         {
             var requesterUserId = guildWide
                 ? default
-                : new Option<long?>(_requestingUserId);
+                : new Option<long>(_requestingUserId);
             var response = await _api.GetTopClipStatsAsync(
                 _guildId,
                 requesterUserId,
@@ -230,7 +269,7 @@ namespace ownbotsidekick.Services
         {
             var requesterUserId = guildWide
                 ? default
-                : new Option<long?>(_requestingUserId);
+                : new Option<long>(_requestingUserId);
             var response = await _api.GetRecentClipStatsAsync(
                 _guildId,
                 requesterUserId,
@@ -487,6 +526,7 @@ namespace ownbotsidekick.Services
         {
             _serviceProvider.Dispose();
         }
+
         internal sealed class ClipCatalog
         {
             public ClipCatalog(IReadOnlyList<string> triggers, int total)
