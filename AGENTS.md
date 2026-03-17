@@ -11,4 +11,4 @@ Originally codenamed "sidekick" but is now named Trilby
 7. Keep logging to UI + Debug + `%LocalAppData%\\ownbotsidekick\\logs\\overlay.log`.
 8. Keep `appsettings.json` as the runtime config source for overlay and Sidekick API settings; preserve safe defaults.
 9. Treat `E:\\g\\ownbot\\openapi\\sidekick.v1.yaml` as API source of truth; regenerate SDK with `scripts\\generate-sidekick-sdk.bat` after contract changes.
-10. Update `STATUS.md` after meaningful behavior, API contract, generated SDK, or architecture changes.
+10. Discord snowflake fields such as `guild_id` and `requester_user_id` must remain `long`/`long?` in the generated SDK; if they regress to `int`, fix the OpenAPI contract generation instead of adding casts in Trilby.
