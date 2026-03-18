@@ -284,9 +284,12 @@
                                 <ItemsControl ItemsSource="{Binding Clips}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Button Style="{StaticResource TopClipStatButtonStyle}"
-                                                    Tag="{Binding Trigger}"
-                                                    Click="TagClipItemButton_Click">
+                                                <Button Style="{StaticResource TopClipStatButtonStyle}"
+                                                        Tag="{Binding Trigger}"
+                                                        PreviewMouseLeftButtonDown="ClipDragSourceButton_PreviewMouseLeftButtonDown"
+                                                        PreviewMouseLeftButtonUp="ClipDragSourceButton_PreviewMouseLeftButtonUp"
+                                                        PreviewMouseMove="ClipDragSourceButton_PreviewMouseMove"
+                                                        Click="TagClipItemButton_Click">
                                                 <TextBlock Text="{Binding Trigger}"
                                                            Foreground="{StaticResource TextPrimaryBrush}"
                                                            FontSize="14"
@@ -425,9 +428,12 @@
                                     <ItemsControl ItemsSource="{Binding RecentClipStats}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Button Style="{StaticResource TopClipStatButtonStyle}"
-                                                        Tag="{Binding Trigger}"
-                                                        Click="RecentClipStatsItemButton_Click">
+                                                  <Button Style="{StaticResource TopClipStatButtonStyle}"
+                                                          Tag="{Binding Trigger}"
+                                                          PreviewMouseLeftButtonDown="ClipDragSourceButton_PreviewMouseLeftButtonDown"
+                                                          PreviewMouseLeftButtonUp="ClipDragSourceButton_PreviewMouseLeftButtonUp"
+                                                          PreviewMouseMove="ClipDragSourceButton_PreviewMouseMove"
+                                                          Click="RecentClipStatsItemButton_Click">
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="*" />
@@ -557,9 +563,12 @@
                                     <ItemsControl ItemsSource="{Binding TopClipStats}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Button Style="{StaticResource TopClipStatButtonStyle}"
-                                                        Tag="{Binding Trigger}"
-                                                        Click="TopClipStatsItemButton_Click">
+                                                  <Button Style="{StaticResource TopClipStatButtonStyle}"
+                                                          Tag="{Binding Trigger}"
+                                                          PreviewMouseLeftButtonDown="ClipDragSourceButton_PreviewMouseLeftButtonDown"
+                                                          PreviewMouseLeftButtonUp="ClipDragSourceButton_PreviewMouseLeftButtonUp"
+                                                          PreviewMouseMove="ClipDragSourceButton_PreviewMouseMove"
+                                                          Click="TopClipStatsItemButton_Click">
                                                     <Grid>
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="*" />

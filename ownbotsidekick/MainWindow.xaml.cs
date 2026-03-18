@@ -53,11 +53,12 @@ namespace ownbotsidekick
         private readonly UserSettingsStateStore _userSettingsStore;
         private readonly UserSettingsState _userSettings;
         private readonly IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots;
+        private readonly ClipDragSourceBehavior _clipDragSourceBehavior = new();
         private readonly CurrentIntroSlotViewModel _currentIntroSlot = new();
         private readonly TagWidgetViewModel _tagWidget = new();
         private string _topClipStatsDays = "7";
         private bool _topClipStatsGuildWide;
-        private bool _quickPlayDragActive;
+        private bool _clipAssignmentDragActive;
         private int _quickPlayDragHoverSlot;
         private bool _currentIntroDragHover;
         private bool _tagDropZoneHover;
@@ -78,7 +79,7 @@ namespace ownbotsidekick
             InitializeComponent();
             DataContext = _viewModel;
             SearchPanel.SearchResultSelected += SearchPanel_SearchResultSelected;
-            SearchPanel.ClipDragStateChanged += SearchPanel_ClipDragStateChanged;
+            SearchPanel.ClipAssignmentDragStateChanged += SearchPanel_ClipAssignmentDragStateChanged;
 
             _settings = AppSettingsLoader.LoadFromBaseDirectory(AppContext.BaseDirectory);
             Topmost = _settings.Overlay.Topmost;
@@ -271,9 +272,34 @@ namespace ownbotsidekick
             await SelectTagAsync(searchResult.Value, "search result");
         }
 
-        private void SearchPanel_ClipDragStateChanged(object? sender, bool isDragging)
+        private void SearchPanel_ClipAssignmentDragStateChanged(object? sender, bool isDragging)
         {
-            _quickPlayDragActive = isDragging;
+            SetClipAssignmentDragActive(isDragging);
+        }
+
+        private void ClipDragSourceButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _clipDragSourceBehavior.HandlePreviewMouseLeftButtonDown(sender, e, this);
+        }
+
+        private void ClipDragSourceButton_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _clipDragSourceBehavior.HandlePreviewMouseLeftButtonUp();
+        }
+
+        private void ClipDragSourceButton_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            _clipDragSourceBehavior.HandlePreviewMouseMove(
+                sender,
+                e,
+                this,
+                button => button.Tag as string,
+                SetClipAssignmentDragActive);
+        }
+
+        private void SetClipAssignmentDragActive(bool isDragging)
+        {
+            _clipAssignmentDragActive = isDragging;
             if (!isDragging)
             {
                 _quickPlayDragHoverSlot = 0;
@@ -1234,21 +1260,21 @@ namespace ownbotsidekick
             foreach (var slot in _quickPlaySlots)
             {
                 slot.Trigger = _userSettings.GetTrigger(slot.SlotIndex);
-                slot.IsDragHoverTarget = _quickPlayDragActive && _quickPlayDragHoverSlot == slot.SlotIndex;
-                slot.IsDragAvailableTarget = _quickPlayDragActive && _quickPlayDragHoverSlot != slot.SlotIndex;
+                slot.IsDragHoverTarget = _clipAssignmentDragActive && _quickPlayDragHoverSlot == slot.SlotIndex;
+                slot.IsDragAvailableTarget = _clipAssignmentDragActive && _quickPlayDragHoverSlot != slot.SlotIndex;
             }
         }
 
         private void UpdateCurrentIntroSlot()
         {
-            _currentIntroSlot.IsDragHoverTarget = _quickPlayDragActive && _currentIntroDragHover;
-            _currentIntroSlot.IsDragAvailableTarget = _quickPlayDragActive && !_currentIntroDragHover;
+            _currentIntroSlot.IsDragHoverTarget = _clipAssignmentDragActive && _currentIntroDragHover;
+            _currentIntroSlot.IsDragAvailableTarget = _clipAssignmentDragActive && !_currentIntroDragHover;
         }
 
         private void UpdateTagDropZone()
         {
-            _tagWidget.IsDragHoverTarget = _quickPlayDragActive && _tagDropZoneHover && _tagWidget.HasSelectedTag;
-            _tagWidget.IsDragAvailableTarget = _quickPlayDragActive && !_tagDropZoneHover && _tagWidget.HasSelectedTag;
+            _tagWidget.IsDragHoverTarget = _clipAssignmentDragActive && _tagDropZoneHover && _tagWidget.HasSelectedTag;
+            _tagWidget.IsDragAvailableTarget = _clipAssignmentDragActive && !_tagDropZoneHover && _tagWidget.HasSelectedTag;
         }
 
         private void SaveUserSettings()
@@ -1294,7 +1320,7 @@ namespace ownbotsidekick
 
         private static bool HasClipTriggerDragData(System.Windows.DragEventArgs e)
         {
-            return e.Data.GetDataPresent(QuickPlayDragDrop.ClipTriggerFormat);
+            return e.Data.GetDataPresent(ClipAssignmentDragDrop.ClipTriggerFormat);
         }
 
         private static string? TryGetDroppedClipTrigger(System.Windows.DragEventArgs e)
@@ -1304,7 +1330,7 @@ namespace ownbotsidekick
                 return null;
             }
 
-            var trigger = e.Data.GetData(QuickPlayDragDrop.ClipTriggerFormat) as string;
+            var trigger = e.Data.GetData(ClipAssignmentDragDrop.ClipTriggerFormat) as string;
             return string.IsNullOrWhiteSpace(trigger) ? null : trigger.Trim();
         }
 

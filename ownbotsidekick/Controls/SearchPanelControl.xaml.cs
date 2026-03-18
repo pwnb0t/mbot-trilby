@@ -10,8 +10,7 @@ namespace ownbotsidekick.Controls
 {
     public partial class SearchPanelControl : System.Windows.Controls.UserControl
     {
-        private System.Windows.Point? _dragStartPoint;
-        private System.Windows.Controls.Button? _dragSourceButton;
+        private readonly ClipDragSourceBehavior _clipDragSourceBehavior = new();
 
         public static readonly DependencyProperty SearchQueryDisplayProperty = DependencyProperty.Register(
             nameof(SearchQueryDisplay),
@@ -35,7 +34,7 @@ namespace ownbotsidekick.Controls
         );
 
         public event EventHandler<ClipSearchResult>? SearchResultSelected;
-        public event EventHandler<bool>? ClipDragStateChanged;
+        public event EventHandler<bool>? ClipAssignmentDragStateChanged;
 
         public SearchPanelControl()
         {
@@ -120,63 +119,30 @@ namespace ownbotsidekick.Controls
 
         private void SearchResultButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is not System.Windows.Controls.Button button)
-            {
-                return;
-            }
-
-            _dragSourceButton = button;
-            _dragStartPoint = e.GetPosition(this);
+            _clipDragSourceBehavior.HandlePreviewMouseLeftButtonDown(sender, e, this);
         }
 
         private void SearchResultButton_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            _dragSourceButton = null;
-            _dragStartPoint = null;
+            _clipDragSourceBehavior.HandlePreviewMouseLeftButtonUp();
         }
 
         private void SearchResultButton_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            if (e.LeftButton != MouseButtonState.Pressed)
-            {
-                return;
-            }
+            _clipDragSourceBehavior.HandlePreviewMouseMove(
+                sender,
+                e,
+                this,
+                button =>
+                {
+                    if (button.Tag is not ClipSearchResult searchResult || searchResult.Kind != SearchResultKind.Clip)
+                    {
+                        return null;
+                    }
 
-            if (
-                sender is not System.Windows.Controls.Button button ||
-                _dragSourceButton != button ||
-                _dragStartPoint is null ||
-                button.Tag is not ClipSearchResult searchResult ||
-                searchResult.Kind != SearchResultKind.Clip ||
-                string.IsNullOrWhiteSpace(searchResult.Value)
-            )
-            {
-                return;
-            }
-
-            var currentPosition = e.GetPosition(this);
-            var horizontalDistance = Math.Abs(currentPosition.X - _dragStartPoint.Value.X);
-            var verticalDistance = Math.Abs(currentPosition.Y - _dragStartPoint.Value.Y);
-            if (
-                horizontalDistance < SystemParameters.MinimumHorizontalDragDistance &&
-                verticalDistance < SystemParameters.MinimumVerticalDragDistance
-            )
-            {
-                return;
-            }
-
-            ClipDragStateChanged?.Invoke(this, true);
-            try
-            {
-                var dragData = new System.Windows.DataObject(QuickPlayDragDrop.ClipTriggerFormat, searchResult.Value);
-                DragDrop.DoDragDrop(button, dragData, System.Windows.DragDropEffects.Copy);
-            }
-            finally
-            {
-                _dragSourceButton = null;
-                _dragStartPoint = null;
-                ClipDragStateChanged?.Invoke(this, false);
-            }
+                    return searchResult.Value;
+                },
+                isDragging => ClipAssignmentDragStateChanged?.Invoke(this, isDragging));
         }
     }
 }
