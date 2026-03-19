@@ -16,12 +16,12 @@ paths:
                 $ref: "#/components/schemas/HealthResponse"
           description: Successful Response
       summary: Health
-  /v1/clips:
+  /v1/guilds/{guild_id}/clips:
     get:
       operationId: ListClips
       parameters:
-      - explode: true
-        in: query
+      - explode: false
+        in: path
         name: guild_id
         required: true
         schema:
@@ -30,7 +30,7 @@ paths:
           minimum: 0
           title: Guild Id
           type: integer
-        style: form
+        style: simple
       - explode: true
         in: query
         name: search
@@ -69,14 +69,26 @@ paths:
       security:
       - APIKeyHeader: []
       summary: List Clips
-  /v1/clips/play:
+  /v1/guilds/{guild_id}/clips/play:
     post:
       operationId: PlayClip
+      parameters:
+      - explode: false
+        in: path
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PlayClipRequest"
+              $ref: "#/components/schemas/PlayClipBody"
         required: true
       responses:
         "200":
@@ -124,14 +136,26 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Play Clip
-  /v1/clips/play-random:
+  /v1/guilds/{guild_id}/clips/play-random:
     post:
       operationId: PlayRandomClip
+      parameters:
+      - explode: false
+        in: path
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PlayRandomClipRequest"
+              $ref: "#/components/schemas/PlayRandomClipBody"
         required: true
       responses:
         "200":
@@ -173,14 +197,26 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Play Random Clip
-  /v1/clips/stop:
+  /v1/guilds/{guild_id}/clips/stop:
     post:
       operationId: StopClip
+      parameters:
+      - explode: false
+        in: path
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/StopClipRequest"
+              $ref: "#/components/schemas/StopClipBody"
         required: true
       responses:
         "200":
@@ -222,12 +258,12 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Stop Clip
-  /v1/clips/stats/top:
+  /v1/guilds/{guild_id}/clips/stats/top:
     get:
       operationId: GetTopClipStats
       parameters:
-      - explode: true
-        in: query
+      - explode: false
+        in: path
         name: guild_id
         required: true
         schema:
@@ -236,7 +272,7 @@ paths:
           minimum: 0
           title: Guild Id
           type: integer
-        style: form
+        style: simple
       - explode: true
         in: query
         name: requester_user_id
@@ -313,12 +349,12 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Top Clip Stats
-  /v1/clips/stats/recent:
+  /v1/guilds/{guild_id}/clips/stats/recent:
     get:
       operationId: GetRecentClipStats
       parameters:
-      - explode: true
-        in: query
+      - explode: false
+        in: path
         name: guild_id
         required: true
         schema:
@@ -327,7 +363,7 @@ paths:
           minimum: 0
           title: Guild Id
           type: integer
-        style: form
+        style: simple
       - explode: true
         in: query
         name: requester_user_id
@@ -388,12 +424,12 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Recent Clip Stats
-  /v1/intros/current:
+  /v1/guilds/{guild_id}/intros/current:
     get:
       operationId: GetCurrentIntro
       parameters:
-      - explode: true
-        in: query
+      - explode: false
+        in: path
         name: guild_id
         required: true
         schema:
@@ -402,7 +438,7 @@ paths:
           minimum: 0
           title: Guild Id
           type: integer
-        style: form
+        style: simple
       - explode: true
         in: query
         name: requester_user_id
@@ -456,11 +492,23 @@ paths:
       summary: Get Current Intro
     put:
       operationId: SetCurrentIntro
+      parameters:
+      - explode: false
+        in: path
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SetCurrentIntroRequest"
+              $ref: "#/components/schemas/SetCurrentIntroBody"
         required: true
       responses:
         "200":
@@ -502,12 +550,12 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Set Current Intro
-  /v1/tags:
+  /v1/guilds/{guild_id}/tags:
     get:
       operationId: ListTags
       parameters:
-      - explode: true
-        in: query
+      - explode: false
+        in: path
         name: guild_id
         required: true
         schema:
@@ -516,7 +564,7 @@ paths:
           minimum: 0
           title: Guild Id
           type: integer
-        style: form
+        style: simple
       - explode: true
         in: query
         name: search
@@ -555,7 +603,7 @@ paths:
       security:
       - APIKeyHeader: []
       summary: List Tags
-  /v1/tags/{tag_name}/clips:
+  /v1/guilds/{guild_id}/tags/{tag_name}/clips:
     get:
       operationId: ListTagClips
       parameters:
@@ -569,8 +617,8 @@ paths:
           title: Tag Name
           type: string
         style: simple
-      - explode: true
-        in: query
+      - explode: false
+        in: path
         name: guild_id
         required: true
         schema:
@@ -579,7 +627,7 @@ paths:
           minimum: 0
           title: Guild Id
           type: integer
-        style: form
+        style: simple
       responses:
         "200":
           content:
@@ -617,6 +665,17 @@ paths:
     post:
       operationId: AddTagClip
       parameters:
+      - explode: false
+        in: path
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: simple
       - explode: false
         in: path
         name: tag_name
@@ -667,10 +726,21 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Add Tag Clip
-  /v1/tags/{tag_name}/clips/{clip_trigger}:
+  /v1/guilds/{guild_id}/tags/{tag_name}/clips/{clip_trigger}:
     delete:
       operationId: RemoveTagClip
       parameters:
+      - explode: false
+        in: path
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: simple
       - explode: false
         in: path
         name: tag_name
@@ -691,17 +761,6 @@ paths:
           title: Clip Trigger
           type: string
         style: simple
-      - explode: true
-        in: query
-        name: guild_id
-        required: true
-        schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
-          title: Guild Id
-          type: integer
-        style: form
       responses:
         "200":
           content:
@@ -740,15 +799,8 @@ components:
   schemas:
     AddTagClipBody:
       example:
-        guild_id: 0
         clip_trigger: clip_trigger
       properties:
-        guild_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
-          title: Guild Id
-          type: integer
         clip_trigger:
           maxLength: 64
           minLength: 1
@@ -756,7 +808,6 @@ components:
           type: string
       required:
       - clip_trigger
-      - guild_id
       title: AddTagClipBody
     AddTagClipResponse:
       example:
@@ -987,19 +1038,12 @@ components:
       - tags
       - total
       title: ListTagsResponse
-    PlayClipRequest:
+    PlayClipBody:
       example:
-        guild_id: 0
         requester_user_id: 0
         trigger: trigger
         request_id: request_id
       properties:
-        guild_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
-          title: Guild Id
-          type: integer
         trigger:
           maxLength: 64
           minLength: 1
@@ -1015,10 +1059,9 @@ components:
           title: Requester User Id
           type: integer
       required:
-      - guild_id
       - requester_user_id
       - trigger
-      title: PlayClipRequest
+      title: PlayClipBody
     PlayClipResponse:
       example:
         guild_id: 0
@@ -1056,18 +1099,11 @@ components:
       - status
       - trigger
       title: PlayClipResponse
-    PlayRandomClipRequest:
+    PlayRandomClipBody:
       example:
-        guild_id: 0
         requester_user_id: 0
         request_id: request_id
       properties:
-        guild_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
-          title: Guild Id
-          type: integer
         request_id:
           nullable: true
           type: string
@@ -1078,9 +1114,8 @@ components:
           title: Requester User Id
           type: integer
       required:
-      - guild_id
       - requester_user_id
-      title: PlayRandomClipRequest
+      title: PlayRandomClipBody
     PlayRandomClipResponse:
       example:
         guild_id: 0
@@ -1214,18 +1249,11 @@ components:
       - ok
       - tag_name
       title: RemoveTagClipResponse
-    SetCurrentIntroRequest:
+    SetCurrentIntroBody:
       example:
-        guild_id: 0
         requester_user_id: 0
         trigger: trigger
       properties:
-        guild_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
-          title: Guild Id
-          type: integer
         requester_user_id:
           exclusiveMinimum: true
           format: int64
@@ -1238,10 +1266,9 @@ components:
           title: Trigger
           type: string
       required:
-      - guild_id
       - requester_user_id
       - trigger
-      title: SetCurrentIntroRequest
+      title: SetCurrentIntroBody
     SetCurrentIntroResponse:
       example:
         guild_id: 0
@@ -1269,18 +1296,11 @@ components:
       - requester_user_id
       - trigger
       title: SetCurrentIntroResponse
-    StopClipRequest:
+    StopClipBody:
       example:
-        guild_id: 0
         requester_user_id: 0
         request_id: request_id
       properties:
-        guild_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
-          title: Guild Id
-          type: integer
         request_id:
           nullable: true
           type: string
@@ -1291,9 +1311,8 @@ components:
           title: Requester User Id
           type: integer
       required:
-      - guild_id
       - requester_user_id
-      title: StopClipRequest
+      title: StopClipBody
     StopClipResponse:
       example:
         guild_id: 0

@@ -167,8 +167,9 @@ namespace ownbotsidekick.Services
             string clipTrigger,
             CancellationToken cancellationToken = default)
         {
-            var request = new AddTagClipBody(_guildId, clipTrigger);
-            var response = await _api.AddTagClipAsync(tagName, request, cancellationToken).ConfigureAwait(false);
+            var request = new AddTagClipBody(clipTrigger);
+            var response = await _api.AddTagClipAsync(_guildId, tagName, request, cancellationToken)
+                .ConfigureAwait(false);
             if (response.IsOk)
             {
                 return;
@@ -205,7 +206,7 @@ namespace ownbotsidekick.Services
             string clipTrigger,
             CancellationToken cancellationToken = default)
         {
-            var response = await _api.RemoveTagClipAsync(tagName, clipTrigger, _guildId, cancellationToken)
+            var response = await _api.RemoveTagClipAsync(_guildId, tagName, clipTrigger, cancellationToken)
                 .ConfigureAwait(false);
             if (response.IsOk)
             {
@@ -351,12 +352,12 @@ namespace ownbotsidekick.Services
 
         public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
         {
-            var request = new PlayClipRequest(_guildId, trigger, _requestingUserId)
+            var request = new PlayClipBody(trigger, _requestingUserId)
             {
                 RequestId = $"play:{Guid.NewGuid():N}"
             };
 
-            var response = await _api.PlayClipAsync(request, cancellationToken).ConfigureAwait(false);
+            var response = await _api.PlayClipAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
 
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
@@ -387,7 +388,7 @@ namespace ownbotsidekick.Services
 
             if (response.IsUnprocessableContent)
             {
-                return "Validation error (422). Check guild_id and trigger values.";
+                return "Validation error (422). Check the guild path and trigger values.";
             }
 
             return $"Unexpected status: {(int)response.StatusCode} ({response.StatusCode}).";
@@ -395,12 +396,12 @@ namespace ownbotsidekick.Services
 
         public async Task<string> PlayRandomClipAsync(CancellationToken cancellationToken = default)
         {
-            var request = new PlayRandomClipRequest(_guildId, _requestingUserId)
+            var request = new PlayRandomClipBody(_requestingUserId)
             {
                 RequestId = $"random:{Guid.NewGuid():N}"
             };
 
-            var response = await _api.PlayRandomClipAsync(request, cancellationToken).ConfigureAwait(false);
+            var response = await _api.PlayRandomClipAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
 
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
@@ -426,7 +427,7 @@ namespace ownbotsidekick.Services
 
             if (response.IsUnprocessableContent)
             {
-                return "Validation error (422). Check guild_id value.";
+                return "Validation error (422). Check the guild path value.";
             }
 
             return $"Unexpected status: {(int)response.StatusCode} ({response.StatusCode}).";
@@ -434,12 +435,12 @@ namespace ownbotsidekick.Services
 
         public async Task<string> StopClipAsync(CancellationToken cancellationToken = default)
         {
-            var request = new StopClipRequest(_guildId, _requestingUserId)
+            var request = new StopClipBody(_requestingUserId)
             {
                 RequestId = Guid.NewGuid().ToString("N")
             };
 
-            var response = await _api.StopClipAsync(request, cancellationToken).ConfigureAwait(false);
+            var response = await _api.StopClipAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
 
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
@@ -465,7 +466,7 @@ namespace ownbotsidekick.Services
 
             if (response.IsUnprocessableContent)
             {
-                return "Validation error (422). Check guild_id value.";
+                return "Validation error (422). Check the guild path value.";
             }
 
             return $"Unexpected status: {(int)response.StatusCode} ({response.StatusCode}).";
@@ -515,8 +516,8 @@ namespace ownbotsidekick.Services
 
         public async Task<CurrentIntroState> SetCurrentIntroAsync(string trigger, CancellationToken cancellationToken = default)
         {
-            var request = new SetCurrentIntroRequest(_guildId, _requestingUserId, trigger);
-            var response = await _api.SetCurrentIntroAsync(request, cancellationToken).ConfigureAwait(false);
+            var request = new SetCurrentIntroBody(_requestingUserId, trigger);
+            var response = await _api.SetCurrentIntroAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
 
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {

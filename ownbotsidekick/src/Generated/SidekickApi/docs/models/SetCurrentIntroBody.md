@@ -1,10 +1,11 @@
-# SidekickApi.Model.AddTagClipBody
+# SidekickApi.Model.SetCurrentIntroBody
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ClipTrigger** | **string** |  | 
+**RequesterUserId** | **long** |  | 
+**Trigger** | **string** |  | 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

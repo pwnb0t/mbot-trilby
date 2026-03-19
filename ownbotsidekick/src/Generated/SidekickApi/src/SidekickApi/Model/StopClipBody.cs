@@ -26,28 +26,43 @@ using SidekickApi.Client;
 namespace SidekickApi.Model
 {
     /// <summary>
-    /// AddTagClipBody
+    /// StopClipBody
     /// </summary>
-    public partial class AddTagClipBody : IValidatableObject
+    public partial class StopClipBody : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AddTagClipBody" /> class.
+        /// Initializes a new instance of the <see cref="StopClipBody" /> class.
         /// </summary>
-        /// <param name="clipTrigger">clipTrigger</param>
+        /// <param name="requesterUserId">requesterUserId</param>
+        /// <param name="requestId">requestId</param>
         [JsonConstructor]
-        public AddTagClipBody(string clipTrigger)
+        public StopClipBody(long requesterUserId, Option<string?> requestId = default)
         {
-            ClipTrigger = clipTrigger;
+            RequesterUserId = requesterUserId;
+            RequestIdOption = requestId;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Gets or Sets ClipTrigger
+        /// Gets or Sets RequesterUserId
         /// </summary>
-        [JsonPropertyName("clip_trigger")]
-        public string ClipTrigger { get; set; }
+        [JsonPropertyName("requester_user_id")]
+        public long RequesterUserId { get; set; }
+
+        /// <summary>
+        /// Used to track the state of RequestId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequestIdOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets RequestId
+        /// </summary>
+        [JsonPropertyName("request_id")]
+        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -56,8 +71,9 @@ namespace SidekickApi.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class AddTagClipBody {\n");
-            sb.Append("  ClipTrigger: ").Append(ClipTrigger).Append("\n");
+            sb.Append("class StopClipBody {\n");
+            sb.Append("  RequesterUserId: ").Append(RequesterUserId).Append("\n");
+            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -69,16 +85,10 @@ namespace SidekickApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
-            // ClipTrigger (string) maxLength
-            if (this.ClipTrigger != null && this.ClipTrigger.Length > 64)
+            // RequesterUserId (long) minimum
+            if (this.RequesterUserId < (long)0)
             {
-                yield return new ValidationResult("Invalid value for ClipTrigger, length must be less than 64.", new [] { "ClipTrigger" });
-            }
-
-            // ClipTrigger (string) minLength
-            if (this.ClipTrigger != null && this.ClipTrigger.Length < 1)
-            {
-                yield return new ValidationResult("Invalid value for ClipTrigger, length must be greater than 1.", new [] { "ClipTrigger" });
+                yield return new ValidationResult("Invalid value for RequesterUserId, must be a value greater than 0.", new [] { "RequesterUserId" });
             }
 
             yield break;
@@ -86,19 +96,19 @@ namespace SidekickApi.Model
     }
 
     /// <summary>
-    /// A Json converter for type <see cref="AddTagClipBody" />
+    /// A Json converter for type <see cref="StopClipBody" />
     /// </summary>
-    public class AddTagClipBodyJsonConverter : JsonConverter<AddTagClipBody>
+    public class StopClipBodyJsonConverter : JsonConverter<StopClipBody>
     {
         /// <summary>
-        /// Deserializes json to <see cref="AddTagClipBody" />
+        /// Deserializes json to <see cref="StopClipBody" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
         /// <param name="typeToConvert"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override AddTagClipBody Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+        public override StopClipBody Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
         {
             int currentDepth = utf8JsonReader.CurrentDepth;
 
@@ -107,7 +117,8 @@ namespace SidekickApi.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<string?> clipTrigger = default;
+            Option<long?> requesterUserId = default;
+            Option<string?> requestId = default;
 
             while (utf8JsonReader.Read())
             {
@@ -124,8 +135,11 @@ namespace SidekickApi.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "clip_trigger":
-                            clipTrigger = new Option<string?>(utf8JsonReader.GetString()!);
+                        case "requester_user_id":
+                            requesterUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            break;
+                        case "request_id":
+                            requestId = new Option<string?>(utf8JsonReader.GetString());
                             break;
                         default:
                             break;
@@ -133,43 +147,46 @@ namespace SidekickApi.Model
                 }
             }
 
-            if (!clipTrigger.IsSet)
-                throw new ArgumentException("Property is required for class AddTagClipBody.", nameof(clipTrigger));
+            if (!requesterUserId.IsSet)
+                throw new ArgumentException("Property is required for class StopClipBody.", nameof(requesterUserId));
 
-            if (clipTrigger.IsSet && clipTrigger.Value == null)
-                throw new ArgumentNullException(nameof(clipTrigger), "Property is not nullable for class AddTagClipBody.");
+            if (requesterUserId.IsSet && requesterUserId.Value == null)
+                throw new ArgumentNullException(nameof(requesterUserId), "Property is not nullable for class StopClipBody.");
 
-            return new AddTagClipBody(clipTrigger.Value!);
+            return new StopClipBody(requesterUserId.Value!.Value!, requestId);
         }
 
         /// <summary>
-        /// Serializes a <see cref="AddTagClipBody" />
+        /// Serializes a <see cref="StopClipBody" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="addTagClipBody"></param>
+        /// <param name="stopClipBody"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, AddTagClipBody addTagClipBody, JsonSerializerOptions jsonSerializerOptions)
+        public override void Write(Utf8JsonWriter writer, StopClipBody stopClipBody, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
 
-            WriteProperties(writer, addTagClipBody, jsonSerializerOptions);
+            WriteProperties(writer, stopClipBody, jsonSerializerOptions);
             writer.WriteEndObject();
         }
 
         /// <summary>
-        /// Serializes the properties of <see cref="AddTagClipBody" />
+        /// Serializes the properties of <see cref="StopClipBody" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="addTagClipBody"></param>
+        /// <param name="stopClipBody"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, AddTagClipBody addTagClipBody, JsonSerializerOptions jsonSerializerOptions)
+        public void WriteProperties(Utf8JsonWriter writer, StopClipBody stopClipBody, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (addTagClipBody.ClipTrigger == null)
-                throw new ArgumentNullException(nameof(addTagClipBody.ClipTrigger), "Property is required for class AddTagClipBody.");
+            writer.WriteNumber("requester_user_id", stopClipBody.RequesterUserId);
 
-            writer.WriteString("clip_trigger", addTagClipBody.ClipTrigger);
+            if (stopClipBody.RequestIdOption.IsSet)
+                if (stopClipBody.RequestIdOption.Value != null)
+                    writer.WriteString("request_id", stopClipBody.RequestId);
+                else
+                    writer.WriteNull("request_id");
         }
     }
 }

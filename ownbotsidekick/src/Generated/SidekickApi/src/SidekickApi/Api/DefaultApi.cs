@@ -44,11 +44,12 @@ namespace SidekickApi.Api
         /// 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>&gt;</returns>
-        Task<IAddTagClipApiResponse> AddTagClipAsync(string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<IAddTagClipApiResponse> AddTagClipAsync(long guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Add Tag Clip
@@ -56,11 +57,12 @@ namespace SidekickApi.Api
         /// <remarks>
         /// 
         /// </remarks>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>?&gt;</returns>
-        Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(long guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get Current Intro
@@ -250,10 +252,11 @@ namespace SidekickApi.Api
         /// 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="playClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="playClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>&gt;</returns>
-        Task<IPlayClipApiResponse> PlayClipAsync(PlayClipRequest playClipRequest, System.Threading.CancellationToken cancellationToken = default);
+        Task<IPlayClipApiResponse> PlayClipAsync(long guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Play Clip
@@ -261,10 +264,11 @@ namespace SidekickApi.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <param name="playClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="playClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>?&gt;</returns>
-        Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(PlayClipRequest playClipRequest, System.Threading.CancellationToken cancellationToken = default);
+        Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(long guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Play Random Clip
@@ -273,10 +277,11 @@ namespace SidekickApi.Api
         /// 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="playRandomClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="playRandomClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>&gt;</returns>
-        Task<IPlayRandomClipApiResponse> PlayRandomClipAsync(PlayRandomClipRequest playRandomClipRequest, System.Threading.CancellationToken cancellationToken = default);
+        Task<IPlayRandomClipApiResponse> PlayRandomClipAsync(long guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Play Random Clip
@@ -284,10 +289,11 @@ namespace SidekickApi.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <param name="playRandomClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="playRandomClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>?&gt;</returns>
-        Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(PlayRandomClipRequest playRandomClipRequest, System.Threading.CancellationToken cancellationToken = default);
+        Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(long guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Remove Tag Clip
@@ -296,12 +302,12 @@ namespace SidekickApi.Api
         /// 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRemoveTagClipApiResponse"/>&gt;</returns>
-        Task<IRemoveTagClipApiResponse> RemoveTagClipAsync(string tagName, string clipTrigger, long guildId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IRemoveTagClipApiResponse> RemoveTagClipAsync(long guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Remove Tag Clip
@@ -309,12 +315,12 @@ namespace SidekickApi.Api
         /// <remarks>
         /// 
         /// </remarks>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRemoveTagClipApiResponse"/>?&gt;</returns>
-        Task<IRemoveTagClipApiResponse?> RemoveTagClipOrDefaultAsync(string tagName, string clipTrigger, long guildId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IRemoveTagClipApiResponse?> RemoveTagClipOrDefaultAsync(long guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Set Current Intro
@@ -323,10 +329,11 @@ namespace SidekickApi.Api
         /// 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="setCurrentIntroRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="setCurrentIntroBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetCurrentIntroApiResponse"/>&gt;</returns>
-        Task<ISetCurrentIntroApiResponse> SetCurrentIntroAsync(SetCurrentIntroRequest setCurrentIntroRequest, System.Threading.CancellationToken cancellationToken = default);
+        Task<ISetCurrentIntroApiResponse> SetCurrentIntroAsync(long guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Set Current Intro
@@ -334,10 +341,11 @@ namespace SidekickApi.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <param name="setCurrentIntroRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="setCurrentIntroBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetCurrentIntroApiResponse"/>?&gt;</returns>
-        Task<ISetCurrentIntroApiResponse?> SetCurrentIntroOrDefaultAsync(SetCurrentIntroRequest setCurrentIntroRequest, System.Threading.CancellationToken cancellationToken = default);
+        Task<ISetCurrentIntroApiResponse?> SetCurrentIntroOrDefaultAsync(long guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Stop Clip
@@ -346,10 +354,11 @@ namespace SidekickApi.Api
         /// 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="stopClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="stopClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IStopClipApiResponse"/>&gt;</returns>
-        Task<IStopClipApiResponse> StopClipAsync(StopClipRequest stopClipRequest, System.Threading.CancellationToken cancellationToken = default);
+        Task<IStopClipApiResponse> StopClipAsync(long guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Stop Clip
@@ -357,10 +366,11 @@ namespace SidekickApi.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <param name="stopClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="stopClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IStopClipApiResponse"/>?&gt;</returns>
-        Task<IStopClipApiResponse?> StopClipOrDefaultAsync(StopClipRequest stopClipRequest, System.Threading.CancellationToken cancellationToken = default);
+        Task<IStopClipApiResponse?> StopClipOrDefaultAsync(long guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default);
     }
 
     /// <summary>
@@ -1138,7 +1148,7 @@ namespace SidekickApi.Api
             ApiKeyProvider = apiKeyProvider;
         }
 
-        partial void FormatAddTagClip(ref string tagName, AddTagClipBody addTagClipBody);
+        partial void FormatAddTagClip(ref long guildId, ref string tagName, AddTagClipBody addTagClipBody);
 
         /// <summary>
         /// Validates the request parameters
@@ -1159,12 +1169,13 @@ namespace SidekickApi.Api
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
-        private void AfterAddTagClipDefaultImplementation(IAddTagClipApiResponse apiResponseLocalVar, string tagName, AddTagClipBody addTagClipBody)
+        private void AfterAddTagClipDefaultImplementation(IAddTagClipApiResponse apiResponseLocalVar, long guildId, string tagName, AddTagClipBody addTagClipBody)
         {
             bool suppressDefaultLog = false;
-            AfterAddTagClip(ref suppressDefaultLog, apiResponseLocalVar, tagName, addTagClipBody);
+            AfterAddTagClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, tagName, addTagClipBody);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -1174,9 +1185,10 @@ namespace SidekickApi.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
-        partial void AfterAddTagClip(ref bool suppressDefaultLog, IAddTagClipApiResponse apiResponseLocalVar, string tagName, AddTagClipBody addTagClipBody);
+        partial void AfterAddTagClip(ref bool suppressDefaultLog, IAddTagClipApiResponse apiResponseLocalVar, long guildId, string tagName, AddTagClipBody addTagClipBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1184,12 +1196,13 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
-        private void OnErrorAddTagClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, AddTagClipBody addTagClipBody)
+        private void OnErrorAddTagClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, string tagName, AddTagClipBody addTagClipBody)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorAddTagClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, tagName, addTagClipBody);
+            OnErrorAddTagClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, tagName, addTagClipBody);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -1201,22 +1214,24 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
-        partial void OnErrorAddTagClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, AddTagClipBody addTagClipBody);
+        partial void OnErrorAddTagClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, string tagName, AddTagClipBody addTagClipBody);
 
         /// <summary>
         /// Add Tag Clip 
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>&gt;</returns>
-        public async Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(long guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await AddTagClipAsync(tagName, addTagClipBody, cancellationToken).ConfigureAwait(false);
+                return await AddTagClipAsync(guildId, tagName, addTagClipBody, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -1228,11 +1243,12 @@ namespace SidekickApi.Api
         /// Add Tag Clip 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>&gt;</returns>
-        public async Task<IAddTagClipApiResponse> AddTagClipAsync(string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IAddTagClipApiResponse> AddTagClipAsync(long guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
@@ -1240,7 +1256,7 @@ namespace SidekickApi.Api
             {
                 ValidateAddTagClip(tagName, addTagClipBody);
 
-                FormatAddTagClip(ref tagName, addTagClipBody);
+                FormatAddTagClip(ref guildId, ref tagName, addTagClipBody);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -1248,8 +1264,9 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/tags/{tag_name}/clips"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/tags/{tag_name}/clips");
+                        ? "/v1/guilds/{guild_id}/tags/{tag_name}/clips"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/tags/{tag_name}/clips");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
                     uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Btag_name%7D", Uri.EscapeDataString(tagName.ToString()));
 
                     httpRequestMessageLocalVar.Content = (addTagClipBody as object) is System.IO.Stream stream
@@ -1293,13 +1310,13 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/tags/{tag_name}/clips", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/tags/{tag_name}/clips", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
                         }
 
-                        AfterAddTagClipDefaultImplementation(apiResponseLocalVar, tagName, addTagClipBody);
+                        AfterAddTagClipDefaultImplementation(apiResponseLocalVar, guildId, tagName, addTagClipBody);
 
                         Events.ExecuteOnAddTagClip(apiResponseLocalVar);
 
@@ -1313,7 +1330,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorAddTagClipDefaultImplementation(e, "/v1/tags/{tag_name}/clips", uriBuilderLocalVar.Path, tagName, addTagClipBody);
+                OnErrorAddTagClipDefaultImplementation(e, "/v1/guilds/{guild_id}/tags/{tag_name}/clips", uriBuilderLocalVar.Path, guildId, tagName, addTagClipBody);
                 Events.ExecuteOnErrorAddTagClip(e);
                 throw;
             }
@@ -1657,12 +1674,12 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/intros/current"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/intros/current");
+                        ? "/v1/guilds/{guild_id}/intros/current"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/intros/current");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
                     System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
 
-                    parseQueryStringLocalVar["guild_id"] = ClientUtils.ParameterToString(guildId);
                     parseQueryStringLocalVar["requester_user_id"] = ClientUtils.ParameterToString(requesterUserId);
 
                     uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
@@ -1695,7 +1712,7 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/intros/current", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/intros/current", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
@@ -1715,7 +1732,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorGetCurrentIntroDefaultImplementation(e, "/v1/intros/current", uriBuilderLocalVar.Path, guildId, requesterUserId);
+                OnErrorGetCurrentIntroDefaultImplementation(e, "/v1/guilds/{guild_id}/intros/current", uriBuilderLocalVar.Path, guildId, requesterUserId);
                 Events.ExecuteOnErrorGetCurrentIntro(e);
                 throw;
             }
@@ -2327,12 +2344,11 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/clips/stats/recent"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/clips/stats/recent");
+                        ? "/v1/guilds/{guild_id}/clips/stats/recent"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/clips/stats/recent");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
                     System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
-
-                    parseQueryStringLocalVar["guild_id"] = ClientUtils.ParameterToString(guildId);
 
                     if (requesterUserId.IsSet)
                         parseQueryStringLocalVar["requester_user_id"] = ClientUtils.ParameterToString(requesterUserId.Value);
@@ -2373,7 +2389,7 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/clips/stats/recent", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/clips/stats/recent", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
@@ -2393,7 +2409,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorGetRecentClipStatsDefaultImplementation(e, "/v1/clips/stats/recent", uriBuilderLocalVar.Path, guildId, requesterUserId, limit, includeRandom);
+                OnErrorGetRecentClipStatsDefaultImplementation(e, "/v1/guilds/{guild_id}/clips/stats/recent", uriBuilderLocalVar.Path, guildId, requesterUserId, limit, includeRandom);
                 Events.ExecuteOnErrorGetRecentClipStats(e);
                 throw;
             }
@@ -2730,12 +2746,11 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/clips/stats/top"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/clips/stats/top");
+                        ? "/v1/guilds/{guild_id}/clips/stats/top"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/clips/stats/top");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
                     System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
-
-                    parseQueryStringLocalVar["guild_id"] = ClientUtils.ParameterToString(guildId);
 
                     if (requesterUserId.IsSet)
                         parseQueryStringLocalVar["requester_user_id"] = ClientUtils.ParameterToString(requesterUserId.Value);
@@ -2779,7 +2794,7 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/clips/stats/top", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/clips/stats/top", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
@@ -2799,7 +2814,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorGetTopClipStatsDefaultImplementation(e, "/v1/clips/stats/top", uriBuilderLocalVar.Path, guildId, requesterUserId, days, limit, includeRandom);
+                OnErrorGetTopClipStatsDefaultImplementation(e, "/v1/guilds/{guild_id}/clips/stats/top", uriBuilderLocalVar.Path, guildId, requesterUserId, days, limit, includeRandom);
                 Events.ExecuteOnErrorGetTopClipStats(e);
                 throw;
             }
@@ -3143,12 +3158,11 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/clips"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/clips");
+                        ? "/v1/guilds/{guild_id}/clips"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/clips");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
                     System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
-
-                    parseQueryStringLocalVar["guild_id"] = ClientUtils.ParameterToString(guildId);
 
                     if (search.IsSet)
                         parseQueryStringLocalVar["search"] = ClientUtils.ParameterToString(search.Value);
@@ -3183,7 +3197,7 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/clips", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/clips", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
@@ -3203,7 +3217,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorListClipsDefaultImplementation(e, "/v1/clips", uriBuilderLocalVar.Path, guildId, search);
+                OnErrorListClipsDefaultImplementation(e, "/v1/guilds/{guild_id}/clips", uriBuilderLocalVar.Path, guildId, search);
                 Events.ExecuteOnErrorListClips(e);
                 throw;
             }
@@ -3522,15 +3536,10 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/tags/{tag_name}/clips"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/tags/{tag_name}/clips");
+                        ? "/v1/guilds/{guild_id}/tags/{tag_name}/clips"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/tags/{tag_name}/clips");
                     uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Btag_name%7D", Uri.EscapeDataString(tagName.ToString()));
-
-                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
-
-                    parseQueryStringLocalVar["guild_id"] = ClientUtils.ParameterToString(guildId);
-
-                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
                     ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
@@ -3560,7 +3569,7 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/tags/{tag_name}/clips", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/tags/{tag_name}/clips", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
@@ -3580,7 +3589,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorListTagClipsDefaultImplementation(e, "/v1/tags/{tag_name}/clips", uriBuilderLocalVar.Path, tagName, guildId);
+                OnErrorListTagClipsDefaultImplementation(e, "/v1/guilds/{guild_id}/tags/{tag_name}/clips", uriBuilderLocalVar.Path, tagName, guildId);
                 Events.ExecuteOnErrorListTagClips(e);
                 throw;
             }
@@ -3924,12 +3933,11 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/tags"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/tags");
+                        ? "/v1/guilds/{guild_id}/tags"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/tags");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
                     System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
-
-                    parseQueryStringLocalVar["guild_id"] = ClientUtils.ParameterToString(guildId);
 
                     if (search.IsSet)
                         parseQueryStringLocalVar["search"] = ClientUtils.ParameterToString(search.Value);
@@ -3964,7 +3972,7 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/tags", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/tags", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
@@ -3984,7 +3992,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorListTagsDefaultImplementation(e, "/v1/tags", uriBuilderLocalVar.Path, guildId, search);
+                OnErrorListTagsDefaultImplementation(e, "/v1/guilds/{guild_id}/tags", uriBuilderLocalVar.Path, guildId, search);
                 Events.ExecuteOnErrorListTags(e);
                 throw;
             }
@@ -4197,28 +4205,29 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatPlayClip(PlayClipRequest playClipRequest);
+        partial void FormatPlayClip(ref long guildId, PlayClipBody playClipBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
-        /// <param name="playClipRequest"></param>
+        /// <param name="playClipBody"></param>
         /// <returns></returns>
-        private void ValidatePlayClip(PlayClipRequest playClipRequest)
+        private void ValidatePlayClip(PlayClipBody playClipBody)
         {
-            if (playClipRequest == null)
-                throw new ArgumentNullException(nameof(playClipRequest));
+            if (playClipBody == null)
+                throw new ArgumentNullException(nameof(playClipBody));
         }
 
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="playClipRequest"></param>
-        private void AfterPlayClipDefaultImplementation(IPlayClipApiResponse apiResponseLocalVar, PlayClipRequest playClipRequest)
+        /// <param name="guildId"></param>
+        /// <param name="playClipBody"></param>
+        private void AfterPlayClipDefaultImplementation(IPlayClipApiResponse apiResponseLocalVar, long guildId, PlayClipBody playClipBody)
         {
             bool suppressDefaultLog = false;
-            AfterPlayClip(ref suppressDefaultLog, apiResponseLocalVar, playClipRequest);
+            AfterPlayClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, playClipBody);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -4228,8 +4237,9 @@ namespace SidekickApi.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="playClipRequest"></param>
-        partial void AfterPlayClip(ref bool suppressDefaultLog, IPlayClipApiResponse apiResponseLocalVar, PlayClipRequest playClipRequest);
+        /// <param name="guildId"></param>
+        /// <param name="playClipBody"></param>
+        partial void AfterPlayClip(ref bool suppressDefaultLog, IPlayClipApiResponse apiResponseLocalVar, long guildId, PlayClipBody playClipBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -4237,11 +4247,12 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="playClipRequest"></param>
-        private void OnErrorPlayClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, PlayClipRequest playClipRequest)
+        /// <param name="guildId"></param>
+        /// <param name="playClipBody"></param>
+        private void OnErrorPlayClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, PlayClipBody playClipBody)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorPlayClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, playClipRequest);
+            OnErrorPlayClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, playClipBody);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -4253,20 +4264,22 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="playClipRequest"></param>
-        partial void OnErrorPlayClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, PlayClipRequest playClipRequest);
+        /// <param name="guildId"></param>
+        /// <param name="playClipBody"></param>
+        partial void OnErrorPlayClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, PlayClipBody playClipBody);
 
         /// <summary>
         /// Play Clip 
         /// </summary>
-        /// <param name="playClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="playClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>&gt;</returns>
-        public async Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(PlayClipRequest playClipRequest, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(long guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await PlayClipAsync(playClipRequest, cancellationToken).ConfigureAwait(false);
+                return await PlayClipAsync(guildId, playClipBody, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -4278,18 +4291,19 @@ namespace SidekickApi.Api
         /// Play Clip 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="playClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="playClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>&gt;</returns>
-        public async Task<IPlayClipApiResponse> PlayClipAsync(PlayClipRequest playClipRequest, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IPlayClipApiResponse> PlayClipAsync(long guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidatePlayClip(playClipRequest);
+                ValidatePlayClip(playClipBody);
 
-                FormatPlayClip(playClipRequest);
+                FormatPlayClip(ref guildId, playClipBody);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -4297,12 +4311,13 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/clips/play"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/clips/play");
+                        ? "/v1/guilds/{guild_id}/clips/play"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/clips/play");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
-                    httpRequestMessageLocalVar.Content = (playClipRequest as object) is System.IO.Stream stream
+                    httpRequestMessageLocalVar.Content = (playClipBody as object) is System.IO.Stream stream
                         ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
-                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(playClipRequest, _jsonSerializerOptions));
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(playClipBody, _jsonSerializerOptions));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
                     ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
@@ -4341,13 +4356,13 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/clips/play", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/clips/play", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
                         }
 
-                        AfterPlayClipDefaultImplementation(apiResponseLocalVar, playClipRequest);
+                        AfterPlayClipDefaultImplementation(apiResponseLocalVar, guildId, playClipBody);
 
                         Events.ExecuteOnPlayClip(apiResponseLocalVar);
 
@@ -4361,7 +4376,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorPlayClipDefaultImplementation(e, "/v1/clips/play", uriBuilderLocalVar.Path, playClipRequest);
+                OnErrorPlayClipDefaultImplementation(e, "/v1/guilds/{guild_id}/clips/play", uriBuilderLocalVar.Path, guildId, playClipBody);
                 Events.ExecuteOnErrorPlayClip(e);
                 throw;
             }
@@ -4688,28 +4703,29 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatPlayRandomClip(PlayRandomClipRequest playRandomClipRequest);
+        partial void FormatPlayRandomClip(ref long guildId, PlayRandomClipBody playRandomClipBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
-        /// <param name="playRandomClipRequest"></param>
+        /// <param name="playRandomClipBody"></param>
         /// <returns></returns>
-        private void ValidatePlayRandomClip(PlayRandomClipRequest playRandomClipRequest)
+        private void ValidatePlayRandomClip(PlayRandomClipBody playRandomClipBody)
         {
-            if (playRandomClipRequest == null)
-                throw new ArgumentNullException(nameof(playRandomClipRequest));
+            if (playRandomClipBody == null)
+                throw new ArgumentNullException(nameof(playRandomClipBody));
         }
 
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="playRandomClipRequest"></param>
-        private void AfterPlayRandomClipDefaultImplementation(IPlayRandomClipApiResponse apiResponseLocalVar, PlayRandomClipRequest playRandomClipRequest)
+        /// <param name="guildId"></param>
+        /// <param name="playRandomClipBody"></param>
+        private void AfterPlayRandomClipDefaultImplementation(IPlayRandomClipApiResponse apiResponseLocalVar, long guildId, PlayRandomClipBody playRandomClipBody)
         {
             bool suppressDefaultLog = false;
-            AfterPlayRandomClip(ref suppressDefaultLog, apiResponseLocalVar, playRandomClipRequest);
+            AfterPlayRandomClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, playRandomClipBody);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -4719,8 +4735,9 @@ namespace SidekickApi.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="playRandomClipRequest"></param>
-        partial void AfterPlayRandomClip(ref bool suppressDefaultLog, IPlayRandomClipApiResponse apiResponseLocalVar, PlayRandomClipRequest playRandomClipRequest);
+        /// <param name="guildId"></param>
+        /// <param name="playRandomClipBody"></param>
+        partial void AfterPlayRandomClip(ref bool suppressDefaultLog, IPlayRandomClipApiResponse apiResponseLocalVar, long guildId, PlayRandomClipBody playRandomClipBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -4728,11 +4745,12 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="playRandomClipRequest"></param>
-        private void OnErrorPlayRandomClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, PlayRandomClipRequest playRandomClipRequest)
+        /// <param name="guildId"></param>
+        /// <param name="playRandomClipBody"></param>
+        private void OnErrorPlayRandomClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, PlayRandomClipBody playRandomClipBody)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorPlayRandomClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, playRandomClipRequest);
+            OnErrorPlayRandomClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, playRandomClipBody);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -4744,20 +4762,22 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="playRandomClipRequest"></param>
-        partial void OnErrorPlayRandomClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, PlayRandomClipRequest playRandomClipRequest);
+        /// <param name="guildId"></param>
+        /// <param name="playRandomClipBody"></param>
+        partial void OnErrorPlayRandomClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, PlayRandomClipBody playRandomClipBody);
 
         /// <summary>
         /// Play Random Clip 
         /// </summary>
-        /// <param name="playRandomClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="playRandomClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>&gt;</returns>
-        public async Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(PlayRandomClipRequest playRandomClipRequest, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(long guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await PlayRandomClipAsync(playRandomClipRequest, cancellationToken).ConfigureAwait(false);
+                return await PlayRandomClipAsync(guildId, playRandomClipBody, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -4769,18 +4789,19 @@ namespace SidekickApi.Api
         /// Play Random Clip 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="playRandomClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="playRandomClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>&gt;</returns>
-        public async Task<IPlayRandomClipApiResponse> PlayRandomClipAsync(PlayRandomClipRequest playRandomClipRequest, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IPlayRandomClipApiResponse> PlayRandomClipAsync(long guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidatePlayRandomClip(playRandomClipRequest);
+                ValidatePlayRandomClip(playRandomClipBody);
 
-                FormatPlayRandomClip(playRandomClipRequest);
+                FormatPlayRandomClip(ref guildId, playRandomClipBody);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -4788,12 +4809,13 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/clips/play-random"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/clips/play-random");
+                        ? "/v1/guilds/{guild_id}/clips/play-random"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/clips/play-random");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
-                    httpRequestMessageLocalVar.Content = (playRandomClipRequest as object) is System.IO.Stream stream
+                    httpRequestMessageLocalVar.Content = (playRandomClipBody as object) is System.IO.Stream stream
                         ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
-                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(playRandomClipRequest, _jsonSerializerOptions));
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(playRandomClipBody, _jsonSerializerOptions));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
                     ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
@@ -4832,13 +4854,13 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/clips/play-random", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/clips/play-random", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
                         }
 
-                        AfterPlayRandomClipDefaultImplementation(apiResponseLocalVar, playRandomClipRequest);
+                        AfterPlayRandomClipDefaultImplementation(apiResponseLocalVar, guildId, playRandomClipBody);
 
                         Events.ExecuteOnPlayRandomClip(apiResponseLocalVar);
 
@@ -4852,7 +4874,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorPlayRandomClipDefaultImplementation(e, "/v1/clips/play-random", uriBuilderLocalVar.Path, playRandomClipRequest);
+                OnErrorPlayRandomClipDefaultImplementation(e, "/v1/guilds/{guild_id}/clips/play-random", uriBuilderLocalVar.Path, guildId, playRandomClipBody);
                 Events.ExecuteOnErrorPlayRandomClip(e);
                 throw;
             }
@@ -5141,7 +5163,7 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatRemoveTagClip(ref string tagName, ref string clipTrigger, ref long guildId);
+        partial void FormatRemoveTagClip(ref long guildId, ref string tagName, ref string clipTrigger);
 
         /// <summary>
         /// Validates the request parameters
@@ -5162,13 +5184,13 @@ namespace SidekickApi.Api
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        /// <param name="guildId"></param>
-        private void AfterRemoveTagClipDefaultImplementation(IRemoveTagClipApiResponse apiResponseLocalVar, string tagName, string clipTrigger, long guildId)
+        private void AfterRemoveTagClipDefaultImplementation(IRemoveTagClipApiResponse apiResponseLocalVar, long guildId, string tagName, string clipTrigger)
         {
             bool suppressDefaultLog = false;
-            AfterRemoveTagClip(ref suppressDefaultLog, apiResponseLocalVar, tagName, clipTrigger, guildId);
+            AfterRemoveTagClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, tagName, clipTrigger);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -5178,10 +5200,10 @@ namespace SidekickApi.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        /// <param name="guildId"></param>
-        partial void AfterRemoveTagClip(ref bool suppressDefaultLog, IRemoveTagClipApiResponse apiResponseLocalVar, string tagName, string clipTrigger, long guildId);
+        partial void AfterRemoveTagClip(ref bool suppressDefaultLog, IRemoveTagClipApiResponse apiResponseLocalVar, long guildId, string tagName, string clipTrigger);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -5189,13 +5211,13 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        /// <param name="guildId"></param>
-        private void OnErrorRemoveTagClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, string clipTrigger, long guildId)
+        private void OnErrorRemoveTagClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, string tagName, string clipTrigger)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorRemoveTagClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, tagName, clipTrigger, guildId);
+            OnErrorRemoveTagClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, tagName, clipTrigger);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -5207,24 +5229,24 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        /// <param name="guildId"></param>
-        partial void OnErrorRemoveTagClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, string clipTrigger, long guildId);
+        partial void OnErrorRemoveTagClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, string tagName, string clipTrigger);
 
         /// <summary>
         /// Remove Tag Clip 
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRemoveTagClipApiResponse"/>&gt;</returns>
-        public async Task<IRemoveTagClipApiResponse?> RemoveTagClipOrDefaultAsync(string tagName, string clipTrigger, long guildId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IRemoveTagClipApiResponse?> RemoveTagClipOrDefaultAsync(long guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await RemoveTagClipAsync(tagName, clipTrigger, guildId, cancellationToken).ConfigureAwait(false);
+                return await RemoveTagClipAsync(guildId, tagName, clipTrigger, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -5236,12 +5258,12 @@ namespace SidekickApi.Api
         /// Remove Tag Clip 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRemoveTagClipApiResponse"/>&gt;</returns>
-        public async Task<IRemoveTagClipApiResponse> RemoveTagClipAsync(string tagName, string clipTrigger, long guildId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IRemoveTagClipApiResponse> RemoveTagClipAsync(long guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
@@ -5249,7 +5271,7 @@ namespace SidekickApi.Api
             {
                 ValidateRemoveTagClip(tagName, clipTrigger);
 
-                FormatRemoveTagClip(ref tagName, ref clipTrigger, ref guildId);
+                FormatRemoveTagClip(ref guildId, ref tagName, ref clipTrigger);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -5257,16 +5279,11 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/tags/{tag_name}/clips/{clip_trigger}"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/tags/{tag_name}/clips/{clip_trigger}");
+                        ? "/v1/guilds/{guild_id}/tags/{tag_name}/clips/{clip_trigger}"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/tags/{tag_name}/clips/{clip_trigger}");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
                     uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Btag_name%7D", Uri.EscapeDataString(tagName.ToString()));
                     uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bclip_trigger%7D", Uri.EscapeDataString(clipTrigger.ToString()));
-
-                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
-
-                    parseQueryStringLocalVar["guild_id"] = ClientUtils.ParameterToString(guildId);
-
-                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
                     ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
@@ -5296,13 +5313,13 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/tags/{tag_name}/clips/{clip_trigger}", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/tags/{tag_name}/clips/{clip_trigger}", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
                         }
 
-                        AfterRemoveTagClipDefaultImplementation(apiResponseLocalVar, tagName, clipTrigger, guildId);
+                        AfterRemoveTagClipDefaultImplementation(apiResponseLocalVar, guildId, tagName, clipTrigger);
 
                         Events.ExecuteOnRemoveTagClip(apiResponseLocalVar);
 
@@ -5316,7 +5333,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorRemoveTagClipDefaultImplementation(e, "/v1/tags/{tag_name}/clips/{clip_trigger}", uriBuilderLocalVar.Path, tagName, clipTrigger, guildId);
+                OnErrorRemoveTagClipDefaultImplementation(e, "/v1/guilds/{guild_id}/tags/{tag_name}/clips/{clip_trigger}", uriBuilderLocalVar.Path, guildId, tagName, clipTrigger);
                 Events.ExecuteOnErrorRemoveTagClip(e);
                 throw;
             }
@@ -5567,28 +5584,29 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatSetCurrentIntro(SetCurrentIntroRequest setCurrentIntroRequest);
+        partial void FormatSetCurrentIntro(ref long guildId, SetCurrentIntroBody setCurrentIntroBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
-        /// <param name="setCurrentIntroRequest"></param>
+        /// <param name="setCurrentIntroBody"></param>
         /// <returns></returns>
-        private void ValidateSetCurrentIntro(SetCurrentIntroRequest setCurrentIntroRequest)
+        private void ValidateSetCurrentIntro(SetCurrentIntroBody setCurrentIntroBody)
         {
-            if (setCurrentIntroRequest == null)
-                throw new ArgumentNullException(nameof(setCurrentIntroRequest));
+            if (setCurrentIntroBody == null)
+                throw new ArgumentNullException(nameof(setCurrentIntroBody));
         }
 
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="setCurrentIntroRequest"></param>
-        private void AfterSetCurrentIntroDefaultImplementation(ISetCurrentIntroApiResponse apiResponseLocalVar, SetCurrentIntroRequest setCurrentIntroRequest)
+        /// <param name="guildId"></param>
+        /// <param name="setCurrentIntroBody"></param>
+        private void AfterSetCurrentIntroDefaultImplementation(ISetCurrentIntroApiResponse apiResponseLocalVar, long guildId, SetCurrentIntroBody setCurrentIntroBody)
         {
             bool suppressDefaultLog = false;
-            AfterSetCurrentIntro(ref suppressDefaultLog, apiResponseLocalVar, setCurrentIntroRequest);
+            AfterSetCurrentIntro(ref suppressDefaultLog, apiResponseLocalVar, guildId, setCurrentIntroBody);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -5598,8 +5616,9 @@ namespace SidekickApi.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="setCurrentIntroRequest"></param>
-        partial void AfterSetCurrentIntro(ref bool suppressDefaultLog, ISetCurrentIntroApiResponse apiResponseLocalVar, SetCurrentIntroRequest setCurrentIntroRequest);
+        /// <param name="guildId"></param>
+        /// <param name="setCurrentIntroBody"></param>
+        partial void AfterSetCurrentIntro(ref bool suppressDefaultLog, ISetCurrentIntroApiResponse apiResponseLocalVar, long guildId, SetCurrentIntroBody setCurrentIntroBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -5607,11 +5626,12 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="setCurrentIntroRequest"></param>
-        private void OnErrorSetCurrentIntroDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, SetCurrentIntroRequest setCurrentIntroRequest)
+        /// <param name="guildId"></param>
+        /// <param name="setCurrentIntroBody"></param>
+        private void OnErrorSetCurrentIntroDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, SetCurrentIntroBody setCurrentIntroBody)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorSetCurrentIntro(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, setCurrentIntroRequest);
+            OnErrorSetCurrentIntro(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, setCurrentIntroBody);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -5623,20 +5643,22 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="setCurrentIntroRequest"></param>
-        partial void OnErrorSetCurrentIntro(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, SetCurrentIntroRequest setCurrentIntroRequest);
+        /// <param name="guildId"></param>
+        /// <param name="setCurrentIntroBody"></param>
+        partial void OnErrorSetCurrentIntro(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, SetCurrentIntroBody setCurrentIntroBody);
 
         /// <summary>
         /// Set Current Intro 
         /// </summary>
-        /// <param name="setCurrentIntroRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="setCurrentIntroBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetCurrentIntroApiResponse"/>&gt;</returns>
-        public async Task<ISetCurrentIntroApiResponse?> SetCurrentIntroOrDefaultAsync(SetCurrentIntroRequest setCurrentIntroRequest, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<ISetCurrentIntroApiResponse?> SetCurrentIntroOrDefaultAsync(long guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await SetCurrentIntroAsync(setCurrentIntroRequest, cancellationToken).ConfigureAwait(false);
+                return await SetCurrentIntroAsync(guildId, setCurrentIntroBody, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -5648,18 +5670,19 @@ namespace SidekickApi.Api
         /// Set Current Intro 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="setCurrentIntroRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="setCurrentIntroBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetCurrentIntroApiResponse"/>&gt;</returns>
-        public async Task<ISetCurrentIntroApiResponse> SetCurrentIntroAsync(SetCurrentIntroRequest setCurrentIntroRequest, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<ISetCurrentIntroApiResponse> SetCurrentIntroAsync(long guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateSetCurrentIntro(setCurrentIntroRequest);
+                ValidateSetCurrentIntro(setCurrentIntroBody);
 
-                FormatSetCurrentIntro(setCurrentIntroRequest);
+                FormatSetCurrentIntro(ref guildId, setCurrentIntroBody);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -5667,12 +5690,13 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/intros/current"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/intros/current");
+                        ? "/v1/guilds/{guild_id}/intros/current"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/intros/current");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
-                    httpRequestMessageLocalVar.Content = (setCurrentIntroRequest as object) is System.IO.Stream stream
+                    httpRequestMessageLocalVar.Content = (setCurrentIntroBody as object) is System.IO.Stream stream
                         ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
-                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(setCurrentIntroRequest, _jsonSerializerOptions));
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(setCurrentIntroBody, _jsonSerializerOptions));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
                     ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
@@ -5711,13 +5735,13 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/intros/current", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/intros/current", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
                         }
 
-                        AfterSetCurrentIntroDefaultImplementation(apiResponseLocalVar, setCurrentIntroRequest);
+                        AfterSetCurrentIntroDefaultImplementation(apiResponseLocalVar, guildId, setCurrentIntroBody);
 
                         Events.ExecuteOnSetCurrentIntro(apiResponseLocalVar);
 
@@ -5731,7 +5755,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorSetCurrentIntroDefaultImplementation(e, "/v1/intros/current", uriBuilderLocalVar.Path, setCurrentIntroRequest);
+                OnErrorSetCurrentIntroDefaultImplementation(e, "/v1/guilds/{guild_id}/intros/current", uriBuilderLocalVar.Path, guildId, setCurrentIntroBody);
                 Events.ExecuteOnErrorSetCurrentIntro(e);
                 throw;
             }
@@ -6020,28 +6044,29 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatStopClip(StopClipRequest stopClipRequest);
+        partial void FormatStopClip(ref long guildId, StopClipBody stopClipBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
-        /// <param name="stopClipRequest"></param>
+        /// <param name="stopClipBody"></param>
         /// <returns></returns>
-        private void ValidateStopClip(StopClipRequest stopClipRequest)
+        private void ValidateStopClip(StopClipBody stopClipBody)
         {
-            if (stopClipRequest == null)
-                throw new ArgumentNullException(nameof(stopClipRequest));
+            if (stopClipBody == null)
+                throw new ArgumentNullException(nameof(stopClipBody));
         }
 
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="stopClipRequest"></param>
-        private void AfterStopClipDefaultImplementation(IStopClipApiResponse apiResponseLocalVar, StopClipRequest stopClipRequest)
+        /// <param name="guildId"></param>
+        /// <param name="stopClipBody"></param>
+        private void AfterStopClipDefaultImplementation(IStopClipApiResponse apiResponseLocalVar, long guildId, StopClipBody stopClipBody)
         {
             bool suppressDefaultLog = false;
-            AfterStopClip(ref suppressDefaultLog, apiResponseLocalVar, stopClipRequest);
+            AfterStopClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, stopClipBody);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -6051,8 +6076,9 @@ namespace SidekickApi.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
-        /// <param name="stopClipRequest"></param>
-        partial void AfterStopClip(ref bool suppressDefaultLog, IStopClipApiResponse apiResponseLocalVar, StopClipRequest stopClipRequest);
+        /// <param name="guildId"></param>
+        /// <param name="stopClipBody"></param>
+        partial void AfterStopClip(ref bool suppressDefaultLog, IStopClipApiResponse apiResponseLocalVar, long guildId, StopClipBody stopClipBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -6060,11 +6086,12 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="stopClipRequest"></param>
-        private void OnErrorStopClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, StopClipRequest stopClipRequest)
+        /// <param name="guildId"></param>
+        /// <param name="stopClipBody"></param>
+        private void OnErrorStopClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, StopClipBody stopClipBody)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorStopClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, stopClipRequest);
+            OnErrorStopClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, stopClipBody);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -6076,20 +6103,22 @@ namespace SidekickApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        /// <param name="stopClipRequest"></param>
-        partial void OnErrorStopClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, StopClipRequest stopClipRequest);
+        /// <param name="guildId"></param>
+        /// <param name="stopClipBody"></param>
+        partial void OnErrorStopClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, StopClipBody stopClipBody);
 
         /// <summary>
         /// Stop Clip 
         /// </summary>
-        /// <param name="stopClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="stopClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IStopClipApiResponse"/>&gt;</returns>
-        public async Task<IStopClipApiResponse?> StopClipOrDefaultAsync(StopClipRequest stopClipRequest, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IStopClipApiResponse?> StopClipOrDefaultAsync(long guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await StopClipAsync(stopClipRequest, cancellationToken).ConfigureAwait(false);
+                return await StopClipAsync(guildId, stopClipBody, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -6101,18 +6130,19 @@ namespace SidekickApi.Api
         /// Stop Clip 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
-        /// <param name="stopClipRequest"></param>
+        /// <param name="guildId"></param>
+        /// <param name="stopClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IStopClipApiResponse"/>&gt;</returns>
-        public async Task<IStopClipApiResponse> StopClipAsync(StopClipRequest stopClipRequest, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IStopClipApiResponse> StopClipAsync(long guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateStopClip(stopClipRequest);
+                ValidateStopClip(stopClipBody);
 
-                FormatStopClip(stopClipRequest);
+                FormatStopClip(ref guildId, stopClipBody);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -6120,12 +6150,13 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/v1/clips/stop"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/clips/stop");
+                        ? "/v1/guilds/{guild_id}/clips/stop"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/clips/stop");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
-                    httpRequestMessageLocalVar.Content = (stopClipRequest as object) is System.IO.Stream stream
+                    httpRequestMessageLocalVar.Content = (stopClipBody as object) is System.IO.Stream stream
                         ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
-                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(stopClipRequest, _jsonSerializerOptions));
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(stopClipBody, _jsonSerializerOptions));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
                     ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
@@ -6164,13 +6195,13 @@ namespace SidekickApi.Api
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/clips/stop", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/clips/stop", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
                         }
 
-                        AfterStopClipDefaultImplementation(apiResponseLocalVar, stopClipRequest);
+                        AfterStopClipDefaultImplementation(apiResponseLocalVar, guildId, stopClipBody);
 
                         Events.ExecuteOnStopClip(apiResponseLocalVar);
 
@@ -6184,7 +6215,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorStopClipDefaultImplementation(e, "/v1/clips/stop", uriBuilderLocalVar.Path, stopClipRequest);
+                OnErrorStopClipDefaultImplementation(e, "/v1/guilds/{guild_id}/clips/stop", uriBuilderLocalVar.Path, guildId, stopClipBody);
                 Events.ExecuteOnErrorStopClip(e);
                 throw;
             }

@@ -4,23 +4,23 @@ All URIs are relative to *http://127.0.0.1:28765*
 
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
-| [**AddTagClip**](DefaultApi.md#addtagclip) | **POST** /v1/tags/{tag_name}/clips | Add Tag Clip |
-| [**GetCurrentIntro**](DefaultApi.md#getcurrentintro) | **GET** /v1/intros/current | Get Current Intro |
+| [**AddTagClip**](DefaultApi.md#addtagclip) | **POST** /v1/guilds/{guild_id}/tags/{tag_name}/clips | Add Tag Clip |
+| [**GetCurrentIntro**](DefaultApi.md#getcurrentintro) | **GET** /v1/guilds/{guild_id}/intros/current | Get Current Intro |
 | [**GetHealth**](DefaultApi.md#gethealth) | **GET** /v1/health | Health |
-| [**GetRecentClipStats**](DefaultApi.md#getrecentclipstats) | **GET** /v1/clips/stats/recent | Recent Clip Stats |
-| [**GetTopClipStats**](DefaultApi.md#gettopclipstats) | **GET** /v1/clips/stats/top | Top Clip Stats |
-| [**ListClips**](DefaultApi.md#listclips) | **GET** /v1/clips | List Clips |
-| [**ListTagClips**](DefaultApi.md#listtagclips) | **GET** /v1/tags/{tag_name}/clips | List Tag Clips |
-| [**ListTags**](DefaultApi.md#listtags) | **GET** /v1/tags | List Tags |
-| [**PlayClip**](DefaultApi.md#playclip) | **POST** /v1/clips/play | Play Clip |
-| [**PlayRandomClip**](DefaultApi.md#playrandomclip) | **POST** /v1/clips/play-random | Play Random Clip |
-| [**RemoveTagClip**](DefaultApi.md#removetagclip) | **DELETE** /v1/tags/{tag_name}/clips/{clip_trigger} | Remove Tag Clip |
-| [**SetCurrentIntro**](DefaultApi.md#setcurrentintro) | **PUT** /v1/intros/current | Set Current Intro |
-| [**StopClip**](DefaultApi.md#stopclip) | **POST** /v1/clips/stop | Stop Clip |
+| [**GetRecentClipStats**](DefaultApi.md#getrecentclipstats) | **GET** /v1/guilds/{guild_id}/clips/stats/recent | Recent Clip Stats |
+| [**GetTopClipStats**](DefaultApi.md#gettopclipstats) | **GET** /v1/guilds/{guild_id}/clips/stats/top | Top Clip Stats |
+| [**ListClips**](DefaultApi.md#listclips) | **GET** /v1/guilds/{guild_id}/clips | List Clips |
+| [**ListTagClips**](DefaultApi.md#listtagclips) | **GET** /v1/guilds/{guild_id}/tags/{tag_name}/clips | List Tag Clips |
+| [**ListTags**](DefaultApi.md#listtags) | **GET** /v1/guilds/{guild_id}/tags | List Tags |
+| [**PlayClip**](DefaultApi.md#playclip) | **POST** /v1/guilds/{guild_id}/clips/play | Play Clip |
+| [**PlayRandomClip**](DefaultApi.md#playrandomclip) | **POST** /v1/guilds/{guild_id}/clips/play-random | Play Random Clip |
+| [**RemoveTagClip**](DefaultApi.md#removetagclip) | **DELETE** /v1/guilds/{guild_id}/tags/{tag_name}/clips/{clip_trigger} | Remove Tag Clip |
+| [**SetCurrentIntro**](DefaultApi.md#setcurrentintro) | **PUT** /v1/guilds/{guild_id}/intros/current | Set Current Intro |
+| [**StopClip**](DefaultApi.md#stopclip) | **POST** /v1/guilds/{guild_id}/clips/stop | Stop Clip |
 
 <a id="addtagclip"></a>
 # **AddTagClip**
-> AddTagClipResponse AddTagClip (string tagName, AddTagClipBody addTagClipBody)
+> AddTagClipResponse AddTagClip (long guildId, string tagName, AddTagClipBody addTagClipBody)
 
 Add Tag Clip
 
@@ -29,6 +29,7 @@ Add Tag Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
+| **guildId** | **long** |  |  |
 | **tagName** | **string** |  |  |
 | **addTagClipBody** | [**AddTagClipBody**](AddTagClipBody.md) |  |  |
 
@@ -326,7 +327,7 @@ List Tags
 
 <a id="playclip"></a>
 # **PlayClip**
-> PlayClipResponse PlayClip (PlayClipRequest playClipRequest)
+> PlayClipResponse PlayClip (long guildId, PlayClipBody playClipBody)
 
 Play Clip
 
@@ -335,7 +336,8 @@ Play Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **playClipRequest** | [**PlayClipRequest**](PlayClipRequest.md) |  |  |
+| **guildId** | **long** |  |  |
+| **playClipBody** | [**PlayClipBody**](PlayClipBody.md) |  |  |
 
 ### Return type
 
@@ -366,7 +368,7 @@ Play Clip
 
 <a id="playrandomclip"></a>
 # **PlayRandomClip**
-> PlayRandomClipResponse PlayRandomClip (PlayRandomClipRequest playRandomClipRequest)
+> PlayRandomClipResponse PlayRandomClip (long guildId, PlayRandomClipBody playRandomClipBody)
 
 Play Random Clip
 
@@ -375,7 +377,8 @@ Play Random Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **playRandomClipRequest** | [**PlayRandomClipRequest**](PlayRandomClipRequest.md) |  |  |
+| **guildId** | **long** |  |  |
+| **playRandomClipBody** | [**PlayRandomClipBody**](PlayRandomClipBody.md) |  |  |
 
 ### Return type
 
@@ -405,7 +408,7 @@ Play Random Clip
 
 <a id="removetagclip"></a>
 # **RemoveTagClip**
-> RemoveTagClipResponse RemoveTagClip (string tagName, string clipTrigger, long guildId)
+> RemoveTagClipResponse RemoveTagClip (long guildId, string tagName, string clipTrigger)
 
 Remove Tag Clip
 
@@ -414,9 +417,9 @@ Remove Tag Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
+| **guildId** | **long** |  |  |
 | **tagName** | **string** |  |  |
 | **clipTrigger** | **string** |  |  |
-| **guildId** | **long** |  |  |
 
 ### Return type
 
@@ -445,7 +448,7 @@ Remove Tag Clip
 
 <a id="setcurrentintro"></a>
 # **SetCurrentIntro**
-> SetCurrentIntroResponse SetCurrentIntro (SetCurrentIntroRequest setCurrentIntroRequest)
+> SetCurrentIntroResponse SetCurrentIntro (long guildId, SetCurrentIntroBody setCurrentIntroBody)
 
 Set Current Intro
 
@@ -454,7 +457,8 @@ Set Current Intro
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **setCurrentIntroRequest** | [**SetCurrentIntroRequest**](SetCurrentIntroRequest.md) |  |  |
+| **guildId** | **long** |  |  |
+| **setCurrentIntroBody** | [**SetCurrentIntroBody**](SetCurrentIntroBody.md) |  |  |
 
 ### Return type
 
@@ -484,7 +488,7 @@ Set Current Intro
 
 <a id="stopclip"></a>
 # **StopClip**
-> StopClipResponse StopClip (StopClipRequest stopClipRequest)
+> StopClipResponse StopClip (long guildId, StopClipBody stopClipBody)
 
 Stop Clip
 
@@ -493,7 +497,8 @@ Stop Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **stopClipRequest** | [**StopClipRequest**](StopClipRequest.md) |  |  |
+| **guildId** | **long** |  |  |
+| **stopClipBody** | [**StopClipBody**](StopClipBody.md) |  |  |
 
 ### Return type
 
