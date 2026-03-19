@@ -200,6 +200,44 @@ namespace ownbotsidekick.Services
                 $"Add clip to tag failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
         }
 
+        public async Task RemoveClipFromTagAsync(
+            string tagName,
+            string clipTrigger,
+            CancellationToken cancellationToken = default)
+        {
+            var response = await _api.RemoveTagClipAsync(tagName, clipTrigger, _guildId, cancellationToken)
+                .ConfigureAwait(false);
+            if (response.IsOk)
+            {
+                return;
+            }
+
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            {
+                throw new InvalidOperationException($"Remove clip from tag failed: {unauthorized.Message}");
+            }
+
+            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            {
+                throw new InvalidOperationException($"Remove clip from tag failed: {notFound.Message}");
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"Remove clip from tag failed: {internalError.Message}");
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("Remove clip from tag failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"Remove clip from tag failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
+        }
+
         public async Task<TopClipStatsCatalog> GetTopClipStatsAsync(
             string days,
             int limit = 10,

@@ -10,9 +10,10 @@ namespace ownbotsidekick.Tests.ViewModels
         public void ClearSelection_Restores_Empty_State()
         {
             var viewModel = new TagWidgetViewModel();
-            viewModel.SetLoaded("test", new[] { new TagClipEntryViewModel("alpha") });
+            viewModel.SetLoaded("test", new[] { new TagClipEntryViewModel("alpha", "test") });
             viewModel.IsDragAvailableTarget = true;
             viewModel.IsDragHoverTarget = true;
+            viewModel.IsRemoveDragOperation = true;
 
             viewModel.ClearSelection();
 
@@ -23,6 +24,7 @@ namespace ownbotsidekick.Tests.ViewModels
             Assert.Empty(viewModel.Clips);
             Assert.False(viewModel.IsDragAvailableTarget);
             Assert.False(viewModel.IsDragHoverTarget);
+            Assert.False(viewModel.IsRemoveDragOperation);
             Assert.Equal("Search for an existing &tag", viewModel.DropHintText);
         }
 
@@ -50,8 +52,8 @@ namespace ownbotsidekick.Tests.ViewModels
                 "test",
                 new[]
                 {
-                    new TagClipEntryViewModel("alpha"),
-                    new TagClipEntryViewModel("beta")
+                    new TagClipEntryViewModel("alpha", "test"),
+                    new TagClipEntryViewModel("beta", "test")
                 });
 
             Assert.True(viewModel.HasSelectedTag);
@@ -59,6 +61,17 @@ namespace ownbotsidekick.Tests.ViewModels
             Assert.Equal("Tag: &test", viewModel.TitleText);
             Assert.Equal(string.Empty, viewModel.StatusText);
             Assert.Equal(new[] { "alpha", "beta" }, viewModel.Clips.Select(clip => clip.Trigger).ToArray());
+        }
+
+        [Fact]
+        public void DropHintText_Uses_Remove_Copy_When_Remove_Drag_Is_Active()
+        {
+            var viewModel = new TagWidgetViewModel();
+            viewModel.SetLoaded("test", new[] { new TagClipEntryViewModel("alpha", "test") });
+
+            viewModel.IsRemoveDragOperation = true;
+
+            Assert.Equal("Drag clips here to remove from &test", viewModel.DropHintText);
         }
 
         [Fact]

@@ -667,6 +667,75 @@ paths:
       security:
       - APIKeyHeader: []
       summary: Add Tag Clip
+  /v1/tags/{tag_name}/clips/{clip_trigger}:
+    delete:
+      operationId: RemoveTagClip
+      parameters:
+      - explode: false
+        in: path
+        name: tag_name
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 1
+          title: Tag Name
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: clip_trigger
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 1
+          title: Clip Trigger
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RemoveTagClipResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not found error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - APIKeyHeader: []
+      summary: Remove Tag Clip
 components:
   schemas:
     AddTagClipBody:
@@ -1119,6 +1188,32 @@ components:
       - ok
       - rows
       title: RecentClipStatsResponse
+    RemoveTagClipResponse:
+      example:
+        tag_name: tag_name
+        guild_id: 0
+        clip_trigger: clip_trigger
+        ok: true
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        tag_name:
+          title: Tag Name
+          type: string
+        clip_trigger:
+          title: Clip Trigger
+          type: string
+      required:
+      - clip_trigger
+      - guild_id
+      - ok
+      - tag_name
+      title: RemoveTagClipResponse
     SetCurrentIntroRequest:
       example:
         guild_id: 0

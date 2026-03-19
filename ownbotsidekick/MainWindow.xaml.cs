@@ -293,7 +293,19 @@ namespace ownbotsidekick
                 sender,
                 e,
                 this,
-                button => button.Tag as string,
+                button =>
+                {
+                    var trigger = button.Tag as string;
+                    if (string.IsNullOrWhiteSpace(trigger))
+                    {
+                        return null;
+                    }
+
+                    var sourceTagName = button.DataContext is TagClipEntryViewModel tagClip
+                        ? tagClip.TagName
+                        : null;
+                    return new ClipAssignmentDragData(trigger, sourceTagName);
+                },
                 SetClipAssignmentDragActive);
         }
 
@@ -305,6 +317,7 @@ namespace ownbotsidekick
                 _quickPlayDragHoverSlot = 0;
                 _currentIntroDragHover = false;
                 _tagDropZoneHover = false;
+                _tagWidget.IsRemoveDragOperation = false;
             }
 
             UpdateQuickPlaySlots();
@@ -364,6 +377,7 @@ namespace ownbotsidekick
             }
 
             _tagDropZoneHover = true;
+            _tagWidget.IsRemoveDragOperation = IsSelectedTagRemovalDrag(e);
             e.Effects = System.Windows.DragDropEffects.Copy;
             UpdateTagDropZone();
         }
@@ -371,11 +385,13 @@ namespace ownbotsidekick
         private void TagDropZone_DragLeave(object sender, System.Windows.DragEventArgs e)
         {
             _tagDropZoneHover = false;
+            _tagWidget.IsRemoveDragOperation = false;
             UpdateTagDropZone();
         }
 
         private void TagDropZone_DragOver(object sender, System.Windows.DragEventArgs e)
         {
+            _tagWidget.IsRemoveDragOperation = IsSelectedTagRemovalDrag(e);
             e.Effects = _tagWidget.HasSelectedTag && HasClipTriggerDragData(e)
                 ? System.Windows.DragDropEffects.Copy
                 : System.Windows.DragDropEffects.None;
@@ -385,29 +401,43 @@ namespace ownbotsidekick
         private async void TagDropZone_Drop(object sender, System.Windows.DragEventArgs e)
         {
             _tagDropZoneHover = false;
-            var trigger = TryGetDroppedClipTrigger(e);
+            var dragData = TryGetDroppedClipAssignment(e);
             var selectedTagName = _tagWidget.SelectedTagName;
-            if (string.IsNullOrWhiteSpace(trigger) || string.IsNullOrWhiteSpace(selectedTagName))
+            if (dragData is null || string.IsNullOrWhiteSpace(selectedTagName))
             {
+                _tagWidget.IsRemoveDragOperation = false;
                 UpdateTagDropZone();
                 return;
             }
 
             if (_sidekickApiClient is null)
             {
+                _tagWidget.IsRemoveDragOperation = false;
                 UpdateTagDropZone();
                 return;
             }
 
             try
             {
-                await _sidekickApiClient.AddClipToTagAsync(selectedTagName, trigger);
-                Log($"Added clip '{trigger}' to &{selectedTagName}");
+                if (IsSelectedTagRemovalDrag(dragData, selectedTagName))
+                {
+                    await _sidekickApiClient.RemoveClipFromTagAsync(selectedTagName, dragData.Trigger);
+                    Log($"Removed clip '{dragData.Trigger}' from &{selectedTagName}");
+                }
+                else
+                {
+                    await _sidekickApiClient.AddClipToTagAsync(selectedTagName, dragData.Trigger);
+                    Log($"Added clip '{dragData.Trigger}' to &{selectedTagName}");
+                }
+
+                _tagWidget.IsRemoveDragOperation = false;
                 await SelectTagAsync(selectedTagName, "tag drop refresh");
             }
             catch (Exception ex)
             {
-                Log($"Failed to add clip '{trigger}' to &{selectedTagName}: {ex.Message}");
+                var action = IsSelectedTagRemovalDrag(dragData, selectedTagName) ? "remove" : "add";
+                Log($"Failed to {action} clip '{dragData.Trigger}' {(action == "remove" ? "from" : "to")} &{selectedTagName}: {ex.Message}");
+                _tagWidget.IsRemoveDragOperation = false;
                 UpdateTagDropZone();
             }
         }
@@ -528,8 +558,8 @@ namespace ownbotsidekick
         private async void CurrentIntroButton_Drop(object sender, System.Windows.DragEventArgs e)
         {
             _currentIntroDragHover = false;
-            var trigger = TryGetDroppedClipTrigger(e);
-            if (string.IsNullOrWhiteSpace(trigger))
+            var dragData = TryGetDroppedClipAssignment(e);
+            if (dragData is null || string.IsNullOrWhiteSpace(dragData.Trigger))
             {
                 UpdateCurrentIntroSlot();
                 return;
@@ -543,9 +573,9 @@ namespace ownbotsidekick
 
             try
             {
-                var currentIntro = await _sidekickApiClient.SetCurrentIntroAsync(trigger);
+                var currentIntro = await _sidekickApiClient.SetCurrentIntroAsync(dragData.Trigger);
                 _currentIntroSlot.Trigger = currentIntro.Trigger;
-                Log($"Assigned current intro -> {trigger}");
+                Log($"Assigned current intro -> {dragData.Trigger}");
             }
             catch (Exception ex)
             {
@@ -722,7 +752,7 @@ namespace ownbotsidekick
                 Log($"Loading tag clips ({reason}) for &{tagName}...");
                 var catalog = await _sidekickApiClient.ListTagClipsAsync(tagName);
                 var clips = catalog.Triggers
-                    .Select(trigger => new TagClipEntryViewModel(trigger))
+                    .Select(trigger => new TagClipEntryViewModel(trigger, catalog.TagName))
                     .ToArray();
                 _tagWidget.SetLoaded(catalog.TagName, clips);
                 _userSettings.SelectedTagName = catalog.TagName;
@@ -1212,17 +1242,17 @@ namespace ownbotsidekick
         private void HandleQuickPlayDrop(int slotIndex, System.Windows.DragEventArgs e)
         {
             _quickPlayDragHoverSlot = 0;
-            var trigger = TryGetDroppedClipTrigger(e);
-            if (string.IsNullOrWhiteSpace(trigger))
+            var dragData = TryGetDroppedClipAssignment(e);
+            if (dragData is null || string.IsNullOrWhiteSpace(dragData.Trigger))
             {
                 UpdateQuickPlaySlots();
                 return;
             }
 
-            SetQuickPlayTrigger(slotIndex, trigger);
+            SetQuickPlayTrigger(slotIndex, dragData.Trigger);
             SaveUserSettings();
             UpdateQuickPlaySlots();
-            Log($"Assigned quick play slot {slotIndex} -> {trigger}");
+            Log($"Assigned quick play slot {slotIndex} -> {dragData.Trigger}");
         }
 
         private void ShowOverlay(OverlayShowSource source)
@@ -1320,18 +1350,26 @@ namespace ownbotsidekick
 
         private static bool HasClipTriggerDragData(System.Windows.DragEventArgs e)
         {
-            return e.Data.GetDataPresent(ClipAssignmentDragDrop.ClipTriggerFormat);
+            return TryGetDroppedClipAssignment(e) is not null;
         }
 
-        private static string? TryGetDroppedClipTrigger(System.Windows.DragEventArgs e)
+        private static ClipAssignmentDragData? TryGetDroppedClipAssignment(System.Windows.DragEventArgs e)
         {
-            if (!HasClipTriggerDragData(e))
-            {
-                return null;
-            }
+            return ClipAssignmentDragDrop.TryRead(e.Data);
+        }
 
-            var trigger = e.Data.GetData(ClipAssignmentDragDrop.ClipTriggerFormat) as string;
-            return string.IsNullOrWhiteSpace(trigger) ? null : trigger.Trim();
+        private bool IsSelectedTagRemovalDrag(System.Windows.DragEventArgs e)
+        {
+            var dragData = TryGetDroppedClipAssignment(e);
+            var selectedTagName = _tagWidget.SelectedTagName;
+            return dragData is not null && !string.IsNullOrWhiteSpace(selectedTagName)
+                && IsSelectedTagRemovalDrag(dragData, selectedTagName);
+        }
+
+        private static bool IsSelectedTagRemovalDrag(ClipAssignmentDragData dragData, string selectedTagName)
+        {
+            return !string.IsNullOrWhiteSpace(dragData.SourceTagName) &&
+                string.Equals(dragData.SourceTagName, selectedTagName, StringComparison.OrdinalIgnoreCase);
         }
 
         private static HotkeyModifiers ParseModifiers(string configuredModifiers)

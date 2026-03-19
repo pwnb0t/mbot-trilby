@@ -140,7 +140,7 @@ namespace ownbotsidekick.Controls
                         return null;
                     }
 
-                    return searchResult.Value;
+                    return new ClipAssignmentDragData(searchResult.Value, sourceTagName: null);
                 },
                 isDragging => ClipAssignmentDragStateChanged?.Invoke(this, isDragging));
         }

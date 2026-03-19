@@ -12,6 +12,7 @@ namespace ownbotsidekick.ViewModels
         private string? _selectedTagName;
         private bool _isDragHoverTarget;
         private bool _isDragAvailableTarget;
+        private bool _isRemoveDragOperation;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -62,8 +63,24 @@ namespace ownbotsidekick.ViewModels
             set => SetField(ref _isDragAvailableTarget, value);
         }
 
+        public bool IsRemoveDragOperation
+        {
+            get => _isRemoveDragOperation;
+            set
+            {
+                if (!SetField(ref _isRemoveDragOperation, value))
+                {
+                    return;
+                }
+
+                OnPropertyChanged(nameof(DropHintText));
+            }
+        }
+
         public string DropHintText => HasSelectedTag
-            ? $"Drag clips here to add to &{SelectedTagName}"
+            ? IsRemoveDragOperation
+                ? $"Drag clips here to remove from &{SelectedTagName}"
+                : $"Drag clips here to add to &{SelectedTagName}"
             : "Search for an existing &tag";
 
         public void ClearSelection()
@@ -74,6 +91,7 @@ namespace ownbotsidekick.ViewModels
             Clips = new List<TagClipEntryViewModel>();
             IsDragHoverTarget = false;
             IsDragAvailableTarget = false;
+            IsRemoveDragOperation = false;
         }
 
         public void SetLoading(string tagName)
@@ -82,6 +100,7 @@ namespace ownbotsidekick.ViewModels
             TitleText = $"Tag: &{tagName}";
             StatusText = $"Loading clips for &{tagName}...";
             Clips = new List<TagClipEntryViewModel>();
+            IsRemoveDragOperation = false;
         }
 
         public void SetLoaded(string tagName, IReadOnlyList<TagClipEntryViewModel> clips)
@@ -90,6 +109,7 @@ namespace ownbotsidekick.ViewModels
             TitleText = $"Tag: &{tagName}";
             StatusText = clips.Count == 0 ? $"No clips in &{tagName} yet." : string.Empty;
             Clips = clips;
+            IsRemoveDragOperation = false;
         }
 
         public void SetFailed(string tagName, string message)
@@ -98,6 +118,7 @@ namespace ownbotsidekick.ViewModels
             TitleText = $"Tag: &{tagName}";
             StatusText = message;
             Clips = new List<TagClipEntryViewModel>();
+            IsRemoveDragOperation = false;
         }
 
         private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

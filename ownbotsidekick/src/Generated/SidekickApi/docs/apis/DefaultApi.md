@@ -14,6 +14,7 @@ All URIs are relative to *http://127.0.0.1:28765*
 | [**ListTags**](DefaultApi.md#listtags) | **GET** /v1/tags | List Tags |
 | [**PlayClip**](DefaultApi.md#playclip) | **POST** /v1/clips/play | Play Clip |
 | [**PlayRandomClip**](DefaultApi.md#playrandomclip) | **POST** /v1/clips/play-random | Play Random Clip |
+| [**RemoveTagClip**](DefaultApi.md#removetagclip) | **DELETE** /v1/tags/{tag_name}/clips/{clip_trigger} | Remove Tag Clip |
 | [**SetCurrentIntro**](DefaultApi.md#setcurrentintro) | **PUT** /v1/intros/current | Set Current Intro |
 | [**StopClip**](DefaultApi.md#stopclip) | **POST** /v1/clips/stop | Stop Clip |
 
@@ -397,6 +398,46 @@ Play Random Clip
 | **401** | Unauthorized error response. |  -  |
 | **404** | Clip not found error response. |  -  |
 | **409** | Voice not connected error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="removetagclip"></a>
+# **RemoveTagClip**
+> RemoveTagClipResponse RemoveTagClip (string tagName, string clipTrigger, long guildId)
+
+Remove Tag Clip
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **tagName** | **string** |  |  |
+| **clipTrigger** | **string** |  |  |
+| **guildId** | **long** |  |  |
+
+### Return type
+
+[**RemoveTagClipResponse**](RemoveTagClipResponse.md)
+
+### Authorization
+
+[APIKeyHeader](../README.md#APIKeyHeader)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
+| **404** | Not found error response. |  -  |
 | **500** | Internal error response. |  -  |
 | **422** | Validation Error |  -  |
 

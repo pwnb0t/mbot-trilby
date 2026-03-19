@@ -60,6 +60,7 @@ namespace SidekickApi.Client
             _jsonOptions.Converters.Add(new PlayRandomClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new RecentClipStatsItemJsonConverter());
             _jsonOptions.Converters.Add(new RecentClipStatsResponseJsonConverter());
+            _jsonOptions.Converters.Add(new RemoveTagClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new SetCurrentIntroRequestJsonConverter());
             _jsonOptions.Converters.Add(new SetCurrentIntroResponseJsonConverter());
             _jsonOptions.Converters.Add(new StopClipRequestJsonConverter());

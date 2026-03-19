@@ -18,6 +18,7 @@ namespace ownbotsidekick.Tests.SidekickApi
         [InlineData(nameof(IDefaultApi.GetTopClipStatsAsync), 6, "guildId", typeof(long))]
         [InlineData(nameof(IDefaultApi.GetTopClipStatsAsync), 6, "requesterUserId", typeof(Option<long>))]
         [InlineData(nameof(IDefaultApi.ListClipsAsync), 3, "guildId", typeof(long))]
+        [InlineData(nameof(IDefaultApi.RemoveTagClipAsync), 4, "guildId", typeof(long))]
         [InlineData(nameof(IDefaultApi.ListTagClipsAsync), 3, "guildId", typeof(long))]
         [InlineData(nameof(IDefaultApi.ListTagsAsync), 3, "guildId", typeof(long))]
         public void Generated_Api_Methods_Keep_Snowflake_Params_As_Long(
