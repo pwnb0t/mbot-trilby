@@ -63,7 +63,7 @@ namespace ownbotsidekick
         private int _quickPlayDragHoverSlot;
         private bool _currentIntroDragHover;
         private bool _tagDropZoneHover;
-        private bool _recentStatsGuildWide;
+        private bool _recentStatsGuildWide = true;
         private bool _recentStatsIncludeRandom = true;
         private bool _hotkeyRegistered;
         private bool _exitRequested;
@@ -1254,10 +1254,6 @@ namespace ownbotsidekick
             UpdateRecentClipTimeTexts();
             _overlayController.Show(source, _settings.Overlay.Topmost);
             _recentClipTimeRefreshTimer.Start();
-            if (_sidekickApiClient is not null)
-            {
-                _ = LoadCurrentIntroAsync("overlay shown");
-            }
         }
 
         private void RecentClipTimeRefreshTimer_Tick(object? sender, EventArgs e)
