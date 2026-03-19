@@ -155,10 +155,7 @@ namespace ownbotsidekick
             UpdateTopStatsFilterButtonVisuals();
             UpdateRecentStatsFilterButtonVisuals();
             UpdateRecentClipTimeTexts();
-            if (_userSettings.GetSession(GetSelectedEnvironmentName()) is null)
-            {
-                OpenSettingsWindow();
-            }
+            OpenSettingsWindow();
         }
 
         private async void QuickPlayButton_Click(object sender, RoutedEventArgs e)
