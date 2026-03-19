@@ -48,4 +48,14 @@ namespace ownbotsidekick.Services
         public string Trigger { get; }
         public string? SourceTagName { get; }
     }
+
+    internal sealed class ClipAssignmentDragChangedEventArgs : EventArgs
+    {
+        public ClipAssignmentDragChangedEventArgs(ClipAssignmentDragData? dragData)
+        {
+            DragData = dragData;
+        }
+
+        public ClipAssignmentDragData? DragData { get; }
+    }
 }

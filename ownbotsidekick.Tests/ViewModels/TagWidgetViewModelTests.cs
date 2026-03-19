@@ -70,8 +70,9 @@ namespace ownbotsidekick.Tests.ViewModels
             viewModel.SetLoaded("test", new[] { new TagClipEntryViewModel("alpha", "test") });
 
             viewModel.IsRemoveDragOperation = true;
+            viewModel.IsDragAvailableTarget = true;
 
-            Assert.Equal("Drag clips here to remove from &test", viewModel.DropHintText);
+            Assert.Equal("Drop here to remove from &test", viewModel.DropHintText);
         }
 
         [Fact]

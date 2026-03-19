@@ -54,13 +54,29 @@ namespace ownbotsidekick.ViewModels
         public bool IsDragHoverTarget
         {
             get => _isDragHoverTarget;
-            set => SetField(ref _isDragHoverTarget, value);
+            set
+            {
+                if (!SetField(ref _isDragHoverTarget, value))
+                {
+                    return;
+                }
+
+                OnPropertyChanged(nameof(DropHintText));
+            }
         }
 
         public bool IsDragAvailableTarget
         {
             get => _isDragAvailableTarget;
-            set => SetField(ref _isDragAvailableTarget, value);
+            set
+            {
+                if (!SetField(ref _isDragAvailableTarget, value))
+                {
+                    return;
+                }
+
+                OnPropertyChanged(nameof(DropHintText));
+            }
         }
 
         public bool IsRemoveDragOperation
@@ -78,8 +94,10 @@ namespace ownbotsidekick.ViewModels
         }
 
         public string DropHintText => HasSelectedTag
-            ? IsRemoveDragOperation
-                ? $"Drag clips here to remove from &{SelectedTagName}"
+            ? IsDragHoverTarget || IsDragAvailableTarget
+                ? IsRemoveDragOperation
+                    ? $"Drop here to remove from &{SelectedTagName}"
+                    : $"Drop here to add to &{SelectedTagName}"
                 : $"Drag clips here to add to &{SelectedTagName}"
             : "Search for an existing &tag";
 

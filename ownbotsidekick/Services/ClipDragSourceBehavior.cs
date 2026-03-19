@@ -31,7 +31,7 @@ namespace ownbotsidekick.Services
             System.Windows.Input.MouseEventArgs e,
             System.Windows.UIElement relativeTo,
             Func<System.Windows.Controls.Button, ClipAssignmentDragData?> getDragData,
-            Action<bool> setDragActive)
+            Action<ClipAssignmentDragData?> setDragData)
         {
             if (e.LeftButton != System.Windows.Input.MouseButtonState.Pressed)
             {
@@ -64,7 +64,7 @@ namespace ownbotsidekick.Services
                 return;
             }
 
-                setDragActive(true);
+            setDragData(dragData);
             try
             {
                 var dataObject = ClipAssignmentDragDrop.CreateDataObject(dragData.Trigger, dragData.SourceTagName);
@@ -74,7 +74,7 @@ namespace ownbotsidekick.Services
             {
                 _dragSourceButton = null;
                 _dragStartPoint = null;
-                setDragActive(false);
+                setDragData(null);
             }
         }
     }

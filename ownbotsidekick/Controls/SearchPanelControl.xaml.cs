@@ -34,7 +34,7 @@ namespace ownbotsidekick.Controls
         );
 
         public event EventHandler<ClipSearchResult>? SearchResultSelected;
-        public event EventHandler<bool>? ClipAssignmentDragStateChanged;
+        internal event EventHandler<ClipAssignmentDragChangedEventArgs>? ClipAssignmentDragStateChanged;
 
         public SearchPanelControl()
         {
@@ -142,7 +142,9 @@ namespace ownbotsidekick.Controls
 
                     return new ClipAssignmentDragData(searchResult.Value, sourceTagName: null);
                 },
-                isDragging => ClipAssignmentDragStateChanged?.Invoke(this, isDragging));
+                dragData => ClipAssignmentDragStateChanged?.Invoke(
+                    this,
+                    new ClipAssignmentDragChangedEventArgs(dragData)));
         }
     }
 }
