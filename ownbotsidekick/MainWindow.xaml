@@ -24,19 +24,19 @@
                 BorderThickness="0"
                 CornerRadius="0"
                 Padding="14">
-            <Grid>
+            <Grid x:Name="OverlayLayoutGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Margin="0,0,0,12">
+                <Grid x:Name="HeaderSectionGrid" Grid.Row="0" Margin="0,0,0,12">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0" Margin="0,0,0,10">
+                    <Grid x:Name="TopBarGrid" Grid.Row="0" Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -83,7 +83,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <Grid Grid.Row="1">
+                    <Grid x:Name="QuickPlayAndTransportGrid" Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="660" />
@@ -157,7 +157,8 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <Grid Grid.Column="1"
+                        <Grid x:Name="TransportControlsGrid"
+                              Grid.Column="1"
                               HorizontalAlignment="Right">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -239,7 +240,7 @@
                     </Grid>
                 </Grid>
 
-                <Grid Grid.Row="1">
+                <Grid x:Name="MainContentGrid" Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="320" />
                         <ColumnDefinition Width="*" />
@@ -247,14 +248,15 @@
                         <ColumnDefinition Width="320" />
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0"
+                    <Border x:Name="TagWidgetPanel"
+                            Grid.Column="0"
                             Background="{StaticResource PanelBackgroundBrush}"
                             BorderBrush="{StaticResource PanelBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="10"
                             Padding="12"
                             Margin="0,0,12,0">
-                        <Grid DataContext="{Binding TagWidget}">
+                        <Grid x:Name="TagWidgetGrid" DataContext="{Binding TagWidget}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -278,10 +280,11 @@
                                        TextWrapping="Wrap"
                                        Margin="0,0,0,10" />
 
-                            <ScrollViewer Grid.Row="2"
+                            <ScrollViewer x:Name="TagClipListScrollViewer"
+                                          Grid.Row="2"
                                           VerticalScrollBarVisibility="Auto"
                                           HorizontalScrollBarVisibility="Disabled">
-                                <ItemsControl ItemsSource="{Binding Clips}">
+                                <ItemsControl x:Name="TagClipItemsControl" ItemsSource="{Binding Clips}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                                 <Button Style="{StaticResource TopClipStatButtonStyle}"
@@ -302,7 +305,8 @@
                                 </ItemsControl>
                             </ScrollViewer>
 
-                            <Border Grid.Row="3"
+                            <Border x:Name="TagDropZoneBorder"
+                                    Grid.Row="3"
                                     Margin="0,10,0,0"
                                     Padding="10"
                                     CornerRadius="8"
@@ -365,14 +369,15 @@
                                                  Width="640"
                                                  Height="500" />
 
-                    <Border Grid.Column="2"
+                    <Border x:Name="RecentClipsPanel"
+                            Grid.Column="2"
                             Background="{StaticResource PanelBackgroundBrush}"
                             BorderBrush="{StaticResource PanelBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="10"
                             Padding="12"
                             Margin="12,0,0,0">
-                        <Grid>
+                        <Grid x:Name="RecentClipsGrid">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -412,7 +417,7 @@
                                 </StackPanel>
                             </StackPanel>
 
-                            <Grid Grid.Row="2">
+                            <Grid x:Name="RecentClipsContentGrid" Grid.Row="2">
                                 <TextBlock Text="{Binding RecentStatsStatusText}"
                                            Foreground="{StaticResource TextSecondaryBrush}"
                                            FontSize="12"
@@ -422,10 +427,11 @@
                                         VerticalAlignment="Top"
                                         Margin="14,0,14,0"
                                         Background="{StaticResource TextSecondaryBrush}" />
-                                <ScrollViewer Margin="0,22,0,0"
+                                <ScrollViewer x:Name="RecentClipsScrollViewer"
+                                              Margin="0,22,0,0"
                                               VerticalScrollBarVisibility="Auto"
                                               HorizontalScrollBarVisibility="Disabled">
-                                    <ItemsControl ItemsSource="{Binding RecentClipStats}">
+                                    <ItemsControl x:Name="RecentClipsItemsControl" ItemsSource="{Binding RecentClipStats}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                   <Button Style="{StaticResource TopClipStatButtonStyle}"
@@ -488,14 +494,15 @@
                         </Grid>
                     </Border>
 
-                    <Border Grid.Column="3"
+                    <Border x:Name="TopClipsPanel"
+                            Grid.Column="3"
                             Background="{StaticResource PanelBackgroundBrush}"
                             BorderBrush="{StaticResource PanelBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="10"
                             Padding="12"
                             Margin="12,0,0,0">
-                        <Grid>
+                        <Grid x:Name="TopClipsGrid">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -547,7 +554,7 @@
                                 </StackPanel>
                             </StackPanel>
 
-                            <Grid Grid.Row="2">
+                            <Grid x:Name="TopClipsContentGrid" Grid.Row="2">
                                 <TextBlock Text="{Binding TopStatsStatusText}"
                                            Foreground="{StaticResource TextSecondaryBrush}"
                                            FontSize="12"
@@ -557,10 +564,11 @@
                                         VerticalAlignment="Top"
                                         Margin="14,0,14,0"
                                         Background="{StaticResource TextSecondaryBrush}" />
-                                <ScrollViewer Margin="0,22,0,0"
+                                <ScrollViewer x:Name="TopClipsScrollViewer"
+                                              Margin="0,22,0,0"
                                               VerticalScrollBarVisibility="Auto"
                                               HorizontalScrollBarVisibility="Disabled">
-                                    <ItemsControl ItemsSource="{Binding TopClipStats}">
+                                    <ItemsControl x:Name="TopClipsItemsControl" ItemsSource="{Binding TopClipStats}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                   <Button Style="{StaticResource TopClipStatButtonStyle}"
