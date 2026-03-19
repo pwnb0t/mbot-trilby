@@ -5,6 +5,8 @@ All URIs are relative to *http://127.0.0.1:28765*
 | Method | HTTP request | Description |
 |--------|--------------|-------------|
 | [**AddTagClip**](DefaultApi.md#addtagclip) | **POST** /v1/guilds/{guild_id}/tags/{tag_name}/clips | Add Tag Clip |
+| [**CompleteDiscordAuth**](DefaultApi.md#completediscordauth) | **GET** /v1/auth/discord/callback | Complete Discord Auth |
+| [**GetAuthenticatedSession**](DefaultApi.md#getauthenticatedsession) | **GET** /v1/auth/me | Get Authenticated Session |
 | [**GetCurrentIntro**](DefaultApi.md#getcurrentintro) | **GET** /v1/guilds/{guild_id}/intros/current | Get Current Intro |
 | [**GetHealth**](DefaultApi.md#gethealth) | **GET** /v1/health | Health |
 | [**GetRecentClipStats**](DefaultApi.md#getrecentclipstats) | **GET** /v1/guilds/{guild_id}/clips/stats/recent | Recent Clip Stats |
@@ -14,8 +16,11 @@ All URIs are relative to *http://127.0.0.1:28765*
 | [**ListTags**](DefaultApi.md#listtags) | **GET** /v1/guilds/{guild_id}/tags | List Tags |
 | [**PlayClip**](DefaultApi.md#playclip) | **POST** /v1/guilds/{guild_id}/clips/play | Play Clip |
 | [**PlayRandomClip**](DefaultApi.md#playrandomclip) | **POST** /v1/guilds/{guild_id}/clips/play-random | Play Random Clip |
+| [**RefreshSidekickSession**](DefaultApi.md#refreshsidekicksession) | **POST** /v1/auth/refresh | Refresh Sidekick Session |
 | [**RemoveTagClip**](DefaultApi.md#removetagclip) | **DELETE** /v1/guilds/{guild_id}/tags/{tag_name}/clips/{clip_trigger} | Remove Tag Clip |
+| [**SelectDiscordAuthGuild**](DefaultApi.md#selectdiscordauthguild) | **GET** /v1/auth/discord/select | Select Discord Auth Guild |
 | [**SetCurrentIntro**](DefaultApi.md#setcurrentintro) | **PUT** /v1/guilds/{guild_id}/intros/current | Set Current Intro |
+| [**StartDiscordAuth**](DefaultApi.md#startdiscordauth) | **GET** /v1/auth/discord/start | Start Discord Auth |
 | [**StopClip**](DefaultApi.md#stopclip) | **POST** /v1/guilds/{guild_id}/clips/stop | Stop Clip |
 
 <a id="addtagclip"></a>
@@ -39,7 +44,7 @@ Add Tag Clip
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -58,9 +63,78 @@ Add Tag Clip
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
+<a id="completediscordauth"></a>
+# **CompleteDiscordAuth**
+> Object CompleteDiscordAuth (string code = null, string state = null, string error = null, string errorDescription = null)
+
+Complete Discord Auth
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **code** | **string** |  | [optional]  |
+| **state** | **string** |  | [optional]  |
+| **error** | **string** |  | [optional]  |
+| **errorDescription** | **string** |  | [optional]  |
+
+### Return type
+
+**Object**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="getauthenticatedsession"></a>
+# **GetAuthenticatedSession**
+> SessionSummaryResponse GetAuthenticatedSession ()
+
+Get Authenticated Session
+
+
+### Parameters
+This endpoint does not need any parameter.
+### Return type
+
+[**SessionSummaryResponse**](SessionSummaryResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
 <a id="getcurrentintro"></a>
 # **GetCurrentIntro**
-> GetCurrentIntroResponse GetCurrentIntro (long guildId, long requesterUserId)
+> GetCurrentIntroResponse GetCurrentIntro (long guildId)
 
 Get Current Intro
 
@@ -70,7 +144,6 @@ Get Current Intro
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **guildId** | **long** |  |  |
-| **requesterUserId** | **long** |  |  |
 
 ### Return type
 
@@ -78,7 +151,7 @@ Get Current Intro
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -130,7 +203,7 @@ No authorization required
 
 <a id="getrecentclipstats"></a>
 # **GetRecentClipStats**
-> RecentClipStatsResponse GetRecentClipStats (long guildId, long requesterUserId = null, int limit = null, bool includeRandom = null)
+> RecentClipStatsResponse GetRecentClipStats (long guildId, string scope = null, int limit = null, bool includeRandom = null)
 
 Recent Clip Stats
 
@@ -140,7 +213,7 @@ Recent Clip Stats
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **guildId** | **long** |  |  |
-| **requesterUserId** | **long** |  | [optional]  |
+| **scope** | **string** |  | [optional] [default to me] |
 | **limit** | **int** |  | [optional] [default to 10] |
 | **includeRandom** | **bool** |  | [optional] [default to true] |
 
@@ -150,7 +223,7 @@ Recent Clip Stats
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -170,7 +243,7 @@ Recent Clip Stats
 
 <a id="gettopclipstats"></a>
 # **GetTopClipStats**
-> TopClipStatsResponse GetTopClipStats (long guildId, long requesterUserId = null, string days = null, int limit = null, bool includeRandom = null)
+> TopClipStatsResponse GetTopClipStats (long guildId, string scope = null, string days = null, int limit = null, bool includeRandom = null)
 
 Top Clip Stats
 
@@ -180,7 +253,7 @@ Top Clip Stats
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **guildId** | **long** |  |  |
-| **requesterUserId** | **long** |  | [optional]  |
+| **scope** | **string** |  | [optional] [default to me] |
 | **days** | **string** |  | [optional] [default to &quot;7&quot;] |
 | **limit** | **int** |  | [optional] [default to 10] |
 | **includeRandom** | **bool** |  | [optional] [default to false] |
@@ -191,7 +264,7 @@ Top Clip Stats
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -230,7 +303,7 @@ List Clips
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -268,7 +341,7 @@ List Tag Clips
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -307,7 +380,7 @@ List Tags
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -345,7 +418,7 @@ Play Clip
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -386,7 +459,7 @@ Play Random Clip
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -401,6 +474,43 @@ Play Random Clip
 | **401** | Unauthorized error response. |  -  |
 | **404** | Clip not found error response. |  -  |
 | **409** | Voice not connected error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="refreshsidekicksession"></a>
+# **RefreshSidekickSession**
+> SessionResponse RefreshSidekickSession (RefreshSessionRequest refreshSessionRequest)
+
+Refresh Sidekick Session
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **refreshSessionRequest** | [**RefreshSessionRequest**](RefreshSessionRequest.md) |  |  |
+
+### Return type
+
+[**SessionResponse**](SessionResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
 | **500** | Internal error response. |  -  |
 | **422** | Validation Error |  -  |
 
@@ -427,7 +537,7 @@ Remove Tag Clip
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -442,6 +552,42 @@ Remove Tag Clip
 | **401** | Unauthorized error response. |  -  |
 | **404** | Not found error response. |  -  |
 | **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="selectdiscordauthguild"></a>
+# **SelectDiscordAuthGuild**
+> Object SelectDiscordAuthGuild (string grant, long guildId)
+
+Select Discord Auth Guild
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **grant** | **string** |  |  |
+| **guildId** | **long** |  |  |
+
+### Return type
+
+**Object**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
 | **422** | Validation Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
@@ -466,7 +612,7 @@ Set Current Intro
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
@@ -482,6 +628,41 @@ Set Current Intro
 | **400** | Bad request error response. |  -  |
 | **404** | Not found error response. |  -  |
 | **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="startdiscordauth"></a>
+# **StartDiscordAuth**
+> Object StartDiscordAuth (string clientCallbackUrl)
+
+Start Discord Auth
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **clientCallbackUrl** | **string** |  |  |
+
+### Return type
+
+**Object**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
 | **422** | Validation Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
@@ -506,7 +687,7 @@ Stop Clip
 
 ### Authorization
 
-[APIKeyHeader](../README.md#APIKeyHeader)
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 

@@ -16,30 +16,17 @@ namespace ownbotsidekick.Services
         private readonly ServiceProvider _serviceProvider;
         private readonly IDefaultApi _api;
         private readonly long _guildId;
-        private readonly long _requestingUserId;
 
-        public SidekickApiClientService(string baseUrl, string apiToken, long guildId, long requestingUserId)
+        public SidekickApiClientService(string baseUrl, string accessToken, long guildId)
         {
-            _ = apiToken ?? throw new ArgumentNullException(nameof(apiToken));
+            _ = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
             _guildId = guildId;
-            _requestingUserId = requestingUserId;
-            if (_requestingUserId <= 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(requestingUserId),
-                    "Sidekick RequestingUserId must be configured to a positive Discord user id.");
-            }
 
             var services = new ServiceCollection();
             services.AddLogging();
             services.AddApi(options =>
             {
-                var apiKeyToken = new ApiKeyToken(
-                    apiToken,
-                    ClientUtils.ApiKeyHeader.X_Sidekick_Token,
-                    prefix: string.Empty
-                );
-                options.AddTokens(apiKeyToken);
+                options.AddTokens(new BearerToken(accessToken));
                 options.AddApiHttpClients(client =>
                 {
                     client.BaseAddress = new Uri(baseUrl, UriKind.Absolute);
@@ -246,12 +233,9 @@ namespace ownbotsidekick.Services
             bool guildWide = false,
             CancellationToken cancellationToken = default)
         {
-            var requesterUserId = guildWide
-                ? default
-                : new Option<long>(_requestingUserId);
             var response = await _api.GetTopClipStatsAsync(
                 _guildId,
-                requesterUserId,
+                guildWide ? new Option<string>("guild") : new Option<string>("me"),
                 days,
                 limit,
                 includeRandom,
@@ -306,12 +290,9 @@ namespace ownbotsidekick.Services
             bool guildWide = false,
             CancellationToken cancellationToken = default)
         {
-            var requesterUserId = guildWide
-                ? default
-                : new Option<long>(_requestingUserId);
             var response = await _api.GetRecentClipStatsAsync(
                 _guildId,
-                requesterUserId,
+                guildWide ? new Option<string>("guild") : new Option<string>("me"),
                 limit,
                 includeRandom,
                 cancellationToken).ConfigureAwait(false);
@@ -352,7 +333,7 @@ namespace ownbotsidekick.Services
 
         public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
         {
-            var request = new PlayClipBody(trigger, _requestingUserId)
+            var request = new PlayClipBody(trigger)
             {
                 RequestId = $"play:{Guid.NewGuid():N}"
             };
@@ -396,7 +377,7 @@ namespace ownbotsidekick.Services
 
         public async Task<string> PlayRandomClipAsync(CancellationToken cancellationToken = default)
         {
-            var request = new PlayRandomClipBody(_requestingUserId)
+            var request = new PlayRandomClipBody()
             {
                 RequestId = $"random:{Guid.NewGuid():N}"
             };
@@ -435,7 +416,7 @@ namespace ownbotsidekick.Services
 
         public async Task<string> StopClipAsync(CancellationToken cancellationToken = default)
         {
-            var request = new StopClipBody(_requestingUserId)
+            var request = new StopClipBody()
             {
                 RequestId = Guid.NewGuid().ToString("N")
             };
@@ -474,10 +455,7 @@ namespace ownbotsidekick.Services
 
         public async Task<CurrentIntroState> GetCurrentIntroAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.GetCurrentIntroAsync(
-                _guildId,
-                _requestingUserId,
-                cancellationToken).ConfigureAwait(false);
+            var response = await _api.GetCurrentIntroAsync(_guildId, cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
                 return new CurrentIntroState(ok.Trigger);
@@ -516,7 +494,7 @@ namespace ownbotsidekick.Services
 
         public async Task<CurrentIntroState> SetCurrentIntroAsync(string trigger, CancellationToken cancellationToken = default)
         {
-            var request = new SetCurrentIntroBody(_requestingUserId, trigger);
+            var request = new SetCurrentIntroBody(trigger);
             var response = await _api.SetCurrentIntroAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
 
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)

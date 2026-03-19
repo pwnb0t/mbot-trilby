@@ -33,23 +33,15 @@ namespace SidekickApi.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="StopClipBody" /> class.
         /// </summary>
-        /// <param name="requesterUserId">requesterUserId</param>
         /// <param name="requestId">requestId</param>
         [JsonConstructor]
-        public StopClipBody(long requesterUserId, Option<string?> requestId = default)
+        public StopClipBody(Option<string?> requestId = default)
         {
-            RequesterUserId = requesterUserId;
             RequestIdOption = requestId;
             OnCreated();
         }
 
         partial void OnCreated();
-
-        /// <summary>
-        /// Gets or Sets RequesterUserId
-        /// </summary>
-        [JsonPropertyName("requester_user_id")]
-        public long RequesterUserId { get; set; }
 
         /// <summary>
         /// Used to track the state of RequestId
@@ -72,7 +64,6 @@ namespace SidekickApi.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class StopClipBody {\n");
-            sb.Append("  RequesterUserId: ").Append(RequesterUserId).Append("\n");
             sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -85,12 +76,6 @@ namespace SidekickApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
-            // RequesterUserId (long) minimum
-            if (this.RequesterUserId < (long)0)
-            {
-                yield return new ValidationResult("Invalid value for RequesterUserId, must be a value greater than 0.", new [] { "RequesterUserId" });
-            }
-
             yield break;
         }
     }
@@ -117,7 +102,6 @@ namespace SidekickApi.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<long?> requesterUserId = default;
             Option<string?> requestId = default;
 
             while (utf8JsonReader.Read())
@@ -135,9 +119,6 @@ namespace SidekickApi.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "requester_user_id":
-                            requesterUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
-                            break;
                         case "request_id":
                             requestId = new Option<string?>(utf8JsonReader.GetString());
                             break;
@@ -147,13 +128,7 @@ namespace SidekickApi.Model
                 }
             }
 
-            if (!requesterUserId.IsSet)
-                throw new ArgumentException("Property is required for class StopClipBody.", nameof(requesterUserId));
-
-            if (requesterUserId.IsSet && requesterUserId.Value == null)
-                throw new ArgumentNullException(nameof(requesterUserId), "Property is not nullable for class StopClipBody.");
-
-            return new StopClipBody(requesterUserId.Value!.Value!, requestId);
+            return new StopClipBody(requestId);
         }
 
         /// <summary>
@@ -180,8 +155,6 @@ namespace SidekickApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, StopClipBody stopClipBody, JsonSerializerOptions jsonSerializerOptions)
         {
-            writer.WriteNumber("requester_user_id", stopClipBody.RequesterUserId);
-
             if (stopClipBody.RequestIdOption.IsSet)
                 if (stopClipBody.RequestIdOption.Value != null)
                     writer.WriteString("request_id", stopClipBody.RequestId);

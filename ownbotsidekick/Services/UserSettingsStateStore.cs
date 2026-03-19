@@ -84,17 +84,78 @@ namespace ownbotsidekick.Services
         public string? SelectedTagName { get; set; }
     }
 
+    internal sealed class EnvironmentSettings
+    {
+        public string SelectedName { get; set; } = "dev";
+    }
+
+    public sealed class SidekickSessionSettings
+    {
+        public string? AccessToken { get; set; }
+        public string? RefreshToken { get; set; }
+        public string? ExpiresAtUtc { get; set; }
+        public long UserId { get; set; }
+        public string? Username { get; set; }
+        public long GuildId { get; set; }
+        public string? GuildName { get; set; }
+
+        [JsonIgnore]
+        public bool IsAuthenticated =>
+            !string.IsNullOrWhiteSpace(AccessToken) &&
+            !string.IsNullOrWhiteSpace(RefreshToken) &&
+            GuildId > 0 &&
+            UserId > 0;
+    }
+
+    internal sealed class AuthSettings
+    {
+        public SidekickSessionSettings? Dev { get; set; }
+        public SidekickSessionSettings? Test { get; set; }
+        public SidekickSessionSettings? Prod { get; set; }
+
+        public SidekickSessionSettings? GetSession(string environmentName)
+        {
+            return environmentName.ToLowerInvariant() switch
+            {
+                "dev" => Dev,
+                "test" => Test,
+                "prod" => Prod,
+                _ => null
+            };
+        }
+
+        public void SetSession(string environmentName, SidekickSessionSettings? session)
+        {
+            switch (environmentName.ToLowerInvariant())
+            {
+                case "dev":
+                    Dev = session;
+                    break;
+                case "test":
+                    Test = session;
+                    break;
+                case "prod":
+                    Prod = session;
+                    break;
+            }
+        }
+    }
+
     internal sealed class UserSettingsState
     {
         public QuickPlaySettings QuickPlay { get; set; } = QuickPlaySettings.CreateEmpty();
         public TagSettings Tags { get; set; } = new();
+        public EnvironmentSettings Environment { get; set; } = new();
+        public AuthSettings Auth { get; set; } = new();
 
         public static UserSettingsState CreateEmpty()
         {
             return new UserSettingsState
             {
                 QuickPlay = QuickPlaySettings.CreateEmpty(),
-                Tags = new TagSettings()
+                Tags = new TagSettings(),
+                Environment = new EnvironmentSettings(),
+                Auth = new AuthSettings()
             };
         }
 
@@ -113,6 +174,23 @@ namespace ownbotsidekick.Services
         {
             get => Tags.SelectedTagName;
             set => Tags.SelectedTagName = value;
+        }
+
+        [JsonIgnore]
+        public string SelectedEnvironmentName
+        {
+            get => Environment.SelectedName;
+            set => Environment.SelectedName = string.IsNullOrWhiteSpace(value) ? "dev" : value.Trim().ToLowerInvariant();
+        }
+
+        public SidekickSessionSettings? GetSession(string environmentName)
+        {
+            return Auth.GetSession(environmentName);
+        }
+
+        public void SetSession(string environmentName, SidekickSessionSettings? session)
+        {
+            Auth.SetSession(environmentName, session);
         }
     }
 
@@ -174,6 +252,8 @@ namespace ownbotsidekick.Services
 
             settings.QuickPlay ??= QuickPlaySettings.CreateEmpty();
             settings.Tags ??= new TagSettings();
+            settings.Environment ??= new EnvironmentSettings();
+            settings.Auth ??= new AuthSettings();
             return settings;
         }
     }

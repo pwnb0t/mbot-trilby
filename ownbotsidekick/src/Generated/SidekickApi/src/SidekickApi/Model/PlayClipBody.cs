@@ -34,13 +34,11 @@ namespace SidekickApi.Model
         /// Initializes a new instance of the <see cref="PlayClipBody" /> class.
         /// </summary>
         /// <param name="trigger">trigger</param>
-        /// <param name="requesterUserId">requesterUserId</param>
         /// <param name="requestId">requestId</param>
         [JsonConstructor]
-        public PlayClipBody(string trigger, long requesterUserId, Option<string?> requestId = default)
+        public PlayClipBody(string trigger, Option<string?> requestId = default)
         {
             Trigger = trigger;
-            RequesterUserId = requesterUserId;
             RequestIdOption = requestId;
             OnCreated();
         }
@@ -52,12 +50,6 @@ namespace SidekickApi.Model
         /// </summary>
         [JsonPropertyName("trigger")]
         public string Trigger { get; set; }
-
-        /// <summary>
-        /// Gets or Sets RequesterUserId
-        /// </summary>
-        [JsonPropertyName("requester_user_id")]
-        public long RequesterUserId { get; set; }
 
         /// <summary>
         /// Used to track the state of RequestId
@@ -81,7 +73,6 @@ namespace SidekickApi.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class PlayClipBody {\n");
             sb.Append("  Trigger: ").Append(Trigger).Append("\n");
-            sb.Append("  RequesterUserId: ").Append(RequesterUserId).Append("\n");
             sb.Append("  RequestId: ").Append(RequestId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -104,12 +95,6 @@ namespace SidekickApi.Model
             if (this.Trigger != null && this.Trigger.Length < 1)
             {
                 yield return new ValidationResult("Invalid value for Trigger, length must be greater than 1.", new [] { "Trigger" });
-            }
-
-            // RequesterUserId (long) minimum
-            if (this.RequesterUserId < (long)0)
-            {
-                yield return new ValidationResult("Invalid value for RequesterUserId, must be a value greater than 0.", new [] { "RequesterUserId" });
             }
 
             yield break;
@@ -139,7 +124,6 @@ namespace SidekickApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> trigger = default;
-            Option<long?> requesterUserId = default;
             Option<string?> requestId = default;
 
             while (utf8JsonReader.Read())
@@ -160,9 +144,6 @@ namespace SidekickApi.Model
                         case "trigger":
                             trigger = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "requester_user_id":
-                            requesterUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
-                            break;
                         case "request_id":
                             requestId = new Option<string?>(utf8JsonReader.GetString());
                             break;
@@ -175,16 +156,10 @@ namespace SidekickApi.Model
             if (!trigger.IsSet)
                 throw new ArgumentException("Property is required for class PlayClipBody.", nameof(trigger));
 
-            if (!requesterUserId.IsSet)
-                throw new ArgumentException("Property is required for class PlayClipBody.", nameof(requesterUserId));
-
             if (trigger.IsSet && trigger.Value == null)
                 throw new ArgumentNullException(nameof(trigger), "Property is not nullable for class PlayClipBody.");
 
-            if (requesterUserId.IsSet && requesterUserId.Value == null)
-                throw new ArgumentNullException(nameof(requesterUserId), "Property is not nullable for class PlayClipBody.");
-
-            return new PlayClipBody(trigger.Value!, requesterUserId.Value!.Value!, requestId);
+            return new PlayClipBody(trigger.Value!, requestId);
         }
 
         /// <summary>
@@ -215,8 +190,6 @@ namespace SidekickApi.Model
                 throw new ArgumentNullException(nameof(playClipBody.Trigger), "Property is required for class PlayClipBody.");
 
             writer.WriteString("trigger", playClipBody.Trigger);
-
-            writer.WriteNumber("requester_user_id", playClipBody.RequesterUserId);
 
             if (playClipBody.RequestIdOption.IsSet)
                 if (playClipBody.RequestIdOption.Value != null)

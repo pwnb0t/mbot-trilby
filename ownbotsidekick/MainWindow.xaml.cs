@@ -47,6 +47,7 @@ namespace ownbotsidekick
         private readonly int _playFirstPrimaryVirtualKey;
         private readonly int _playFirstSecondaryVirtualKey;
         private readonly OverlayViewModel _viewModel = new();
+        private readonly SidekickAuthenticationService _sidekickAuthenticationService = new();
         private readonly List<string> _allClipTriggers = new();
         private readonly List<string> _allTagNames = new();
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
@@ -74,6 +75,7 @@ namespace ownbotsidekick
         private readonly DispatcherTimer _recentClipTimeRefreshTimer;
         private TrayController? _trayController;
         private OverlayInputRouter? _overlayInputRouter;
+        private SettingsWindow? _settingsWindow;
 
         public MainWindow()
         {
@@ -84,15 +86,6 @@ namespace ownbotsidekick
 
             _settings = AppSettingsLoader.LoadFromBaseDirectory(AppContext.BaseDirectory);
             Topmost = _settings.Overlay.Topmost;
-            if (_settings.SidekickApi.Enabled)
-            {
-                _sidekickApiClient = new SidekickApiClientService(
-                    _settings.SidekickApi.BaseUrl,
-                    _settings.SidekickApi.ApiToken,
-                    _settings.SidekickApi.GuildId,
-                    _settings.SidekickApi.RequestingUserId
-                );
-            }
 
             _hideOverlayVirtualKey = ParseBindingVirtualKey(_settings.InputBindings.HideOverlayKey, Key.Escape);
             _clearSearchVirtualKey = ParseBindingVirtualKey(_settings.InputBindings.ClearSearchKey, Key.Tab);
@@ -135,9 +128,7 @@ namespace ownbotsidekick
             _recentClipTimeRefreshTimer.Tick += RecentClipTimeRefreshTimer_Tick;
             _trayController = new TrayController(
                 diagnostics: _diagnostics,
-                showOverlay: ShowOverlayFromTray,
-                hideOverlay: HideOverlayFromTray,
-                toggleOverlay: ToggleOverlayVisibility,
+                openSettings: OpenSettingsWindow,
                 exitApp: ExitFromTray,
                 appBaseDirectory: AppContext.BaseDirectory
             );
@@ -150,49 +141,24 @@ namespace ownbotsidekick
 
             Log("m'bot Trilby loaded.");
             Log($"Hotkey: {DescribeHotkey(_settings.Hotkey)}");
-            Log(_settings.SidekickApi.Enabled
-                ? "Sidekick API client enabled."
-                : "Sidekick API client disabled in appsettings.");
-            if (_settings.SidekickApi.Enabled && string.IsNullOrWhiteSpace(_settings.SidekickApi.ApiToken))
-            {
-                Log("Warning: SidekickApi.ApiToken is empty. API calls will fail with 401.");
-            }
+            Log($"Selected environment: {GetSelectedEnvironmentName()}");
             Log(
                 string.Join(
                     ", ",
                     _quickPlaySlots.Select(slot => $"{slot.SlotIndex}={DescribeQuickPlaySlot(slot.Trigger)}")
                 )
             );
-            Log($"Sidekick requester user id: {_settings.SidekickApi.RequestingUserId}");
-            if (_sidekickApiClient is not null)
-            {
-                _ = InitializeHealthCheckAsync();
-                _ = LoadClipCatalogAsync("startup");
-                _ = LoadTagCatalogAsync("startup");
-                _ = LoadTopClipStatsAsync("startup");
-                _ = LoadRecentClipStatsAsync("startup");
-                _ = LoadCurrentIntroAsync("startup");
-            }
-            else
-            {
-                UpdateClipCountText(0, "API disabled");
-                _viewModel.TopStatsStatusText = "API disabled";
-                _viewModel.RecentStatsStatusText = "API disabled";
-            }
-
-            if (_settings.Overlay.StartHidden)
-            {
-                Log("Overlay starts hidden per appsettings.");
-            }
-            else
-            {
-                _overlayController.Show(OverlayShowSource.Standard, _settings.Overlay.Topmost);
-            }
+            _ = InitializeAuthenticatedStateAsync("startup");
+            Log("Overlay starts hidden until authenticated hotkey use.");
 
             _overlayController.ApplyOverlayPanelLayout();
             UpdateTopStatsFilterButtonVisuals();
             UpdateRecentStatsFilterButtonVisuals();
             UpdateRecentClipTimeTexts();
+            if (_userSettings.GetSession(GetSelectedEnvironmentName()) is null)
+            {
+                OpenSettingsWindow();
+            }
         }
 
         private async void QuickPlayButton_Click(object sender, RoutedEventArgs e)
@@ -208,6 +174,11 @@ namespace ownbotsidekick
 
         private async void RefreshClipsButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!await EnsureAuthenticatedApiClientAsync("manual refresh"))
+            {
+                return;
+            }
+
             await LoadClipCatalogAsync("manual refresh");
             await LoadTagCatalogAsync("manual refresh");
             await LoadTopClipStatsAsync("manual refresh");
@@ -975,17 +946,12 @@ namespace ownbotsidekick
                 return;
             }
 
-            ShowOverlay(OverlayShowSource.Standard);
+            _ = ShowOverlayIfAuthenticatedAsync(OverlayShowSource.Standard);
         }
 
         private void ShowOverlayFromTray()
         {
-            if (_overlayController.IsVisible)
-            {
-                return;
-            }
-
-            ShowOverlay(OverlayShowSource.Tray);
+            OpenSettingsWindow();
         }
 
         private void HideOverlayFromTray()
@@ -1305,6 +1271,141 @@ namespace ownbotsidekick
         private void SaveUserSettings()
         {
             _userSettingsStore.Save(_userSettings);
+        }
+
+        private async System.Threading.Tasks.Task InitializeAuthenticatedStateAsync(string reason)
+        {
+            if (!await EnsureAuthenticatedApiClientAsync(reason))
+            {
+                UpdateClipCountText(0, "Not signed in");
+                _viewModel.TopStatsStatusText = "Not signed in";
+                _viewModel.RecentStatsStatusText = "Not signed in";
+                return;
+            }
+
+            _ = InitializeHealthCheckAsync();
+            _ = LoadClipCatalogAsync(reason);
+            _ = LoadTagCatalogAsync(reason);
+            _ = LoadTopClipStatsAsync(reason);
+            _ = LoadRecentClipStatsAsync(reason);
+            _ = LoadCurrentIntroAsync(reason);
+        }
+
+        private async System.Threading.Tasks.Task<bool> EnsureAuthenticatedApiClientAsync(string reason)
+        {
+            var environmentName = GetSelectedEnvironmentName();
+            var environment = _settings.SidekickEnvironments.GetByName(environmentName);
+            var session = _userSettings.GetSession(environmentName);
+            if (session is null || !session.IsAuthenticated)
+            {
+                _sidekickApiClient = null;
+                _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_sidekickApiClient);
+                return false;
+            }
+
+            if (SidekickAuthenticationService.IsExpired(session))
+            {
+                try
+                {
+                    Log($"Refreshing expired session for {environmentName} ({reason})...");
+                    var refreshedSession = await _sidekickAuthenticationService.RefreshSessionAsync(
+                        environment.BaseUrl,
+                        session.RefreshToken ?? string.Empty);
+                    _userSettings.SetSession(environmentName, refreshedSession);
+                    session = refreshedSession;
+                    SaveUserSettings();
+                }
+                catch (Exception ex)
+                {
+                    Log($"Session refresh failed for {environmentName}: {ex.Message}");
+                    _userSettings.SetSession(environmentName, null);
+                    SaveUserSettings();
+                    _sidekickApiClient = null;
+                    _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_sidekickApiClient);
+                    OpenSettingsWindow();
+                    return false;
+                }
+            }
+
+            _sidekickApiClient = new SidekickApiClientService(
+                environment.BaseUrl,
+                session.AccessToken ?? string.Empty,
+                session.GuildId);
+            _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_sidekickApiClient);
+            return true;
+        }
+
+        private async System.Threading.Tasks.Task ShowOverlayIfAuthenticatedAsync(OverlayShowSource source)
+        {
+            if (!await EnsureAuthenticatedApiClientAsync("show overlay"))
+            {
+                OpenSettingsWindow();
+                return;
+            }
+
+            ShowOverlay(source);
+        }
+
+        private void OpenSettingsWindow()
+        {
+            if (_settingsWindow is not null)
+            {
+                _settingsWindow.Activate();
+                return;
+            }
+
+            _settingsWindow = new SettingsWindow(
+                _settings.SidekickEnvironments,
+                getSelectedEnvironmentName: GetSelectedEnvironmentName,
+                setSelectedEnvironmentName: SetSelectedEnvironmentName,
+                getSession: environmentName => _userSettings.GetSession(environmentName),
+                signInAsync: SignInToEnvironmentAsync,
+                signOut: SignOutEnvironment,
+                log: Log);
+            _settingsWindow.Closed += (_, _) => _settingsWindow = null;
+            _settingsWindow.Show();
+        }
+
+        private async System.Threading.Tasks.Task SignInToEnvironmentAsync(string environmentName)
+        {
+            var environment = _settings.SidekickEnvironments.GetByName(environmentName);
+            var session = await _sidekickAuthenticationService.SignInAsync(environment.BaseUrl);
+            _userSettings.SetSession(environmentName, session);
+            SaveUserSettings();
+            Log($"Signed in to {environmentName} as {session.Username} for guild {session.GuildName} ({session.GuildId}).");
+            await InitializeAuthenticatedStateAsync($"{environmentName} sign in");
+            _settingsWindow?.RefreshView();
+        }
+
+        private void SignOutEnvironment(string environmentName)
+        {
+            _userSettings.SetSession(environmentName, null);
+            SaveUserSettings();
+            if (string.Equals(GetSelectedEnvironmentName(), environmentName, StringComparison.OrdinalIgnoreCase))
+            {
+                _sidekickApiClient = null;
+                _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_sidekickApiClient);
+                _overlayController.Hide("Overlay hidden after sign out.");
+                UpdateClipCountText(0, "Signed out");
+                _viewModel.TopStatsStatusText = "Signed out";
+                _viewModel.RecentStatsStatusText = "Signed out";
+            }
+
+            Log($"Signed out of {environmentName}.");
+            _settingsWindow?.RefreshView();
+        }
+
+        private string GetSelectedEnvironmentName()
+        {
+            return _userSettings.SelectedEnvironmentName;
+        }
+
+        private void SetSelectedEnvironmentName(string environmentName)
+        {
+            _userSettings.SelectedEnvironmentName = environmentName;
+            SaveUserSettings();
+            Log($"Selected environment changed to {environmentName}.");
+            _ = InitializeAuthenticatedStateAsync($"{environmentName} selected");
         }
 
         private void SetQuickPlayTrigger(int slotIndex, string trigger)

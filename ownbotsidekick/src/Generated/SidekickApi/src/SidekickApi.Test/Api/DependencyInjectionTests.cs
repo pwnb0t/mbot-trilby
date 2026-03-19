@@ -27,16 +27,16 @@ namespace SidekickApi.Test.Api
         private readonly IHost _hostUsingConfigureWithoutAClient =
             Host.CreateDefaultBuilder([]).ConfigureApi((context, services, options) =>
             {
-                ApiKeyToken apiKeyToken1 = new("<token>", ClientUtils.ApiKeyHeader.X_Sidekick_Token, timeout: TimeSpan.FromSeconds(1));
-                options.AddTokens(apiKeyToken1);
+                BearerToken bearerToken1 = new("<token>", timeout: TimeSpan.FromSeconds(1));
+                options.AddTokens(bearerToken1);
             })
             .Build();
 
         private readonly IHost _hostUsingConfigureWithAClient =
             Host.CreateDefaultBuilder([]).ConfigureApi((context, services, options) =>
             {
-                ApiKeyToken apiKeyToken1 = new("<token>", ClientUtils.ApiKeyHeader.X_Sidekick_Token, timeout: TimeSpan.FromSeconds(1));
-                options.AddTokens(apiKeyToken1);
+                BearerToken bearerToken1 = new("<token>", timeout: TimeSpan.FromSeconds(1));
+                options.AddTokens(bearerToken1);
                 options.AddApiHttpClients(client => client.BaseAddress = new Uri(ClientUtils.BASE_ADDRESS));
             })
             .Build();
@@ -46,8 +46,8 @@ namespace SidekickApi.Test.Api
             {
                 services.AddApi(options =>
                 {
-                    ApiKeyToken apiKeyToken1 = new("<token>", ClientUtils.ApiKeyHeader.X_Sidekick_Token, timeout: TimeSpan.FromSeconds(1));
-                    options.AddTokens(apiKeyToken1);
+                    BearerToken bearerToken1 = new("<token>", timeout: TimeSpan.FromSeconds(1));
+                    options.AddTokens(bearerToken1);
                 });
             })
             .Build();
@@ -57,8 +57,8 @@ namespace SidekickApi.Test.Api
             {
                 services.AddApi(options =>
                 {
-                    ApiKeyToken apiKeyToken1 = new("<token>", ClientUtils.ApiKeyHeader.X_Sidekick_Token, timeout: TimeSpan.FromSeconds(1));
-                    options.AddTokens(apiKeyToken1);
+                    BearerToken bearerToken1 = new("<token>", timeout: TimeSpan.FromSeconds(1));
+                    options.AddTokens(bearerToken1);
                     options.AddApiHttpClients(client => client.BaseAddress = new Uri(ClientUtils.BASE_ADDRESS));
                 });
             })

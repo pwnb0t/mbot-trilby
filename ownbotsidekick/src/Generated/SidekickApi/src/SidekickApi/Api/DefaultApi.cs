@@ -65,6 +65,56 @@ namespace SidekickApi.Api
         Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(long guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Complete Discord Auth
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="code"> (optional)</param>
+        /// <param name="state"> (optional)</param>
+        /// <param name="error"> (optional)</param>
+        /// <param name="errorDescription"> (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="ICompleteDiscordAuthApiResponse"/>&gt;</returns>
+        Task<ICompleteDiscordAuthApiResponse> CompleteDiscordAuthAsync(Option<string?> code = default, Option<string?> state = default, Option<string?> error = default, Option<string?> errorDescription = default, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Complete Discord Auth
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="code"> (optional)</param>
+        /// <param name="state"> (optional)</param>
+        /// <param name="error"> (optional)</param>
+        /// <param name="errorDescription"> (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="ICompleteDiscordAuthApiResponse"/>?&gt;</returns>
+        Task<ICompleteDiscordAuthApiResponse?> CompleteDiscordAuthOrDefaultAsync(Option<string?> code = default, Option<string?> state = default, Option<string?> error = default, Option<string?> errorDescription = default, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Authenticated Session
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetAuthenticatedSessionApiResponse"/>&gt;</returns>
+        Task<IGetAuthenticatedSessionApiResponse> GetAuthenticatedSessionAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Authenticated Session
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetAuthenticatedSessionApiResponse"/>?&gt;</returns>
+        Task<IGetAuthenticatedSessionApiResponse?> GetAuthenticatedSessionOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Get Current Intro
         /// </summary>
         /// <remarks>
@@ -72,10 +122,9 @@ namespace SidekickApi.Api
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>&gt;</returns>
-        Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(long guildId, long requesterUserId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(long guildId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get Current Intro
@@ -84,10 +133,9 @@ namespace SidekickApi.Api
         /// 
         /// </remarks>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>?&gt;</returns>
-        Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(long guildId, long requesterUserId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(long guildId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Health
@@ -118,12 +166,12 @@ namespace SidekickApi.Api
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="scope"> (optional, default to me)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<long> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Recent Clip Stats
@@ -132,12 +180,12 @@ namespace SidekickApi.Api
         /// 
         /// </remarks>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="scope"> (optional, default to me)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>?&gt;</returns>
-        Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<long> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Top Clip Stats
@@ -147,13 +195,13 @@ namespace SidekickApi.Api
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="scope"> (optional, default to me)</param>
         /// <param name="days"> (optional, default to &quot;7&quot;)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<long> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Top Clip Stats
@@ -162,13 +210,13 @@ namespace SidekickApi.Api
         /// 
         /// </remarks>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="scope"> (optional, default to me)</param>
         /// <param name="days"> (optional, default to &quot;7&quot;)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>?&gt;</returns>
-        Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<long> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Clips
@@ -296,6 +344,29 @@ namespace SidekickApi.Api
         Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(long guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Refresh Sidekick Session
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="refreshSessionRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IRefreshSidekickSessionApiResponse"/>&gt;</returns>
+        Task<IRefreshSidekickSessionApiResponse> RefreshSidekickSessionAsync(RefreshSessionRequest refreshSessionRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Refresh Sidekick Session
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="refreshSessionRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IRefreshSidekickSessionApiResponse"/>?&gt;</returns>
+        Task<IRefreshSidekickSessionApiResponse?> RefreshSidekickSessionOrDefaultAsync(RefreshSessionRequest refreshSessionRequest, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Remove Tag Clip
         /// </summary>
         /// <remarks>
@@ -323,6 +394,31 @@ namespace SidekickApi.Api
         Task<IRemoveTagClipApiResponse?> RemoveTagClipOrDefaultAsync(long guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Select Discord Auth Guild
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="grant"></param>
+        /// <param name="guildId"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="ISelectDiscordAuthGuildApiResponse"/>&gt;</returns>
+        Task<ISelectDiscordAuthGuildApiResponse> SelectDiscordAuthGuildAsync(string grant, long guildId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Select Discord Auth Guild
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="grant"></param>
+        /// <param name="guildId"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="ISelectDiscordAuthGuildApiResponse"/>?&gt;</returns>
+        Task<ISelectDiscordAuthGuildApiResponse?> SelectDiscordAuthGuildOrDefaultAsync(string grant, long guildId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Set Current Intro
         /// </summary>
         /// <remarks>
@@ -346,6 +442,29 @@ namespace SidekickApi.Api
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetCurrentIntroApiResponse"/>?&gt;</returns>
         Task<ISetCurrentIntroApiResponse?> SetCurrentIntroOrDefaultAsync(long guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Start Discord Auth
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="clientCallbackUrl"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IStartDiscordAuthApiResponse"/>&gt;</returns>
+        Task<IStartDiscordAuthApiResponse> StartDiscordAuthAsync(string clientCallbackUrl, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Start Discord Auth
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="clientCallbackUrl"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IStartDiscordAuthApiResponse"/>?&gt;</returns>
+        Task<IStartDiscordAuthApiResponse?> StartDiscordAuthOrDefaultAsync(string clientCallbackUrl, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Stop Clip
@@ -407,6 +526,42 @@ namespace SidekickApi.Api
         /// </summary>
         /// <returns></returns>
         bool IsUnprocessableContent { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="ICompleteDiscordAuthApiResponse"/>
+    /// </summary>
+    public interface ICompleteDiscordAuthApiResponse : SidekickApi.Client.IApiResponse, IOk<Object?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 422 UnprocessableContent
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnprocessableContent { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IGetAuthenticatedSessionApiResponse"/>
+    /// </summary>
+    public interface IGetAuthenticatedSessionApiResponse : SidekickApi.Client.IApiResponse, IOk<SidekickApi.Model.SessionSummaryResponse?>, IUnauthorized<SidekickApi.Model.ApiErrorResponse?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
     }
 
     /// <summary>
@@ -716,6 +871,36 @@ namespace SidekickApi.Api
     }
 
     /// <summary>
+    /// The <see cref="IRefreshSidekickSessionApiResponse"/>
+    /// </summary>
+    public interface IRefreshSidekickSessionApiResponse : SidekickApi.Client.IApiResponse, IOk<SidekickApi.Model.SessionResponse?>, IUnauthorized<SidekickApi.Model.ApiErrorResponse?>, IInternalServerError<SidekickApi.Model.ApiErrorResponse?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 500 InternalServerError
+        /// </summary>
+        /// <returns></returns>
+        bool IsInternalServerError { get; }
+
+        /// <summary>
+        /// Returns true if the response is 422 UnprocessableContent
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnprocessableContent { get; }
+    }
+
+    /// <summary>
     /// The <see cref="IRemoveTagClipApiResponse"/>
     /// </summary>
     public interface IRemoveTagClipApiResponse : SidekickApi.Client.IApiResponse, IOk<SidekickApi.Model.RemoveTagClipResponse?>, IUnauthorized<SidekickApi.Model.ApiErrorResponse?>, INotFound<SidekickApi.Model.ApiErrorResponse?>, IInternalServerError<SidekickApi.Model.ApiErrorResponse?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
@@ -743,6 +928,24 @@ namespace SidekickApi.Api
         /// </summary>
         /// <returns></returns>
         bool IsInternalServerError { get; }
+
+        /// <summary>
+        /// Returns true if the response is 422 UnprocessableContent
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnprocessableContent { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="ISelectDiscordAuthGuildApiResponse"/>
+    /// </summary>
+    public interface ISelectDiscordAuthGuildApiResponse : SidekickApi.Client.IApiResponse, IOk<Object?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
 
         /// <summary>
         /// Returns true if the response is 422 UnprocessableContent
@@ -785,6 +988,24 @@ namespace SidekickApi.Api
         /// </summary>
         /// <returns></returns>
         bool IsInternalServerError { get; }
+
+        /// <summary>
+        /// Returns true if the response is 422 UnprocessableContent
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnprocessableContent { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IStartDiscordAuthApiResponse"/>
+    /// </summary>
+    public interface IStartDiscordAuthApiResponse : SidekickApi.Client.IApiResponse, IOk<Object?>, IUnprocessableContent<SidekickApi.Model.HTTPValidationError?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
 
         /// <summary>
         /// Returns true if the response is 422 UnprocessableContent
@@ -858,6 +1079,46 @@ namespace SidekickApi.Api
         internal void ExecuteOnErrorAddTagClip(Exception exception)
         {
             OnErrorAddTagClip?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnCompleteDiscordAuth;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorCompleteDiscordAuth;
+
+        internal void ExecuteOnCompleteDiscordAuth(DefaultApi.CompleteDiscordAuthApiResponse apiResponse)
+        {
+            OnCompleteDiscordAuth?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorCompleteDiscordAuth(Exception exception)
+        {
+            OnErrorCompleteDiscordAuth?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnGetAuthenticatedSession;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorGetAuthenticatedSession;
+
+        internal void ExecuteOnGetAuthenticatedSession(DefaultApi.GetAuthenticatedSessionApiResponse apiResponse)
+        {
+            OnGetAuthenticatedSession?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorGetAuthenticatedSession(Exception exception)
+        {
+            OnErrorGetAuthenticatedSession?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -1043,6 +1304,26 @@ namespace SidekickApi.Api
         /// <summary>
         /// The event raised after the server response
         /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnRefreshSidekickSession;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorRefreshSidekickSession;
+
+        internal void ExecuteOnRefreshSidekickSession(DefaultApi.RefreshSidekickSessionApiResponse apiResponse)
+        {
+            OnRefreshSidekickSession?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorRefreshSidekickSession(Exception exception)
+        {
+            OnErrorRefreshSidekickSession?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
         public event EventHandler<ApiResponseEventArgs>? OnRemoveTagClip;
 
         /// <summary>
@@ -1063,6 +1344,26 @@ namespace SidekickApi.Api
         /// <summary>
         /// The event raised after the server response
         /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnSelectDiscordAuthGuild;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorSelectDiscordAuthGuild;
+
+        internal void ExecuteOnSelectDiscordAuthGuild(DefaultApi.SelectDiscordAuthGuildApiResponse apiResponse)
+        {
+            OnSelectDiscordAuthGuild?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorSelectDiscordAuthGuild(Exception exception)
+        {
+            OnErrorSelectDiscordAuthGuild?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
         public event EventHandler<ApiResponseEventArgs>? OnSetCurrentIntro;
 
         /// <summary>
@@ -1078,6 +1379,26 @@ namespace SidekickApi.Api
         internal void ExecuteOnErrorSetCurrentIntro(Exception exception)
         {
             OnErrorSetCurrentIntro?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnStartDiscordAuth;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorStartDiscordAuth;
+
+        internal void ExecuteOnStartDiscordAuth(DefaultApi.StartDiscordAuthApiResponse apiResponse)
+        {
+            OnStartDiscordAuth?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorStartDiscordAuth(Exception exception)
+        {
+            OnErrorStartDiscordAuth?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -1129,23 +1450,23 @@ namespace SidekickApi.Api
         public DefaultApiEvents Events { get; }
 
         /// <summary>
-        /// A token provider of type <see cref="ApiKeyProvider"/>
+        /// A token provider of type <see cref="BearerToken"/>
         /// </summary>
-        public TokenProvider<ApiKeyToken> ApiKeyProvider { get; }
+        public TokenProvider<BearerToken> BearerTokenProvider { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultApi"/> class.
         /// </summary>
         /// <returns></returns>
         public DefaultApi(ILogger<DefaultApi> logger, ILoggerFactory loggerFactory, HttpClient httpClient, JsonSerializerOptionsProvider jsonSerializerOptionsProvider, DefaultApiEvents defaultApiEvents,
-            TokenProvider<ApiKeyToken> apiKeyProvider)
+            TokenProvider<BearerToken> bearerTokenProvider)
         {
             _jsonSerializerOptions = jsonSerializerOptionsProvider.Options;
             LoggerFactory = loggerFactory;
             Logger = LoggerFactory.CreateLogger<DefaultApi>();
             HttpClient = httpClient;
             Events = defaultApiEvents;
-            ApiKeyProvider = apiKeyProvider;
+            BearerTokenProvider = bearerTokenProvider;
         }
 
         partial void FormatAddTagClip(ref long guildId, ref string tagName, AddTagClipBody addTagClipBody);
@@ -1274,11 +1595,13 @@ namespace SidekickApi.Api
                         : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(addTagClipBody, _jsonSerializerOptions));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] contentTypes = new string[] {
                         "application/json"
@@ -1581,18 +1904,584 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetCurrentIntro(ref long guildId, ref long requesterUserId);
+        partial void FormatCompleteDiscordAuth(ref Option<string?> code, ref Option<string?> state, ref Option<string?> error, ref Option<string?> errorDescription);
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="code"></param>
+        /// <param name="state"></param>
+        /// <param name="error"></param>
+        /// <param name="errorDescription"></param>
+        private void AfterCompleteDiscordAuthDefaultImplementation(ICompleteDiscordAuthApiResponse apiResponseLocalVar, Option<string?> code, Option<string?> state, Option<string?> error, Option<string?> errorDescription)
+        {
+            bool suppressDefaultLog = false;
+            AfterCompleteDiscordAuth(ref suppressDefaultLog, apiResponseLocalVar, code, state, error, errorDescription);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="code"></param>
+        /// <param name="state"></param>
+        /// <param name="error"></param>
+        /// <param name="errorDescription"></param>
+        partial void AfterCompleteDiscordAuth(ref bool suppressDefaultLog, ICompleteDiscordAuthApiResponse apiResponseLocalVar, Option<string?> code, Option<string?> state, Option<string?> error, Option<string?> errorDescription);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="code"></param>
+        /// <param name="state"></param>
+        /// <param name="error"></param>
+        /// <param name="errorDescription"></param>
+        private void OnErrorCompleteDiscordAuthDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string?> code, Option<string?> state, Option<string?> error, Option<string?> errorDescription)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorCompleteDiscordAuth(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, code, state, error, errorDescription);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="code"></param>
+        /// <param name="state"></param>
+        /// <param name="error"></param>
+        /// <param name="errorDescription"></param>
+        partial void OnErrorCompleteDiscordAuth(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string?> code, Option<string?> state, Option<string?> error, Option<string?> errorDescription);
+
+        /// <summary>
+        /// Complete Discord Auth 
+        /// </summary>
+        /// <param name="code"> (optional)</param>
+        /// <param name="state"> (optional)</param>
+        /// <param name="error"> (optional)</param>
+        /// <param name="errorDescription"> (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="ICompleteDiscordAuthApiResponse"/>&gt;</returns>
+        public async Task<ICompleteDiscordAuthApiResponse?> CompleteDiscordAuthOrDefaultAsync(Option<string?> code = default, Option<string?> state = default, Option<string?> error = default, Option<string?> errorDescription = default, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await CompleteDiscordAuthAsync(code, state, error, errorDescription, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Complete Discord Auth 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="code"> (optional)</param>
+        /// <param name="state"> (optional)</param>
+        /// <param name="error"> (optional)</param>
+        /// <param name="errorDescription"> (optional)</param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="ICompleteDiscordAuthApiResponse"/>&gt;</returns>
+        public async Task<ICompleteDiscordAuthApiResponse> CompleteDiscordAuthAsync(Option<string?> code = default, Option<string?> state = default, Option<string?> error = default, Option<string?> errorDescription = default, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                FormatCompleteDiscordAuth(ref code, ref state, ref error, ref errorDescription);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/auth/discord/callback"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/auth/discord/callback");
+
+                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+                    if (code.IsSet)
+                        parseQueryStringLocalVar["code"] = ClientUtils.ParameterToString(code.Value);
+
+                    if (state.IsSet)
+                        parseQueryStringLocalVar["state"] = ClientUtils.ParameterToString(state.Value);
+
+                    if (error.IsSet)
+                        parseQueryStringLocalVar["error"] = ClientUtils.ParameterToString(error.Value);
+
+                    if (errorDescription.IsSet)
+                        parseQueryStringLocalVar["error_description"] = ClientUtils.ParameterToString(errorDescription.Value);
+
+                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<CompleteDiscordAuthApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<CompleteDiscordAuthApiResponse>();
+                        CompleteDiscordAuthApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/auth/discord/callback", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterCompleteDiscordAuthDefaultImplementation(apiResponseLocalVar, code, state, error, errorDescription);
+
+                        Events.ExecuteOnCompleteDiscordAuth(apiResponseLocalVar);
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorCompleteDiscordAuthDefaultImplementation(e, "/v1/auth/discord/callback", uriBuilderLocalVar.Path, code, state, error, errorDescription);
+                Events.ExecuteOnErrorCompleteDiscordAuth(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="CompleteDiscordAuthApiResponse"/>
+        /// </summary>
+        public partial class CompleteDiscordAuthApiResponse : SidekickApi.Client.ApiResponse, ICompleteDiscordAuthApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<CompleteDiscordAuthApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="CompleteDiscordAuthApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public CompleteDiscordAuthApiResponse(ILogger<CompleteDiscordAuthApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="CompleteDiscordAuthApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public CompleteDiscordAuthApiResponse(ILogger<CompleteDiscordAuthApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public Object? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<Object>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out Object? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnprocessableContent => 422 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.HTTPValidationError? UnprocessableContent()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnprocessableContent
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.HTTPValidationError>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnprocessableContent([NotNullWhen(true)]out SidekickApi.Model.HTTPValidationError? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = UnprocessableContent();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)422);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        private void AfterGetAuthenticatedSessionDefaultImplementation(IGetAuthenticatedSessionApiResponse apiResponseLocalVar)
+        {
+            bool suppressDefaultLog = false;
+            AfterGetAuthenticatedSession(ref suppressDefaultLog, apiResponseLocalVar);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        partial void AfterGetAuthenticatedSession(ref bool suppressDefaultLog, IGetAuthenticatedSessionApiResponse apiResponseLocalVar);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        private void OnErrorGetAuthenticatedSessionDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorGetAuthenticatedSession(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        partial void OnErrorGetAuthenticatedSession(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar);
+
+        /// <summary>
+        /// Get Authenticated Session 
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetAuthenticatedSessionApiResponse"/>&gt;</returns>
+        public async Task<IGetAuthenticatedSessionApiResponse?> GetAuthenticatedSessionOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await GetAuthenticatedSessionAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get Authenticated Session 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetAuthenticatedSessionApiResponse"/>&gt;</returns>
+        public async Task<IGetAuthenticatedSessionApiResponse> GetAuthenticatedSessionAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/auth/me"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/auth/me");
+
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<GetAuthenticatedSessionApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetAuthenticatedSessionApiResponse>();
+                        GetAuthenticatedSessionApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/auth/me", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterGetAuthenticatedSessionDefaultImplementation(apiResponseLocalVar);
+
+                        Events.ExecuteOnGetAuthenticatedSession(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorGetAuthenticatedSessionDefaultImplementation(e, "/v1/auth/me", uriBuilderLocalVar.Path);
+                Events.ExecuteOnErrorGetAuthenticatedSession(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GetAuthenticatedSessionApiResponse"/>
+        /// </summary>
+        public partial class GetAuthenticatedSessionApiResponse : SidekickApi.Client.ApiResponse, IGetAuthenticatedSessionApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<GetAuthenticatedSessionApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="GetAuthenticatedSessionApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetAuthenticatedSessionApiResponse(ILogger<GetAuthenticatedSessionApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="GetAuthenticatedSessionApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetAuthenticatedSessionApiResponse(ILogger<GetAuthenticatedSessionApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.SessionSummaryResponse? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.SessionSummaryResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out SidekickApi.Model.SessionSummaryResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        partial void FormatGetCurrentIntro(ref long guildId);
 
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
-        private void AfterGetCurrentIntroDefaultImplementation(IGetCurrentIntroApiResponse apiResponseLocalVar, long guildId, long requesterUserId)
+        private void AfterGetCurrentIntroDefaultImplementation(IGetCurrentIntroApiResponse apiResponseLocalVar, long guildId)
         {
             bool suppressDefaultLog = false;
-            AfterGetCurrentIntro(ref suppressDefaultLog, apiResponseLocalVar, guildId, requesterUserId);
+            AfterGetCurrentIntro(ref suppressDefaultLog, apiResponseLocalVar, guildId);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -1603,8 +2492,7 @@ namespace SidekickApi.Api
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
-        partial void AfterGetCurrentIntro(ref bool suppressDefaultLog, IGetCurrentIntroApiResponse apiResponseLocalVar, long guildId, long requesterUserId);
+        partial void AfterGetCurrentIntro(ref bool suppressDefaultLog, IGetCurrentIntroApiResponse apiResponseLocalVar, long guildId);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1613,11 +2501,10 @@ namespace SidekickApi.Api
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
-        private void OnErrorGetCurrentIntroDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, long requesterUserId)
+        private void OnErrorGetCurrentIntroDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorGetCurrentIntro(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, requesterUserId);
+            OnErrorGetCurrentIntro(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -1630,21 +2517,19 @@ namespace SidekickApi.Api
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
-        partial void OnErrorGetCurrentIntro(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, long requesterUserId);
+        partial void OnErrorGetCurrentIntro(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId);
 
         /// <summary>
         /// Get Current Intro 
         /// </summary>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>&gt;</returns>
-        public async Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(long guildId, long requesterUserId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(long guildId, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await GetCurrentIntroAsync(guildId, requesterUserId, cancellationToken).ConfigureAwait(false);
+                return await GetCurrentIntroAsync(guildId, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -1657,16 +2542,15 @@ namespace SidekickApi.Api
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>&gt;</returns>
-        public async Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(long guildId, long requesterUserId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(long guildId, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                FormatGetCurrentIntro(ref guildId, ref requesterUserId);
+                FormatGetCurrentIntro(ref guildId);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -1678,18 +2562,14 @@ namespace SidekickApi.Api
                         : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/intros/current");
                     uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
-                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
-
-                    parseQueryStringLocalVar["requester_user_id"] = ClientUtils.ParameterToString(requesterUserId);
-
-                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
-
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] acceptLocalVars = new string[] {
                         "application/json"
@@ -1718,7 +2598,7 @@ namespace SidekickApi.Api
                             }
                         }
 
-                        AfterGetCurrentIntroDefaultImplementation(apiResponseLocalVar, guildId, requesterUserId);
+                        AfterGetCurrentIntroDefaultImplementation(apiResponseLocalVar, guildId);
 
                         Events.ExecuteOnGetCurrentIntro(apiResponseLocalVar);
 
@@ -1732,7 +2612,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorGetCurrentIntroDefaultImplementation(e, "/v1/guilds/{guild_id}/intros/current", uriBuilderLocalVar.Path, guildId, requesterUserId);
+                OnErrorGetCurrentIntroDefaultImplementation(e, "/v1/guilds/{guild_id}/intros/current", uriBuilderLocalVar.Path, guildId);
                 Events.ExecuteOnErrorGetCurrentIntro(e);
                 throw;
             }
@@ -2239,20 +3119,31 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetRecentClipStats(ref long guildId, ref Option<long> requesterUserId, ref Option<int> limit, ref Option<bool> includeRandom);
+        partial void FormatGetRecentClipStats(ref long guildId, ref Option<string> scope, ref Option<int> limit, ref Option<bool> includeRandom);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        private void ValidateGetRecentClipStats(Option<string> scope)
+        {
+            if (scope.IsSet && scope.Value == null)
+                throw new ArgumentNullException(nameof(scope));
+        }
 
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
+        /// <param name="scope"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void AfterGetRecentClipStatsDefaultImplementation(IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long> requesterUserId, Option<int> limit, Option<bool> includeRandom)
+        private void AfterGetRecentClipStatsDefaultImplementation(IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLog = false;
-            AfterGetRecentClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, requesterUserId, limit, includeRandom);
+            AfterGetRecentClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, scope, limit, includeRandom);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -2263,10 +3154,10 @@ namespace SidekickApi.Api
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
+        /// <param name="scope"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void AfterGetRecentClipStats(ref bool suppressDefaultLog, IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long> requesterUserId, Option<int> limit, Option<bool> includeRandom);
+        partial void AfterGetRecentClipStats(ref bool suppressDefaultLog, IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -2275,13 +3166,13 @@ namespace SidekickApi.Api
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
+        /// <param name="scope"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void OnErrorGetRecentClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long> requesterUserId, Option<int> limit, Option<bool> includeRandom)
+        private void OnErrorGetRecentClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorGetRecentClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, requesterUserId, limit, includeRandom);
+            OnErrorGetRecentClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, scope, limit, includeRandom);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -2294,25 +3185,25 @@ namespace SidekickApi.Api
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
+        /// <param name="scope"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void OnErrorGetRecentClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long> requesterUserId, Option<int> limit, Option<bool> includeRandom);
+        partial void OnErrorGetRecentClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Recent Clip Stats 
         /// </summary>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="scope"> (optional, default to me)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<long> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await GetRecentClipStatsAsync(guildId, requesterUserId, limit, includeRandom, cancellationToken).ConfigureAwait(false);
+                return await GetRecentClipStatsAsync(guildId, scope, limit, includeRandom, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -2325,18 +3216,20 @@ namespace SidekickApi.Api
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="scope"> (optional, default to me)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<long> requesterUserId = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                FormatGetRecentClipStats(ref guildId, ref requesterUserId, ref limit, ref includeRandom);
+                ValidateGetRecentClipStats(scope);
+
+                FormatGetRecentClipStats(ref guildId, ref scope, ref limit, ref includeRandom);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -2350,8 +3243,8 @@ namespace SidekickApi.Api
 
                     System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
 
-                    if (requesterUserId.IsSet)
-                        parseQueryStringLocalVar["requester_user_id"] = ClientUtils.ParameterToString(requesterUserId.Value);
+                    if (scope.IsSet)
+                        parseQueryStringLocalVar["scope"] = ClientUtils.ParameterToString(scope.Value);
 
                     if (limit.IsSet)
                         parseQueryStringLocalVar["limit"] = ClientUtils.ParameterToString(limit.Value);
@@ -2362,11 +3255,13 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] acceptLocalVars = new string[] {
                         "application/json"
@@ -2395,7 +3290,7 @@ namespace SidekickApi.Api
                             }
                         }
 
-                        AfterGetRecentClipStatsDefaultImplementation(apiResponseLocalVar, guildId, requesterUserId, limit, includeRandom);
+                        AfterGetRecentClipStatsDefaultImplementation(apiResponseLocalVar, guildId, scope, limit, includeRandom);
 
                         Events.ExecuteOnGetRecentClipStats(apiResponseLocalVar);
 
@@ -2409,7 +3304,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorGetRecentClipStatsDefaultImplementation(e, "/v1/guilds/{guild_id}/clips/stats/recent", uriBuilderLocalVar.Path, guildId, requesterUserId, limit, includeRandom);
+                OnErrorGetRecentClipStatsDefaultImplementation(e, "/v1/guilds/{guild_id}/clips/stats/recent", uriBuilderLocalVar.Path, guildId, scope, limit, includeRandom);
                 Events.ExecuteOnErrorGetRecentClipStats(e);
                 throw;
             }
@@ -2622,15 +3517,19 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetTopClipStats(ref long guildId, ref Option<long> requesterUserId, ref Option<string> days, ref Option<int> limit, ref Option<bool> includeRandom);
+        partial void FormatGetTopClipStats(ref long guildId, ref Option<string> scope, ref Option<string> days, ref Option<int> limit, ref Option<bool> includeRandom);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="scope"></param>
         /// <param name="days"></param>
         /// <returns></returns>
-        private void ValidateGetTopClipStats(Option<string> days)
+        private void ValidateGetTopClipStats(Option<string> scope, Option<string> days)
         {
+            if (scope.IsSet && scope.Value == null)
+                throw new ArgumentNullException(nameof(scope));
+
             if (days.IsSet && days.Value == null)
                 throw new ArgumentNullException(nameof(days));
         }
@@ -2640,14 +3539,14 @@ namespace SidekickApi.Api
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
+        /// <param name="scope"></param>
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void AfterGetTopClipStatsDefaultImplementation(IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
+        private void AfterGetTopClipStatsDefaultImplementation(IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLog = false;
-            AfterGetTopClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, requesterUserId, days, limit, includeRandom);
+            AfterGetTopClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, scope, days, limit, includeRandom);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -2658,11 +3557,11 @@ namespace SidekickApi.Api
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
+        /// <param name="scope"></param>
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void AfterGetTopClipStats(ref bool suppressDefaultLog, IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<long> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
+        partial void AfterGetTopClipStats(ref bool suppressDefaultLog, IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -2671,14 +3570,14 @@ namespace SidekickApi.Api
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
+        /// <param name="scope"></param>
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void OnErrorGetTopClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom)
+        private void OnErrorGetTopClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorGetTopClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, requesterUserId, days, limit, includeRandom);
+            OnErrorGetTopClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, scope, days, limit, includeRandom);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -2691,27 +3590,27 @@ namespace SidekickApi.Api
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"></param>
+        /// <param name="scope"></param>
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void OnErrorGetTopClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<long> requesterUserId, Option<string> days, Option<int> limit, Option<bool> includeRandom);
+        partial void OnErrorGetTopClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Top Clip Stats 
         /// </summary>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="scope"> (optional, default to me)</param>
         /// <param name="days"> (optional, default to &quot;7&quot;)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<long> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await GetTopClipStatsAsync(guildId, requesterUserId, days, limit, includeRandom, cancellationToken).ConfigureAwait(false);
+                return await GetTopClipStatsAsync(guildId, scope, days, limit, includeRandom, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -2724,21 +3623,21 @@ namespace SidekickApi.Api
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="guildId"></param>
-        /// <param name="requesterUserId"> (optional)</param>
+        /// <param name="scope"> (optional, default to me)</param>
         /// <param name="days"> (optional, default to &quot;7&quot;)</param>
         /// <param name="limit"> (optional, default to 10)</param>
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<long> requesterUserId = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateGetTopClipStats(days);
+                ValidateGetTopClipStats(scope, days);
 
-                FormatGetTopClipStats(ref guildId, ref requesterUserId, ref days, ref limit, ref includeRandom);
+                FormatGetTopClipStats(ref guildId, ref scope, ref days, ref limit, ref includeRandom);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
@@ -2752,8 +3651,8 @@ namespace SidekickApi.Api
 
                     System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
 
-                    if (requesterUserId.IsSet)
-                        parseQueryStringLocalVar["requester_user_id"] = ClientUtils.ParameterToString(requesterUserId.Value);
+                    if (scope.IsSet)
+                        parseQueryStringLocalVar["scope"] = ClientUtils.ParameterToString(scope.Value);
 
                     if (days.IsSet)
                         parseQueryStringLocalVar["days"] = ClientUtils.ParameterToString(days.Value);
@@ -2767,11 +3666,13 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] acceptLocalVars = new string[] {
                         "application/json"
@@ -2800,7 +3701,7 @@ namespace SidekickApi.Api
                             }
                         }
 
-                        AfterGetTopClipStatsDefaultImplementation(apiResponseLocalVar, guildId, requesterUserId, days, limit, includeRandom);
+                        AfterGetTopClipStatsDefaultImplementation(apiResponseLocalVar, guildId, scope, days, limit, includeRandom);
 
                         Events.ExecuteOnGetTopClipStats(apiResponseLocalVar);
 
@@ -2814,7 +3715,7 @@ namespace SidekickApi.Api
             }
             catch(Exception e)
             {
-                OnErrorGetTopClipStatsDefaultImplementation(e, "/v1/guilds/{guild_id}/clips/stats/top", uriBuilderLocalVar.Path, guildId, requesterUserId, days, limit, includeRandom);
+                OnErrorGetTopClipStatsDefaultImplementation(e, "/v1/guilds/{guild_id}/clips/stats/top", uriBuilderLocalVar.Path, guildId, scope, days, limit, includeRandom);
                 Events.ExecuteOnErrorGetTopClipStats(e);
                 throw;
             }
@@ -3170,11 +4071,13 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] acceptLocalVars = new string[] {
                         "application/json"
@@ -3542,11 +4445,13 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] acceptLocalVars = new string[] {
                         "application/json"
@@ -3945,11 +4850,13 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] acceptLocalVars = new string[] {
                         "application/json"
@@ -4320,11 +5227,13 @@ namespace SidekickApi.Api
                         : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(playClipBody, _jsonSerializerOptions));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] contentTypes = new string[] {
                         "application/json"
@@ -4818,11 +5727,13 @@ namespace SidekickApi.Api
                         : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(playRandomClipBody, _jsonSerializerOptions));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] contentTypes = new string[] {
                         "application/json"
@@ -5163,6 +6074,374 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
+        partial void FormatRefreshSidekickSession(RefreshSessionRequest refreshSessionRequest);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="refreshSessionRequest"></param>
+        /// <returns></returns>
+        private void ValidateRefreshSidekickSession(RefreshSessionRequest refreshSessionRequest)
+        {
+            if (refreshSessionRequest == null)
+                throw new ArgumentNullException(nameof(refreshSessionRequest));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="refreshSessionRequest"></param>
+        private void AfterRefreshSidekickSessionDefaultImplementation(IRefreshSidekickSessionApiResponse apiResponseLocalVar, RefreshSessionRequest refreshSessionRequest)
+        {
+            bool suppressDefaultLog = false;
+            AfterRefreshSidekickSession(ref suppressDefaultLog, apiResponseLocalVar, refreshSessionRequest);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="refreshSessionRequest"></param>
+        partial void AfterRefreshSidekickSession(ref bool suppressDefaultLog, IRefreshSidekickSessionApiResponse apiResponseLocalVar, RefreshSessionRequest refreshSessionRequest);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="refreshSessionRequest"></param>
+        private void OnErrorRefreshSidekickSessionDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, RefreshSessionRequest refreshSessionRequest)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorRefreshSidekickSession(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, refreshSessionRequest);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="refreshSessionRequest"></param>
+        partial void OnErrorRefreshSidekickSession(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, RefreshSessionRequest refreshSessionRequest);
+
+        /// <summary>
+        /// Refresh Sidekick Session 
+        /// </summary>
+        /// <param name="refreshSessionRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IRefreshSidekickSessionApiResponse"/>&gt;</returns>
+        public async Task<IRefreshSidekickSessionApiResponse?> RefreshSidekickSessionOrDefaultAsync(RefreshSessionRequest refreshSessionRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await RefreshSidekickSessionAsync(refreshSessionRequest, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Refresh Sidekick Session 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="refreshSessionRequest"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IRefreshSidekickSessionApiResponse"/>&gt;</returns>
+        public async Task<IRefreshSidekickSessionApiResponse> RefreshSidekickSessionAsync(RefreshSessionRequest refreshSessionRequest, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateRefreshSidekickSession(refreshSessionRequest);
+
+                FormatRefreshSidekickSession(refreshSessionRequest);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/auth/refresh"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/auth/refresh");
+
+                    httpRequestMessageLocalVar.Content = (refreshSessionRequest as object) is System.IO.Stream stream
+                        ? httpRequestMessageLocalVar.Content = new StreamContent(stream)
+                        : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(refreshSessionRequest, _jsonSerializerOptions));
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    string[] contentTypes = new string[] {
+                        "application/json"
+                    };
+
+                    string? contentTypeLocalVar = ClientUtils.SelectHeaderContentType(contentTypes);
+
+                    if (contentTypeLocalVar != null && httpRequestMessageLocalVar.Content != null)
+                        httpRequestMessageLocalVar.Content.Headers.ContentType = new MediaTypeHeaderValue(contentTypeLocalVar);
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Post;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<RefreshSidekickSessionApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<RefreshSidekickSessionApiResponse>();
+                        RefreshSidekickSessionApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/auth/refresh", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterRefreshSidekickSessionDefaultImplementation(apiResponseLocalVar, refreshSessionRequest);
+
+                        Events.ExecuteOnRefreshSidekickSession(apiResponseLocalVar);
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorRefreshSidekickSessionDefaultImplementation(e, "/v1/auth/refresh", uriBuilderLocalVar.Path, refreshSessionRequest);
+                Events.ExecuteOnErrorRefreshSidekickSession(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="RefreshSidekickSessionApiResponse"/>
+        /// </summary>
+        public partial class RefreshSidekickSessionApiResponse : SidekickApi.Client.ApiResponse, IRefreshSidekickSessionApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<RefreshSidekickSessionApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="RefreshSidekickSessionApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public RefreshSidekickSessionApiResponse(ILogger<RefreshSidekickSessionApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="RefreshSidekickSessionApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public RefreshSidekickSessionApiResponse(ILogger<RefreshSidekickSessionApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.SessionResponse? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.SessionResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out SidekickApi.Model.SessionResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public bool IsInternalServerError => 500 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.ApiErrorResponse? InternalServerError()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsInternalServerError
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryInternalServerError([NotNullWhen(true)]out SidekickApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = InternalServerError();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)500);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnprocessableContent => 422 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.HTTPValidationError? UnprocessableContent()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnprocessableContent
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.HTTPValidationError>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnprocessableContent([NotNullWhen(true)]out SidekickApi.Model.HTTPValidationError? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = UnprocessableContent();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)422);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
         partial void FormatRemoveTagClip(ref long guildId, ref string tagName, ref string clipTrigger);
 
         /// <summary>
@@ -5286,11 +6565,13 @@ namespace SidekickApi.Api
                     uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bclip_trigger%7D", Uri.EscapeDataString(clipTrigger.ToString()));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] acceptLocalVars = new string[] {
                         "application/json"
@@ -5584,6 +6865,298 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
+        partial void FormatSelectDiscordAuthGuild(ref string grant, ref long guildId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="grant"></param>
+        /// <returns></returns>
+        private void ValidateSelectDiscordAuthGuild(string grant)
+        {
+            if (grant == null)
+                throw new ArgumentNullException(nameof(grant));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="grant"></param>
+        /// <param name="guildId"></param>
+        private void AfterSelectDiscordAuthGuildDefaultImplementation(ISelectDiscordAuthGuildApiResponse apiResponseLocalVar, string grant, long guildId)
+        {
+            bool suppressDefaultLog = false;
+            AfterSelectDiscordAuthGuild(ref suppressDefaultLog, apiResponseLocalVar, grant, guildId);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="grant"></param>
+        /// <param name="guildId"></param>
+        partial void AfterSelectDiscordAuthGuild(ref bool suppressDefaultLog, ISelectDiscordAuthGuildApiResponse apiResponseLocalVar, string grant, long guildId);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="grant"></param>
+        /// <param name="guildId"></param>
+        private void OnErrorSelectDiscordAuthGuildDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string grant, long guildId)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorSelectDiscordAuthGuild(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, grant, guildId);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="grant"></param>
+        /// <param name="guildId"></param>
+        partial void OnErrorSelectDiscordAuthGuild(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string grant, long guildId);
+
+        /// <summary>
+        /// Select Discord Auth Guild 
+        /// </summary>
+        /// <param name="grant"></param>
+        /// <param name="guildId"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="ISelectDiscordAuthGuildApiResponse"/>&gt;</returns>
+        public async Task<ISelectDiscordAuthGuildApiResponse?> SelectDiscordAuthGuildOrDefaultAsync(string grant, long guildId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await SelectDiscordAuthGuildAsync(grant, guildId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Select Discord Auth Guild 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="grant"></param>
+        /// <param name="guildId"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="ISelectDiscordAuthGuildApiResponse"/>&gt;</returns>
+        public async Task<ISelectDiscordAuthGuildApiResponse> SelectDiscordAuthGuildAsync(string grant, long guildId, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateSelectDiscordAuthGuild(grant);
+
+                FormatSelectDiscordAuthGuild(ref grant, ref guildId);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/auth/discord/select"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/auth/discord/select");
+
+                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+                    parseQueryStringLocalVar["grant"] = ClientUtils.ParameterToString(grant);
+                    parseQueryStringLocalVar["guild_id"] = ClientUtils.ParameterToString(guildId);
+
+                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<SelectDiscordAuthGuildApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<SelectDiscordAuthGuildApiResponse>();
+                        SelectDiscordAuthGuildApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/auth/discord/select", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterSelectDiscordAuthGuildDefaultImplementation(apiResponseLocalVar, grant, guildId);
+
+                        Events.ExecuteOnSelectDiscordAuthGuild(apiResponseLocalVar);
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorSelectDiscordAuthGuildDefaultImplementation(e, "/v1/auth/discord/select", uriBuilderLocalVar.Path, grant, guildId);
+                Events.ExecuteOnErrorSelectDiscordAuthGuild(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="SelectDiscordAuthGuildApiResponse"/>
+        /// </summary>
+        public partial class SelectDiscordAuthGuildApiResponse : SidekickApi.Client.ApiResponse, ISelectDiscordAuthGuildApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<SelectDiscordAuthGuildApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="SelectDiscordAuthGuildApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public SelectDiscordAuthGuildApiResponse(ILogger<SelectDiscordAuthGuildApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="SelectDiscordAuthGuildApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public SelectDiscordAuthGuildApiResponse(ILogger<SelectDiscordAuthGuildApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public Object? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<Object>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out Object? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnprocessableContent => 422 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.HTTPValidationError? UnprocessableContent()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnprocessableContent
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.HTTPValidationError>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnprocessableContent([NotNullWhen(true)]out SidekickApi.Model.HTTPValidationError? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = UnprocessableContent();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)422);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
         partial void FormatSetCurrentIntro(ref long guildId, SetCurrentIntroBody setCurrentIntroBody);
 
         /// <summary>
@@ -5699,11 +7272,13 @@ namespace SidekickApi.Api
                         : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(setCurrentIntroBody, _jsonSerializerOptions));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] contentTypes = new string[] {
                         "application/json"
@@ -6044,6 +7619,291 @@ namespace SidekickApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
+        partial void FormatStartDiscordAuth(ref string clientCallbackUrl);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="clientCallbackUrl"></param>
+        /// <returns></returns>
+        private void ValidateStartDiscordAuth(string clientCallbackUrl)
+        {
+            if (clientCallbackUrl == null)
+                throw new ArgumentNullException(nameof(clientCallbackUrl));
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="clientCallbackUrl"></param>
+        private void AfterStartDiscordAuthDefaultImplementation(IStartDiscordAuthApiResponse apiResponseLocalVar, string clientCallbackUrl)
+        {
+            bool suppressDefaultLog = false;
+            AfterStartDiscordAuth(ref suppressDefaultLog, apiResponseLocalVar, clientCallbackUrl);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        /// <param name="clientCallbackUrl"></param>
+        partial void AfterStartDiscordAuth(ref bool suppressDefaultLog, IStartDiscordAuthApiResponse apiResponseLocalVar, string clientCallbackUrl);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="clientCallbackUrl"></param>
+        private void OnErrorStartDiscordAuthDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string clientCallbackUrl)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorStartDiscordAuth(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, clientCallbackUrl);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        /// <param name="clientCallbackUrl"></param>
+        partial void OnErrorStartDiscordAuth(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string clientCallbackUrl);
+
+        /// <summary>
+        /// Start Discord Auth 
+        /// </summary>
+        /// <param name="clientCallbackUrl"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IStartDiscordAuthApiResponse"/>&gt;</returns>
+        public async Task<IStartDiscordAuthApiResponse?> StartDiscordAuthOrDefaultAsync(string clientCallbackUrl, System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await StartDiscordAuthAsync(clientCallbackUrl, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Start Discord Auth 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="clientCallbackUrl"></param>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IStartDiscordAuthApiResponse"/>&gt;</returns>
+        public async Task<IStartDiscordAuthApiResponse> StartDiscordAuthAsync(string clientCallbackUrl, System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                ValidateStartDiscordAuth(clientCallbackUrl);
+
+                FormatStartDiscordAuth(ref clientCallbackUrl);
+
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/v1/auth/discord/start"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/auth/discord/start");
+
+                    System.Collections.Specialized.NameValueCollection parseQueryStringLocalVar = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+                    parseQueryStringLocalVar["client_callback_url"] = ClientUtils.ParameterToString(clientCallbackUrl);
+
+                    uriBuilderLocalVar.Query = parseQueryStringLocalVar.ToString();
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    string[] acceptLocalVars = new string[] {
+                        "application/json"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<StartDiscordAuthApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<StartDiscordAuthApiResponse>();
+                        StartDiscordAuthApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/auth/discord/start", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterStartDiscordAuthDefaultImplementation(apiResponseLocalVar, clientCallbackUrl);
+
+                        Events.ExecuteOnStartDiscordAuth(apiResponseLocalVar);
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorStartDiscordAuthDefaultImplementation(e, "/v1/auth/discord/start", uriBuilderLocalVar.Path, clientCallbackUrl);
+                Events.ExecuteOnErrorStartDiscordAuth(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="StartDiscordAuthApiResponse"/>
+        /// </summary>
+        public partial class StartDiscordAuthApiResponse : SidekickApi.Client.ApiResponse, IStartDiscordAuthApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<StartDiscordAuthApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="StartDiscordAuthApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public StartDiscordAuthApiResponse(ILogger<StartDiscordAuthApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="StartDiscordAuthApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public StartDiscordAuthApiResponse(ILogger<StartDiscordAuthApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public Object? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<Object>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out Object? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnprocessableContent => 422 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public SidekickApi.Model.HTTPValidationError? UnprocessableContent()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnprocessableContent
+                    ? System.Text.Json.JsonSerializer.Deserialize<SidekickApi.Model.HTTPValidationError>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnprocessableContent([NotNullWhen(true)]out SidekickApi.Model.HTTPValidationError? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = UnprocessableContent();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)422);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
         partial void FormatStopClip(ref long guildId, StopClipBody stopClipBody);
 
         /// <summary>
@@ -6159,11 +8019,13 @@ namespace SidekickApi.Api
                         : httpRequestMessageLocalVar.Content = new StringContent(JsonSerializer.Serialize(stopClipBody, _jsonSerializerOptions));
 
                     List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
-                    ApiKeyToken apiKeyTokenLocalVar1 = (ApiKeyToken) await ApiKeyProvider.GetAsync("X-Sidekick-Token", cancellationToken).ConfigureAwait(false);
-                    tokenBaseLocalVars.Add(apiKeyTokenLocalVar1);
-                    apiKeyTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar);
-
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
 
                     string[] contentTypes = new string[] {
                         "application/json"

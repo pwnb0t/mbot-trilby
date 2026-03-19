@@ -5,6 +5,7 @@ namespace ownbotsidekick.Configuration
         public HotkeySettings Hotkey { get; set; } = new();
         public OverlaySettings Overlay { get; set; } = new();
         public SidekickApiSettings SidekickApi { get; set; } = new();
+        public SidekickEnvironmentCatalogSettings SidekickEnvironments { get; set; } = SidekickEnvironmentCatalogSettings.CreateDefaults();
         public InputBindingsSettings InputBindings { get; set; } = new();
     }
 
@@ -27,6 +28,49 @@ namespace ownbotsidekick.Configuration
         public string ApiToken { get; set; } = string.Empty;
         public long GuildId { get; set; }
         public long RequestingUserId { get; set; }
+    }
+
+    public sealed class SidekickEnvironmentSettings
+    {
+        public string DisplayName { get; set; } = string.Empty;
+        public string BaseUrl { get; set; } = string.Empty;
+    }
+
+    public sealed class SidekickEnvironmentCatalogSettings
+    {
+        public SidekickEnvironmentSettings Dev { get; set; } = new()
+        {
+            DisplayName = "Development",
+            BaseUrl = "http://127.0.0.1:28765"
+        };
+
+        public SidekickEnvironmentSettings Test { get; set; } = new()
+        {
+            DisplayName = "Test",
+            BaseUrl = "https://sidekick-test.pwnb0t.com"
+        };
+
+        public SidekickEnvironmentSettings Prod { get; set; } = new()
+        {
+            DisplayName = "Production",
+            BaseUrl = "https://sidekick.pwnb0t.com"
+        };
+
+        public static SidekickEnvironmentCatalogSettings CreateDefaults()
+        {
+            return new SidekickEnvironmentCatalogSettings();
+        }
+
+        public SidekickEnvironmentSettings GetByName(string environmentName)
+        {
+            return environmentName.ToLowerInvariant() switch
+            {
+                "dev" => Dev,
+                "test" => Test,
+                "prod" => Prod,
+                _ => Dev
+            };
+        }
     }
 
     internal sealed class InputBindingsSettings

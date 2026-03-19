@@ -33,23 +33,15 @@ namespace SidekickApi.Model
         /// <summary>
         /// Initializes a new instance of the <see cref="SetCurrentIntroBody" /> class.
         /// </summary>
-        /// <param name="requesterUserId">requesterUserId</param>
         /// <param name="trigger">trigger</param>
         [JsonConstructor]
-        public SetCurrentIntroBody(long requesterUserId, string trigger)
+        public SetCurrentIntroBody(string trigger)
         {
-            RequesterUserId = requesterUserId;
             Trigger = trigger;
             OnCreated();
         }
 
         partial void OnCreated();
-
-        /// <summary>
-        /// Gets or Sets RequesterUserId
-        /// </summary>
-        [JsonPropertyName("requester_user_id")]
-        public long RequesterUserId { get; set; }
 
         /// <summary>
         /// Gets or Sets Trigger
@@ -65,7 +57,6 @@ namespace SidekickApi.Model
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("class SetCurrentIntroBody {\n");
-            sb.Append("  RequesterUserId: ").Append(RequesterUserId).Append("\n");
             sb.Append("  Trigger: ").Append(Trigger).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -78,12 +69,6 @@ namespace SidekickApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
-            // RequesterUserId (long) minimum
-            if (this.RequesterUserId < (long)0)
-            {
-                yield return new ValidationResult("Invalid value for RequesterUserId, must be a value greater than 0.", new [] { "RequesterUserId" });
-            }
-
             // Trigger (string) maxLength
             if (this.Trigger != null && this.Trigger.Length > 64)
             {
@@ -122,7 +107,6 @@ namespace SidekickApi.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<long?> requesterUserId = default;
             Option<string?> trigger = default;
 
             while (utf8JsonReader.Read())
@@ -140,9 +124,6 @@ namespace SidekickApi.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "requester_user_id":
-                            requesterUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
-                            break;
                         case "trigger":
                             trigger = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
@@ -152,19 +133,13 @@ namespace SidekickApi.Model
                 }
             }
 
-            if (!requesterUserId.IsSet)
-                throw new ArgumentException("Property is required for class SetCurrentIntroBody.", nameof(requesterUserId));
-
             if (!trigger.IsSet)
                 throw new ArgumentException("Property is required for class SetCurrentIntroBody.", nameof(trigger));
-
-            if (requesterUserId.IsSet && requesterUserId.Value == null)
-                throw new ArgumentNullException(nameof(requesterUserId), "Property is not nullable for class SetCurrentIntroBody.");
 
             if (trigger.IsSet && trigger.Value == null)
                 throw new ArgumentNullException(nameof(trigger), "Property is not nullable for class SetCurrentIntroBody.");
 
-            return new SetCurrentIntroBody(requesterUserId.Value!.Value!, trigger.Value!);
+            return new SetCurrentIntroBody(trigger.Value!);
         }
 
         /// <summary>
@@ -193,8 +168,6 @@ namespace SidekickApi.Model
         {
             if (setCurrentIntroBody.Trigger == null)
                 throw new ArgumentNullException(nameof(setCurrentIntroBody.Trigger), "Property is required for class SetCurrentIntroBody.");
-
-            writer.WriteNumber("requester_user_id", setCurrentIntroBody.RequesterUserId);
 
             writer.WriteString("trigger", setCurrentIntroBody.Trigger);
         }

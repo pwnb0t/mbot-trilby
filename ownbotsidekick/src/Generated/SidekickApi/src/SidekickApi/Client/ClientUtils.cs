@@ -30,6 +30,28 @@ namespace SidekickApi.Client
     /// </summary>
     public static partial class ClientUtils
     {
+        /// <summary>
+        /// Legacy fallback enum retained because the generator still emits ApiKeyToken even when the active scheme is bearer-only.
+        /// </summary>
+        public enum ApiKeyHeader
+        {
+            /// <summary>
+            /// Authorization header fallback.
+            /// </summary>
+            Authorization
+        }
+
+        /// <summary>
+        /// Converts the legacy ApiKeyHeader enum to its header name.
+        /// </summary>
+        public static string ApiKeyHeaderToString(ApiKeyHeader header)
+        {
+            return header switch
+            {
+                ApiKeyHeader.Authorization => "Authorization",
+                _ => "Authorization"
+            };
+        }
 
         /// <summary>
         /// A delegate for events.
@@ -39,32 +61,6 @@ namespace SidekickApi.Client
         /// <param name="e"></param>
         /// <returns></returns>
         public delegate void EventHandler<T>(object sender, T e) where T : EventArgs;
-
-        /// <summary>
-        /// An enum of headers
-        /// </summary>
-        public enum ApiKeyHeader
-        {
-            /// <summary>
-            /// The X-Sidekick-Token header
-            /// </summary>
-            X_Sidekick_Token
-        }
-
-        /// <summary>
-        /// Converte an ApiKeyHeader to a string
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        /// <exception cref="System.ComponentModel.InvalidEnumArgumentException"></exception>
-        public static string ApiKeyHeaderToString(ApiKeyHeader value)
-        {
-            return value switch
-            {
-                ApiKeyHeader.X_Sidekick_Token => "X-Sidekick-Token",
-                _ => throw new System.ComponentModel.InvalidEnumArgumentException(nameof(value), (int)value, typeof(ApiKeyHeader)),
-            };
-        }
 
         /// <summary>
         /// Returns true when deserialization succeeds.
@@ -144,6 +140,8 @@ namespace SidekickApi.Client
                 return PlayRandomClipResponse.StatusEnumToJsonValue(playRandomClipResponseStatusEnum);
             if (obj is RecentClipStatsItem.ModeEnum recentClipStatsItemModeEnum)
                 return RecentClipStatsItem.ModeEnumToJsonValue(recentClipStatsItemModeEnum);
+            if (obj is SessionResponse.TokenTypeEnum sessionResponseTokenTypeEnum)
+                return SessionResponse.TokenTypeEnumToJsonValue(sessionResponseTokenTypeEnum);
             if (obj is StopClipResponse.StatusEnum stopClipResponseStatusEnum)
                 return StopClipResponse.StatusEnumToJsonValue(stopClipResponseStatusEnum);
             if (obj is TopClipStatsResponse.DaysEnum topClipStatsResponseDaysEnum)

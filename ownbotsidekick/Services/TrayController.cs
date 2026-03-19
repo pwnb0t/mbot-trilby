@@ -8,9 +8,7 @@ namespace ownbotsidekick.Services
     internal sealed class TrayController : IDisposable
     {
         private readonly OverlayDiagnostics _diagnostics;
-        private readonly Action _showOverlay;
-        private readonly Action _hideOverlay;
-        private readonly Action _toggleOverlay;
+        private readonly Action _openSettings;
         private readonly Action _exitApp;
         private readonly string _appBaseDirectory;
         private Forms.NotifyIcon? _trayIcon;
@@ -18,17 +16,13 @@ namespace ownbotsidekick.Services
 
         public TrayController(
             OverlayDiagnostics diagnostics,
-            Action showOverlay,
-            Action hideOverlay,
-            Action toggleOverlay,
+            Action openSettings,
             Action exitApp,
             string appBaseDirectory
         )
         {
             _diagnostics = diagnostics;
-            _showOverlay = showOverlay;
-            _hideOverlay = hideOverlay;
-            _toggleOverlay = toggleOverlay;
+            _openSettings = openSettings;
             _exitApp = exitApp;
             _appBaseDirectory = appBaseDirectory;
         }
@@ -49,13 +43,12 @@ namespace ownbotsidekick.Services
             };
 
             var trayMenu = new Forms.ContextMenuStrip();
-            trayMenu.Items.Add("Show Overlay", null, (_, _) => _showOverlay());
-            trayMenu.Items.Add("Hide Overlay", null, (_, _) => _hideOverlay());
+            trayMenu.Items.Add("Settings", null, (_, _) => _openSettings());
             trayMenu.Items.Add(new Forms.ToolStripSeparator());
             trayMenu.Items.Add("Exit", null, (_, _) => _exitApp());
 
             _trayIcon.ContextMenuStrip = trayMenu;
-            _trayIcon.DoubleClick += (_, _) => _toggleOverlay();
+            _trayIcon.DoubleClick += (_, _) => _openSettings();
             if (trayIconImage == SystemIcons.Application)
             {
                 _diagnostics.Info("tray", "Tray icon initialized with fallback icon (mbot.ico not available).");

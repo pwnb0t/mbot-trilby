@@ -16,6 +16,171 @@ paths:
                 $ref: "#/components/schemas/HealthResponse"
           description: Successful Response
       summary: Health
+  /v1/auth/discord/start:
+    get:
+      operationId: StartDiscordAuth
+      parameters:
+      - explode: true
+        in: query
+        name: client_callback_url
+        required: true
+        schema:
+          minLength: 1
+          title: Client Callback Url
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      summary: Start Discord Auth
+  /v1/auth/discord/callback:
+    get:
+      operationId: CompleteDiscordAuth
+      parameters:
+      - explode: true
+        in: query
+        name: code
+        required: false
+        schema:
+          nullable: true
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: state
+        required: false
+        schema:
+          nullable: true
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: error
+        required: false
+        schema:
+          nullable: true
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: error_description
+        required: false
+        schema:
+          nullable: true
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      summary: Complete Discord Auth
+  /v1/auth/discord/select:
+    get:
+      operationId: SelectDiscordAuthGuild
+      parameters:
+      - explode: true
+        in: query
+        name: grant
+        required: true
+        schema:
+          title: Grant
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      summary: Select Discord Auth Guild
+  /v1/auth/refresh:
+    post:
+      operationId: RefreshSidekickSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshSessionRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      summary: Refresh Sidekick Session
+  /v1/auth/me:
+    get:
+      operationId: GetAuthenticatedSession
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionSummaryResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+      security:
+      - HTTPBearer: []
+      summary: Get Authenticated Session
   /v1/guilds/{guild_id}/clips:
     get:
       operationId: ListClips
@@ -67,7 +232,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: List Clips
   /v1/guilds/{guild_id}/clips/play:
     post:
@@ -134,7 +299,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: Play Clip
   /v1/guilds/{guild_id}/clips/play-random:
     post:
@@ -195,7 +360,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: Play Random Clip
   /v1/guilds/{guild_id}/clips/stop:
     post:
@@ -256,7 +421,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: Stop Clip
   /v1/guilds/{guild_id}/clips/stats/top:
     get:
@@ -275,15 +440,15 @@ paths:
         style: simple
       - explode: true
         in: query
-        name: requester_user_id
+        name: scope
         required: false
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
-          title: Requester User Id
-          type: integer
-          nullable: true
+          default: me
+          enum:
+          - me
+          - guild
+          title: Scope
+          type: string
         style: form
       - explode: true
         in: query
@@ -347,7 +512,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: Top Clip Stats
   /v1/guilds/{guild_id}/clips/stats/recent:
     get:
@@ -366,15 +531,15 @@ paths:
         style: simple
       - explode: true
         in: query
-        name: requester_user_id
+        name: scope
         required: false
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
-          title: Requester User Id
-          type: integer
-          nullable: true
+          default: me
+          enum:
+          - me
+          - guild
+          title: Scope
+          type: string
         style: form
       - explode: true
         in: query
@@ -422,7 +587,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: Recent Clip Stats
   /v1/guilds/{guild_id}/intros/current:
     get:
@@ -439,17 +604,6 @@ paths:
           title: Guild Id
           type: integer
         style: simple
-      - explode: true
-        in: query
-        name: requester_user_id
-        required: true
-        schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
-          title: Requester User Id
-          type: integer
-        style: form
       responses:
         "200":
           content:
@@ -488,7 +642,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: Get Current Intro
     put:
       operationId: SetCurrentIntro
@@ -548,7 +702,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: Set Current Intro
   /v1/guilds/{guild_id}/tags:
     get:
@@ -601,7 +755,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: List Tags
   /v1/guilds/{guild_id}/tags/{tag_name}/clips:
     get:
@@ -660,7 +814,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: List Tag Clips
     post:
       operationId: AddTagClip
@@ -724,7 +878,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: Add Tag Clip
   /v1/guilds/{guild_id}/tags/{tag_name}/clips/{clip_trigger}:
     delete:
@@ -793,7 +947,7 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       security:
-      - APIKeyHeader: []
+      - HTTPBearer: []
       summary: Remove Tag Clip
 components:
   schemas:
@@ -1040,7 +1194,6 @@ components:
       title: ListTagsResponse
     PlayClipBody:
       example:
-        requester_user_id: 0
         trigger: trigger
         request_id: request_id
       properties:
@@ -1052,14 +1205,7 @@ components:
         request_id:
           nullable: true
           type: string
-        requester_user_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
-          title: Requester User Id
-          type: integer
       required:
-      - requester_user_id
       - trigger
       title: PlayClipBody
     PlayClipResponse:
@@ -1101,20 +1247,11 @@ components:
       title: PlayClipResponse
     PlayRandomClipBody:
       example:
-        requester_user_id: 0
         request_id: request_id
       properties:
         request_id:
           nullable: true
           type: string
-        requester_user_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
-          title: Requester User Id
-          type: integer
-      required:
-      - requester_user_id
       title: PlayRandomClipBody
     PlayRandomClipResponse:
       example:
@@ -1223,6 +1360,17 @@ components:
       - ok
       - rows
       title: RecentClipStatsResponse
+    RefreshSessionRequest:
+      example:
+        refresh_token: refresh_token
+      properties:
+        refresh_token:
+          minLength: 1
+          title: Refresh Token
+          type: string
+      required:
+      - refresh_token
+      title: RefreshSessionRequest
     RemoveTagClipResponse:
       example:
         tag_name: tag_name
@@ -1249,24 +1397,102 @@ components:
       - ok
       - tag_name
       title: RemoveTagClipResponse
+    SessionResponse:
+      example:
+        access_token: access_token
+        refresh_token: refresh_token
+        expires_at_utc: expires_at_utc
+        user_id: 0
+        guild_name: guild_name
+        guild_id: 6
+        ok: true
+        token_type: Bearer
+        username: username
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        access_token:
+          title: Access Token
+          type: string
+        refresh_token:
+          title: Refresh Token
+          type: string
+        token_type:
+          default: Bearer
+          enum:
+          - Bearer
+          title: Token Type
+          type: string
+        expires_at_utc:
+          title: Expires At Utc
+          type: string
+        user_id:
+          format: int64
+          title: User Id
+          type: integer
+        username:
+          title: Username
+          type: string
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        guild_name:
+          title: Guild Name
+          type: string
+      required:
+      - access_token
+      - expires_at_utc
+      - guild_id
+      - guild_name
+      - ok
+      - refresh_token
+      - user_id
+      - username
+      title: SessionResponse
+    SessionSummaryResponse:
+      example:
+        expires_at_utc: expires_at_utc
+        user_id: 0
+        guild_id: 6
+        ok: true
+        username: username
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        user_id:
+          format: int64
+          title: User Id
+          type: integer
+        username:
+          title: Username
+          type: string
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        expires_at_utc:
+          title: Expires At Utc
+          type: string
+      required:
+      - expires_at_utc
+      - guild_id
+      - ok
+      - user_id
+      - username
+      title: SessionSummaryResponse
     SetCurrentIntroBody:
       example:
-        requester_user_id: 0
         trigger: trigger
       properties:
-        requester_user_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
-          title: Requester User Id
-          type: integer
         trigger:
           maxLength: 64
           minLength: 1
           title: Trigger
           type: string
       required:
-      - requester_user_id
       - trigger
       title: SetCurrentIntroBody
     SetCurrentIntroResponse:
@@ -1298,20 +1524,11 @@ components:
       title: SetCurrentIntroResponse
     StopClipBody:
       example:
-        requester_user_id: 0
         request_id: request_id
       properties:
         request_id:
           nullable: true
           type: string
-        requester_user_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
-          title: Requester User Id
-          type: integer
-      required:
-      - requester_user_id
       title: StopClipBody
     StopClipResponse:
       example:
@@ -1478,8 +1695,7 @@ components:
       - type: string
       - type: integer
   securitySchemes:
-    APIKeyHeader:
-      in: header
-      name: X-Sidekick-Token
-      type: apiKey
+    HTTPBearer:
+      scheme: bearer
+      type: http
 

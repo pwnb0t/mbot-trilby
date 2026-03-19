@@ -11,16 +11,14 @@ namespace ownbotsidekick.Tests.SidekickApi
     public sealed class SidekickApiInt64Tests
     {
         [Theory]
-        [InlineData(nameof(IDefaultApi.GetCurrentIntroAsync), 3, "guildId", typeof(long))]
-        [InlineData(nameof(IDefaultApi.GetCurrentIntroAsync), 3, "requesterUserId", typeof(long))]
+        [InlineData(nameof(IDefaultApi.GetCurrentIntroAsync), 2, "guildId", typeof(long))]
         [InlineData(nameof(IDefaultApi.GetRecentClipStatsAsync), 5, "guildId", typeof(long))]
-        [InlineData(nameof(IDefaultApi.GetRecentClipStatsAsync), 5, "requesterUserId", typeof(Option<long>))]
         [InlineData(nameof(IDefaultApi.GetTopClipStatsAsync), 6, "guildId", typeof(long))]
-        [InlineData(nameof(IDefaultApi.GetTopClipStatsAsync), 6, "requesterUserId", typeof(Option<long>))]
         [InlineData(nameof(IDefaultApi.ListClipsAsync), 3, "guildId", typeof(long))]
         [InlineData(nameof(IDefaultApi.RemoveTagClipAsync), 4, "guildId", typeof(long))]
         [InlineData(nameof(IDefaultApi.ListTagClipsAsync), 3, "guildId", typeof(long))]
         [InlineData(nameof(IDefaultApi.ListTagsAsync), 3, "guildId", typeof(long))]
+        [InlineData(nameof(IDefaultApi.RefreshSidekickSessionAsync), 2, "refreshSessionRequest", typeof(RefreshSessionRequest))]
         public void Generated_Api_Methods_Keep_Snowflake_Params_As_Long(
             string methodName,
             int parameterCount,

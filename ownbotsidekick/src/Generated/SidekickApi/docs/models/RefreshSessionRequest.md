@@ -1,11 +1,10 @@
-# SidekickApi.Model.PlayClipBody
+# SidekickApi.Model.RefreshSessionRequest
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Trigger** | **string** |  | 
-**RequestId** | **string** |  | [optional] 
+**RefreshToken** | **string** |  | 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

@@ -26,35 +26,28 @@ using SidekickApi.Client;
 namespace SidekickApi.Model
 {
     /// <summary>
-    /// PlayRandomClipBody
+    /// RefreshSessionRequest
     /// </summary>
-    public partial class PlayRandomClipBody : IValidatableObject
+    public partial class RefreshSessionRequest : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlayRandomClipBody" /> class.
+        /// Initializes a new instance of the <see cref="RefreshSessionRequest" /> class.
         /// </summary>
-        /// <param name="requestId">requestId</param>
+        /// <param name="refreshToken">refreshToken</param>
         [JsonConstructor]
-        public PlayRandomClipBody(Option<string?> requestId = default)
+        public RefreshSessionRequest(string refreshToken)
         {
-            RequestIdOption = requestId;
+            RefreshToken = refreshToken;
             OnCreated();
         }
 
         partial void OnCreated();
 
         /// <summary>
-        /// Used to track the state of RequestId
+        /// Gets or Sets RefreshToken
         /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> RequestIdOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets RequestId
-        /// </summary>
-        [JsonPropertyName("request_id")]
-        public string? RequestId { get { return this.RequestIdOption; } set { this.RequestIdOption = new(value); } }
+        [JsonPropertyName("refresh_token")]
+        public string RefreshToken { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -63,8 +56,8 @@ namespace SidekickApi.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class PlayRandomClipBody {\n");
-            sb.Append("  RequestId: ").Append(RequestId).Append("\n");
+            sb.Append("class RefreshSessionRequest {\n");
+            sb.Append("  RefreshToken: ").Append(RefreshToken).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -76,24 +69,30 @@ namespace SidekickApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // RefreshToken (string) minLength
+            if (this.RefreshToken != null && this.RefreshToken.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for RefreshToken, length must be greater than 1.", new [] { "RefreshToken" });
+            }
+
             yield break;
         }
     }
 
     /// <summary>
-    /// A Json converter for type <see cref="PlayRandomClipBody" />
+    /// A Json converter for type <see cref="RefreshSessionRequest" />
     /// </summary>
-    public class PlayRandomClipBodyJsonConverter : JsonConverter<PlayRandomClipBody>
+    public class RefreshSessionRequestJsonConverter : JsonConverter<RefreshSessionRequest>
     {
         /// <summary>
-        /// Deserializes json to <see cref="PlayRandomClipBody" />
+        /// Deserializes json to <see cref="RefreshSessionRequest" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
         /// <param name="typeToConvert"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override PlayRandomClipBody Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+        public override RefreshSessionRequest Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
         {
             int currentDepth = utf8JsonReader.CurrentDepth;
 
@@ -102,7 +101,7 @@ namespace SidekickApi.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<string?> requestId = default;
+            Option<string?> refreshToken = default;
 
             while (utf8JsonReader.Read())
             {
@@ -119,8 +118,8 @@ namespace SidekickApi.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "request_id":
-                            requestId = new Option<string?>(utf8JsonReader.GetString());
+                        case "refresh_token":
+                            refreshToken = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -128,38 +127,43 @@ namespace SidekickApi.Model
                 }
             }
 
-            return new PlayRandomClipBody(requestId);
+            if (!refreshToken.IsSet)
+                throw new ArgumentException("Property is required for class RefreshSessionRequest.", nameof(refreshToken));
+
+            if (refreshToken.IsSet && refreshToken.Value == null)
+                throw new ArgumentNullException(nameof(refreshToken), "Property is not nullable for class RefreshSessionRequest.");
+
+            return new RefreshSessionRequest(refreshToken.Value!);
         }
 
         /// <summary>
-        /// Serializes a <see cref="PlayRandomClipBody" />
+        /// Serializes a <see cref="RefreshSessionRequest" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="playRandomClipBody"></param>
+        /// <param name="refreshSessionRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, PlayRandomClipBody playRandomClipBody, JsonSerializerOptions jsonSerializerOptions)
+        public override void Write(Utf8JsonWriter writer, RefreshSessionRequest refreshSessionRequest, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
 
-            WriteProperties(writer, playRandomClipBody, jsonSerializerOptions);
+            WriteProperties(writer, refreshSessionRequest, jsonSerializerOptions);
             writer.WriteEndObject();
         }
 
         /// <summary>
-        /// Serializes the properties of <see cref="PlayRandomClipBody" />
+        /// Serializes the properties of <see cref="RefreshSessionRequest" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="playRandomClipBody"></param>
+        /// <param name="refreshSessionRequest"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, PlayRandomClipBody playRandomClipBody, JsonSerializerOptions jsonSerializerOptions)
+        public void WriteProperties(Utf8JsonWriter writer, RefreshSessionRequest refreshSessionRequest, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (playRandomClipBody.RequestIdOption.IsSet)
-                if (playRandomClipBody.RequestIdOption.Value != null)
-                    writer.WriteString("request_id", playRandomClipBody.RequestId);
-                else
-                    writer.WriteNull("request_id");
+            if (refreshSessionRequest.RefreshToken == null)
+                throw new ArgumentNullException(nameof(refreshSessionRequest.RefreshToken), "Property is required for class RefreshSessionRequest.");
+
+            writer.WriteString("refresh_token", refreshSessionRequest.RefreshToken);
         }
     }
 }
