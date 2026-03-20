@@ -1,0 +1,53 @@
+<Window x:Class="mbottrilby.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Trilby Settings"
+        Width="440"
+        Height="320"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Trilby Settings"
+                   FontSize="22"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,16" />
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="Environment"
+                       Width="110"
+                       VerticalAlignment="Center" />
+            <ComboBox x:Name="EnvironmentComboBox"
+                      Width="260"
+                      SelectionChanged="EnvironmentComboBox_SelectionChanged">
+                <ComboBoxItem Content="Development" Tag="dev" />
+                <ComboBoxItem Content="Test" Tag="test" />
+                <ComboBoxItem Content="Production" Tag="prod" />
+            </ComboBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,12">
+            <TextBlock x:Name="BaseUrlTextBlock" Margin="0,0,0,6" />
+            <TextBlock x:Name="AuthStatusTextBlock" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <TextBlock Grid.Row="3"
+                   x:Name="InfoTextBlock"
+                   TextWrapping="Wrap"
+                   Foreground="DimGray" />
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="SignInButton" Width="110" Margin="0,0,8,0" Content="Sign In" Click="SignInButton_Click" />
+            <Button x:Name="SignOutButton" Width="110" Margin="0,0,8,0" Content="Sign Out" Click="SignOutButton_Click" />
+            <Button Width="110" Content="Close" Click="CloseButton_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="mbot-trilby/mbot-trilby.csproj" />
+  <Project Path="mbot-trilby.Tests/mbot-trilby.Tests.csproj" />
+</Solution>

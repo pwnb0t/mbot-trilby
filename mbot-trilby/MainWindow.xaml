@@ -1,0 +1,598 @@
+<Window x:Class="mbottrilby.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:mbottrilby.Controls"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        FontFamily="Segoe UI Variable Text"
+        Title="m'bot Trilby"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        WindowState="Maximized"
+        Loaded="Window_Loaded">
+    <Grid x:Name="RootOverlayGrid"
+          Visibility="{Binding OverlayVisibility}"
+          Background="Transparent">
+        <Border x:Name="OverlayPanelBorder"
+                Margin="0"
+                Background="{StaticResource OverlayBackgroundBrush}"
+                BorderThickness="0"
+                CornerRadius="0"
+                Padding="14">
+            <Grid x:Name="OverlayLayoutGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid x:Name="HeaderSectionGrid" Grid.Row="0" Margin="0,0,0,12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid x:Name="TopBarGrid" Grid.Row="0" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <Border Background="#263242"
+                                    BorderBrush="{StaticResource AccentBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Padding="6,2"
+                                    Margin="0,0,10,0">
+                                <TextBlock Text="m'bot"
+                                           Foreground="{StaticResource AccentBrush}"
+                                           FontSize="12"
+                                           FontWeight="Bold" />
+                            </Border>
+                            <TextBlock Text="m'bot Trilby"
+                                       FontSize="20"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Right">
+                            <TextBlock x:Name="ClipCountTextBlock"
+                                       Text="{Binding ClipCountText}"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontSize="13"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0" />
+                            <Button Content="Refresh"
+                                    Style="{StaticResource TopBarButtonStyle}"
+                                    Click="RefreshClipsButton_Click" />
+                            <Button Content="X"
+                                    Style="{StaticResource TopBarButtonStyle}"
+                                    Width="32"
+                                    Height="28"
+                                    Padding="0"
+                                    Margin="0"
+                                    Click="CloseOverlayButton_Click" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid x:Name="QuickPlayAndTransportGrid" Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="660" />
+                        </Grid.ColumnDefinitions>
+
+                        <ItemsControl Grid.Column="0"
+                                      ItemsSource="{Binding QuickPlaySlots}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="1"
+                                                 Columns="8" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.Template>
+                                <ControlTemplate TargetType="ItemsControl">
+                                    <Border Width="1536"
+                                            HorizontalAlignment="Left"
+                                            Background="Transparent">
+                                        <ItemsPresenter />
+                                    </Border>
+                                </ControlTemplate>
+                            </ItemsControl.Template>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="4,0,4,8">
+                                        <TextBlock Text="{Binding HotkeyLabel}"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,0,6"
+                                                   TextAlignment="Center" />
+                                        <Button Height="86"
+                                                Tag="{Binding SlotIndex}"
+                                                Click="QuickPlayButton_Click"
+                                                AllowDrop="True"
+                                                DragEnter="QuickPlayButton_DragEnter"
+                                                DragLeave="QuickPlayButton_DragLeave"
+                                                DragOver="QuickPlayButton_DragOver"
+                                                Drop="QuickPlayButton_Drop">
+                                            <TextBlock Text="{Binding DisplayText}"
+                                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                                       FontSize="15"
+                                                       FontWeight="SemiBold"
+                                                       TextAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <Button.Style>
+                                                <Style TargetType="Button"
+                                                       BasedOn="{StaticResource ClipButtonStyle}">
+                                                    <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+                                                    <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+                                                    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsDragHoverTarget}" Value="True">
+                                                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
+                                                            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsDragAvailableTarget}" Value="True">
+                                                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsAssigned}" Value="False">
+                                                            <Setter Property="Background" Value="#AA1C2430" />
+                                                            <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}" />
+                                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Grid x:Name="TransportControlsGrid"
+                              Grid.Column="1"
+                              HorizontalAlignment="Right">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <UniformGrid Grid.Row="0"
+                                         Rows="1"
+                                         Columns="3"
+                                         Width="660"
+                                         Margin="0,0,0,6">
+                                <TextBlock Text="Alt+-"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           TextAlignment="Center"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="Alt+="
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           TextAlignment="Center"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="Current Intro"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           TextAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </UniformGrid>
+
+                            <UniformGrid Grid.Row="1"
+                                         Rows="1"
+                                         Columns="3"
+                                         Width="660"
+                                         Height="86"
+                                         HorizontalAlignment="Right">
+                                <Button Style="{StaticResource ClipButtonStyle}" Content="Play Random" Click="PlayRandomButton_Click" />
+                                <Button Style="{StaticResource ClipButtonStyle}" Content="Stop" Click="StopButton_Click" />
+                                <Button x:Name="CurrentIntroButton"
+                                        DataContext="{Binding CurrentIntroSlot}"
+                                        Click="CurrentIntroButton_Click"
+                                        AllowDrop="True"
+                                        DragEnter="CurrentIntroButton_DragEnter"
+                                        DragLeave="CurrentIntroButton_DragLeave"
+                                        DragOver="CurrentIntroButton_DragOver"
+                                        Drop="CurrentIntroButton_Drop">
+                                    <TextBlock Text="{Binding DisplayText}"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               TextAlignment="Center"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <Button.Style>
+                                        <Style TargetType="Button"
+                                               BasedOn="{StaticResource ClipButtonStyle}">
+                                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+                                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+                                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDragHoverTarget}" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
+                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsDragAvailableTarget}" Value="True">
+                                                    <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsAssigned}" Value="False">
+                                                    <Setter Property="Background" Value="#AA1C2430" />
+                                                    <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}" />
+                                                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </UniformGrid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+                <Grid x:Name="MainContentGrid" Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="320" />
+                        <ColumnDefinition Width="320" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="320" />
+                        <ColumnDefinition Width="320" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border x:Name="TagWidgetPanel"
+                            Grid.Column="0"
+                            Background="{StaticResource PanelBackgroundBrush}"
+                            BorderBrush="{StaticResource PanelBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12"
+                            Margin="0,0,12,0">
+                        <Grid x:Name="TagWidgetGrid" DataContext="{Binding TagWidget}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       Text="{Binding TitleText}"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Height="24"
+                                       Margin="0,0,0,10" />
+
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding StatusText}"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,10" />
+
+                            <ScrollViewer x:Name="TagClipListScrollViewer"
+                                          Grid.Row="2"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
+                                <ItemsControl x:Name="TagClipItemsControl" ItemsSource="{Binding Clips}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                                <Button Style="{StaticResource TopClipStatButtonStyle}"
+                                                        Tag="{Binding Trigger}"
+                                                        PreviewMouseLeftButtonDown="ClipDragSourceButton_PreviewMouseLeftButtonDown"
+                                                        PreviewMouseLeftButtonUp="ClipDragSourceButton_PreviewMouseLeftButtonUp"
+                                                        PreviewMouseMove="ClipDragSourceButton_PreviewMouseMove"
+                                                        Click="TagClipItemButton_Click">
+                                                <TextBlock Text="{Binding Trigger}"
+                                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           VerticalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+
+                            <Border x:Name="TagDropZoneBorder"
+                                    Grid.Row="3"
+                                    Margin="0,10,0,0"
+                                    Padding="10"
+                                    CornerRadius="8"
+                                    AllowDrop="True"
+                                    DragEnter="TagDropZone_DragEnter"
+                                    DragLeave="TagDropZone_DragLeave"
+                                    DragOver="TagDropZone_DragOver"
+                                    Drop="TagDropZone_Drop">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#AA1C2430" />
+                                        <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDragHoverTarget}" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
+                                                <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsDragAvailableTarget}" Value="True">
+                                                <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="{Binding DropHintText}"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center" />
+                            </Border>
+
+                        </Grid>
+                    </Border>
+
+                    <!-- Spacer column reserved to keep the centered search section aligned. -->
+
+                    <controls:SearchPanelControl x:Name="SearchPanel"
+                                                 Grid.Column="2"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 SearchQueryDisplay="{Binding SearchQueryDisplay}"
+                                                 VisibleSearchResults="{Binding VisibleSearchResults}"
+                                                 NoResultsVisible="{Binding NoResultsVisible}"
+                                                 Width="640"
+                                                 Height="500" />
+
+                    <Border x:Name="RecentClipsPanel"
+                            Grid.Column="3"
+                            Background="{StaticResource PanelBackgroundBrush}"
+                            BorderBrush="{StaticResource PanelBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12"
+                            Margin="12,0,0,0">
+                        <Grid x:Name="RecentClipsGrid">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       Text="{Binding RecentStatsTitle}"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Height="24"
+                                       Margin="0,0,0,10" />
+
+                            <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                                <TextBlock Text="Filters"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           Height="16"
+                                           Margin="0,0,0,4" />
+                                <StackPanel Orientation="Horizontal" Height="30">
+                                    <Button x:Name="RecentStatsScopeMeButton"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="Just me"
+                                            Click="RecentStatsScopeMeButton_Click" />
+                                    <Button x:Name="RecentStatsScopeEveryoneButton"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="Everyone"
+                                            Click="RecentStatsScopeEveryoneButton_Click" />
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Height="30" Margin="0,6,0,0">
+                                    <Button x:Name="RecentStatsIncludeRandomButton"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="Include random"
+                                            Click="RecentStatsIncludeRandomButton_Click" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Grid x:Name="RecentClipsContentGrid" Grid.Row="2">
+                                <TextBlock Text="{Binding RecentStatsStatusText}"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           Margin="0,0,0,8" />
+                                <Border Height="1"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Top"
+                                        Margin="14,0,14,0"
+                                        Background="{StaticResource TextSecondaryBrush}" />
+                                <ScrollViewer x:Name="RecentClipsScrollViewer"
+                                              Margin="0,22,0,0"
+                                              VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl x:Name="RecentClipsItemsControl" ItemsSource="{Binding RecentClipStats}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                  <Button Style="{StaticResource TopClipStatButtonStyle}"
+                                                          Tag="{Binding Trigger}"
+                                                          PreviewMouseLeftButtonDown="ClipDragSourceButton_PreviewMouseLeftButtonDown"
+                                                          PreviewMouseLeftButtonUp="ClipDragSourceButton_PreviewMouseLeftButtonUp"
+                                                          PreviewMouseMove="ClipDragSourceButton_PreviewMouseMove"
+                                                          Click="RecentClipStatsItemButton_Click">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <TextBlock Grid.Row="0"
+                                                                   Grid.Column="0"
+                                                                   Text="{Binding TriggerDisplay}"
+                                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                                   FontSize="14"
+                                                                   FontWeight="SemiBold"
+                                                                   VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Grid.Row="0"
+                                                                   Grid.Column="1"
+                                                                   Text="&#x1F500;"
+                                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                                   FontSize="12"
+                                                                   FontWeight="Normal"
+                                                                   HorizontalAlignment="Right"
+                                                                   VerticalAlignment="Top"
+                                                                   Margin="8,0,0,0">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsRandom}" Value="True">
+                                                                            <Setter Property="Visibility" Value="Visible" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                        <TextBlock Grid.Row="1"
+                                                                   Grid.Column="1"
+                                                                   Text="{Binding PlayedAgoText}"
+                                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                                   FontSize="11"
+                                                                   FontWeight="Normal"
+                                                                   HorizontalAlignment="Right" />
+                                                    </Grid>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <Border x:Name="TopClipsPanel"
+                            Grid.Column="4"
+                            Background="{StaticResource PanelBackgroundBrush}"
+                            BorderBrush="{StaticResource PanelBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12"
+                            Margin="12,0,0,0">
+                        <Grid x:Name="TopClipsGrid">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       Text="{Binding TopStatsTitle}"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       Height="24"
+                                       Margin="0,0,0,10" />
+
+                            <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                                <TextBlock Text="Filters"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           Height="16"
+                                           Margin="0,0,0,4" />
+                                <StackPanel Orientation="Horizontal" Height="30">
+                                    <Button x:Name="TopStatsScopeMeButton"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="Just me"
+                                            Click="TopStatsScopeMeButton_Click" />
+                                    <Button x:Name="TopStatsScopeServerButton"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="Everyone"
+                                            Click="TopStatsScopeGuildButton_Click" />
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Height="30" Margin="0,6,0,0">
+                                    <Button x:Name="TopStatsDays1Button"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="1D"
+                                            Click="TopStatsDays1Button_Click" />
+                                    <Button x:Name="TopStatsDays7Button"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="7D"
+                                            Click="TopStatsDays7Button_Click" />
+                                    <Button x:Name="TopStatsDays30Button"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="30D"
+                                            Click="TopStatsDays30Button_Click" />
+                                    <Button x:Name="TopStatsDaysAllButton"
+                                            Style="{StaticResource StatsFilterButtonStyle}"
+                                            Content="All time"
+                                            Click="TopStatsDaysAllButton_Click" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Grid x:Name="TopClipsContentGrid" Grid.Row="2">
+                                <TextBlock Text="{Binding TopStatsStatusText}"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="12"
+                                           Margin="0,0,0,8" />
+                                <Border Height="1"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Top"
+                                        Margin="14,0,14,0"
+                                        Background="{StaticResource TextSecondaryBrush}" />
+                                <ScrollViewer x:Name="TopClipsScrollViewer"
+                                              Margin="0,22,0,0"
+                                              VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl x:Name="TopClipsItemsControl" ItemsSource="{Binding TopClipStats}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                  <Button Style="{StaticResource TopClipStatButtonStyle}"
+                                                          Tag="{Binding Trigger}"
+                                                          PreviewMouseLeftButtonDown="ClipDragSourceButton_PreviewMouseLeftButtonDown"
+                                                          PreviewMouseLeftButtonUp="ClipDragSourceButton_PreviewMouseLeftButtonUp"
+                                                          PreviewMouseMove="ClipDragSourceButton_PreviewMouseMove"
+                                                          Click="TopClipStatsItemButton_Click">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <TextBlock Grid.Row="0"
+                                                                   Text="{Binding Trigger}"
+                                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                                   FontSize="14"
+                                                                   FontWeight="SemiBold"
+                                                                   VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Grid.Row="1"
+                                                                   Text="{Binding PlayCountText}"
+                                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                                   FontSize="11"
+                                                                   FontWeight="Normal"
+                                                                   HorizontalAlignment="Right" />
+                                                    </Grid>
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
