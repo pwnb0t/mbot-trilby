@@ -28,11 +28,16 @@ namespace mbottrilby
         private const int VkOemMinus = 0xBD;
         private const int VkEquals = 0xBB;
         private const int VkOemPlus = 0xBB;
+        private const int VkSpace = 0x20;
         private const int Vk0 = 0x30;
         private const int Vk7 = 0x37;
         private const int Vk9 = 0x39;
         private const int VkA = 0x41;
+        private const int VkControl = 0x11;
+        private const int VkMenu = 0x12;
         private const int VkShift = 0x10;
+        private const int VkLWin = 0x5B;
+        private const int VkRWin = 0x5C;
         private const int VkZ = 0x5A;
         private const int VkNumpad0 = 0x60;
         private const int VkNumpad9 = 0x69;
@@ -43,6 +48,8 @@ namespace mbottrilby
 
         private readonly string _logFilePath;
         private readonly AppSettings _settings;
+        private readonly HotkeyModifiers _overlayHotkeyModifiers;
+        private readonly int _overlayHotkeyVirtualKey;
         private readonly int _hideOverlayVirtualKey;
         private readonly int _clearSearchVirtualKey;
         private readonly int _playFirstPrimaryVirtualKey;
@@ -89,6 +96,8 @@ namespace mbottrilby
             _settings = AppSettingsLoader.LoadFromBaseDirectory(AppContext.BaseDirectory);
             Topmost = _settings.Overlay.Topmost;
 
+            _overlayHotkeyModifiers = ParseModifiers(_settings.Hotkey.Modifiers);
+            _overlayHotkeyVirtualKey = KeyInterop.VirtualKeyFromKey(ParseKey(_settings.Hotkey.Key));
             _hideOverlayVirtualKey = ParseBindingVirtualKey(_settings.InputBindings.HideOverlayKey, Key.Escape);
             _clearSearchVirtualKey = ParseBindingVirtualKey(_settings.InputBindings.ClearSearchKey, Key.Tab);
             _playFirstPrimaryVirtualKey = ParseBindingVirtualKey(_settings.InputBindings.PlayFirstPrimaryKey, Key.Enter);
@@ -585,6 +594,7 @@ namespace mbottrilby
             RegisterOverlayHotkey(helper.Handle);
             _overlayInputRouter = new OverlayInputRouter(
                 isOverlayVisible: () => _overlayController.IsVisible,
+                handleGlobalHotkey: HandleGlobalHotkeyDown,
                 handleOverlayVirtualKey: HandleOverlayKeyDown,
                 isPointInsideOverlayPanel: _overlayController.IsPointInsideOverlayPanel,
                 onOutsideClick: () => _overlayController.Hide("Overlay hidden (outside click)."),
@@ -1102,12 +1112,11 @@ namespace mbottrilby
 
             if (virtualKey == VkBack)
             {
-                if (!_clipSearchState.Backspace())
+                if (_clipSearchState.Backspace())
                 {
-                    return false;
+                    RenderSearchState();
                 }
 
-                RenderSearchState();
                 return true;
             }
 
@@ -1125,11 +1134,31 @@ namespace mbottrilby
             var character = TryGetSearchCharacter(virtualKey);
             if (character is null)
             {
-                return false;
+                return ShouldConsumeOverlayKey(virtualKey, isAltDown);
             }
 
             _clipSearchState.AppendCharacter(character.Value);
             RenderSearchState();
+            return true;
+        }
+
+        private bool HandleGlobalHotkeyDown(int virtualKey, bool isAltDown)
+        {
+            if (!IsConfiguredOverlayHotkey(virtualKey, isAltDown))
+            {
+                return false;
+            }
+
+            if (_overlayController.IsVisible)
+            {
+                HideOverlayWithConditionalSearchReset("Overlay hidden.");
+                return true;
+            }
+
+            _ = Dispatcher.BeginInvoke(new Action(async () =>
+            {
+                await ShowOverlayIfAuthenticatedAsync(OverlayShowSource.Standard);
+            }));
             return true;
         }
 
@@ -1138,6 +1167,11 @@ namespace mbottrilby
             if (virtualKey == Vk7 && IsShiftPressed())
             {
                 return '&';
+            }
+
+            if (virtualKey == VkMinus || virtualKey == VkOemMinus)
+            {
+                return IsShiftPressed() ? '_' : '-';
             }
 
             if (virtualKey >= VkA && virtualKey <= VkZ)
@@ -1160,7 +1194,12 @@ namespace mbottrilby
 
         private static bool IsShiftPressed()
         {
-            return (GetKeyState(VkShift) & 0x8000) != 0;
+            return IsModifierPressed(VkShift);
+        }
+
+        private static bool IsModifierPressed(int virtualKey)
+        {
+            return (GetKeyState(virtualKey) & 0x8000) != 0;
         }
 
         private static int TryGetQuickPlaySlotIndexFromAltHotkey(int virtualKey)
@@ -1569,6 +1608,73 @@ namespace mbottrilby
             }
 
             return null;
+        }
+
+        private static bool ShouldConsumeOverlayKey(int virtualKey, bool isAltDown)
+        {
+            if (virtualKey == VkShift ||
+                virtualKey == VkControl ||
+                virtualKey == VkMenu ||
+                virtualKey == VkLWin ||
+                virtualKey == VkRWin)
+            {
+                return false;
+            }
+
+            if (isAltDown)
+            {
+                return true;
+            }
+
+            if (virtualKey == VkSpace)
+            {
+                return true;
+            }
+
+            if ((virtualKey >= 0x30 && virtualKey <= 0x39) ||
+                (virtualKey >= 0x41 && virtualKey <= 0x5A) ||
+                (virtualKey >= 0x60 && virtualKey <= 0x69))
+            {
+                return true;
+            }
+
+            if ((virtualKey >= 0xBA && virtualKey <= 0xC0) ||
+                (virtualKey >= 0xDB && virtualKey <= 0xDE))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool IsConfiguredOverlayHotkey(int virtualKey, bool isAltDown)
+        {
+            if (virtualKey != _overlayHotkeyVirtualKey)
+            {
+                return false;
+            }
+
+            if (_overlayHotkeyModifiers.HasFlag(HotkeyModifiers.Alt) != isAltDown)
+            {
+                return false;
+            }
+
+            if (_overlayHotkeyModifiers.HasFlag(HotkeyModifiers.Control) != IsModifierPressed(VkControl))
+            {
+                return false;
+            }
+
+            if (_overlayHotkeyModifiers.HasFlag(HotkeyModifiers.Shift) != IsModifierPressed(VkShift))
+            {
+                return false;
+            }
+
+            if (_overlayHotkeyModifiers.HasFlag(HotkeyModifiers.Win) != (IsModifierPressed(VkLWin) || IsModifierPressed(VkRWin)))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private string GetInactiveServerStatusText()

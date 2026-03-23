@@ -19,6 +19,7 @@ namespace mbottrilby.Input
         private const int WmMButtonDown = 0x0207;
 
         private readonly Func<bool> _isOverlayVisible;
+        private readonly Func<int, bool, bool> _handleGlobalHotkey;
         private readonly Func<int, bool, bool> _handleOverlayVirtualKey;
         private readonly Func<System.Windows.Point, bool> _isPointInsideOverlayPanel;
         private readonly Action _onOutsideClick;
@@ -32,6 +33,7 @@ namespace mbottrilby.Input
 
         public OverlayInputRouter(
             Func<bool> isOverlayVisible,
+            Func<int, bool, bool> handleGlobalHotkey,
             Func<int, bool, bool> handleOverlayVirtualKey,
             Func<System.Windows.Point, bool> isPointInsideOverlayPanel,
             Action onOutsideClick,
@@ -40,6 +42,7 @@ namespace mbottrilby.Input
         )
         {
             _isOverlayVisible = isOverlayVisible;
+            _handleGlobalHotkey = handleGlobalHotkey;
             _handleOverlayVirtualKey = handleOverlayVirtualKey;
             _isPointInsideOverlayPanel = isPointInsideOverlayPanel;
             _onOutsideClick = onOutsideClick;
@@ -105,13 +108,18 @@ namespace mbottrilby.Input
                 return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
             }
 
+            var keyboardData = Marshal.PtrToStructure<KbdLlHookStruct>(lParam);
+            var isAltDown = message == WmSysKeyDown || (keyboardData.Flags & LlkhfAltdown) != 0;
+            if (_handleGlobalHotkey(keyboardData.VkCode, isAltDown))
+            {
+                return (IntPtr)1;
+            }
+
             if (!_isOverlayVisible())
             {
                 return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
             }
 
-            var keyboardData = Marshal.PtrToStructure<KbdLlHookStruct>(lParam);
-            var isAltDown = message == WmSysKeyDown || (keyboardData.Flags & LlkhfAltdown) != 0;
             var handled = _handleOverlayVirtualKey(keyboardData.VkCode, isAltDown);
             if (handled)
             {
