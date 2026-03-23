@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
@@ -82,6 +83,7 @@ namespace mbottrilby
             InitializeComponent();
             DataContext = _viewModel;
             SearchPanel.SearchResultSelected += SearchPanel_SearchResultSelected;
+            SearchPanel.SearchResultSecondarySelected += SearchPanel_SearchResultSecondarySelected;
             SearchPanel.ClipAssignmentDragStateChanged += SearchPanel_ClipAssignmentDragStateChanged;
 
             _settings = AppSettingsLoader.LoadFromBaseDirectory(AppContext.BaseDirectory);
@@ -239,7 +241,17 @@ namespace mbottrilby
                 return;
             }
 
-            await SelectTagAsync(searchResult.Value, "search result");
+            await PlayRandomTagResultAsync(searchResult.Value, "search result");
+        }
+
+        private async void SearchPanel_SearchResultSecondarySelected(object? sender, ClipSearchResult searchResult)
+        {
+            if (searchResult.Kind != SearchResultKind.Tag)
+            {
+                return;
+            }
+
+            await SelectTagAsync(searchResult.Value, "search result right click");
         }
 
         private void SearchPanel_ClipAssignmentDragStateChanged(object? sender, ClipAssignmentDragChangedEventArgs e)
@@ -1021,7 +1033,34 @@ namespace mbottrilby
                 return;
             }
 
-            await SelectTagAsync(first.Value, "primary search action");
+            await PlayRandomTagResultAsync(first.Value, "primary search action");
+        }
+
+        private async System.Threading.Tasks.Task PlayRandomTagResultAsync(string tagName, string reason)
+        {
+            if (_trilbyApiClient is null)
+            {
+                Log($"Play tag failed for &{tagName}: API disabled");
+                return;
+            }
+
+            try
+            {
+                Log($"Loading tag clips ({reason}) for random &{tagName} play...");
+                var catalog = await _trilbyApiClient.ListTagClipsAsync(tagName);
+                if (catalog.Triggers.Count == 0)
+                {
+                    Log($"Play tag failed for &{tagName}: tag has no clips.");
+                    return;
+                }
+
+                var selectedTrigger = catalog.Triggers[RandomNumberGenerator.GetInt32(catalog.Triggers.Count)];
+                await PlayClipAsync($"&{tagName}", selectedTrigger);
+            }
+            catch (Exception ex)
+            {
+                Log($"Play tag failed for &{tagName}: {ex.Message}");
+            }
         }
 
         private bool HandleOverlayKeyDown(int virtualKey, bool isAltDown)

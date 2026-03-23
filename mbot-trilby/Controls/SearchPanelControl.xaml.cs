@@ -34,6 +34,7 @@ namespace mbottrilby.Controls
         );
 
         public event EventHandler<ClipSearchResult>? SearchResultSelected;
+        public event EventHandler<ClipSearchResult>? SearchResultSecondarySelected;
         internal event EventHandler<ClipAssignmentDragChangedEventArgs>? ClipAssignmentDragStateChanged;
 
         public SearchPanelControl()
@@ -84,6 +85,7 @@ namespace mbottrilby.Controls
                     Tag = searchResult
                 };
                 button.Click += (_, _) => control.SearchResultSelected?.Invoke(control, searchResult);
+                button.MouseRightButtonUp += (_, _) => control.SearchResultSecondarySelected?.Invoke(control, searchResult);
                 button.PreviewMouseLeftButtonDown += control.SearchResultButton_PreviewMouseLeftButtonDown;
                 button.PreviewMouseLeftButtonUp += control.SearchResultButton_PreviewMouseLeftButtonUp;
                 button.PreviewMouseMove += control.SearchResultButton_PreviewMouseMove;
