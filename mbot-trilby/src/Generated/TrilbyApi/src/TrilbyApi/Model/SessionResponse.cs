@@ -41,8 +41,9 @@ namespace TrilbyApi.Model
         /// <param name="username">username</param>
         /// <param name="guilds">guilds</param>
         /// <param name="tokenType">tokenType (default to TokenTypeEnum.Bearer)</param>
+        /// <param name="defaultGuildId">defaultGuildId</param>
         [JsonConstructor]
-        public SessionResponse(bool ok, string accessToken, string refreshToken, string expiresAtUtc, long userId, string username, List<AuthenticatedTrilbyGuild> guilds, Option<TokenTypeEnum?> tokenType = default)
+        public SessionResponse(bool ok, string accessToken, string refreshToken, string expiresAtUtc, long userId, string username, List<AuthenticatedTrilbyGuild> guilds, Option<TokenTypeEnum?> tokenType = default, Option<long?> defaultGuildId = default)
         {
             Ok = ok;
             AccessToken = accessToken;
@@ -52,6 +53,7 @@ namespace TrilbyApi.Model
             Username = username;
             Guilds = guilds;
             TokenTypeOption = tokenType;
+            DefaultGuildIdOption = defaultGuildId;
             OnCreated();
         }
 
@@ -165,6 +167,19 @@ namespace TrilbyApi.Model
         public List<AuthenticatedTrilbyGuild> Guilds { get; set; }
 
         /// <summary>
+        /// Used to track the state of DefaultGuildId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<long?> DefaultGuildIdOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets DefaultGuildId
+        /// </summary>
+        [JsonPropertyName("default_guild_id")]
+        public long? DefaultGuildId { get { return this.DefaultGuildIdOption; } set { this.DefaultGuildIdOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -180,6 +195,7 @@ namespace TrilbyApi.Model
             sb.Append("  Username: ").Append(Username).Append("\n");
             sb.Append("  Guilds: ").Append(Guilds).Append("\n");
             sb.Append("  TokenType: ").Append(TokenType).Append("\n");
+            sb.Append("  DefaultGuildId: ").Append(DefaultGuildId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -225,6 +241,7 @@ namespace TrilbyApi.Model
             Option<string?> username = default;
             Option<List<AuthenticatedTrilbyGuild>?> guilds = default;
             Option<SessionResponse.TokenTypeEnum?> tokenType = default;
+            Option<long?> defaultGuildId = default;
 
             while (utf8JsonReader.Read())
             {
@@ -266,6 +283,9 @@ namespace TrilbyApi.Model
                             string? tokenTypeRawValue = utf8JsonReader.GetString();
                             if (tokenTypeRawValue != null)
                                 tokenType = new Option<SessionResponse.TokenTypeEnum?>(SessionResponse.TokenTypeEnumFromStringOrDefault(tokenTypeRawValue));
+                            break;
+                        case "default_guild_id":
+                            defaultGuildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
                             break;
                         default:
                             break;
@@ -318,7 +338,10 @@ namespace TrilbyApi.Model
             if (tokenType.IsSet && tokenType.Value == null)
                 throw new ArgumentNullException(nameof(tokenType), "Property is not nullable for class SessionResponse.");
 
-            return new SessionResponse(ok.Value!.Value!, accessToken.Value!, refreshToken.Value!, expiresAtUtc.Value!, userId.Value!.Value!, username.Value!, guilds.Value!, tokenType);
+            if (defaultGuildId.IsSet && defaultGuildId.Value == null)
+                throw new ArgumentNullException(nameof(defaultGuildId), "Property is not nullable for class SessionResponse.");
+
+            return new SessionResponse(ok.Value!.Value!, accessToken.Value!, refreshToken.Value!, expiresAtUtc.Value!, userId.Value!.Value!, username.Value!, guilds.Value!, tokenType, defaultGuildId);
         }
 
         /// <summary>
@@ -376,6 +399,8 @@ namespace TrilbyApi.Model
             JsonSerializer.Serialize(writer, sessionResponse.Guilds, jsonSerializerOptions);
             var tokenTypeRawValue = SessionResponse.TokenTypeEnumToJsonValue(sessionResponse.TokenTypeOption.Value!.Value);
             writer.WriteString("token_type", tokenTypeRawValue);
+            if (sessionResponse.DefaultGuildIdOption.IsSet)
+                writer.WriteNumber("default_guild_id", sessionResponse.DefaultGuildIdOption.Value!.Value);
         }
     }
 }

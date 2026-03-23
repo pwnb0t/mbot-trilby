@@ -221,6 +221,7 @@ namespace mbottrilby.Services
                     ExpiresAtUtc = ExpiresAtUtc,
                     UserId = summary.UserId > 0 ? summary.UserId : UserId,
                     Username = summary.Username ?? Username,
+                    DefaultGuildId = summary.DefaultGuildId,
                     Servers = summary.Guilds?
                         .Where(guild => guild.GuildId > 0)
                         .Select(guild => guild.ToSettings())
@@ -251,6 +252,9 @@ namespace mbottrilby.Services
             [JsonPropertyName("guilds")]
             public List<GuildPayload>? Guilds { get; set; }
 
+            [JsonPropertyName("default_guild_id")]
+            public long? DefaultGuildId { get; set; }
+
             public TrilbySessionSettings ToSettings()
             {
                 return new TrilbySessionSettings
@@ -260,6 +264,7 @@ namespace mbottrilby.Services
                     ExpiresAtUtc = ExpiresAtUtc,
                     UserId = UserId,
                     Username = Username,
+                    DefaultGuildId = DefaultGuildId,
                     Servers = Guilds?
                         .Where(guild => guild.GuildId > 0)
                         .Select(guild => guild.ToSettings())
@@ -283,6 +288,9 @@ namespace mbottrilby.Services
 
             [JsonPropertyName("guilds")]
             public List<GuildPayload>? Guilds { get; set; }
+
+            [JsonPropertyName("default_guild_id")]
+            public long? DefaultGuildId { get; set; }
         }
 
         private sealed class GuildPayload

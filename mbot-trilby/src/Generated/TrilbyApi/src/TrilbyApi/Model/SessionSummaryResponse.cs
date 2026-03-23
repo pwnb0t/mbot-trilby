@@ -38,14 +38,16 @@ namespace TrilbyApi.Model
         /// <param name="username">username</param>
         /// <param name="expiresAtUtc">expiresAtUtc</param>
         /// <param name="guilds">guilds</param>
+        /// <param name="defaultGuildId">defaultGuildId</param>
         [JsonConstructor]
-        public SessionSummaryResponse(bool ok, long userId, string username, string expiresAtUtc, List<AuthenticatedTrilbyGuild> guilds)
+        public SessionSummaryResponse(bool ok, long userId, string username, string expiresAtUtc, List<AuthenticatedTrilbyGuild> guilds, Option<long?> defaultGuildId = default)
         {
             Ok = ok;
             UserId = userId;
             Username = username;
             ExpiresAtUtc = expiresAtUtc;
             Guilds = guilds;
+            DefaultGuildIdOption = defaultGuildId;
             OnCreated();
         }
 
@@ -82,6 +84,19 @@ namespace TrilbyApi.Model
         public List<AuthenticatedTrilbyGuild> Guilds { get; set; }
 
         /// <summary>
+        /// Used to track the state of DefaultGuildId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<long?> DefaultGuildIdOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets DefaultGuildId
+        /// </summary>
+        [JsonPropertyName("default_guild_id")]
+        public long? DefaultGuildId { get { return this.DefaultGuildIdOption; } set { this.DefaultGuildIdOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -94,6 +109,7 @@ namespace TrilbyApi.Model
             sb.Append("  Username: ").Append(Username).Append("\n");
             sb.Append("  ExpiresAtUtc: ").Append(ExpiresAtUtc).Append("\n");
             sb.Append("  Guilds: ").Append(Guilds).Append("\n");
+            sb.Append("  DefaultGuildId: ").Append(DefaultGuildId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -136,6 +152,7 @@ namespace TrilbyApi.Model
             Option<string?> username = default;
             Option<string?> expiresAtUtc = default;
             Option<List<AuthenticatedTrilbyGuild>?> guilds = default;
+            Option<long?> defaultGuildId = default;
 
             while (utf8JsonReader.Read())
             {
@@ -166,6 +183,9 @@ namespace TrilbyApi.Model
                             break;
                         case "guilds":
                             guilds = new Option<List<AuthenticatedTrilbyGuild>?>(JsonSerializer.Deserialize<List<AuthenticatedTrilbyGuild>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
+                        case "default_guild_id":
+                            defaultGuildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
                             break;
                         default:
                             break;
@@ -203,7 +223,10 @@ namespace TrilbyApi.Model
             if (guilds.IsSet && guilds.Value == null)
                 throw new ArgumentNullException(nameof(guilds), "Property is not nullable for class SessionSummaryResponse.");
 
-            return new SessionSummaryResponse(ok.Value!.Value!, userId.Value!.Value!, username.Value!, expiresAtUtc.Value!, guilds.Value!);
+            if (defaultGuildId.IsSet && defaultGuildId.Value == null)
+                throw new ArgumentNullException(nameof(defaultGuildId), "Property is not nullable for class SessionSummaryResponse.");
+
+            return new SessionSummaryResponse(ok.Value!.Value!, userId.Value!.Value!, username.Value!, expiresAtUtc.Value!, guilds.Value!, defaultGuildId);
         }
 
         /// <summary>
@@ -249,6 +272,8 @@ namespace TrilbyApi.Model
 
             writer.WritePropertyName("guilds");
             JsonSerializer.Serialize(writer, sessionSummaryResponse.Guilds, jsonSerializerOptions);
+            if (sessionSummaryResponse.DefaultGuildIdOption.IsSet)
+                writer.WriteNumber("default_guild_id", sessionSummaryResponse.DefaultGuildIdOption.Value!.Value);
         }
     }
 }

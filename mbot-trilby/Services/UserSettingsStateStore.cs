@@ -128,6 +128,7 @@ namespace mbottrilby.Services
         public long UserId { get; set; }
         public string? Username { get; set; }
         public List<TrilbyGuildSettings> Servers { get; set; } = new();
+        public long? DefaultGuildId { get; set; }
 
         public bool IsAuthenticated =>
             !string.IsNullOrWhiteSpace(AccessToken) &&
@@ -431,6 +432,7 @@ namespace mbottrilby.Services
                 ExpiresAtUtc = ReadString(sessionElement, "expiresAtUtc"),
                 UserId = ReadInt64(sessionElement, "userId"),
                 Username = ReadString(sessionElement, "username"),
+                DefaultGuildId = ReadNullableInt64(sessionElement, "defaultGuildId"),
                 Servers = ReadServers(sessionElement)
             };
 
@@ -674,6 +676,22 @@ namespace mbottrilby.Services
                 JsonValueKind.Number => value.GetInt64(),
                 JsonValueKind.String when long.TryParse(value.GetString(), out var parsed) => parsed,
                 _ => 0
+            };
+        }
+
+        private static long? ReadNullableInt64(JsonElement element, string propertyName)
+        {
+            if (!TryGetProperty(element, propertyName, out var value))
+            {
+                return null;
+            }
+
+            return value.ValueKind switch
+            {
+                JsonValueKind.Null => null,
+                JsonValueKind.Number => value.GetInt64(),
+                JsonValueKind.String when long.TryParse(value.GetString(), out var parsed) => parsed,
+                _ => null
             };
         }
     }

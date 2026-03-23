@@ -1384,6 +1384,7 @@ components:
         access_token: access_token
         refresh_token: refresh_token
         expires_at_utc: expires_at_utc
+        default_guild_id: 1
         user_id: 0
         guilds:
         - guild_name: guild_name
@@ -1424,6 +1425,11 @@ components:
             $ref: "#/components/schemas/AuthenticatedTrilbyGuild"
           title: Guilds
           type: array
+        default_guild_id:
+          format: int64
+          title: Default Guild Id
+          type: integer
+          nullable: true
       required:
       - access_token
       - expires_at_utc
@@ -1436,6 +1442,7 @@ components:
     SessionSummaryResponse:
       example:
         expires_at_utc: expires_at_utc
+        default_guild_id: 6
         user_id: 0
         guilds:
         - guild_name: guild_name
@@ -1463,6 +1470,11 @@ components:
             $ref: "#/components/schemas/AuthenticatedTrilbyGuild"
           title: Guilds
           type: array
+        default_guild_id:
+          format: int64
+          title: Default Guild Id
+          type: integer
+          nullable: true
       required:
       - expires_at_utc
       - guilds

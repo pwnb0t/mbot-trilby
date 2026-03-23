@@ -1513,7 +1513,22 @@ namespace mbottrilby
 
             _userSettings.SetSelectedGuildId(
                 environmentName,
-                session.Servers.Count == 1 ? session.Servers[0].GuildId : null);
+                ResolveSuggestedGuildId(session));
+        }
+
+        private static long? ResolveSuggestedGuildId(TrilbySessionSettings session)
+        {
+            if (session.Servers.Count == 1)
+            {
+                return session.Servers[0].GuildId;
+            }
+
+            if (session.DefaultGuildId is > 0 && session.Servers.Any(server => server.GuildId == session.DefaultGuildId.Value))
+            {
+                return session.DefaultGuildId.Value;
+            }
+
+            return null;
         }
 
         private string GetInactiveServerStatusText()
