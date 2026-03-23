@@ -77,7 +77,7 @@ namespace TrilbyApi.Api
         /// <param name="errorDescription"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ICompleteDiscordAuthApiResponse"/>&gt;</returns>
-        Task<ICompleteDiscordAuthApiResponse> CompleteDiscordAuthAsync(Option<string?> code = default, Option<string?> state = default, Option<string?> error = default, Option<string?> errorDescription = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<ICompleteDiscordAuthApiResponse> CompleteDiscordAuthAsync(Option<string> code = default, Option<string> state = default, Option<string> error = default, Option<string> errorDescription = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Complete Discord Auth
@@ -91,7 +91,7 @@ namespace TrilbyApi.Api
         /// <param name="errorDescription"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ICompleteDiscordAuthApiResponse"/>?&gt;</returns>
-        Task<ICompleteDiscordAuthApiResponse?> CompleteDiscordAuthOrDefaultAsync(Option<string?> code = default, Option<string?> state = default, Option<string?> error = default, Option<string?> errorDescription = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<ICompleteDiscordAuthApiResponse?> CompleteDiscordAuthOrDefaultAsync(Option<string> code = default, Option<string> state = default, Option<string> error = default, Option<string> errorDescription = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get Authenticated Session
@@ -229,7 +229,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
-        Task<IListClipsApiResponse> ListClipsAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListClipsApiResponse> ListClipsAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Clips
@@ -241,7 +241,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>?&gt;</returns>
-        Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Tag Clips
@@ -279,7 +279,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>&gt;</returns>
-        Task<IListTagsApiResponse> ListTagsAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTagsApiResponse> ListTagsAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Tags
@@ -291,7 +291,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>?&gt;</returns>
-        Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Play Clip
@@ -1841,7 +1841,30 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatCompleteDiscordAuth(ref Option<string?> code, ref Option<string?> state, ref Option<string?> error, ref Option<string?> errorDescription);
+        partial void FormatCompleteDiscordAuth(ref Option<string> code, ref Option<string> state, ref Option<string> error, ref Option<string> errorDescription);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="state"></param>
+        /// <param name="error"></param>
+        /// <param name="errorDescription"></param>
+        /// <returns></returns>
+        private void ValidateCompleteDiscordAuth(Option<string> code, Option<string> state, Option<string> error, Option<string> errorDescription)
+        {
+            if (code.IsSet && code.Value == null)
+                throw new ArgumentNullException(nameof(code));
+
+            if (state.IsSet && state.Value == null)
+                throw new ArgumentNullException(nameof(state));
+
+            if (error.IsSet && error.Value == null)
+                throw new ArgumentNullException(nameof(error));
+
+            if (errorDescription.IsSet && errorDescription.Value == null)
+                throw new ArgumentNullException(nameof(errorDescription));
+        }
 
         /// <summary>
         /// Processes the server response
@@ -1851,7 +1874,7 @@ namespace TrilbyApi.Api
         /// <param name="state"></param>
         /// <param name="error"></param>
         /// <param name="errorDescription"></param>
-        private void AfterCompleteDiscordAuthDefaultImplementation(ICompleteDiscordAuthApiResponse apiResponseLocalVar, Option<string?> code, Option<string?> state, Option<string?> error, Option<string?> errorDescription)
+        private void AfterCompleteDiscordAuthDefaultImplementation(ICompleteDiscordAuthApiResponse apiResponseLocalVar, Option<string> code, Option<string> state, Option<string> error, Option<string> errorDescription)
         {
             bool suppressDefaultLog = false;
             AfterCompleteDiscordAuth(ref suppressDefaultLog, apiResponseLocalVar, code, state, error, errorDescription);
@@ -1868,7 +1891,7 @@ namespace TrilbyApi.Api
         /// <param name="state"></param>
         /// <param name="error"></param>
         /// <param name="errorDescription"></param>
-        partial void AfterCompleteDiscordAuth(ref bool suppressDefaultLog, ICompleteDiscordAuthApiResponse apiResponseLocalVar, Option<string?> code, Option<string?> state, Option<string?> error, Option<string?> errorDescription);
+        partial void AfterCompleteDiscordAuth(ref bool suppressDefaultLog, ICompleteDiscordAuthApiResponse apiResponseLocalVar, Option<string> code, Option<string> state, Option<string> error, Option<string> errorDescription);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1880,7 +1903,7 @@ namespace TrilbyApi.Api
         /// <param name="state"></param>
         /// <param name="error"></param>
         /// <param name="errorDescription"></param>
-        private void OnErrorCompleteDiscordAuthDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string?> code, Option<string?> state, Option<string?> error, Option<string?> errorDescription)
+        private void OnErrorCompleteDiscordAuthDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> code, Option<string> state, Option<string> error, Option<string> errorDescription)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorCompleteDiscordAuth(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, code, state, error, errorDescription);
@@ -1899,7 +1922,7 @@ namespace TrilbyApi.Api
         /// <param name="state"></param>
         /// <param name="error"></param>
         /// <param name="errorDescription"></param>
-        partial void OnErrorCompleteDiscordAuth(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string?> code, Option<string?> state, Option<string?> error, Option<string?> errorDescription);
+        partial void OnErrorCompleteDiscordAuth(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, Option<string> code, Option<string> state, Option<string> error, Option<string> errorDescription);
 
         /// <summary>
         /// Complete Discord Auth 
@@ -1910,7 +1933,7 @@ namespace TrilbyApi.Api
         /// <param name="errorDescription"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ICompleteDiscordAuthApiResponse"/>&gt;</returns>
-        public async Task<ICompleteDiscordAuthApiResponse?> CompleteDiscordAuthOrDefaultAsync(Option<string?> code = default, Option<string?> state = default, Option<string?> error = default, Option<string?> errorDescription = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<ICompleteDiscordAuthApiResponse?> CompleteDiscordAuthOrDefaultAsync(Option<string> code = default, Option<string> state = default, Option<string> error = default, Option<string> errorDescription = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -1932,12 +1955,14 @@ namespace TrilbyApi.Api
         /// <param name="errorDescription"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ICompleteDiscordAuthApiResponse"/>&gt;</returns>
-        public async Task<ICompleteDiscordAuthApiResponse> CompleteDiscordAuthAsync(Option<string?> code = default, Option<string?> state = default, Option<string?> error = default, Option<string?> errorDescription = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<ICompleteDiscordAuthApiResponse> CompleteDiscordAuthAsync(Option<string> code = default, Option<string> state = default, Option<string> error = default, Option<string> errorDescription = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
+                ValidateCompleteDiscordAuth(code, state, error, errorDescription);
+
                 FormatCompleteDiscordAuth(ref code, ref state, ref error, ref errorDescription);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
@@ -3903,7 +3928,18 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListClips(ref long guildId, ref Option<string?> search);
+        partial void FormatListClips(ref long guildId, ref Option<string> search);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        private void ValidateListClips(Option<string> search)
+        {
+            if (search.IsSet && search.Value == null)
+                throw new ArgumentNullException(nameof(search));
+        }
 
         /// <summary>
         /// Processes the server response
@@ -3911,7 +3947,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void AfterListClipsDefaultImplementation(IListClipsApiResponse apiResponseLocalVar, long guildId, Option<string?> search)
+        private void AfterListClipsDefaultImplementation(IListClipsApiResponse apiResponseLocalVar, long guildId, Option<string> search)
         {
             bool suppressDefaultLog = false;
             AfterListClips(ref suppressDefaultLog, apiResponseLocalVar, guildId, search);
@@ -3926,7 +3962,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void AfterListClips(ref bool suppressDefaultLog, IListClipsApiResponse apiResponseLocalVar, long guildId, Option<string?> search);
+        partial void AfterListClips(ref bool suppressDefaultLog, IListClipsApiResponse apiResponseLocalVar, long guildId, Option<string> search);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -3936,7 +3972,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void OnErrorListClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string?> search)
+        private void OnErrorListClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> search)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorListClips(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, search);
@@ -3953,7 +3989,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void OnErrorListClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string?> search);
+        partial void OnErrorListClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> search);
 
         /// <summary>
         /// List Clips 
@@ -3962,7 +3998,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
-        public async Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -3982,12 +4018,14 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
-        public async Task<IListClipsApiResponse> ListClipsAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListClipsApiResponse> ListClipsAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
+                ValidateListClips(search);
+
                 FormatListClips(ref guildId, ref search);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
@@ -4682,7 +4720,18 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListTags(ref long guildId, ref Option<string?> search);
+        partial void FormatListTags(ref long guildId, ref Option<string> search);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        private void ValidateListTags(Option<string> search)
+        {
+            if (search.IsSet && search.Value == null)
+                throw new ArgumentNullException(nameof(search));
+        }
 
         /// <summary>
         /// Processes the server response
@@ -4690,7 +4739,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void AfterListTagsDefaultImplementation(IListTagsApiResponse apiResponseLocalVar, long guildId, Option<string?> search)
+        private void AfterListTagsDefaultImplementation(IListTagsApiResponse apiResponseLocalVar, long guildId, Option<string> search)
         {
             bool suppressDefaultLog = false;
             AfterListTags(ref suppressDefaultLog, apiResponseLocalVar, guildId, search);
@@ -4705,7 +4754,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void AfterListTags(ref bool suppressDefaultLog, IListTagsApiResponse apiResponseLocalVar, long guildId, Option<string?> search);
+        partial void AfterListTags(ref bool suppressDefaultLog, IListTagsApiResponse apiResponseLocalVar, long guildId, Option<string> search);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -4715,7 +4764,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void OnErrorListTagsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string?> search)
+        private void OnErrorListTagsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> search)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorListTags(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, search);
@@ -4732,7 +4781,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void OnErrorListTags(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string?> search);
+        partial void OnErrorListTags(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> search);
 
         /// <summary>
         /// List Tags 
@@ -4741,7 +4790,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>&gt;</returns>
-        public async Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -4761,12 +4810,14 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>&gt;</returns>
-        public async Task<IListTagsApiResponse> ListTagsAsync(long guildId, Option<string?> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTagsApiResponse> ListTagsAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
+                ValidateListTags(search);
+
                 FormatListTags(ref guildId, ref search);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())

@@ -159,7 +159,7 @@ namespace TrilbyApi.Model
                             requesterUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
                             break;
                         case "trigger":
-                            trigger = new Option<string?>(utf8JsonReader.GetString());
+                            trigger = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -184,6 +184,9 @@ namespace TrilbyApi.Model
 
             if (requesterUserId.IsSet && requesterUserId.Value == null)
                 throw new ArgumentNullException(nameof(requesterUserId), "Property is not nullable for class GetCurrentIntroResponse.");
+
+            if (trigger.IsSet && trigger.Value == null)
+                throw new ArgumentNullException(nameof(trigger), "Property is not nullable for class GetCurrentIntroResponse.");
 
             return new GetCurrentIntroResponse(ok.Value!.Value!, guildId.Value!.Value!, requesterUserId.Value!.Value!, trigger);
         }
@@ -212,6 +215,9 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, GetCurrentIntroResponse getCurrentIntroResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (getCurrentIntroResponse.TriggerOption.IsSet && getCurrentIntroResponse.Trigger == null)
+                throw new ArgumentNullException(nameof(getCurrentIntroResponse.Trigger), "Property is required for class GetCurrentIntroResponse.");
+
             writer.WriteBoolean("ok", getCurrentIntroResponse.Ok);
 
             writer.WriteNumber("guild_id", getCurrentIntroResponse.GuildId);
@@ -219,10 +225,7 @@ namespace TrilbyApi.Model
             writer.WriteNumber("requester_user_id", getCurrentIntroResponse.RequesterUserId);
 
             if (getCurrentIntroResponse.TriggerOption.IsSet)
-                if (getCurrentIntroResponse.TriggerOption.Value != null)
-                    writer.WriteString("trigger", getCurrentIntroResponse.Trigger);
-                else
-                    writer.WriteNull("trigger");
+                writer.WriteString("trigger", getCurrentIntroResponse.Trigger);
         }
     }
 }

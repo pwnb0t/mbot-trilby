@@ -226,7 +226,7 @@ namespace TrilbyApi.Model
                                 status = new Option<PlayRandomClipResponse.StatusEnum?>(PlayRandomClipResponse.StatusEnumFromStringOrDefault(statusRawValue));
                             break;
                         case "request_id":
-                            requestId = new Option<string?>(utf8JsonReader.GetString());
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -258,6 +258,9 @@ namespace TrilbyApi.Model
             if (status.IsSet && status.Value == null)
                 throw new ArgumentNullException(nameof(status), "Property is not nullable for class PlayRandomClipResponse.");
 
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class PlayRandomClipResponse.");
+
             return new PlayRandomClipResponse(ok.Value!.Value!, guildId.Value!.Value!, resolvedTrigger.Value!, status.Value!.Value!, requestId);
         }
 
@@ -288,6 +291,9 @@ namespace TrilbyApi.Model
             if (playRandomClipResponse.ResolvedTrigger == null)
                 throw new ArgumentNullException(nameof(playRandomClipResponse.ResolvedTrigger), "Property is required for class PlayRandomClipResponse.");
 
+            if (playRandomClipResponse.RequestIdOption.IsSet && playRandomClipResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(playRandomClipResponse.RequestId), "Property is required for class PlayRandomClipResponse.");
+
             writer.WriteBoolean("ok", playRandomClipResponse.Ok);
 
             writer.WriteNumber("guild_id", playRandomClipResponse.GuildId);
@@ -297,10 +303,7 @@ namespace TrilbyApi.Model
             var statusRawValue = PlayRandomClipResponse.StatusEnumToJsonValue(playRandomClipResponse.Status);
             writer.WriteString("status", statusRawValue);
             if (playRandomClipResponse.RequestIdOption.IsSet)
-                if (playRandomClipResponse.RequestIdOption.Value != null)
-                    writer.WriteString("request_id", playRandomClipResponse.RequestId);
-                else
-                    writer.WriteNull("request_id");
+                writer.WriteString("request_id", playRandomClipResponse.RequestId);
         }
     }
 }

@@ -145,7 +145,7 @@ namespace TrilbyApi.Model
                             trigger = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "request_id":
-                            requestId = new Option<string?>(utf8JsonReader.GetString());
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -158,6 +158,9 @@ namespace TrilbyApi.Model
 
             if (trigger.IsSet && trigger.Value == null)
                 throw new ArgumentNullException(nameof(trigger), "Property is not nullable for class PlayClipBody.");
+
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class PlayClipBody.");
 
             return new PlayClipBody(trigger.Value!, requestId);
         }
@@ -189,13 +192,13 @@ namespace TrilbyApi.Model
             if (playClipBody.Trigger == null)
                 throw new ArgumentNullException(nameof(playClipBody.Trigger), "Property is required for class PlayClipBody.");
 
+            if (playClipBody.RequestIdOption.IsSet && playClipBody.RequestId == null)
+                throw new ArgumentNullException(nameof(playClipBody.RequestId), "Property is required for class PlayClipBody.");
+
             writer.WriteString("trigger", playClipBody.Trigger);
 
             if (playClipBody.RequestIdOption.IsSet)
-                if (playClipBody.RequestIdOption.Value != null)
-                    writer.WriteString("request_id", playClipBody.RequestId);
-                else
-                    writer.WriteNull("request_id");
+                writer.WriteString("request_id", playClipBody.RequestId);
         }
     }
 }

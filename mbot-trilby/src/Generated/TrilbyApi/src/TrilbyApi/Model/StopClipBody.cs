@@ -120,13 +120,16 @@ namespace TrilbyApi.Model
                     switch (localVarJsonPropertyName)
                     {
                         case "request_id":
-                            requestId = new Option<string?>(utf8JsonReader.GetString());
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
                     }
                 }
             }
+
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class StopClipBody.");
 
             return new StopClipBody(requestId);
         }
@@ -155,11 +158,11 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, StopClipBody stopClipBody, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (stopClipBody.RequestIdOption.IsSet && stopClipBody.RequestId == null)
+                throw new ArgumentNullException(nameof(stopClipBody.RequestId), "Property is required for class StopClipBody.");
+
             if (stopClipBody.RequestIdOption.IsSet)
-                if (stopClipBody.RequestIdOption.Value != null)
-                    writer.WriteString("request_id", stopClipBody.RequestId);
-                else
-                    writer.WriteNull("request_id");
+                writer.WriteString("request_id", stopClipBody.RequestId);
         }
     }
 }

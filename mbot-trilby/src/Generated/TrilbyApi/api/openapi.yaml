@@ -51,32 +51,36 @@ paths:
         name: code
         required: false
         schema:
-          nullable: true
+          title: Code
           type: string
+          nullable: true
         style: form
       - explode: true
         in: query
         name: state
         required: false
         schema:
-          nullable: true
+          title: State
           type: string
+          nullable: true
         style: form
       - explode: true
         in: query
         name: error
         required: false
         schema:
-          nullable: true
+          title: Error
           type: string
+          nullable: true
         style: form
       - explode: true
         in: query
         name: error_description
         required: false
         schema:
-          nullable: true
+          title: Error Description
           type: string
+          nullable: true
         style: form
       responses:
         "200":
@@ -167,8 +171,9 @@ paths:
         schema:
           maxLength: 64
           minLength: 1
-          nullable: true
+          title: Search
           type: string
+          nullable: true
         style: form
       responses:
         "200":
@@ -690,8 +695,9 @@ paths:
         schema:
           maxLength: 64
           minLength: 1
-          nullable: true
+          title: Search
           type: string
+          nullable: true
         style: form
       responses:
         "200":
@@ -1020,8 +1026,9 @@ components:
           title: Requester User Id
           type: integer
         trigger:
-          nullable: true
+          title: Trigger
           type: string
+          nullable: true
       required:
       - guild_id
       - ok
@@ -1097,8 +1104,9 @@ components:
           title: Total
           type: integer
         search:
-          nullable: true
+          title: Search
           type: string
+          nullable: true
       required:
       - clips
       - guild_id
@@ -1166,8 +1174,9 @@ components:
           title: Total
           type: integer
         search:
-          nullable: true
+          title: Search
           type: string
+          nullable: true
       required:
       - guild_id
       - ok
@@ -1185,8 +1194,9 @@ components:
           title: Trigger
           type: string
         request_id:
-          nullable: true
+          title: Request Id
           type: string
+          nullable: true
       required:
       - trigger
       title: PlayClipBody
@@ -1218,8 +1228,9 @@ components:
           title: Status
           type: string
         request_id:
-          nullable: true
+          title: Request Id
           type: string
+          nullable: true
       required:
       - guild_id
       - ok
@@ -1232,8 +1243,9 @@ components:
         request_id: request_id
       properties:
         request_id:
-          nullable: true
+          title: Request Id
           type: string
+          nullable: true
       title: PlayRandomClipBody
     PlayRandomClipResponse:
       example:
@@ -1259,8 +1271,9 @@ components:
           title: Status
           type: string
         request_id:
-          nullable: true
+          title: Request Id
           type: string
+          nullable: true
       required:
       - guild_id
       - ok
@@ -1270,6 +1283,7 @@ components:
     RecentClipStatsItem:
       example:
         mode: direct
+        requester_display_name: requester_display_name
         played_at_utc: played_at_utc
         clip_id: 5
         trigger: trigger
@@ -1286,6 +1300,10 @@ components:
           - random
           title: Mode
           type: string
+        requester_display_name:
+          title: Requester Display Name
+          type: string
+          nullable: true
         played_at_utc:
           title: Played At Utc
           type: string
@@ -1304,10 +1322,12 @@ components:
         ok: true
         rows:
         - mode: direct
+          requester_display_name: requester_display_name
           played_at_utc: played_at_utc
           clip_id: 5
           trigger: trigger
         - mode: direct
+          requester_display_name: requester_display_name
           played_at_utc: played_at_utc
           clip_id: 5
           trigger: trigger
@@ -1526,8 +1546,9 @@ components:
         request_id: request_id
       properties:
         request_id:
-          nullable: true
+          title: Request Id
           type: string
+          nullable: true
       title: StopClipBody
     StopClipResponse:
       example:
@@ -1549,8 +1570,9 @@ components:
           title: Status
           type: string
         request_id:
-          nullable: true
+          title: Request Id
           type: string
+          nullable: true
       required:
       - guild_id
       - ok

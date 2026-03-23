@@ -120,13 +120,16 @@ namespace TrilbyApi.Model
                     switch (localVarJsonPropertyName)
                     {
                         case "request_id":
-                            requestId = new Option<string?>(utf8JsonReader.GetString());
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
                     }
                 }
             }
+
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class PlayRandomClipBody.");
 
             return new PlayRandomClipBody(requestId);
         }
@@ -155,11 +158,11 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, PlayRandomClipBody playRandomClipBody, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (playRandomClipBody.RequestIdOption.IsSet && playRandomClipBody.RequestId == null)
+                throw new ArgumentNullException(nameof(playRandomClipBody.RequestId), "Property is required for class PlayRandomClipBody.");
+
             if (playRandomClipBody.RequestIdOption.IsSet)
-                if (playRandomClipBody.RequestIdOption.Value != null)
-                    writer.WriteString("request_id", playRandomClipBody.RequestId);
-                else
-                    writer.WriteNull("request_id");
+                writer.WriteString("request_id", playRandomClipBody.RequestId);
         }
     }
 }

@@ -867,6 +867,7 @@ namespace mbottrilby
                     .Select(row => new RecentClipEntryViewModel(
                         row.Trigger,
                         row.Trigger,
+                        row.RequesterDisplayName,
                         row.PlayedAtUtc,
                         FormatTimeAgo(row.PlayedAtUtc),
                         row.Mode == "random"

@@ -213,7 +213,7 @@ namespace TrilbyApi.Model
                                 status = new Option<StopClipResponse.StatusEnum?>(StopClipResponse.StatusEnumFromStringOrDefault(statusRawValue));
                             break;
                         case "request_id":
-                            requestId = new Option<string?>(utf8JsonReader.GetString());
+                            requestId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -238,6 +238,9 @@ namespace TrilbyApi.Model
 
             if (status.IsSet && status.Value == null)
                 throw new ArgumentNullException(nameof(status), "Property is not nullable for class StopClipResponse.");
+
+            if (requestId.IsSet && requestId.Value == null)
+                throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class StopClipResponse.");
 
             return new StopClipResponse(ok.Value!.Value!, guildId.Value!.Value!, status.Value!.Value!, requestId);
         }
@@ -266,6 +269,9 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, StopClipResponse stopClipResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (stopClipResponse.RequestIdOption.IsSet && stopClipResponse.RequestId == null)
+                throw new ArgumentNullException(nameof(stopClipResponse.RequestId), "Property is required for class StopClipResponse.");
+
             writer.WriteBoolean("ok", stopClipResponse.Ok);
 
             writer.WriteNumber("guild_id", stopClipResponse.GuildId);
@@ -273,10 +279,7 @@ namespace TrilbyApi.Model
             var statusRawValue = StopClipResponse.StatusEnumToJsonValue(stopClipResponse.Status);
             writer.WriteString("status", statusRawValue);
             if (stopClipResponse.RequestIdOption.IsSet)
-                if (stopClipResponse.RequestIdOption.Value != null)
-                    writer.WriteString("request_id", stopClipResponse.RequestId);
-                else
-                    writer.WriteNull("request_id");
+                writer.WriteString("request_id", stopClipResponse.RequestId);
         }
     }
 }

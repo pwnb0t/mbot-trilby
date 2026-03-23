@@ -172,7 +172,7 @@ namespace TrilbyApi.Model
                             total = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
                         case "search":
-                            search = new Option<string?>(utf8JsonReader.GetString());
+                            search = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -204,6 +204,9 @@ namespace TrilbyApi.Model
             if (total.IsSet && total.Value == null)
                 throw new ArgumentNullException(nameof(total), "Property is not nullable for class ListClipsResponse.");
 
+            if (search.IsSet && search.Value == null)
+                throw new ArgumentNullException(nameof(search), "Property is not nullable for class ListClipsResponse.");
+
             return new ListClipsResponse(ok.Value!.Value!, guildId.Value!.Value!, clips.Value!, total.Value!.Value!, search);
         }
 
@@ -234,6 +237,9 @@ namespace TrilbyApi.Model
             if (listClipsResponse.Clips == null)
                 throw new ArgumentNullException(nameof(listClipsResponse.Clips), "Property is required for class ListClipsResponse.");
 
+            if (listClipsResponse.SearchOption.IsSet && listClipsResponse.Search == null)
+                throw new ArgumentNullException(nameof(listClipsResponse.Search), "Property is required for class ListClipsResponse.");
+
             writer.WriteBoolean("ok", listClipsResponse.Ok);
 
             writer.WriteNumber("guild_id", listClipsResponse.GuildId);
@@ -243,10 +249,7 @@ namespace TrilbyApi.Model
             writer.WriteNumber("total", listClipsResponse.Total);
 
             if (listClipsResponse.SearchOption.IsSet)
-                if (listClipsResponse.SearchOption.Value != null)
-                    writer.WriteString("search", listClipsResponse.Search);
-                else
-                    writer.WriteNull("search");
+                writer.WriteString("search", listClipsResponse.Search);
         }
     }
 }

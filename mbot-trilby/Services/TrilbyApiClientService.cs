@@ -304,6 +304,7 @@ namespace mbottrilby.Services
                     .Select(row => new RecentClipStatsRow(
                         row.Trigger,
                         RecentClipStatsItem.ModeEnumToJsonValue(row.Mode),
+                        row.RequesterDisplayName,
                         row.PlayedAtUtc))
                     .ToList();
 
@@ -635,15 +636,19 @@ namespace mbottrilby.Services
 
         internal sealed class RecentClipStatsRow
         {
-            public RecentClipStatsRow(string trigger, string mode, string playedAtUtc)
+            public RecentClipStatsRow(string trigger, string mode, string? requesterDisplayName, string playedAtUtc)
             {
                 Trigger = trigger;
                 Mode = mode;
+                RequesterDisplayName = string.IsNullOrWhiteSpace(requesterDisplayName)
+                    ? string.Empty
+                    : requesterDisplayName.Trim();
                 PlayedAtUtc = playedAtUtc;
             }
 
             public string Trigger { get; }
             public string Mode { get; }
+            public string RequesterDisplayName { get; }
             public string PlayedAtUtc { get; }
         }
 

@@ -37,13 +37,15 @@ namespace TrilbyApi.Model
         /// <param name="trigger">trigger</param>
         /// <param name="mode">mode</param>
         /// <param name="playedAtUtc">playedAtUtc</param>
+        /// <param name="requesterDisplayName">requesterDisplayName</param>
         [JsonConstructor]
-        public RecentClipStatsItem(int clipId, string trigger, ModeEnum mode, string playedAtUtc)
+        public RecentClipStatsItem(int clipId, string trigger, ModeEnum mode, string playedAtUtc, Option<string?> requesterDisplayName = default)
         {
             ClipId = clipId;
             Trigger = trigger;
             Mode = mode;
             PlayedAtUtc = playedAtUtc;
+            RequesterDisplayNameOption = requesterDisplayName;
             OnCreated();
         }
 
@@ -140,6 +142,19 @@ namespace TrilbyApi.Model
         public string PlayedAtUtc { get; set; }
 
         /// <summary>
+        /// Used to track the state of RequesterDisplayName
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> RequesterDisplayNameOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets RequesterDisplayName
+        /// </summary>
+        [JsonPropertyName("requester_display_name")]
+        public string? RequesterDisplayName { get { return this.RequesterDisplayNameOption; } set { this.RequesterDisplayNameOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -151,6 +166,7 @@ namespace TrilbyApi.Model
             sb.Append("  Trigger: ").Append(Trigger).Append("\n");
             sb.Append("  Mode: ").Append(Mode).Append("\n");
             sb.Append("  PlayedAtUtc: ").Append(PlayedAtUtc).Append("\n");
+            sb.Append("  RequesterDisplayName: ").Append(RequesterDisplayName).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -192,6 +208,7 @@ namespace TrilbyApi.Model
             Option<string?> trigger = default;
             Option<RecentClipStatsItem.ModeEnum?> mode = default;
             Option<string?> playedAtUtc = default;
+            Option<string?> requesterDisplayName = default;
 
             while (utf8JsonReader.Read())
             {
@@ -221,6 +238,9 @@ namespace TrilbyApi.Model
                             break;
                         case "played_at_utc":
                             playedAtUtc = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "requester_display_name":
+                            requesterDisplayName = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -252,7 +272,10 @@ namespace TrilbyApi.Model
             if (playedAtUtc.IsSet && playedAtUtc.Value == null)
                 throw new ArgumentNullException(nameof(playedAtUtc), "Property is not nullable for class RecentClipStatsItem.");
 
-            return new RecentClipStatsItem(clipId.Value!.Value!, trigger.Value!, mode.Value!.Value!, playedAtUtc.Value!);
+            if (requesterDisplayName.IsSet && requesterDisplayName.Value == null)
+                throw new ArgumentNullException(nameof(requesterDisplayName), "Property is not nullable for class RecentClipStatsItem.");
+
+            return new RecentClipStatsItem(clipId.Value!.Value!, trigger.Value!, mode.Value!.Value!, playedAtUtc.Value!, requesterDisplayName);
         }
 
         /// <summary>
@@ -285,6 +308,9 @@ namespace TrilbyApi.Model
             if (recentClipStatsItem.PlayedAtUtc == null)
                 throw new ArgumentNullException(nameof(recentClipStatsItem.PlayedAtUtc), "Property is required for class RecentClipStatsItem.");
 
+            if (recentClipStatsItem.RequesterDisplayNameOption.IsSet && recentClipStatsItem.RequesterDisplayName == null)
+                throw new ArgumentNullException(nameof(recentClipStatsItem.RequesterDisplayName), "Property is required for class RecentClipStatsItem.");
+
             writer.WriteNumber("clip_id", recentClipStatsItem.ClipId);
 
             writer.WriteString("trigger", recentClipStatsItem.Trigger);
@@ -292,6 +318,9 @@ namespace TrilbyApi.Model
             var modeRawValue = RecentClipStatsItem.ModeEnumToJsonValue(recentClipStatsItem.Mode);
             writer.WriteString("mode", modeRawValue);
             writer.WriteString("played_at_utc", recentClipStatsItem.PlayedAtUtc);
+
+            if (recentClipStatsItem.RequesterDisplayNameOption.IsSet)
+                writer.WriteString("requester_display_name", recentClipStatsItem.RequesterDisplayName);
         }
     }
 }

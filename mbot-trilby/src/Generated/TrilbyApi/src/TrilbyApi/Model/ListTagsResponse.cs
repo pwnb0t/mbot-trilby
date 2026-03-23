@@ -172,7 +172,7 @@ namespace TrilbyApi.Model
                             total = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
                             break;
                         case "search":
-                            search = new Option<string?>(utf8JsonReader.GetString());
+                            search = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -204,6 +204,9 @@ namespace TrilbyApi.Model
             if (total.IsSet && total.Value == null)
                 throw new ArgumentNullException(nameof(total), "Property is not nullable for class ListTagsResponse.");
 
+            if (search.IsSet && search.Value == null)
+                throw new ArgumentNullException(nameof(search), "Property is not nullable for class ListTagsResponse.");
+
             return new ListTagsResponse(ok.Value!.Value!, guildId.Value!.Value!, tags.Value!, total.Value!.Value!, search);
         }
 
@@ -234,6 +237,9 @@ namespace TrilbyApi.Model
             if (listTagsResponse.Tags == null)
                 throw new ArgumentNullException(nameof(listTagsResponse.Tags), "Property is required for class ListTagsResponse.");
 
+            if (listTagsResponse.SearchOption.IsSet && listTagsResponse.Search == null)
+                throw new ArgumentNullException(nameof(listTagsResponse.Search), "Property is required for class ListTagsResponse.");
+
             writer.WriteBoolean("ok", listTagsResponse.Ok);
 
             writer.WriteNumber("guild_id", listTagsResponse.GuildId);
@@ -243,10 +249,7 @@ namespace TrilbyApi.Model
             writer.WriteNumber("total", listTagsResponse.Total);
 
             if (listTagsResponse.SearchOption.IsSet)
-                if (listTagsResponse.SearchOption.Value != null)
-                    writer.WriteString("search", listTagsResponse.Search);
-                else
-                    writer.WriteNull("search");
+                writer.WriteString("search", listTagsResponse.Search);
         }
     }
 }

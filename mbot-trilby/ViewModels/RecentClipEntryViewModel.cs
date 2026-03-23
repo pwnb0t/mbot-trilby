@@ -11,6 +11,7 @@ namespace mbottrilby.ViewModels
         public RecentClipEntryViewModel(
             string trigger,
             string triggerDisplay,
+            string requesterDisplayName,
             string playedAtUtc,
             string playedAgoText,
             bool isRandom
@@ -18,6 +19,7 @@ namespace mbottrilby.ViewModels
         {
             Trigger = trigger;
             TriggerDisplay = triggerDisplay;
+            RequesterDisplayName = requesterDisplayName;
             PlayedAtUtc = playedAtUtc;
             _playedAgoText = playedAgoText;
             IsRandom = isRandom;
@@ -27,6 +29,7 @@ namespace mbottrilby.ViewModels
 
         public string Trigger { get; }
         public string TriggerDisplay { get; }
+        public string RequesterDisplayName { get; }
         public string PlayedAtUtc { get; }
         public string PlayedAgoText
         {
