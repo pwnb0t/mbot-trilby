@@ -1,13 +1,33 @@
 namespace mbottrilby.Services
 {
+    internal enum OverlayDragDataKind
+    {
+        Clip,
+        Tag
+    }
+
     internal static class ClipAssignmentDragDrop
     {
+        public const string DragKindFormat = "mbot-trilby/drag-kind";
         public const string ClipTriggerFormat = "mbot-trilby/clip-trigger";
+        public const string TagNameFormat = "mbot-trilby/tag-name";
         public const string SourceTagNameFormat = "mbot-trilby/source-tag-name";
 
-        public static System.Windows.DataObject CreateDataObject(string clipTrigger, string? sourceTagName = null)
+        public static System.Windows.DataObject CreateDataObject(
+            OverlayDragDataKind kind,
+            string value,
+            string? sourceTagName = null)
         {
-            var dataObject = new System.Windows.DataObject(ClipTriggerFormat, clipTrigger);
+            var dataObject = new System.Windows.DataObject(DragKindFormat, kind.ToString());
+            if (kind == OverlayDragDataKind.Clip)
+            {
+                dataObject.SetData(ClipTriggerFormat, value);
+            }
+            else
+            {
+                dataObject.SetData(TagNameFormat, value);
+            }
+
             if (!string.IsNullOrWhiteSpace(sourceTagName))
             {
                 dataObject.SetData(SourceTagNameFormat, sourceTagName);
@@ -18,13 +38,37 @@ namespace mbottrilby.Services
 
         public static ClipAssignmentDragData? TryRead(System.Windows.IDataObject dataObject)
         {
-            if (!dataObject.GetDataPresent(ClipTriggerFormat))
+            var kind = OverlayDragDataKind.Clip;
+            if (dataObject.GetDataPresent(DragKindFormat))
             {
-                return null;
+                var kindValue = dataObject.GetData(DragKindFormat) as string;
+                if (!Enum.TryParse(kindValue, true, out kind))
+                {
+                    return null;
+                }
             }
 
-            var trigger = dataObject.GetData(ClipTriggerFormat) as string;
-            if (string.IsNullOrWhiteSpace(trigger))
+            string? value;
+            if (kind == OverlayDragDataKind.Clip)
+            {
+                if (!dataObject.GetDataPresent(ClipTriggerFormat))
+                {
+                    return null;
+                }
+
+                value = dataObject.GetData(ClipTriggerFormat) as string;
+            }
+            else
+            {
+                if (!dataObject.GetDataPresent(TagNameFormat))
+                {
+                    return null;
+                }
+
+                value = dataObject.GetData(TagNameFormat) as string;
+            }
+
+            if (string.IsNullOrWhiteSpace(value))
             {
                 return null;
             }
@@ -33,19 +77,26 @@ namespace mbottrilby.Services
                 ? dataObject.GetData(SourceTagNameFormat) as string
                 : null;
 
-            return new ClipAssignmentDragData(trigger.Trim(), string.IsNullOrWhiteSpace(sourceTagName) ? null : sourceTagName.Trim());
+            return new ClipAssignmentDragData(
+                kind,
+                value.Trim(),
+                string.IsNullOrWhiteSpace(sourceTagName) ? null : sourceTagName.Trim());
         }
     }
 
     internal sealed class ClipAssignmentDragData
     {
-        public ClipAssignmentDragData(string trigger, string? sourceTagName)
+        public ClipAssignmentDragData(OverlayDragDataKind kind, string value, string? sourceTagName)
         {
-            Trigger = trigger;
+            Kind = kind;
+            Value = value;
             SourceTagName = sourceTagName;
         }
 
-        public string Trigger { get; }
+        public OverlayDragDataKind Kind { get; }
+        public string Value { get; }
+        public string Trigger => Value;
+        public string TagName => Value;
         public string? SourceTagName { get; }
     }
 

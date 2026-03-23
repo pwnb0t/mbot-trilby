@@ -137,12 +137,14 @@ namespace mbottrilby.Controls
                 this,
                 button =>
                 {
-                    if (button.Tag is not ClipSearchResult searchResult || searchResult.Kind != SearchResultKind.Clip)
+                    if (button.Tag is not ClipSearchResult searchResult)
                     {
                         return null;
                     }
 
-                    return new ClipAssignmentDragData(searchResult.Value, sourceTagName: null);
+                    return searchResult.Kind == SearchResultKind.Clip
+                        ? new ClipAssignmentDragData(OverlayDragDataKind.Clip, searchResult.Value, sourceTagName: null)
+                        : new ClipAssignmentDragData(OverlayDragDataKind.Tag, searchResult.Value, sourceTagName: null);
                 },
                 dragData => ClipAssignmentDragStateChanged?.Invoke(
                     this,

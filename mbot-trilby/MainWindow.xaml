@@ -256,7 +256,28 @@
                             BorderThickness="1"
                             CornerRadius="10"
                             Padding="12"
-                            Margin="0,0,12,0">
+                            Margin="0,0,12,0"
+                            AllowDrop="True"
+                            DragEnter="TagWidgetPanel_DragEnter"
+                            DragLeave="TagWidgetPanel_DragLeave"
+                            DragOver="TagWidgetPanel_DragOver"
+                            Drop="TagWidgetPanel_Drop">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="{StaticResource PanelBackgroundBrush}" />
+                                <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}" />
+                                <Setter Property="BorderThickness" Value="1" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding TagWidget.IsTagDragAvailableTarget}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding TagWidget.IsTagDragHoverTarget}" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
+                                        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
                         <Grid x:Name="TagWidgetGrid" DataContext="{Binding TagWidget}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -266,13 +287,56 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0"
-                                       Text="{Binding TitleText}"
-                                       Foreground="{StaticResource TextPrimaryBrush}"
-                                       FontSize="16"
-                                       FontWeight="SemiBold"
-                                       Height="24"
-                                       Margin="0,0,0,10" />
+                            <Border Grid.RowSpan="5"
+                                    Background="#AA1C2430"
+                                    BorderBrush="{StaticResource AccentBrush}"
+                                    BorderThickness="2"
+                                    CornerRadius="8"
+                                    Margin="2"
+                                    Panel.ZIndex="20">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsTagDropActive}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="{Binding TagDropHintText}"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Margin="20" />
+                            </Border>
+
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding TitleText}"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           Height="24"
+                                           VerticalAlignment="Center" />
+
+                                <Button x:Name="TagWidgetPlayRandomButton"
+                                        Grid.Column="1"
+                                        Content="&#x1F500;"
+                                        Style="{StaticResource TopBarButtonStyle}"
+                                        Margin="8,0,0,0"
+                                        Click="TagWidgetPlayRandomButton_Click"
+                                        IsEnabled="{Binding HasSelectedTag}" />
+                            </Grid>
 
                             <TextBlock Grid.Row="1"
                                        Text="{Binding StatusText}"

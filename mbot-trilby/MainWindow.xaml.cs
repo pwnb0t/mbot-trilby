@@ -72,6 +72,7 @@ namespace mbottrilby
         private int _quickPlayDragHoverSlot;
         private bool _currentIntroDragHover;
         private bool _tagDropZoneHover;
+        private bool _tagWidgetPanelHover;
         private bool _recentStatsGuildWide = true;
         private bool _recentStatsIncludeRandom = true;
         private bool _hotkeyRegistered;
@@ -295,7 +296,7 @@ namespace mbottrilby
                     var sourceTagName = button.DataContext is TagClipEntryViewModel tagClip
                         ? tagClip.TagName
                         : null;
-                    return new ClipAssignmentDragData(trigger, sourceTagName);
+                    return new ClipAssignmentDragData(OverlayDragDataKind.Clip, trigger, sourceTagName);
                 },
                 SetActiveClipAssignmentDragData);
         }
@@ -303,7 +304,7 @@ namespace mbottrilby
         private void SetActiveClipAssignmentDragData(ClipAssignmentDragData? dragData)
         {
             _activeClipAssignmentDragData = dragData;
-            _clipAssignmentDragActive = dragData is not null;
+            _clipAssignmentDragActive = dragData is not null && dragData.Kind == OverlayDragDataKind.Clip;
             if (!_clipAssignmentDragActive)
             {
                 _quickPlayDragHoverSlot = 0;
@@ -350,6 +351,63 @@ namespace mbottrilby
             }
 
             await PlayClipAsync(trigger, trigger);
+        }
+
+        private async void TagWidgetPlayRandomButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_tagWidget.SelectedTagName))
+            {
+                return;
+            }
+
+            await PlayRandomTagResultAsync(_tagWidget.SelectedTagName, "tag widget");
+        }
+
+        private void TagWidgetPanel_DragEnter(object sender, System.Windows.DragEventArgs e)
+        {
+            if (!HasTagSelectionDragData(e))
+            {
+                return;
+            }
+
+            _tagWidgetPanelHover = true;
+            UpdateTagDropZone();
+            e.Effects = System.Windows.DragDropEffects.Copy;
+            e.Handled = true;
+        }
+
+        private void TagWidgetPanel_DragLeave(object sender, System.Windows.DragEventArgs e)
+        {
+            _tagWidgetPanelHover = false;
+            UpdateTagDropZone();
+        }
+
+        private void TagWidgetPanel_DragOver(object sender, System.Windows.DragEventArgs e)
+        {
+            if (!HasTagSelectionDragData(e))
+            {
+                return;
+            }
+
+            _tagWidgetPanelHover = true;
+            UpdateTagDropZone();
+            e.Effects = System.Windows.DragDropEffects.Copy;
+            e.Handled = true;
+        }
+
+        private async void TagWidgetPanel_Drop(object sender, System.Windows.DragEventArgs e)
+        {
+            _tagWidgetPanelHover = false;
+            var dragData = TryGetDroppedClipAssignment(e);
+            if (dragData is null || dragData.Kind != OverlayDragDataKind.Tag || string.IsNullOrWhiteSpace(dragData.TagName))
+            {
+                UpdateTagDropZone();
+                return;
+            }
+
+            e.Handled = true;
+            UpdateTagDropZone();
+            await SelectTagAsync(dragData.TagName, "tag drag drop");
         }
 
         private void ClearSelectedTagButton_Click(object sender, RoutedEventArgs e)
@@ -1339,6 +1397,10 @@ namespace mbottrilby
 
         private void UpdateTagDropZone()
         {
+            var isTagDragActive = _activeClipAssignmentDragData is not null &&
+                _activeClipAssignmentDragData.Kind == OverlayDragDataKind.Tag;
+            _tagWidget.IsTagDragHoverTarget = isTagDragActive && _tagWidgetPanelHover;
+            _tagWidget.IsTagDragAvailableTarget = isTagDragActive && !_tagWidgetPanelHover;
             _tagWidget.IsRemoveDragOperation = _clipAssignmentDragActive &&
                 _tagWidget.HasSelectedTag &&
                 _activeClipAssignmentDragData is not null &&
@@ -1721,7 +1783,14 @@ namespace mbottrilby
 
         private static bool HasClipTriggerDragData(System.Windows.DragEventArgs e)
         {
-            return TryGetDroppedClipAssignment(e) is not null;
+            var dragData = TryGetDroppedClipAssignment(e);
+            return dragData is not null && dragData.Kind == OverlayDragDataKind.Clip;
+        }
+
+        private static bool HasTagSelectionDragData(System.Windows.DragEventArgs e)
+        {
+            var dragData = TryGetDroppedClipAssignment(e);
+            return dragData is not null && dragData.Kind == OverlayDragDataKind.Tag;
         }
 
         private static ClipAssignmentDragData? TryGetDroppedClipAssignment(System.Windows.DragEventArgs e)

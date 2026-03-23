@@ -48,7 +48,7 @@ namespace mbottrilby.Services
             }
 
             var dragData = getDragData(button);
-            if (dragData is null || string.IsNullOrWhiteSpace(dragData.Trigger))
+            if (dragData is null || string.IsNullOrWhiteSpace(dragData.Value))
             {
                 return;
             }
@@ -67,7 +67,7 @@ namespace mbottrilby.Services
             setDragData(dragData);
             try
             {
-                var dataObject = ClipAssignmentDragDrop.CreateDataObject(dragData.Trigger, dragData.SourceTagName);
+                var dataObject = ClipAssignmentDragDrop.CreateDataObject(dragData.Kind, dragData.Value, dragData.SourceTagName);
                 System.Windows.DragDrop.DoDragDrop(button, dataObject, System.Windows.DragDropEffects.Copy);
             }
             finally

@@ -13,6 +13,8 @@ namespace mbottrilby.ViewModels
         private bool _isDragHoverTarget;
         private bool _isDragAvailableTarget;
         private bool _isRemoveDragOperation;
+        private bool _isTagDragHoverTarget;
+        private bool _isTagDragAvailableTarget;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -93,6 +95,36 @@ namespace mbottrilby.ViewModels
             }
         }
 
+        public bool IsTagDragHoverTarget
+        {
+            get => _isTagDragHoverTarget;
+            set
+            {
+                if (!SetField(ref _isTagDragHoverTarget, value))
+                {
+                    return;
+                }
+
+                OnPropertyChanged(nameof(IsTagDropActive));
+                OnPropertyChanged(nameof(TagDropHintText));
+            }
+        }
+
+        public bool IsTagDragAvailableTarget
+        {
+            get => _isTagDragAvailableTarget;
+            set
+            {
+                if (!SetField(ref _isTagDragAvailableTarget, value))
+                {
+                    return;
+                }
+
+                OnPropertyChanged(nameof(IsTagDropActive));
+                OnPropertyChanged(nameof(TagDropHintText));
+            }
+        }
+
         public string DropHintText => HasSelectedTag
             ? IsDragHoverTarget || IsDragAvailableTarget
                 ? IsRemoveDragOperation
@@ -100,6 +132,12 @@ namespace mbottrilby.ViewModels
                     : $"Drop here to add to &{SelectedTagName}"
                 : $"Drag clips here to add to &{SelectedTagName}"
             : "Search for an existing &tag";
+
+        public bool IsTagDropActive => IsTagDragHoverTarget || IsTagDragAvailableTarget;
+
+        public string TagDropHintText => IsTagDropActive
+            ? "Drop here to open tagged clips"
+            : string.Empty;
 
         public void ClearSelection()
         {
@@ -110,6 +148,8 @@ namespace mbottrilby.ViewModels
             IsDragHoverTarget = false;
             IsDragAvailableTarget = false;
             IsRemoveDragOperation = false;
+            IsTagDragHoverTarget = false;
+            IsTagDragAvailableTarget = false;
         }
 
         public void SetLoading(string tagName)
@@ -119,6 +159,8 @@ namespace mbottrilby.ViewModels
             StatusText = $"Loading clips for &{tagName}...";
             Clips = new List<TagClipEntryViewModel>();
             IsRemoveDragOperation = false;
+            IsTagDragHoverTarget = false;
+            IsTagDragAvailableTarget = false;
         }
 
         public void SetLoaded(string tagName, IReadOnlyList<TagClipEntryViewModel> clips)
@@ -128,6 +170,8 @@ namespace mbottrilby.ViewModels
             StatusText = clips.Count == 0 ? $"No clips in &{tagName} yet." : string.Empty;
             Clips = clips;
             IsRemoveDragOperation = false;
+            IsTagDragHoverTarget = false;
+            IsTagDragAvailableTarget = false;
         }
 
         public void SetFailed(string tagName, string message)
@@ -137,6 +181,8 @@ namespace mbottrilby.ViewModels
             StatusText = message;
             Clips = new List<TagClipEntryViewModel>();
             IsRemoveDragOperation = false;
+            IsTagDragHoverTarget = false;
+            IsTagDragAvailableTarget = false;
         }
 
         private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
