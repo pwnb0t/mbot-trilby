@@ -26,21 +26,23 @@ namespace mbottrilby.Tests.Services
 
             var state = store.Load();
 
-            Assert.Null(state.SelectedTagName);
+            Assert.Null(state.GetSelectedTagName("dev", 123));
             Assert.True(File.Exists(Path.Combine(_tempDirectory, "user-settings.json")));
             var json = File.ReadAllText(Path.Combine(_tempDirectory, "user-settings.json"));
             Assert.Contains("\"quickPlay\"", json);
             Assert.Contains("\"tags\"", json);
+            Assert.Contains("\"serverSelections\"", json);
         }
 
         [Fact]
-        public void Save_Persists_SelectedTag_And_QuickPlayState()
+        public void Save_Persists_SelectedTag_And_QuickPlayState_Per_Server()
         {
             var store = new UserSettingsStateStore(_tempDirectory);
             var state = UserSettingsState.CreateEmpty();
-            state.SetTrigger(1, "alpha");
-            state.SelectedTagName = "test";
             state.SelectedEnvironmentName = "test";
+            state.SetSelectedGuildId("test", 123);
+            state.SetTrigger("test", 123, 1, "alpha");
+            state.SetSelectedTagName("test", 123, "test");
             state.SetSession("test", new TrilbySessionSettings
             {
                 AccessToken = "access",
@@ -48,15 +50,22 @@ namespace mbottrilby.Tests.Services
                 ExpiresAtUtc = "2030-01-01T00:00:00Z",
                 UserId = 42,
                 Username = "tester",
-                GuildId = 123,
-                GuildName = "Guild"
+                Servers =
+                {
+                    new TrilbyGuildSettings
+                    {
+                        GuildId = 123,
+                        GuildName = "Guild"
+                    }
+                }
             });
 
             store.Save(state);
 
             var reloaded = store.Load();
-            Assert.Equal("alpha", reloaded.GetTrigger(1));
-            Assert.Equal("test", reloaded.SelectedTagName);
+            Assert.Equal(123, reloaded.GetSelectedGuildId("test"));
+            Assert.Equal("alpha", reloaded.GetTrigger("test", 123, 1));
+            Assert.Equal("test", reloaded.GetSelectedTagName("test", 123));
             Assert.Equal("test", reloaded.SelectedEnvironmentName);
             Assert.Equal("access", reloaded.GetSession("test")?.AccessToken);
             var json = File.ReadAllText(Path.Combine(_tempDirectory, "user-settings.json"));
@@ -64,8 +73,9 @@ namespace mbottrilby.Tests.Services
             Assert.Contains("\"tags\"", json);
             Assert.Contains("\"environment\"", json);
             Assert.Contains("\"auth\"", json);
+            Assert.Contains("\"serverSelections\"", json);
             Assert.Contains("\"selectedTagName\"", json);
-            Assert.DoesNotContain("\n  \"selectedTagName\":", json.Replace("\r", string.Empty), StringComparison.Ordinal);
+            Assert.Contains("\"servers\"", json);
         }
 
         public void Dispose()

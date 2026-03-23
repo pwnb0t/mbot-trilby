@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +15,8 @@ namespace mbottrilby
         private readonly Func<string> _getSelectedEnvironmentName;
         private readonly Action<string> _setSelectedEnvironmentName;
         private readonly Func<string, TrilbySessionSettings?> _getSession;
+        private readonly Func<string, long?> _getSelectedServerId;
+        private readonly Action<string, long?> _setSelectedServerId;
         private readonly Func<string, Task> _signInAsync;
         private readonly Action<string> _signOut;
         private readonly Action<string> _log;
@@ -22,6 +26,8 @@ namespace mbottrilby
             Func<string> getSelectedEnvironmentName,
             Action<string> setSelectedEnvironmentName,
             Func<string, TrilbySessionSettings?> getSession,
+            Func<string, long?> getSelectedServerId,
+            Action<string, long?> setSelectedServerId,
             Func<string, Task> signInAsync,
             Action<string> signOut,
             Action<string> log)
@@ -31,6 +37,8 @@ namespace mbottrilby
             _getSelectedEnvironmentName = getSelectedEnvironmentName;
             _setSelectedEnvironmentName = setSelectedEnvironmentName;
             _getSession = getSession;
+            _getSelectedServerId = getSelectedServerId;
+            _setSelectedServerId = setSelectedServerId;
             _signInAsync = signInAsync;
             _signOut = signOut;
             _log = log;
@@ -81,22 +89,41 @@ namespace mbottrilby
             RefreshView();
         }
 
+        private void ServerComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ServerComboBox.SelectedItem is not ServerOption option)
+            {
+                return;
+            }
+
+            _setSelectedServerId(GetSelectedEnvironmentName(), option.GuildId > 0 ? option.GuildId : null);
+            RefreshView();
+        }
+
         public void RefreshView()
         {
             var environmentName = GetSelectedEnvironmentName();
             var environment = _environments.GetByName(environmentName);
             var session = _getSession(environmentName);
             BaseUrlTextBlock.Text = $"Base URL: {environment.BaseUrl}";
+            PopulateServerOptions(environmentName, session);
             if (session is null || !session.IsAuthenticated)
             {
                 AuthStatusTextBlock.Text = "Not signed in.";
+                InfoTextBlock.Text = "Sign in to load your available servers.";
                 SignOutButton.IsEnabled = false;
+                ServerComboBox.IsEnabled = false;
+                return;
             }
-            else
-            {
-                AuthStatusTextBlock.Text = $"Signed in as {session.Username} for {session.GuildName} ({session.GuildId})";
-                SignOutButton.IsEnabled = true;
-            }
+
+            SignOutButton.IsEnabled = true;
+            ServerComboBox.IsEnabled = true;
+            var selectedServerId = _getSelectedServerId(environmentName);
+            var selectedServer = session.Servers.FirstOrDefault(server => server.GuildId == selectedServerId);
+            AuthStatusTextBlock.Text = $"Signed in as {session.Username}";
+            InfoTextBlock.Text = selectedServer is null
+                ? "Choose a server to enable Trilby for this environment."
+                : $"Current server: {selectedServer.GuildName} ({selectedServer.GuildId})";
         }
 
         private string GetSelectedEnvironmentName()
@@ -125,9 +152,40 @@ namespace mbottrilby
         private void SetBusyState(bool isBusy, string infoText)
         {
             EnvironmentComboBox.IsEnabled = !isBusy;
+            ServerComboBox.IsEnabled = !isBusy;
             SignInButton.IsEnabled = !isBusy;
             SignOutButton.IsEnabled = !isBusy;
             InfoTextBlock.Text = infoText;
+        }
+
+        private void PopulateServerOptions(string environmentName, TrilbySessionSettings? session)
+        {
+            var selectedServerId = _getSelectedServerId(environmentName);
+            var options = new List<ServerOption>();
+            if (session is not null)
+            {
+                options.AddRange(session.Servers
+                    .OrderBy(server => server.GuildName, StringComparer.OrdinalIgnoreCase)
+                    .Select(server => new ServerOption(server.GuildId, server.GuildName ?? server.GuildId.ToString())));
+            }
+
+            ServerComboBox.SelectionChanged -= ServerComboBox_SelectionChanged;
+            ServerComboBox.ItemsSource = options;
+            ServerComboBox.SelectedItem = options.FirstOrDefault(option => option.GuildId == selectedServerId);
+            ServerComboBox.SelectionChanged += ServerComboBox_SelectionChanged;
+        }
+
+        private sealed class ServerOption
+        {
+            public ServerOption(long guildId, string displayName)
+            {
+                GuildId = guildId;
+                DisplayName = displayName;
+            }
+
+            public long GuildId { get; }
+
+            public string DisplayName { get; }
         }
     }
 }

@@ -91,42 +91,6 @@ paths:
                 $ref: "#/components/schemas/HTTPValidationError"
           description: Validation Error
       summary: Complete Discord Auth
-  /v1/auth/discord/select:
-    get:
-      operationId: SelectDiscordAuthGuild
-      parameters:
-      - explode: true
-        in: query
-        name: grant
-        required: true
-        schema:
-          title: Grant
-          type: string
-        style: form
-      - explode: true
-        in: query
-        name: guild_id
-        required: true
-        schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
-          title: Guild Id
-          type: integer
-        style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              schema: {}
-          description: Successful Response
-        "422":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HTTPValidationError"
-          description: Validation Error
-      summary: Select Discord Auth Guild
   /v1/auth/refresh:
     post:
       operationId: RefreshTrilbySession
@@ -1009,6 +973,24 @@ components:
       - message
       - ok
       title: ApiErrorResponse
+    AuthenticatedTrilbyGuild:
+      example:
+        guild_name: guild_name
+        guild_id: 0
+      properties:
+        guild_id:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0.0
+          title: Guild Id
+          type: integer
+        guild_name:
+          title: Guild Name
+          type: string
+      required:
+      - guild_id
+      - guild_name
+      title: AuthenticatedTrilbyGuild
     ClipSummary:
       example:
         trigger: trigger
@@ -1403,8 +1385,11 @@ components:
         refresh_token: refresh_token
         expires_at_utc: expires_at_utc
         user_id: 0
-        guild_name: guild_name
-        guild_id: 6
+        guilds:
+        - guild_name: guild_name
+          guild_id: 0
+        - guild_name: guild_name
+          guild_id: 0
         ok: true
         token_type: Bearer
         username: username
@@ -1434,18 +1419,15 @@ components:
         username:
           title: Username
           type: string
-        guild_id:
-          format: int64
-          title: Guild Id
-          type: integer
-        guild_name:
-          title: Guild Name
-          type: string
+        guilds:
+          items:
+            $ref: "#/components/schemas/AuthenticatedTrilbyGuild"
+          title: Guilds
+          type: array
       required:
       - access_token
       - expires_at_utc
-      - guild_id
-      - guild_name
+      - guilds
       - ok
       - refresh_token
       - user_id
@@ -1455,7 +1437,11 @@ components:
       example:
         expires_at_utc: expires_at_utc
         user_id: 0
-        guild_id: 6
+        guilds:
+        - guild_name: guild_name
+          guild_id: 0
+        - guild_name: guild_name
+          guild_id: 0
         ok: true
         username: username
       properties:
@@ -1469,16 +1455,17 @@ components:
         username:
           title: Username
           type: string
-        guild_id:
-          format: int64
-          title: Guild Id
-          type: integer
         expires_at_utc:
           title: Expires At Utc
           type: string
+        guilds:
+          items:
+            $ref: "#/components/schemas/AuthenticatedTrilbyGuild"
+          title: Guilds
+          type: array
       required:
       - expires_at_utc
-      - guild_id
+      - guilds
       - ok
       - user_id
       - username

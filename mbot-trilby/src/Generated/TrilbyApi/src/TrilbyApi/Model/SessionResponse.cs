@@ -39,11 +39,10 @@ namespace TrilbyApi.Model
         /// <param name="expiresAtUtc">expiresAtUtc</param>
         /// <param name="userId">userId</param>
         /// <param name="username">username</param>
-        /// <param name="guildId">guildId</param>
-        /// <param name="guildName">guildName</param>
+        /// <param name="guilds">guilds</param>
         /// <param name="tokenType">tokenType (default to TokenTypeEnum.Bearer)</param>
         [JsonConstructor]
-        public SessionResponse(bool ok, string accessToken, string refreshToken, string expiresAtUtc, long userId, string username, long guildId, string guildName, Option<TokenTypeEnum?> tokenType = default)
+        public SessionResponse(bool ok, string accessToken, string refreshToken, string expiresAtUtc, long userId, string username, List<AuthenticatedTrilbyGuild> guilds, Option<TokenTypeEnum?> tokenType = default)
         {
             Ok = ok;
             AccessToken = accessToken;
@@ -51,8 +50,7 @@ namespace TrilbyApi.Model
             ExpiresAtUtc = expiresAtUtc;
             UserId = userId;
             Username = username;
-            GuildId = guildId;
-            GuildName = guildName;
+            Guilds = guilds;
             TokenTypeOption = tokenType;
             OnCreated();
         }
@@ -161,16 +159,10 @@ namespace TrilbyApi.Model
         public string Username { get; set; }
 
         /// <summary>
-        /// Gets or Sets GuildId
+        /// Gets or Sets Guilds
         /// </summary>
-        [JsonPropertyName("guild_id")]
-        public long GuildId { get; set; }
-
-        /// <summary>
-        /// Gets or Sets GuildName
-        /// </summary>
-        [JsonPropertyName("guild_name")]
-        public string GuildName { get; set; }
+        [JsonPropertyName("guilds")]
+        public List<AuthenticatedTrilbyGuild> Guilds { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -186,8 +178,7 @@ namespace TrilbyApi.Model
             sb.Append("  ExpiresAtUtc: ").Append(ExpiresAtUtc).Append("\n");
             sb.Append("  UserId: ").Append(UserId).Append("\n");
             sb.Append("  Username: ").Append(Username).Append("\n");
-            sb.Append("  GuildId: ").Append(GuildId).Append("\n");
-            sb.Append("  GuildName: ").Append(GuildName).Append("\n");
+            sb.Append("  Guilds: ").Append(Guilds).Append("\n");
             sb.Append("  TokenType: ").Append(TokenType).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -232,8 +223,7 @@ namespace TrilbyApi.Model
             Option<string?> expiresAtUtc = default;
             Option<long?> userId = default;
             Option<string?> username = default;
-            Option<long?> guildId = default;
-            Option<string?> guildName = default;
+            Option<List<AuthenticatedTrilbyGuild>?> guilds = default;
             Option<SessionResponse.TokenTypeEnum?> tokenType = default;
 
             while (utf8JsonReader.Read())
@@ -269,11 +259,8 @@ namespace TrilbyApi.Model
                         case "username":
                             username = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
-                            break;
-                        case "guild_name":
-                            guildName = new Option<string?>(utf8JsonReader.GetString()!);
+                        case "guilds":
+                            guilds = new Option<List<AuthenticatedTrilbyGuild>?>(JsonSerializer.Deserialize<List<AuthenticatedTrilbyGuild>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "token_type":
                             string? tokenTypeRawValue = utf8JsonReader.GetString();
@@ -304,11 +291,8 @@ namespace TrilbyApi.Model
             if (!username.IsSet)
                 throw new ArgumentException("Property is required for class SessionResponse.", nameof(username));
 
-            if (!guildId.IsSet)
-                throw new ArgumentException("Property is required for class SessionResponse.", nameof(guildId));
-
-            if (!guildName.IsSet)
-                throw new ArgumentException("Property is required for class SessionResponse.", nameof(guildName));
+            if (!guilds.IsSet)
+                throw new ArgumentException("Property is required for class SessionResponse.", nameof(guilds));
 
             if (ok.IsSet && ok.Value == null)
                 throw new ArgumentNullException(nameof(ok), "Property is not nullable for class SessionResponse.");
@@ -328,16 +312,13 @@ namespace TrilbyApi.Model
             if (username.IsSet && username.Value == null)
                 throw new ArgumentNullException(nameof(username), "Property is not nullable for class SessionResponse.");
 
-            if (guildId.IsSet && guildId.Value == null)
-                throw new ArgumentNullException(nameof(guildId), "Property is not nullable for class SessionResponse.");
-
-            if (guildName.IsSet && guildName.Value == null)
-                throw new ArgumentNullException(nameof(guildName), "Property is not nullable for class SessionResponse.");
+            if (guilds.IsSet && guilds.Value == null)
+                throw new ArgumentNullException(nameof(guilds), "Property is not nullable for class SessionResponse.");
 
             if (tokenType.IsSet && tokenType.Value == null)
                 throw new ArgumentNullException(nameof(tokenType), "Property is not nullable for class SessionResponse.");
 
-            return new SessionResponse(ok.Value!.Value!, accessToken.Value!, refreshToken.Value!, expiresAtUtc.Value!, userId.Value!.Value!, username.Value!, guildId.Value!.Value!, guildName.Value!, tokenType);
+            return new SessionResponse(ok.Value!.Value!, accessToken.Value!, refreshToken.Value!, expiresAtUtc.Value!, userId.Value!.Value!, username.Value!, guilds.Value!, tokenType);
         }
 
         /// <summary>
@@ -376,8 +357,8 @@ namespace TrilbyApi.Model
             if (sessionResponse.Username == null)
                 throw new ArgumentNullException(nameof(sessionResponse.Username), "Property is required for class SessionResponse.");
 
-            if (sessionResponse.GuildName == null)
-                throw new ArgumentNullException(nameof(sessionResponse.GuildName), "Property is required for class SessionResponse.");
+            if (sessionResponse.Guilds == null)
+                throw new ArgumentNullException(nameof(sessionResponse.Guilds), "Property is required for class SessionResponse.");
 
             writer.WriteBoolean("ok", sessionResponse.Ok);
 
@@ -391,10 +372,8 @@ namespace TrilbyApi.Model
 
             writer.WriteString("username", sessionResponse.Username);
 
-            writer.WriteNumber("guild_id", sessionResponse.GuildId);
-
-            writer.WriteString("guild_name", sessionResponse.GuildName);
-
+            writer.WritePropertyName("guilds");
+            JsonSerializer.Serialize(writer, sessionResponse.Guilds, jsonSerializerOptions);
             var tokenTypeRawValue = SessionResponse.TokenTypeEnumToJsonValue(sessionResponse.TokenTypeOption.Value!.Value);
             writer.WriteString("token_type", tokenTypeRawValue);
         }

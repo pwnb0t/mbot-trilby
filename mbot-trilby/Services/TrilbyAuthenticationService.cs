@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,19 +44,21 @@ namespace mbottrilby.Services
             try
             {
                 var query = context.Request.QueryString;
-                var session = ParseSession(query);
+                var callback = ParseCallback(query);
                 var errorText = GetErrorText(query);
                 await WriteLoopbackResponseAsync(
                     context.Response,
-                    success: session is not null,
+                    success: callback is not null,
                     errorText: errorText).ConfigureAwait(false);
-                if (session is null)
+                if (callback is null)
                 {
                     var errorMessage = errorText ?? "Authentication failed.";
                     throw new InvalidOperationException(errorMessage);
                 }
 
-                return session;
+                var sessionSummary = await GetSessionSummaryAsync(baseUrl, callback.AccessToken ?? string.Empty, cancellationToken)
+                    .ConfigureAwait(false);
+                return callback.ApplySummary(sessionSummary);
             }
             finally
             {
@@ -104,7 +110,7 @@ namespace mbottrilby.Services
             return expiresAt <= DateTimeOffset.UtcNow.AddMinutes(1);
         }
 
-        private static TrilbySessionSettings? ParseSession(NameValueCollection query)
+        private static TrilbySignInCallback? ParseCallback(NameValueCollection query)
         {
             var status = query["status"];
             if (!string.Equals(status, "ok", StringComparison.OrdinalIgnoreCase))
@@ -112,21 +118,18 @@ namespace mbottrilby.Services
                 return null;
             }
 
-            if (!long.TryParse(query["user_id"], out var userId) ||
-                !long.TryParse(query["guild_id"], out var guildId))
+            if (!long.TryParse(query["user_id"], out var userId))
             {
-                throw new InvalidOperationException("Authentication callback did not include valid user or guild ids.");
+                throw new InvalidOperationException("Authentication callback did not include a valid user id.");
             }
 
-            return new TrilbySessionSettings
+            return new TrilbySignInCallback
             {
                 AccessToken = query["access_token"],
                 RefreshToken = query["refresh_token"],
                 ExpiresAtUtc = query["expires_at_utc"],
                 UserId = userId,
-                Username = query["username"],
-                GuildId = guildId,
-                GuildName = query["guild_name"]
+                Username = query["username"]
             };
         }
 
@@ -165,6 +168,30 @@ namespace mbottrilby.Services
             response.OutputStream.Close();
         }
 
+        private static async Task<SessionSummaryPayload> GetSessionSummaryAsync(
+            string baseUrl,
+            string accessToken,
+            CancellationToken cancellationToken)
+        {
+            using var httpClient = new HttpClient { BaseAddress = new Uri(baseUrl, UriKind.Absolute) };
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/v1/auth/me");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException($"Authentication summary failed: {response.StatusCode} {responseText}");
+            }
+
+            var payload = JsonSerializer.Deserialize<SessionSummaryPayload>(responseText, JsonOptions);
+            if (payload is null)
+            {
+                throw new InvalidOperationException("Authentication summary failed: empty response.");
+            }
+
+            return payload;
+        }
+
         private static class LoopbackPortAllocator
         {
             public static int GetFreePort()
@@ -177,15 +204,52 @@ namespace mbottrilby.Services
             }
         }
 
-        private sealed class RefreshSessionPayload
+        private sealed class TrilbySignInCallback
         {
             public string? AccessToken { get; set; }
             public string? RefreshToken { get; set; }
             public string? ExpiresAtUtc { get; set; }
             public long UserId { get; set; }
             public string? Username { get; set; }
-            public long GuildId { get; set; }
-            public string? GuildName { get; set; }
+
+            public TrilbySessionSettings ApplySummary(SessionSummaryPayload summary)
+            {
+                return new TrilbySessionSettings
+                {
+                    AccessToken = AccessToken,
+                    RefreshToken = RefreshToken,
+                    ExpiresAtUtc = ExpiresAtUtc,
+                    UserId = summary.UserId > 0 ? summary.UserId : UserId,
+                    Username = summary.Username ?? Username,
+                    Servers = summary.Guilds?
+                        .Where(guild => guild.GuildId > 0)
+                        .Select(guild => guild.ToSettings())
+                        .OrderBy(guild => guild.GuildName, StringComparer.OrdinalIgnoreCase)
+                        .ToList()
+                        ?? new List<TrilbyGuildSettings>()
+                };
+            }
+        }
+
+        private sealed class RefreshSessionPayload
+        {
+            [JsonPropertyName("access_token")]
+            public string? AccessToken { get; set; }
+
+            [JsonPropertyName("refresh_token")]
+            public string? RefreshToken { get; set; }
+
+            [JsonPropertyName("expires_at_utc")]
+            public string? ExpiresAtUtc { get; set; }
+
+            [JsonPropertyName("user_id")]
+            public long UserId { get; set; }
+
+            [JsonPropertyName("username")]
+            public string? Username { get; set; }
+
+            [JsonPropertyName("guilds")]
+            public List<GuildPayload>? Guilds { get; set; }
 
             public TrilbySessionSettings ToSettings()
             {
@@ -196,6 +260,43 @@ namespace mbottrilby.Services
                     ExpiresAtUtc = ExpiresAtUtc,
                     UserId = UserId,
                     Username = Username,
+                    Servers = Guilds?
+                        .Where(guild => guild.GuildId > 0)
+                        .Select(guild => guild.ToSettings())
+                        .OrderBy(guild => guild.GuildName, StringComparer.OrdinalIgnoreCase)
+                        .ToList()
+                        ?? new List<TrilbyGuildSettings>()
+                };
+            }
+        }
+
+        private sealed class SessionSummaryPayload
+        {
+            [JsonPropertyName("user_id")]
+            public long UserId { get; set; }
+
+            [JsonPropertyName("username")]
+            public string? Username { get; set; }
+
+            [JsonPropertyName("expires_at_utc")]
+            public string? ExpiresAtUtc { get; set; }
+
+            [JsonPropertyName("guilds")]
+            public List<GuildPayload>? Guilds { get; set; }
+        }
+
+        private sealed class GuildPayload
+        {
+            [JsonPropertyName("guild_id")]
+            public long GuildId { get; set; }
+
+            [JsonPropertyName("guild_name")]
+            public string? GuildName { get; set; }
+
+            public TrilbyGuildSettings ToSettings()
+            {
+                return new TrilbyGuildSettings
+                {
                     GuildId = GuildId,
                     GuildName = GuildName
                 };

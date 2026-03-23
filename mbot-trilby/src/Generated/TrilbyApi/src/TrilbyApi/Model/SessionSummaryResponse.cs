@@ -36,16 +36,16 @@ namespace TrilbyApi.Model
         /// <param name="ok">ok</param>
         /// <param name="userId">userId</param>
         /// <param name="username">username</param>
-        /// <param name="guildId">guildId</param>
         /// <param name="expiresAtUtc">expiresAtUtc</param>
+        /// <param name="guilds">guilds</param>
         [JsonConstructor]
-        public SessionSummaryResponse(bool ok, long userId, string username, long guildId, string expiresAtUtc)
+        public SessionSummaryResponse(bool ok, long userId, string username, string expiresAtUtc, List<AuthenticatedTrilbyGuild> guilds)
         {
             Ok = ok;
             UserId = userId;
             Username = username;
-            GuildId = guildId;
             ExpiresAtUtc = expiresAtUtc;
+            Guilds = guilds;
             OnCreated();
         }
 
@@ -70,16 +70,16 @@ namespace TrilbyApi.Model
         public string Username { get; set; }
 
         /// <summary>
-        /// Gets or Sets GuildId
-        /// </summary>
-        [JsonPropertyName("guild_id")]
-        public long GuildId { get; set; }
-
-        /// <summary>
         /// Gets or Sets ExpiresAtUtc
         /// </summary>
         [JsonPropertyName("expires_at_utc")]
         public string ExpiresAtUtc { get; set; }
+
+        /// <summary>
+        /// Gets or Sets Guilds
+        /// </summary>
+        [JsonPropertyName("guilds")]
+        public List<AuthenticatedTrilbyGuild> Guilds { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -92,8 +92,8 @@ namespace TrilbyApi.Model
             sb.Append("  Ok: ").Append(Ok).Append("\n");
             sb.Append("  UserId: ").Append(UserId).Append("\n");
             sb.Append("  Username: ").Append(Username).Append("\n");
-            sb.Append("  GuildId: ").Append(GuildId).Append("\n");
             sb.Append("  ExpiresAtUtc: ").Append(ExpiresAtUtc).Append("\n");
+            sb.Append("  Guilds: ").Append(Guilds).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -134,8 +134,8 @@ namespace TrilbyApi.Model
             Option<bool?> ok = default;
             Option<long?> userId = default;
             Option<string?> username = default;
-            Option<long?> guildId = default;
             Option<string?> expiresAtUtc = default;
+            Option<List<AuthenticatedTrilbyGuild>?> guilds = default;
 
             while (utf8JsonReader.Read())
             {
@@ -161,11 +161,11 @@ namespace TrilbyApi.Model
                         case "username":
                             username = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
-                            break;
                         case "expires_at_utc":
                             expiresAtUtc = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "guilds":
+                            guilds = new Option<List<AuthenticatedTrilbyGuild>?>(JsonSerializer.Deserialize<List<AuthenticatedTrilbyGuild>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         default:
                             break;
@@ -182,11 +182,11 @@ namespace TrilbyApi.Model
             if (!username.IsSet)
                 throw new ArgumentException("Property is required for class SessionSummaryResponse.", nameof(username));
 
-            if (!guildId.IsSet)
-                throw new ArgumentException("Property is required for class SessionSummaryResponse.", nameof(guildId));
-
             if (!expiresAtUtc.IsSet)
                 throw new ArgumentException("Property is required for class SessionSummaryResponse.", nameof(expiresAtUtc));
+
+            if (!guilds.IsSet)
+                throw new ArgumentException("Property is required for class SessionSummaryResponse.", nameof(guilds));
 
             if (ok.IsSet && ok.Value == null)
                 throw new ArgumentNullException(nameof(ok), "Property is not nullable for class SessionSummaryResponse.");
@@ -197,13 +197,13 @@ namespace TrilbyApi.Model
             if (username.IsSet && username.Value == null)
                 throw new ArgumentNullException(nameof(username), "Property is not nullable for class SessionSummaryResponse.");
 
-            if (guildId.IsSet && guildId.Value == null)
-                throw new ArgumentNullException(nameof(guildId), "Property is not nullable for class SessionSummaryResponse.");
-
             if (expiresAtUtc.IsSet && expiresAtUtc.Value == null)
                 throw new ArgumentNullException(nameof(expiresAtUtc), "Property is not nullable for class SessionSummaryResponse.");
 
-            return new SessionSummaryResponse(ok.Value!.Value!, userId.Value!.Value!, username.Value!, guildId.Value!.Value!, expiresAtUtc.Value!);
+            if (guilds.IsSet && guilds.Value == null)
+                throw new ArgumentNullException(nameof(guilds), "Property is not nullable for class SessionSummaryResponse.");
+
+            return new SessionSummaryResponse(ok.Value!.Value!, userId.Value!.Value!, username.Value!, expiresAtUtc.Value!, guilds.Value!);
         }
 
         /// <summary>
@@ -236,15 +236,19 @@ namespace TrilbyApi.Model
             if (sessionSummaryResponse.ExpiresAtUtc == null)
                 throw new ArgumentNullException(nameof(sessionSummaryResponse.ExpiresAtUtc), "Property is required for class SessionSummaryResponse.");
 
+            if (sessionSummaryResponse.Guilds == null)
+                throw new ArgumentNullException(nameof(sessionSummaryResponse.Guilds), "Property is required for class SessionSummaryResponse.");
+
             writer.WriteBoolean("ok", sessionSummaryResponse.Ok);
 
             writer.WriteNumber("user_id", sessionSummaryResponse.UserId);
 
             writer.WriteString("username", sessionSummaryResponse.Username);
 
-            writer.WriteNumber("guild_id", sessionSummaryResponse.GuildId);
-
             writer.WriteString("expires_at_utc", sessionSummaryResponse.ExpiresAtUtc);
+
+            writer.WritePropertyName("guilds");
+            JsonSerializer.Serialize(writer, sessionSummaryResponse.Guilds, jsonSerializerOptions);
         }
     }
 }

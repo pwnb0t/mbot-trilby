@@ -110,9 +110,10 @@ namespace mbottrilby
             _viewModel.QuickPlaySlots = _quickPlaySlots;
             _viewModel.CurrentIntroSlot = _currentIntroSlot;
             _viewModel.TagWidget = _tagWidget;
-            if (!string.IsNullOrWhiteSpace(_userSettings.SelectedTagName))
+            var initialSelectedTagName = GetCurrentSelectedTagName();
+            if (!string.IsNullOrWhiteSpace(initialSelectedTagName))
             {
-                _tagWidget.SetLoading(_userSettings.SelectedTagName);
+                _tagWidget.SetLoading(initialSelectedTagName);
             }
             _diagnostics = new OverlayDiagnostics(_logFilePath);
             _overlayController = new OverlayController(
@@ -333,7 +334,7 @@ namespace mbottrilby
         private void ClearSelectedTagButton_Click(object sender, RoutedEventArgs e)
         {
             _tagWidget.ClearSelection();
-            _userSettings.SelectedTagName = null;
+            SetCurrentSelectedTagName(null);
             SaveUserSettings();
         }
 
@@ -717,7 +718,7 @@ namespace mbottrilby
                     .Select(trigger => new TagClipEntryViewModel(trigger, catalog.TagName))
                     .ToArray();
                 _tagWidget.SetLoaded(catalog.TagName, clips);
-                _userSettings.SelectedTagName = catalog.TagName;
+                SetCurrentSelectedTagName(catalog.TagName);
                 SaveUserSettings();
                 Log($"Loaded {clips.Length} clips for &{catalog.TagName}.");
             }
@@ -1240,9 +1241,12 @@ namespace mbottrilby
 
         private void UpdateQuickPlaySlots()
         {
+            var selectedGuildId = GetSelectedServerId();
             foreach (var slot in _quickPlaySlots)
             {
-                slot.Trigger = _userSettings.GetTrigger(slot.SlotIndex);
+                slot.Trigger = selectedGuildId is > 0
+                    ? _userSettings.GetTrigger(GetSelectedEnvironmentName(), selectedGuildId.Value, slot.SlotIndex)
+                    : null;
                 slot.IsDragHoverTarget = _clipAssignmentDragActive && _quickPlayDragHoverSlot == slot.SlotIndex;
                 slot.IsDragAvailableTarget = _clipAssignmentDragActive && _quickPlayDragHoverSlot != slot.SlotIndex;
             }
@@ -1274,9 +1278,15 @@ namespace mbottrilby
         {
             if (!await EnsureAuthenticatedApiClientAsync(reason))
             {
-                UpdateClipCountText(0, "Not signed in");
-                _viewModel.TopStatsStatusText = "Not signed in";
-                _viewModel.RecentStatsStatusText = "Not signed in";
+                var status = GetInactiveServerStatusText();
+                UpdateClipCountText(0, status);
+                _viewModel.TopStatsStatusText = status;
+                _viewModel.RecentStatsStatusText = status;
+                _allClipTriggers.Clear();
+                _allTagNames.Clear();
+                _clipSearchState.SetSource(Array.Empty<string>(), Array.Empty<string>());
+                RenderSearchState();
+                ApplySelectedServerState();
                 return;
             }
 
@@ -1316,6 +1326,7 @@ namespace mbottrilby
                 {
                     Log($"Session refresh failed for {environmentName}: {ex.Message}");
                     _userSettings.SetSession(environmentName, null);
+                    _userSettings.SetSelectedGuildId(environmentName, null);
                     SaveUserSettings();
                     _trilbyApiClient = null;
                     _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_trilbyApiClient);
@@ -1324,10 +1335,19 @@ namespace mbottrilby
                 }
             }
 
+            EnsureSelectedServerIsValid(environmentName, session);
+            var selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
+            if (selectedGuildId is null or <= 0)
+            {
+                _trilbyApiClient = null;
+                _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_trilbyApiClient);
+                return false;
+            }
+
             _trilbyApiClient = new TrilbyApiClientService(
                 environment.BaseUrl,
                 session.AccessToken ?? string.Empty,
-                session.GuildId);
+                selectedGuildId.Value);
             _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_trilbyApiClient);
             return true;
         }
@@ -1356,6 +1376,8 @@ namespace mbottrilby
                 getSelectedEnvironmentName: GetSelectedEnvironmentName,
                 setSelectedEnvironmentName: SetSelectedEnvironmentName,
                 getSession: environmentName => _userSettings.GetSession(environmentName),
+                getSelectedServerId: environmentName => _userSettings.GetSelectedGuildId(environmentName),
+                setSelectedServerId: SetSelectedServerId,
                 signInAsync: SignInToEnvironmentAsync,
                 signOut: SignOutEnvironment,
                 log: Log);
@@ -1368,8 +1390,9 @@ namespace mbottrilby
             var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
             var session = await _trilbyAuthenticationService.SignInAsync(environment.BaseUrl);
             _userSettings.SetSession(environmentName, session);
+            EnsureSelectedServerIsValid(environmentName, session);
             SaveUserSettings();
-            Log($"Signed in to {environmentName} as {session.Username} for guild {session.GuildName} ({session.GuildId}).");
+            Log($"Signed in to {environmentName} as {session.Username}.");
             await InitializeAuthenticatedStateAsync($"{environmentName} sign in");
             _settingsWindow?.RefreshView();
         }
@@ -1377,6 +1400,7 @@ namespace mbottrilby
         private void SignOutEnvironment(string environmentName)
         {
             _userSettings.SetSession(environmentName, null);
+            _userSettings.SetSelectedGuildId(environmentName, null);
             SaveUserSettings();
             if (string.Equals(GetSelectedEnvironmentName(), environmentName, StringComparison.OrdinalIgnoreCase))
             {
@@ -1386,6 +1410,7 @@ namespace mbottrilby
                 UpdateClipCountText(0, "Signed out");
                 _viewModel.TopStatsStatusText = "Signed out";
                 _viewModel.RecentStatsStatusText = "Signed out";
+                ApplySelectedServerState();
             }
 
             Log($"Signed out of {environmentName}.");
@@ -1400,14 +1425,106 @@ namespace mbottrilby
         private void SetSelectedEnvironmentName(string environmentName)
         {
             _userSettings.SelectedEnvironmentName = environmentName;
+            EnsureSelectedServerIsValid(environmentName, _userSettings.GetSession(environmentName));
             SaveUserSettings();
             Log($"Selected environment changed to {environmentName}.");
+            ApplySelectedServerState();
             _ = InitializeAuthenticatedStateAsync($"{environmentName} selected");
         }
 
         private void SetQuickPlayTrigger(int slotIndex, string trigger)
         {
-            _userSettings.SetTrigger(slotIndex, trigger);
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is null or <= 0)
+            {
+                return;
+            }
+
+            _userSettings.SetTrigger(GetSelectedEnvironmentName(), selectedGuildId.Value, slotIndex, trigger);
+        }
+
+        private long? GetSelectedServerId()
+        {
+            return _userSettings.GetSelectedGuildId(GetSelectedEnvironmentName());
+        }
+
+        private string? GetCurrentSelectedTagName()
+        {
+            var selectedGuildId = GetSelectedServerId();
+            return selectedGuildId is > 0
+                ? _userSettings.GetSelectedTagName(GetSelectedEnvironmentName(), selectedGuildId.Value)
+                : null;
+        }
+
+        private void SetCurrentSelectedTagName(string? tagName)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0)
+            {
+                return;
+            }
+
+            _userSettings.SetSelectedTagName(GetSelectedEnvironmentName(), selectedGuildId.Value, tagName);
+        }
+
+        private void SetSelectedServerId(string environmentName, long? guildId)
+        {
+            _userSettings.SetSelectedGuildId(environmentName, guildId);
+            SaveUserSettings();
+            Log(guildId is > 0
+                ? $"Selected server for {environmentName}: {guildId}"
+                : $"Cleared selected server for {environmentName}.");
+            if (string.Equals(GetSelectedEnvironmentName(), environmentName, StringComparison.OrdinalIgnoreCase))
+            {
+                ApplySelectedServerState();
+                _ = InitializeAuthenticatedStateAsync($"{environmentName} server changed");
+            }
+
+            _settingsWindow?.RefreshView();
+        }
+
+        private void ApplySelectedServerState()
+        {
+            UpdateQuickPlaySlots();
+            var selectedTagName = GetCurrentSelectedTagName();
+            if (!string.IsNullOrWhiteSpace(selectedTagName))
+            {
+                _tagWidget.SetLoading(selectedTagName);
+            }
+            else
+            {
+                _tagWidget.ClearSelection();
+            }
+        }
+
+        private void EnsureSelectedServerIsValid(string environmentName, TrilbySessionSettings? session)
+        {
+            var selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
+            if (session is null || !session.IsAuthenticated || session.Servers.Count == 0)
+            {
+                _userSettings.SetSelectedGuildId(environmentName, null);
+                return;
+            }
+
+            if (selectedGuildId is > 0 && session.Servers.Any(server => server.GuildId == selectedGuildId.Value))
+            {
+                return;
+            }
+
+            _userSettings.SetSelectedGuildId(
+                environmentName,
+                session.Servers.Count == 1 ? session.Servers[0].GuildId : null);
+        }
+
+        private string GetInactiveServerStatusText()
+        {
+            var session = _userSettings.GetSession(GetSelectedEnvironmentName());
+            if (session is null || !session.IsAuthenticated)
+            {
+                return "Not signed in";
+            }
+
+            return "No server selected";
         }
 
         private static int GetQuickPlaySlotIndex(object sender)

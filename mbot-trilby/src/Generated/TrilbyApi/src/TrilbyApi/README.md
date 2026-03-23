@@ -6,12 +6,12 @@ Create a config.yaml file similar to what is below, then run the following power
 
 ```yaml
 generatorName: csharp
-inputSpec: ../openapi/trilby.v1.yaml
+inputSpec: /work/mbot/openapi/trilby.v1.yaml
 outputDir: out
 
 # https://openapi-generator.tech/docs/generators/csharp
 additionalProperties:
-  packageGuid: '{6CF3C69B-3F7D-44A6-81DE-8CB9C08B2EE2}'
+  packageGuid: '{8B041BF5-773F-4AB7-9ACA-8AAF1E8D13AA}'
 
 # https://openapi-generator.tech/docs/integrations/#github-integration
 # gitHost:

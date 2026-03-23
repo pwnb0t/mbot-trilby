@@ -3,11 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Trilby Settings"
         Width="440"
-        Height="320"
+        Height="360"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Grid Margin="16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -39,12 +40,23 @@
             <TextBlock x:Name="AuthStatusTextBlock" TextWrapping="Wrap" />
         </StackPanel>
 
-        <TextBlock Grid.Row="3"
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="Server"
+                       Width="110"
+                       VerticalAlignment="Center" />
+            <ComboBox x:Name="ServerComboBox"
+                      Width="260"
+                      DisplayMemberPath="DisplayName"
+                      SelectedValuePath="GuildId"
+                      SelectionChanged="ServerComboBox_SelectionChanged" />
+        </StackPanel>
+
+        <TextBlock Grid.Row="4"
                    x:Name="InfoTextBlock"
                    TextWrapping="Wrap"
                    Foreground="DimGray" />
 
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="SignInButton" Width="110" Margin="0,0,8,0" Content="Sign In" Click="SignInButton_Click" />
             <Button x:Name="SignOutButton" Width="110" Margin="0,0,8,0" Content="Sign Out" Click="SignOutButton_Click" />
             <Button Width="110" Content="Close" Click="CloseButton_Click" />
