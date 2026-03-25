@@ -83,8 +83,12 @@ namespace mbottrilby
         private bool _hotkeyRegistered;
         private bool _exitRequested;
         private TrilbyApiClientService? _trilbyApiClient;
+        private TrilbyEventsClientService? _trilbyEventsClient;
         private ClipPlaybackCoordinator? _clipPlaybackCoordinator;
         private OverlayDiagnostics? _diagnostics;
+        private string? _eventsClientBaseUrl;
+        private string? _eventsClientAccessToken;
+        private long? _eventsClientGuildId;
         private readonly OverlayController _overlayController;
         private readonly DispatcherTimer _recentClipTimeRefreshTimer;
         private TrayController? _trayController;
@@ -729,6 +733,9 @@ namespace mbottrilby
             _recentClipTimeRefreshTimer.Stop();
             _recentClipTimeRefreshTimer.Tick -= RecentClipTimeRefreshTimer_Tick;
 
+            _trilbyEventsClient?.StopAsync().GetAwaiter().GetResult();
+            _trilbyEventsClient?.Dispose();
+            _trilbyEventsClient = null;
             _trilbyApiClient?.Dispose();
             _trilbyApiClient = null;
             _clipPlaybackCoordinator = null;
@@ -1430,6 +1437,49 @@ namespace mbottrilby
             }
         }
 
+        private async System.Threading.Tasks.Task OnClipPlayedEventAsync(TrilbyEventsClientService.ClipPlayedEvent clipPlayedEvent)
+        {
+            await Dispatcher.InvokeAsync(() => ApplyClipPlayedEvent(clipPlayedEvent));
+        }
+
+        private void ApplyClipPlayedEvent(TrilbyEventsClientService.ClipPlayedEvent clipPlayedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipPlayedEvent.GuildId)
+            {
+                return;
+            }
+
+            if (!_recentStatsGuildWide)
+            {
+                var session = _userSettings.GetSession(GetSelectedEnvironmentName());
+                if (session?.UserId is not > 0 || session.UserId != clipPlayedEvent.RequesterUserId)
+                {
+                    return;
+                }
+            }
+
+            if (!_recentStatsIncludeRandom && clipPlayedEvent.IsRandom)
+            {
+                return;
+            }
+
+            var rows = _viewModel.RecentClipStats.ToList();
+            rows.Insert(
+                0,
+                new RecentClipEntryViewModel(
+                    clipPlayedEvent.Trigger,
+                    clipPlayedEvent.Trigger,
+                    clipPlayedEvent.RequesterDisplayName,
+                    clipPlayedEvent.PlayedAtUtc,
+                    FormatTimeAgo(clipPlayedEvent.PlayedAtUtc),
+                    clipPlayedEvent.IsRandom));
+
+            _viewModel.RecentClipStats = rows.Take(RecentClipStatsLimit).ToArray();
+            _viewModel.RecentStatsStatusText = string.Empty;
+            UpdateRecentClipTimeTexts();
+        }
+
         private void UpdateQuickPlaySlots()
         {
             var selectedGuildId = GetSelectedServerId();
@@ -1473,6 +1523,7 @@ namespace mbottrilby
         {
             if (!await EnsureAuthenticatedApiClientAsync(reason))
             {
+                await StopEventsClientAsync();
                 var status = GetInactiveServerStatusText();
                 UpdateClipCountText(0, status);
                 _viewModel.TopStatsStatusText = status;
@@ -1487,6 +1538,7 @@ namespace mbottrilby
                 return;
             }
 
+            await EnsureEventsClientAsync(reason);
             _ = InitializeHealthCheckAsync();
             _ = LoadClipCatalogAsync(reason);
             _ = LoadTagCatalogAsync(reason);
@@ -1549,6 +1601,58 @@ namespace mbottrilby
             return true;
         }
 
+        private async System.Threading.Tasks.Task EnsureEventsClientAsync(string reason)
+        {
+            var environmentName = GetSelectedEnvironmentName();
+            var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
+            var session = _userSettings.GetSession(environmentName);
+            var selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
+
+            if (session is null ||
+                !session.IsAuthenticated ||
+                string.IsNullOrWhiteSpace(session.AccessToken) ||
+                selectedGuildId is null or <= 0)
+            {
+                await StopEventsClientAsync();
+                return;
+            }
+
+            if (_trilbyEventsClient is not null &&
+                string.Equals(_eventsClientBaseUrl, environment.BaseUrl, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(_eventsClientAccessToken, session.AccessToken, StringComparison.Ordinal) &&
+                _eventsClientGuildId == selectedGuildId.Value)
+            {
+                return;
+            }
+
+            await StopEventsClientAsync();
+            _trilbyEventsClient = new TrilbyEventsClientService(
+                environment.BaseUrl,
+                session.AccessToken,
+                selectedGuildId.Value,
+                OnClipPlayedEventAsync,
+                log: message => Log(message));
+            _eventsClientBaseUrl = environment.BaseUrl;
+            _eventsClientAccessToken = session.AccessToken;
+            _eventsClientGuildId = selectedGuildId.Value;
+            Log($"Starting Trilby events stream ({reason})...");
+            _trilbyEventsClient.Start();
+        }
+
+        private async System.Threading.Tasks.Task StopEventsClientAsync()
+        {
+            if (_trilbyEventsClient is not null)
+            {
+                await _trilbyEventsClient.StopAsync();
+                _trilbyEventsClient.Dispose();
+                _trilbyEventsClient = null;
+            }
+
+            _eventsClientBaseUrl = null;
+            _eventsClientAccessToken = null;
+            _eventsClientGuildId = null;
+        }
+
         private async System.Threading.Tasks.Task ShowOverlayIfAuthenticatedAsync(OverlayShowSource source)
         {
             if (!await EnsureAuthenticatedApiClientAsync("show overlay"))
@@ -1601,6 +1705,7 @@ namespace mbottrilby
             SaveUserSettings();
             if (string.Equals(GetSelectedEnvironmentName(), environmentName, StringComparison.OrdinalIgnoreCase))
             {
+                StopEventsClientAsync().GetAwaiter().GetResult();
                 _trilbyApiClient = null;
                 _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_trilbyApiClient);
                 _overlayController.Hide("Overlay hidden after sign out.");
