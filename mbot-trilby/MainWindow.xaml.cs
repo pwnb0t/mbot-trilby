@@ -227,7 +227,6 @@ namespace mbottrilby
             if (result.Success)
             {
                 _ = LoadTopClipStatsAsync("after random play");
-                _ = LoadRecentClipStatsAsync("after random play");
             }
         }
 
@@ -888,7 +887,6 @@ namespace mbottrilby
             if (result.Success)
             {
                 _ = LoadTopClipStatsAsync("after clip play");
-                _ = LoadRecentClipStatsAsync("after clip play");
             }
 
             return result.Success;
@@ -1449,6 +1447,10 @@ namespace mbottrilby
             {
                 return;
             }
+
+            Log(
+                $"Received clip_played event: trigger={clipPlayedEvent.Trigger} mode={clipPlayedEvent.Mode} " +
+                $"server={clipPlayedEvent.GuildId} player={clipPlayedEvent.RequesterDisplayName}");
 
             if (!_recentStatsGuildWide)
             {
