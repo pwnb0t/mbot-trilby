@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace mbottrilby.ViewModels
@@ -14,7 +16,9 @@ namespace mbottrilby.ViewModels
         private string _startOffsetText = string.Empty;
         private string _clipLengthText = string.Empty;
         private string _addedByText = string.Empty;
-        private bool _hasClip;
+        private string _tagsText = string.Empty;
+        private string _tagClipListText = string.Empty;
+        private DetailContentKind _contentKind = DetailContentKind.None;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -60,11 +64,21 @@ namespace mbottrilby.ViewModels
             private set => SetField(ref _addedByText, value);
         }
 
-        public bool HasClip
+        public string TagsText
         {
-            get => _hasClip;
-            private set => SetField(ref _hasClip, value);
+            get => _tagsText;
+            private set => SetField(ref _tagsText, value);
         }
+
+        public string TagClipListText
+        {
+            get => _tagClipListText;
+            private set => SetField(ref _tagClipListText, value);
+        }
+
+        public bool HasClip => _contentKind == DetailContentKind.Clip;
+
+        public bool HasTag => _contentKind == DetailContentKind.Tag;
 
         public void ShowPlaceholder()
         {
@@ -75,10 +89,18 @@ namespace mbottrilby.ViewModels
             StartOffsetText = string.Empty;
             ClipLengthText = string.Empty;
             AddedByText = string.Empty;
-            HasClip = false;
+            TagsText = string.Empty;
+            TagClipListText = string.Empty;
+            SetContentKind(DetailContentKind.None);
         }
 
-        public void ShowClip(string trigger, string? sourceUrl, string? startOffsetText, string? clipLengthText, string? addedBy)
+        public void ShowClip(
+            string trigger,
+            string? sourceUrl,
+            string? startOffsetText,
+            string? clipLengthText,
+            string? addedBy,
+            IReadOnlyList<string> tagNames)
         {
             TitleText = "Clip Details";
             StatusText = string.Empty;
@@ -87,7 +109,25 @@ namespace mbottrilby.ViewModels
             StartOffsetText = startOffsetText ?? string.Empty;
             ClipLengthText = clipLengthText ?? string.Empty;
             AddedByText = string.IsNullOrWhiteSpace(addedBy) ? string.Empty : addedBy.Trim();
-            HasClip = true;
+            TagsText = tagNames.Count == 0 ? "(none)" : string.Join(", ", tagNames.Select(tagName => $"&{tagName}"));
+            TagClipListText = string.Empty;
+            SetContentKind(DetailContentKind.Clip);
+        }
+
+        public void ShowTag(string tagName, IReadOnlyList<string> clipTriggers)
+        {
+            TitleText = "Tag Details";
+            StatusText = string.Empty;
+            TriggerText = $"&{tagName}";
+            SourceUrlText = string.Empty;
+            StartOffsetText = string.Empty;
+            ClipLengthText = string.Empty;
+            AddedByText = string.Empty;
+            TagsText = string.Empty;
+            TagClipListText = clipTriggers.Count == 0
+                ? "(no clips)"
+                : string.Join(", ", clipTriggers);
+            SetContentKind(DetailContentKind.Tag);
         }
 
         private static string TrimSourceUrl(string? sourceUrl)
@@ -103,7 +143,19 @@ namespace mbottrilby.ViewModels
                 return trimmed;
             }
 
-            return trimmed[..(SourceUrlMaxLength - 1)] + "…";
+            return trimmed[..(SourceUrlMaxLength - 3)] + "...";
+        }
+
+        private void SetContentKind(DetailContentKind contentKind)
+        {
+            if (_contentKind == contentKind)
+            {
+                return;
+            }
+
+            _contentKind = contentKind;
+            OnPropertyChanged(nameof(HasClip));
+            OnPropertyChanged(nameof(HasTag));
         }
 
         private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
@@ -114,12 +166,25 @@ namespace mbottrilby.ViewModels
             }
 
             field = value;
-            if (propertyName is not null)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-
+            OnPropertyChanged(propertyName);
             return true;
         }
+
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            if (propertyName is null)
+            {
+                return;
+            }
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    internal enum DetailContentKind
+    {
+        None,
+        Clip,
+        Tag,
     }
 }

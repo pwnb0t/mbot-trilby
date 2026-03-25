@@ -417,7 +417,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="500" />
                             <RowDefinition Height="*" />
-                            <RowDefinition Height="168" />
+                            <RowDefinition Height="208" />
                         </Grid.RowDefinitions>
 
                         <controls:SearchPanelControl x:Name="SearchPanel"
@@ -428,7 +428,7 @@
 
                         <Border x:Name="ClipDetailPanel"
                                 Grid.Row="2"
-                                Height="168"
+                                Height="208"
                                 VerticalAlignment="Bottom"
                                 Background="{StaticResource PanelBackgroundBrush}"
                                 BorderBrush="{StaticResource PanelBorderBrush}"
@@ -469,15 +469,16 @@
                                     <Grid>
                                         <Grid.Style>
                                             <Style TargetType="Grid">
-                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ClipDetail.HasClip}" Value="False">
-                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    <DataTrigger Binding="{Binding ClipDetail.HasClip}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Grid.Style>
                                         <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
@@ -559,7 +560,74 @@
                                                    Text="{Binding ClipDetail.AddedByText}"
                                                    Foreground="{StaticResource TextPrimaryBrush}"
                                                    FontSize="12"
+                                                   Margin="0,0,0,8"
                                                    TextWrapping="Wrap" />
+
+                                        <TextBlock Grid.Row="5"
+                                                   Grid.Column="0"
+                                                   Text="Tags"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold" />
+                                        <TextBlock Grid.Row="5"
+                                                   Grid.Column="1"
+                                                   Text="{Binding ClipDetail.TagsText}"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap" />
+                                    </Grid>
+
+                                    <Grid>
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ClipDetail.HasTag}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="94" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0"
+                                                   Grid.Column="0"
+                                                   Text="Tag"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,8,8" />
+                                        <TextBlock Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   Text="{Binding ClipDetail.TriggerText}"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="0"
+                                                   Text="Clips"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,8,0"
+                                                   VerticalAlignment="Top" />
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="1"
+                                                   Text="{Binding ClipDetail.TagClipListText}"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   VerticalAlignment="Top" />
                                     </Grid>
                                 </Grid>
                             </Grid>

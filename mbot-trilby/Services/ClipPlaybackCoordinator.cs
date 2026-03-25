@@ -66,7 +66,7 @@ namespace mbottrilby.Services
                 logLines.Add("Load tags skipped: Trilby API is disabled.");
                 return new LoadTagsResult(
                     success: false,
-                    tagNames: Array.Empty<string>(),
+                    tags: Array.Empty<TrilbyApiClientService.TagCatalogEntry>(),
                     total: 0,
                     logLines: logLines
                 );
@@ -75,10 +75,10 @@ namespace mbottrilby.Services
             try
             {
                 var catalog = await _trilbyApiClient.ListTagsAsync();
-                logLines.Add($"Loaded {catalog.TagNames.Count} tags (API total={catalog.Total}).");
+                logLines.Add($"Loaded {catalog.Tags.Count} tags (API total={catalog.Total}).");
                 return new LoadTagsResult(
                     success: true,
-                    tagNames: catalog.TagNames,
+                    tags: catalog.Tags,
                     total: catalog.Total,
                     logLines: logLines
                 );
@@ -88,7 +88,7 @@ namespace mbottrilby.Services
                 logLines.Add($"Load tags failed: {ex.Message}");
                 return new LoadTagsResult(
                     success: false,
-                    tagNames: Array.Empty<string>(),
+                    tags: Array.Empty<TrilbyApiClientService.TagCatalogEntry>(),
                     total: 0,
                     logLines: logLines
                 );
@@ -211,16 +211,20 @@ namespace mbottrilby.Services
 
         internal sealed class LoadTagsResult
         {
-            public LoadTagsResult(bool success, IReadOnlyList<string> tagNames, int total, IReadOnlyList<string> logLines)
+            public LoadTagsResult(
+                bool success,
+                IReadOnlyList<TrilbyApiClientService.TagCatalogEntry> tags,
+                int total,
+                IReadOnlyList<string> logLines)
             {
                 Success = success;
-                TagNames = tagNames;
+                Tags = tags;
                 Total = total;
                 LogLines = logLines;
             }
 
             public bool Success { get; }
-            public IReadOnlyList<string> TagNames { get; }
+            public IReadOnlyList<TrilbyApiClientService.TagCatalogEntry> Tags { get; }
             public int Total { get; }
             public IReadOnlyList<string> LogLines { get; }
         }

@@ -60,6 +60,8 @@ namespace mbottrilby
         private readonly Dictionary<string, TrilbyApiClientService.ClipCatalogEntry> _clipCatalogByTrigger =
             new(StringComparer.OrdinalIgnoreCase);
         private readonly List<string> _allTagNames = new();
+        private readonly Dictionary<string, TrilbyApiClientService.TagCatalogEntry> _tagCatalogByName =
+            new(StringComparer.OrdinalIgnoreCase);
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
         private readonly UserSettingsStateStore _userSettingsStore;
         private readonly UserSettingsState _userSettings;
@@ -277,24 +279,32 @@ namespace mbottrilby
 
         private void SearchPanel_SearchResultHovered(object? sender, ClipSearchResult? searchResult)
         {
-            if (searchResult is null || searchResult.Kind != SearchResultKind.Clip)
+            if (searchResult is null)
             {
-                _clipDetail.ShowPlaceholder();
                 return;
             }
 
-            if (!_clipCatalogByTrigger.TryGetValue(searchResult.Value, out var clip))
+            if (searchResult.Kind == SearchResultKind.Clip)
             {
-                _clipDetail.ShowPlaceholder();
+                if (!_clipCatalogByTrigger.TryGetValue(searchResult.Value, out var clip))
+                {
+                    return;
+                }
+
+                _clipDetail.ShowClip(
+                    clip.Trigger,
+                    clip.SourceUrl,
+                    clip.StartOffsetText,
+                    clip.ClipLengthText,
+                    clip.AddedByText,
+                    clip.TagNames);
                 return;
             }
 
-            _clipDetail.ShowClip(
-                clip.Trigger,
-                clip.SourceUrl,
-                clip.StartOffsetText,
-                clip.ClipLengthText,
-                clip.AddedByText);
+            if (_tagCatalogByName.TryGetValue(searchResult.Value, out var tag))
+            {
+                _clipDetail.ShowTag(tag.Name, tag.ClipTriggers);
+            }
         }
 
         private void ClipDragSourceButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -799,11 +809,17 @@ namespace mbottrilby
 
             if (result.Success)
             {
+                _tagCatalogByName.Clear();
                 _allTagNames.Clear();
-                _allTagNames.AddRange(result.TagNames);
+                foreach (var tag in result.Tags)
+                {
+                    _tagCatalogByName[tag.Name] = tag;
+                    _allTagNames.Add(tag.Name);
+                }
             }
             else
             {
+                _tagCatalogByName.Clear();
                 _allTagNames.Clear();
             }
 

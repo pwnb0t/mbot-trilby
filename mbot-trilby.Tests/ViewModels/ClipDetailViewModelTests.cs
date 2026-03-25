@@ -10,10 +10,11 @@ namespace mbottrilby.Tests.ViewModels
         {
             var viewModel = new ClipDetailViewModel();
 
-            viewModel.ShowClip("hello", "https://example.com/test", "1.25s", "2.5s", "pwnb0t");
+            viewModel.ShowClip("hello", "https://example.com/test", "1.25s", "2.5s", "pwnb0t", new[] { "test" });
             viewModel.ShowPlaceholder();
 
             Assert.False(viewModel.HasClip);
+            Assert.False(viewModel.HasTag);
             Assert.Equal("Hover a clip to see details", viewModel.StatusText);
             Assert.Equal(string.Empty, viewModel.TriggerText);
         }
@@ -23,14 +24,16 @@ namespace mbottrilby.Tests.ViewModels
         {
             var viewModel = new ClipDetailViewModel();
 
-            viewModel.ShowClip("hello", "https://example.com/test", "1.25s", "2.5s", "pwnb0t");
+            viewModel.ShowClip("hello", "https://example.com/test", "1.25s", "2.5s", "pwnb0t", new[] { "test", "wow" });
 
             Assert.True(viewModel.HasClip);
+            Assert.False(viewModel.HasTag);
             Assert.Equal("hello", viewModel.TriggerText);
             Assert.Equal("https://example.com/test", viewModel.SourceUrlText);
             Assert.Equal("1.25s", viewModel.StartOffsetText);
             Assert.Equal("2.5s", viewModel.ClipLengthText);
             Assert.Equal("pwnb0t", viewModel.AddedByText);
+            Assert.Equal("&test, &wow", viewModel.TagsText);
         }
 
         [Fact]
@@ -39,10 +42,23 @@ namespace mbottrilby.Tests.ViewModels
             var viewModel = new ClipDetailViewModel();
             var longUrl = "https://example.com/" + new string('a', 150);
 
-            viewModel.ShowClip("hello", longUrl, string.Empty, string.Empty, "pwnb0t");
+            viewModel.ShowClip("hello", longUrl, string.Empty, string.Empty, "pwnb0t", new string[0]);
 
-            Assert.EndsWith("…", viewModel.SourceUrlText);
+            Assert.EndsWith("...", viewModel.SourceUrlText);
             Assert.True(viewModel.SourceUrlText.Length <= 100);
+        }
+
+        [Fact]
+        public void ShowTag_Displays_Tag_And_Clip_List()
+        {
+            var viewModel = new ClipDetailViewModel();
+
+            viewModel.ShowTag("test", new[] { "hello", "bye" });
+
+            Assert.True(viewModel.HasTag);
+            Assert.False(viewModel.HasClip);
+            Assert.Equal("&test", viewModel.TriggerText);
+            Assert.Equal("hello, bye", viewModel.TagClipListText);
         }
     }
 }

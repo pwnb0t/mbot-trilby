@@ -38,14 +38,16 @@ namespace TrilbyApi.Model
         /// <param name="startOffsetText">startOffsetText (default to &quot;&quot;)</param>
         /// <param name="clipLengthText">clipLengthText (default to &quot;&quot;)</param>
         /// <param name="addedByText">addedByText (default to &quot;&quot;)</param>
+        /// <param name="tagNames">tagNames</param>
         [JsonConstructor]
-        public ClipSummary(string trigger, Option<string?> sourceUrl = default, Option<string?> startOffsetText = default, Option<string?> clipLengthText = default, Option<string?> addedByText = default)
+        public ClipSummary(string trigger, Option<string?> sourceUrl = default, Option<string?> startOffsetText = default, Option<string?> clipLengthText = default, Option<string?> addedByText = default, Option<List<string>?> tagNames = default)
         {
             Trigger = trigger;
             SourceUrlOption = sourceUrl;
             StartOffsetTextOption = startOffsetText;
             ClipLengthTextOption = clipLengthText;
             AddedByTextOption = addedByText;
+            TagNamesOption = tagNames;
             OnCreated();
         }
 
@@ -110,6 +112,19 @@ namespace TrilbyApi.Model
         public string? AddedByText { get { return this.AddedByTextOption; } set { this.AddedByTextOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of TagNames
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<List<string>?> TagNamesOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets TagNames
+        /// </summary>
+        [JsonPropertyName("tag_names")]
+        public List<string>? TagNames { get { return this.TagNamesOption; } set { this.TagNamesOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -122,6 +137,7 @@ namespace TrilbyApi.Model
             sb.Append("  StartOffsetText: ").Append(StartOffsetText).Append("\n");
             sb.Append("  ClipLengthText: ").Append(ClipLengthText).Append("\n");
             sb.Append("  AddedByText: ").Append(AddedByText).Append("\n");
+            sb.Append("  TagNames: ").Append(TagNames).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -164,6 +180,7 @@ namespace TrilbyApi.Model
             Option<string?> startOffsetText = default;
             Option<string?> clipLengthText = default;
             Option<string?> addedByText = default;
+            Option<List<string>?> tagNames = default;
 
             while (utf8JsonReader.Read())
             {
@@ -195,6 +212,9 @@ namespace TrilbyApi.Model
                         case "added_by_text":
                             addedByText = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "tag_names":
+                            tagNames = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         default:
                             break;
                     }
@@ -219,7 +239,10 @@ namespace TrilbyApi.Model
             if (addedByText.IsSet && addedByText.Value == null)
                 throw new ArgumentNullException(nameof(addedByText), "Property is not nullable for class ClipSummary.");
 
-            return new ClipSummary(trigger.Value!, sourceUrl, startOffsetText, clipLengthText, addedByText);
+            if (tagNames.IsSet && tagNames.Value == null)
+                throw new ArgumentNullException(nameof(tagNames), "Property is not nullable for class ClipSummary.");
+
+            return new ClipSummary(trigger.Value!, sourceUrl, startOffsetText, clipLengthText, addedByText, tagNames);
         }
 
         /// <summary>
@@ -261,6 +284,9 @@ namespace TrilbyApi.Model
             if (clipSummary.AddedByTextOption.IsSet && clipSummary.AddedByText == null)
                 throw new ArgumentNullException(nameof(clipSummary.AddedByText), "Property is required for class ClipSummary.");
 
+            if (clipSummary.TagNamesOption.IsSet && clipSummary.TagNames == null)
+                throw new ArgumentNullException(nameof(clipSummary.TagNames), "Property is required for class ClipSummary.");
+
             writer.WriteString("trigger", clipSummary.Trigger);
 
             if (clipSummary.SourceUrlOption.IsSet)
@@ -274,6 +300,12 @@ namespace TrilbyApi.Model
 
             if (clipSummary.AddedByTextOption.IsSet)
                 writer.WriteString("added_by_text", clipSummary.AddedByText);
+
+            if (clipSummary.TagNamesOption.IsSet)
+            {
+                writer.WritePropertyName("tag_names");
+                JsonSerializer.Serialize(writer, clipSummary.TagNames, jsonSerializerOptions);
+            }
         }
     }
 }

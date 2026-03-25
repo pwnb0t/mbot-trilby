@@ -49,7 +49,11 @@ namespace mbottrilby.Services
                         clip.SourceUrl,
                         clip.StartOffsetText,
                         clip.ClipLengthText,
-                        clip.AddedByText))
+                        clip.AddedByText,
+                        (clip.TagNames ?? new List<string>())
+                            .Where(tagName => !string.IsNullOrWhiteSpace(tagName))
+                            .OrderBy(tagName => tagName, StringComparer.OrdinalIgnoreCase)
+                            .ToList()))
                     .OrderBy(clip => clip.Trigger, StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
@@ -82,13 +86,18 @@ namespace mbottrilby.Services
             var response = await _api.ListTagsAsync(_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
-                var tagNames = ok.Tags
-                    .Select(tag => tag.Name)
-                    .Where(tagName => !string.IsNullOrWhiteSpace(tagName))
-                    .OrderBy(tagName => tagName, StringComparer.OrdinalIgnoreCase)
+                var tags = ok.Tags
+                    .Where(tag => !string.IsNullOrWhiteSpace(tag.Name))
+                    .Select(tag => new TagCatalogEntry(
+                        tag.Name,
+                        tag.ClipTriggers
+                            .Where(trigger => !string.IsNullOrWhiteSpace(trigger))
+                            .OrderBy(trigger => trigger, StringComparer.OrdinalIgnoreCase)
+                            .ToList()))
+                    .OrderBy(tag => tag.Name, StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
-                return new TagCatalog(tagNames, ok.Total);
+                return new TagCatalog(tags, ok.Total);
             }
 
             if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
@@ -569,7 +578,8 @@ namespace mbottrilby.Services
                 string? sourceUrl,
                 string? startOffsetText,
                 string? clipLengthText,
-                string? addedByText)
+                string? addedByText,
+                IReadOnlyList<string> tagNames)
             {
                 Trigger = trigger;
                 SourceUrl = string.IsNullOrWhiteSpace(sourceUrl) ? null : sourceUrl.Trim();
@@ -578,6 +588,7 @@ namespace mbottrilby.Services
                 AddedByText = string.IsNullOrWhiteSpace(addedByText)
                     ? string.Empty
                     : addedByText.Trim();
+                TagNames = tagNames;
             }
 
             public string Trigger { get; }
@@ -585,18 +596,31 @@ namespace mbottrilby.Services
             public string StartOffsetText { get; }
             public string ClipLengthText { get; }
             public string AddedByText { get; }
+            public IReadOnlyList<string> TagNames { get; }
         }
 
         internal sealed class TagCatalog
         {
-            public TagCatalog(IReadOnlyList<string> tagNames, int total)
+            public TagCatalog(IReadOnlyList<TagCatalogEntry> tags, int total)
             {
-                TagNames = tagNames;
+                Tags = tags;
                 Total = total;
             }
 
-            public IReadOnlyList<string> TagNames { get; }
+            public IReadOnlyList<TagCatalogEntry> Tags { get; }
             public int Total { get; }
+        }
+
+        internal sealed class TagCatalogEntry
+        {
+            public TagCatalogEntry(string name, IReadOnlyList<string> clipTriggers)
+            {
+                Name = name;
+                ClipTriggers = clipTriggers;
+            }
+
+            public string Name { get; }
+            public IReadOnlyList<string> ClipTriggers { get; }
         }
 
         internal sealed class TagClipCatalog

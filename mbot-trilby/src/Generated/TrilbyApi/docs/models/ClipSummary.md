@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **StartOffsetText** | **string** |  | [optional] [default to ""]
 **ClipLengthText** | **string** |  | [optional] [default to ""]
 **AddedByText** | **string** |  | [optional] [default to ""]
+**TagNames** | **List&lt;string&gt;** |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

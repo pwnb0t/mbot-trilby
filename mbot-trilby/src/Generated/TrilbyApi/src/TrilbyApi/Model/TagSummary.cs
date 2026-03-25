@@ -34,10 +34,12 @@ namespace TrilbyApi.Model
         /// Initializes a new instance of the <see cref="TagSummary" /> class.
         /// </summary>
         /// <param name="name">name</param>
+        /// <param name="clipTriggers">clipTriggers</param>
         [JsonConstructor]
-        public TagSummary(string name)
+        public TagSummary(string name, List<string> clipTriggers)
         {
             Name = name;
+            ClipTriggers = clipTriggers;
             OnCreated();
         }
 
@@ -50,6 +52,12 @@ namespace TrilbyApi.Model
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or Sets ClipTriggers
+        /// </summary>
+        [JsonPropertyName("clip_triggers")]
+        public List<string> ClipTriggers { get; set; }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -58,6 +66,7 @@ namespace TrilbyApi.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class TagSummary {\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
+            sb.Append("  ClipTriggers: ").Append(ClipTriggers).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -96,6 +105,7 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> name = default;
+            Option<List<string>?> clipTriggers = default;
 
             while (utf8JsonReader.Read())
             {
@@ -115,6 +125,9 @@ namespace TrilbyApi.Model
                         case "name":
                             name = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "clip_triggers":
+                            clipTriggers = new Option<List<string>?>(JsonSerializer.Deserialize<List<string>>(ref utf8JsonReader, jsonSerializerOptions)!);
+                            break;
                         default:
                             break;
                     }
@@ -124,10 +137,16 @@ namespace TrilbyApi.Model
             if (!name.IsSet)
                 throw new ArgumentException("Property is required for class TagSummary.", nameof(name));
 
+            if (!clipTriggers.IsSet)
+                throw new ArgumentException("Property is required for class TagSummary.", nameof(clipTriggers));
+
             if (name.IsSet && name.Value == null)
                 throw new ArgumentNullException(nameof(name), "Property is not nullable for class TagSummary.");
 
-            return new TagSummary(name.Value!);
+            if (clipTriggers.IsSet && clipTriggers.Value == null)
+                throw new ArgumentNullException(nameof(clipTriggers), "Property is not nullable for class TagSummary.");
+
+            return new TagSummary(name.Value!, clipTriggers.Value!);
         }
 
         /// <summary>
@@ -157,7 +176,13 @@ namespace TrilbyApi.Model
             if (tagSummary.Name == null)
                 throw new ArgumentNullException(nameof(tagSummary.Name), "Property is required for class TagSummary.");
 
+            if (tagSummary.ClipTriggers == null)
+                throw new ArgumentNullException(nameof(tagSummary.ClipTriggers), "Property is required for class TagSummary.");
+
             writer.WriteString("name", tagSummary.Name);
+
+            writer.WritePropertyName("clip_triggers");
+            JsonSerializer.Serialize(writer, tagSummary.ClipTriggers, jsonSerializerOptions);
         }
     }
 }

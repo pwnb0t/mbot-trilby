@@ -1003,6 +1003,9 @@ components:
         clip_length_text: ""
         start_offset_text: ""
         trigger: trigger
+        tag_names:
+        - tag_names
+        - tag_names
         source_url: ""
       properties:
         trigger:
@@ -1024,6 +1027,12 @@ components:
           default: ""
           title: Added By Text
           type: string
+        tag_names:
+          default: []
+          items:
+            type: string
+          title: Tag Names
+          type: array
       required:
       - trigger
       title: ClipSummary
@@ -1106,11 +1115,17 @@ components:
           clip_length_text: ""
           start_offset_text: ""
           trigger: trigger
+          tag_names:
+          - tag_names
+          - tag_names
           source_url: ""
         - added_by_text: ""
           clip_length_text: ""
           start_offset_text: ""
           trigger: trigger
+          tag_names:
+          - tag_names
+          - tag_names
           source_url: ""
         guild_id: 0
         ok: true
@@ -1181,8 +1196,14 @@ components:
         guild_id: 0
         ok: true
         tags:
-        - name: name
-        - name: name
+        - clip_triggers:
+          - clip_triggers
+          - clip_triggers
+          name: name
+        - clip_triggers:
+          - clip_triggers
+          - clip_triggers
+          name: name
       properties:
         ok:
           title: Ok
@@ -1605,12 +1626,21 @@ components:
       title: TagClipSummary
     TagSummary:
       example:
+        clip_triggers:
+        - clip_triggers
+        - clip_triggers
         name: name
       properties:
         name:
           title: Name
           type: string
+        clip_triggers:
+          items:
+            type: string
+          title: Clip Triggers
+          type: array
       required:
+      - clip_triggers
       - name
       title: TagSummary
     TopClipStatsItem:
