@@ -25,7 +25,7 @@ namespace mbottrilby.Services
                 logLines.Add("Load clips skipped: Trilby API is disabled.");
                 return new LoadClipsResult(
                     success: false,
-                    triggers: Array.Empty<string>(),
+                    clips: Array.Empty<TrilbyApiClientService.ClipCatalogEntry>(),
                     total: 0,
                     logLines: logLines
                 );
@@ -34,10 +34,10 @@ namespace mbottrilby.Services
             try
             {
                 var catalog = await _trilbyApiClient.ListClipsAsync();
-                logLines.Add($"Loaded {catalog.Triggers.Count} clips (API total={catalog.Total}).");
+                logLines.Add($"Loaded {catalog.Clips.Count} clips (API total={catalog.Total}).");
                 return new LoadClipsResult(
                     success: true,
-                    triggers: catalog.Triggers,
+                    clips: catalog.Clips,
                     total: catalog.Total,
                     logLines: logLines
                 );
@@ -47,7 +47,7 @@ namespace mbottrilby.Services
                 logLines.Add($"Load clips failed: {ex.Message}");
                 return new LoadClipsResult(
                     success: false,
-                    triggers: Array.Empty<string>(),
+                    clips: Array.Empty<TrilbyApiClientService.ClipCatalogEntry>(),
                     total: 0,
                     logLines: logLines
                 );
@@ -177,16 +177,20 @@ namespace mbottrilby.Services
 
         internal sealed class LoadClipsResult
         {
-            public LoadClipsResult(bool success, IReadOnlyList<string> triggers, int total, IReadOnlyList<string> logLines)
+            public LoadClipsResult(
+                bool success,
+                IReadOnlyList<TrilbyApiClientService.ClipCatalogEntry> clips,
+                int total,
+                IReadOnlyList<string> logLines)
             {
                 Success = success;
-                Triggers = triggers;
+                Clips = clips;
                 Total = total;
                 LogLines = logLines;
             }
 
             public bool Success { get; }
-            public IReadOnlyList<string> Triggers { get; }
+            public IReadOnlyList<TrilbyApiClientService.ClipCatalogEntry> Clips { get; }
             public int Total { get; }
             public IReadOnlyList<string> LogLines { get; }
         }

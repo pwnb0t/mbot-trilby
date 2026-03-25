@@ -409,15 +409,162 @@
 
                     <!-- Spacer column reserved to keep the centered search section aligned. -->
 
-                    <controls:SearchPanelControl x:Name="SearchPanel"
-                                                 Grid.Column="2"
-                                                 HorizontalAlignment="Center"
-                                                 VerticalAlignment="Center"
-                                                 SearchQueryDisplay="{Binding SearchQueryDisplay}"
-                                                 VisibleSearchResults="{Binding VisibleSearchResults}"
-                                                 NoResultsVisible="{Binding NoResultsVisible}"
-                                                 Width="640"
-                                                 Height="500" />
+                    <Grid x:Name="SearchAndDetailGrid"
+                          Grid.Column="2"
+                          Width="640"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="500" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="168" />
+                        </Grid.RowDefinitions>
+
+                        <controls:SearchPanelControl x:Name="SearchPanel"
+                                                     Grid.Row="0"
+                                                     SearchQueryDisplay="{Binding SearchQueryDisplay}"
+                                                     VisibleSearchResults="{Binding VisibleSearchResults}"
+                                                     NoResultsVisible="{Binding NoResultsVisible}" />
+
+                        <Border x:Name="ClipDetailPanel"
+                                Grid.Row="2"
+                                Height="168"
+                                VerticalAlignment="Bottom"
+                                Background="{StaticResource PanelBackgroundBrush}"
+                                BorderBrush="{StaticResource PanelBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="12">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="{Binding ClipDetail.TitleText}"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,10" />
+
+                                <Grid Grid.Row="1">
+                                    <TextBlock Text="{Binding ClipDetail.StatusText}"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               FontSize="14"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               TextWrapping="Wrap">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ClipDetail.HasClip}" Value="False">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <Grid>
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ClipDetail.HasClip}" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="94" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0"
+                                                   Grid.Column="0"
+                                                   Text="Trigger"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,8,8" />
+                                        <TextBlock Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   Text="{Binding ClipDetail.TriggerText}"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="0"
+                                                   Text="Source"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,8,8" />
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="1"
+                                                   Text="{Binding ClipDetail.SourceUrlText}"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="0"
+                                                   Text="Start"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,8,8" />
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="1"
+                                                   Text="{Binding ClipDetail.StartOffsetText}"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="12"
+                                                   Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="3"
+                                                   Grid.Column="0"
+                                                   Text="Length"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Margin="0,0,8,8" />
+                                        <TextBlock Grid.Row="3"
+                                                   Grid.Column="1"
+                                                   Text="{Binding ClipDetail.ClipLengthText}"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="12"
+                                                   Margin="0,0,0,8" />
+
+                                        <TextBlock Grid.Row="4"
+                                                   Grid.Column="0"
+                                                   Text="Added by"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold" />
+                                        <TextBlock Grid.Row="4"
+                                                   Grid.Column="1"
+                                                   Text="{Binding ClipDetail.AddedByText}"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap" />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </Grid>
 
                     <Border x:Name="RecentClipsPanel"
                             Grid.Column="3"

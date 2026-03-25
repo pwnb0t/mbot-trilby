@@ -999,10 +999,30 @@ components:
       title: AuthenticatedTrilbyGuild
     ClipSummary:
       example:
+        added_by_text: ""
+        clip_length_text: ""
+        start_offset_text: ""
         trigger: trigger
+        source_url: ""
       properties:
         trigger:
           title: Trigger
+          type: string
+        source_url:
+          default: ""
+          title: Source Url
+          type: string
+        start_offset_text:
+          default: ""
+          title: Start Offset Text
+          type: string
+        clip_length_text:
+          default: ""
+          title: Clip Length Text
+          type: string
+        added_by_text:
+          default: ""
+          title: Added By Text
           type: string
       required:
       - trigger
@@ -1028,7 +1048,6 @@ components:
         trigger:
           title: Trigger
           type: string
-          nullable: true
       required:
       - guild_id
       - ok
@@ -1083,8 +1102,16 @@ components:
         total: 6
         search: search
         clips:
-        - trigger: trigger
-        - trigger: trigger
+        - added_by_text: ""
+          clip_length_text: ""
+          start_offset_text: ""
+          trigger: trigger
+          source_url: ""
+        - added_by_text: ""
+          clip_length_text: ""
+          start_offset_text: ""
+          trigger: trigger
+          source_url: ""
         guild_id: 0
         ok: true
       properties:
@@ -1106,7 +1133,6 @@ components:
         search:
           title: Search
           type: string
-          nullable: true
       required:
       - clips
       - guild_id
@@ -1176,7 +1202,6 @@ components:
         search:
           title: Search
           type: string
-          nullable: true
       required:
       - guild_id
       - ok
@@ -1196,7 +1221,6 @@ components:
         request_id:
           title: Request Id
           type: string
-          nullable: true
       required:
       - trigger
       title: PlayClipBody
@@ -1230,7 +1254,6 @@ components:
         request_id:
           title: Request Id
           type: string
-          nullable: true
       required:
       - guild_id
       - ok
@@ -1245,7 +1268,6 @@ components:
         request_id:
           title: Request Id
           type: string
-          nullable: true
       title: PlayRandomClipBody
     PlayRandomClipResponse:
       example:
@@ -1273,7 +1295,6 @@ components:
         request_id:
           title: Request Id
           type: string
-          nullable: true
       required:
       - guild_id
       - ok
@@ -1303,7 +1324,6 @@ components:
         requester_display_name:
           title: Requester Display Name
           type: string
-          nullable: true
         played_at_utc:
           title: Played At Utc
           type: string
@@ -1343,7 +1363,6 @@ components:
           format: int64
           title: Requester User Id
           type: integer
-          nullable: true
         limit:
           title: Limit
           type: integer
@@ -1449,7 +1468,6 @@ components:
           format: int64
           title: Default Guild Id
           type: integer
-          nullable: true
       required:
       - access_token
       - expires_at_utc
@@ -1494,7 +1512,6 @@ components:
           format: int64
           title: Default Guild Id
           type: integer
-          nullable: true
       required:
       - expires_at_utc
       - guilds
@@ -1548,7 +1565,6 @@ components:
         request_id:
           title: Request Id
           type: string
-          nullable: true
       title: StopClipBody
     StopClipResponse:
       example:
@@ -1572,7 +1588,6 @@ components:
         request_id:
           title: Request Id
           type: string
-          nullable: true
       required:
       - guild_id
       - ok
@@ -1652,7 +1667,6 @@ components:
           format: int64
           title: Requester User Id
           type: integer
-          nullable: true
         days:
           enum:
           - "1"

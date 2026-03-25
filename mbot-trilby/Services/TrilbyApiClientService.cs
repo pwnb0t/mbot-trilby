@@ -42,13 +42,18 @@ namespace mbottrilby.Services
             var response = await _api.ListClipsAsync(_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
-                var triggers = ok.Clips
-                    .Select(clip => clip.Trigger)
-                    .Where(trigger => !string.IsNullOrWhiteSpace(trigger))
-                    .OrderBy(trigger => trigger, StringComparer.OrdinalIgnoreCase)
+                var clips = ok.Clips
+                    .Where(clip => !string.IsNullOrWhiteSpace(clip.Trigger))
+                    .Select(clip => new ClipCatalogEntry(
+                        clip.Trigger,
+                        clip.SourceUrl,
+                        clip.StartOffsetText,
+                        clip.ClipLengthText,
+                        clip.AddedByText))
+                    .OrderBy(clip => clip.Trigger, StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
-                return new ClipCatalog(triggers, ok.Total);
+                return new ClipCatalog(clips, ok.Total);
             }
 
             if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
@@ -547,14 +552,39 @@ namespace mbottrilby.Services
 
         internal sealed class ClipCatalog
         {
-            public ClipCatalog(IReadOnlyList<string> triggers, int total)
+            public ClipCatalog(IReadOnlyList<ClipCatalogEntry> clips, int total)
             {
-                Triggers = triggers;
+                Clips = clips;
                 Total = total;
             }
 
-            public IReadOnlyList<string> Triggers { get; }
+            public IReadOnlyList<ClipCatalogEntry> Clips { get; }
             public int Total { get; }
+        }
+
+        internal sealed class ClipCatalogEntry
+        {
+            public ClipCatalogEntry(
+                string trigger,
+                string? sourceUrl,
+                string? startOffsetText,
+                string? clipLengthText,
+                string? addedByText)
+            {
+                Trigger = trigger;
+                SourceUrl = string.IsNullOrWhiteSpace(sourceUrl) ? null : sourceUrl.Trim();
+                StartOffsetText = string.IsNullOrWhiteSpace(startOffsetText) ? string.Empty : startOffsetText.Trim();
+                ClipLengthText = string.IsNullOrWhiteSpace(clipLengthText) ? string.Empty : clipLengthText.Trim();
+                AddedByText = string.IsNullOrWhiteSpace(addedByText)
+                    ? string.Empty
+                    : addedByText.Trim();
+            }
+
+            public string Trigger { get; }
+            public string? SourceUrl { get; }
+            public string StartOffsetText { get; }
+            public string ClipLengthText { get; }
+            public string AddedByText { get; }
         }
 
         internal sealed class TagCatalog

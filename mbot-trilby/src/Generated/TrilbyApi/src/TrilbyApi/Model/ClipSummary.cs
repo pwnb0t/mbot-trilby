@@ -34,10 +34,18 @@ namespace TrilbyApi.Model
         /// Initializes a new instance of the <see cref="ClipSummary" /> class.
         /// </summary>
         /// <param name="trigger">trigger</param>
+        /// <param name="sourceUrl">sourceUrl (default to &quot;&quot;)</param>
+        /// <param name="startOffsetText">startOffsetText (default to &quot;&quot;)</param>
+        /// <param name="clipLengthText">clipLengthText (default to &quot;&quot;)</param>
+        /// <param name="addedByText">addedByText (default to &quot;&quot;)</param>
         [JsonConstructor]
-        public ClipSummary(string trigger)
+        public ClipSummary(string trigger, Option<string?> sourceUrl = default, Option<string?> startOffsetText = default, Option<string?> clipLengthText = default, Option<string?> addedByText = default)
         {
             Trigger = trigger;
+            SourceUrlOption = sourceUrl;
+            StartOffsetTextOption = startOffsetText;
+            ClipLengthTextOption = clipLengthText;
+            AddedByTextOption = addedByText;
             OnCreated();
         }
 
@@ -50,6 +58,58 @@ namespace TrilbyApi.Model
         public string Trigger { get; set; }
 
         /// <summary>
+        /// Used to track the state of SourceUrl
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> SourceUrlOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets SourceUrl
+        /// </summary>
+        [JsonPropertyName("source_url")]
+        public string? SourceUrl { get { return this.SourceUrlOption; } set { this.SourceUrlOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of StartOffsetText
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> StartOffsetTextOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets StartOffsetText
+        /// </summary>
+        [JsonPropertyName("start_offset_text")]
+        public string? StartOffsetText { get { return this.StartOffsetTextOption; } set { this.StartOffsetTextOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of ClipLengthText
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> ClipLengthTextOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets ClipLengthText
+        /// </summary>
+        [JsonPropertyName("clip_length_text")]
+        public string? ClipLengthText { get { return this.ClipLengthTextOption; } set { this.ClipLengthTextOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of AddedByText
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> AddedByTextOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets AddedByText
+        /// </summary>
+        [JsonPropertyName("added_by_text")]
+        public string? AddedByText { get { return this.AddedByTextOption; } set { this.AddedByTextOption = new(value); } }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -58,6 +118,10 @@ namespace TrilbyApi.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class ClipSummary {\n");
             sb.Append("  Trigger: ").Append(Trigger).Append("\n");
+            sb.Append("  SourceUrl: ").Append(SourceUrl).Append("\n");
+            sb.Append("  StartOffsetText: ").Append(StartOffsetText).Append("\n");
+            sb.Append("  ClipLengthText: ").Append(ClipLengthText).Append("\n");
+            sb.Append("  AddedByText: ").Append(AddedByText).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -96,6 +160,10 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> trigger = default;
+            Option<string?> sourceUrl = default;
+            Option<string?> startOffsetText = default;
+            Option<string?> clipLengthText = default;
+            Option<string?> addedByText = default;
 
             while (utf8JsonReader.Read())
             {
@@ -115,6 +183,18 @@ namespace TrilbyApi.Model
                         case "trigger":
                             trigger = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "source_url":
+                            sourceUrl = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "start_offset_text":
+                            startOffsetText = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "clip_length_text":
+                            clipLengthText = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "added_by_text":
+                            addedByText = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
                         default:
                             break;
                     }
@@ -127,7 +207,19 @@ namespace TrilbyApi.Model
             if (trigger.IsSet && trigger.Value == null)
                 throw new ArgumentNullException(nameof(trigger), "Property is not nullable for class ClipSummary.");
 
-            return new ClipSummary(trigger.Value!);
+            if (sourceUrl.IsSet && sourceUrl.Value == null)
+                throw new ArgumentNullException(nameof(sourceUrl), "Property is not nullable for class ClipSummary.");
+
+            if (startOffsetText.IsSet && startOffsetText.Value == null)
+                throw new ArgumentNullException(nameof(startOffsetText), "Property is not nullable for class ClipSummary.");
+
+            if (clipLengthText.IsSet && clipLengthText.Value == null)
+                throw new ArgumentNullException(nameof(clipLengthText), "Property is not nullable for class ClipSummary.");
+
+            if (addedByText.IsSet && addedByText.Value == null)
+                throw new ArgumentNullException(nameof(addedByText), "Property is not nullable for class ClipSummary.");
+
+            return new ClipSummary(trigger.Value!, sourceUrl, startOffsetText, clipLengthText, addedByText);
         }
 
         /// <summary>
@@ -157,7 +249,31 @@ namespace TrilbyApi.Model
             if (clipSummary.Trigger == null)
                 throw new ArgumentNullException(nameof(clipSummary.Trigger), "Property is required for class ClipSummary.");
 
+            if (clipSummary.SourceUrlOption.IsSet && clipSummary.SourceUrl == null)
+                throw new ArgumentNullException(nameof(clipSummary.SourceUrl), "Property is required for class ClipSummary.");
+
+            if (clipSummary.StartOffsetTextOption.IsSet && clipSummary.StartOffsetText == null)
+                throw new ArgumentNullException(nameof(clipSummary.StartOffsetText), "Property is required for class ClipSummary.");
+
+            if (clipSummary.ClipLengthTextOption.IsSet && clipSummary.ClipLengthText == null)
+                throw new ArgumentNullException(nameof(clipSummary.ClipLengthText), "Property is required for class ClipSummary.");
+
+            if (clipSummary.AddedByTextOption.IsSet && clipSummary.AddedByText == null)
+                throw new ArgumentNullException(nameof(clipSummary.AddedByText), "Property is required for class ClipSummary.");
+
             writer.WriteString("trigger", clipSummary.Trigger);
+
+            if (clipSummary.SourceUrlOption.IsSet)
+                writer.WriteString("source_url", clipSummary.SourceUrl);
+
+            if (clipSummary.StartOffsetTextOption.IsSet)
+                writer.WriteString("start_offset_text", clipSummary.StartOffsetText);
+
+            if (clipSummary.ClipLengthTextOption.IsSet)
+                writer.WriteString("clip_length_text", clipSummary.ClipLengthText);
+
+            if (clipSummary.AddedByTextOption.IsSet)
+                writer.WriteString("added_by_text", clipSummary.AddedByText);
         }
     }
 }

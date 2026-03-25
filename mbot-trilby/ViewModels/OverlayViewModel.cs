@@ -22,6 +22,7 @@ namespace mbottrilby.ViewModels
         private IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots = new List<QuickPlaySlotViewModel>();
         private CurrentIntroSlotViewModel _currentIntroSlot = new();
         private TagWidgetViewModel _tagWidget = new();
+        private ClipDetailViewModel _clipDetail = new();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -117,6 +118,12 @@ namespace mbottrilby.ViewModels
         {
             get => _tagWidget;
             set => SetField(ref _tagWidget, value);
+        }
+
+        public ClipDetailViewModel ClipDetail
+        {
+            get => _clipDetail;
+            set => SetField(ref _clipDetail, value);
         }
 
         private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

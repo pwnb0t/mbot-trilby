@@ -57,6 +57,8 @@ namespace mbottrilby
         private readonly OverlayViewModel _viewModel = new();
         private readonly TrilbyAuthenticationService _trilbyAuthenticationService = new();
         private readonly List<string> _allClipTriggers = new();
+        private readonly Dictionary<string, TrilbyApiClientService.ClipCatalogEntry> _clipCatalogByTrigger =
+            new(StringComparer.OrdinalIgnoreCase);
         private readonly List<string> _allTagNames = new();
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
         private readonly UserSettingsStateStore _userSettingsStore;
@@ -65,6 +67,7 @@ namespace mbottrilby
         private readonly ClipDragSourceBehavior _clipDragSourceBehavior = new();
         private readonly CurrentIntroSlotViewModel _currentIntroSlot = new();
         private readonly TagWidgetViewModel _tagWidget = new();
+        private readonly ClipDetailViewModel _clipDetail = new();
         private ClipAssignmentDragData? _activeClipAssignmentDragData;
         private string _topClipStatsDays = "7";
         private bool _topClipStatsGuildWide;
@@ -92,6 +95,7 @@ namespace mbottrilby
             DataContext = _viewModel;
             SearchPanel.SearchResultSelected += SearchPanel_SearchResultSelected;
             SearchPanel.SearchResultSecondarySelected += SearchPanel_SearchResultSecondarySelected;
+            SearchPanel.SearchResultHovered += SearchPanel_SearchResultHovered;
             SearchPanel.ClipAssignmentDragStateChanged += SearchPanel_ClipAssignmentDragStateChanged;
 
             _settings = AppSettingsLoader.LoadFromBaseDirectory(AppContext.BaseDirectory);
@@ -122,6 +126,8 @@ namespace mbottrilby
             _viewModel.QuickPlaySlots = _quickPlaySlots;
             _viewModel.CurrentIntroSlot = _currentIntroSlot;
             _viewModel.TagWidget = _tagWidget;
+            _viewModel.ClipDetail = _clipDetail;
+            _clipDetail.ShowPlaceholder();
             var initialSelectedTagName = GetCurrentSelectedTagName();
             if (!string.IsNullOrWhiteSpace(initialSelectedTagName))
             {
@@ -267,6 +273,28 @@ namespace mbottrilby
         private void SearchPanel_ClipAssignmentDragStateChanged(object? sender, ClipAssignmentDragChangedEventArgs e)
         {
             SetActiveClipAssignmentDragData(e.DragData);
+        }
+
+        private void SearchPanel_SearchResultHovered(object? sender, ClipSearchResult? searchResult)
+        {
+            if (searchResult is null || searchResult.Kind != SearchResultKind.Clip)
+            {
+                _clipDetail.ShowPlaceholder();
+                return;
+            }
+
+            if (!_clipCatalogByTrigger.TryGetValue(searchResult.Value, out var clip))
+            {
+                _clipDetail.ShowPlaceholder();
+                return;
+            }
+
+            _clipDetail.ShowClip(
+                clip.Trigger,
+                clip.SourceUrl,
+                clip.StartOffsetText,
+                clip.ClipLengthText,
+                clip.AddedByText);
         }
 
         private void ClipDragSourceButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -732,19 +760,28 @@ namespace mbottrilby
 
             if (result.Success)
             {
+                _clipCatalogByTrigger.Clear();
+                foreach (var clip in result.Clips)
+                {
+                    _clipCatalogByTrigger[clip.Trigger] = clip;
+                }
+
                 _allClipTriggers.Clear();
-                _allClipTriggers.AddRange(result.Triggers);
+                _allClipTriggers.AddRange(result.Clips.Select(clip => clip.Trigger));
                 _clipSearchState.SetSource(_allClipTriggers, _allTagNames);
                 RenderSearchState();
                 UpdateClipCountText(_allClipTriggers.Count, "loaded");
             }
             else
             {
+                _clipCatalogByTrigger.Clear();
                 _allClipTriggers.Clear();
                 _clipSearchState.SetSource(Array.Empty<string>(), _allTagNames);
                 RenderSearchState();
                 UpdateClipCountText(0, _trilbyApiClient is null ? "API disabled" : "load failed");
             }
+
+            _clipDetail.ShowPlaceholder();
         }
 
         private async System.Threading.Tasks.Task LoadTagCatalogAsync(string reason)
@@ -1069,6 +1106,7 @@ namespace mbottrilby
         private void ResetSearchState()
         {
             _clipSearchState.ClearQuery();
+            _clipDetail.ShowPlaceholder();
             RenderSearchState();
         }
 
@@ -1423,10 +1461,12 @@ namespace mbottrilby
                 UpdateClipCountText(0, status);
                 _viewModel.TopStatsStatusText = status;
                 _viewModel.RecentStatsStatusText = status;
+                _clipCatalogByTrigger.Clear();
                 _allClipTriggers.Clear();
                 _allTagNames.Clear();
                 _clipSearchState.SetSource(Array.Empty<string>(), Array.Empty<string>());
                 RenderSearchState();
+                _clipDetail.ShowPlaceholder();
                 ApplySelectedServerState();
                 return;
             }
@@ -1627,6 +1667,7 @@ namespace mbottrilby
         private void ApplySelectedServerState()
         {
             UpdateQuickPlaySlots();
+            _clipDetail.ShowPlaceholder();
             var selectedTagName = GetCurrentSelectedTagName();
             if (!string.IsNullOrWhiteSpace(selectedTagName))
             {
