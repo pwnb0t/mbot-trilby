@@ -15,10 +15,11 @@ namespace mbottrilby.Services
         {
             PropertyNameCaseInsensitive = true
         };
+        private const string ClipPlayedEventType = "clip_played";
 
         private readonly Uri _eventsUri;
         private readonly string _accessToken;
-        private readonly Func<ClipPlayedEvent, Task> _onClipPlayedAsync;
+        private readonly Func<TrilbyEvent, Task> _onEventAsync;
         private readonly Action<string>? _log;
         private CancellationTokenSource? _stopCts;
         private Task? _runTask;
@@ -27,12 +28,12 @@ namespace mbottrilby.Services
             string baseUrl,
             string accessToken,
             long guildId,
-            Func<ClipPlayedEvent, Task> onClipPlayedAsync,
+            Func<TrilbyEvent, Task> onEventAsync,
             Action<string>? log = null)
         {
             _ = baseUrl ?? throw new ArgumentNullException(nameof(baseUrl));
             _ = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
-            _onClipPlayedAsync = onClipPlayedAsync ?? throw new ArgumentNullException(nameof(onClipPlayedAsync));
+            _onEventAsync = onEventAsync ?? throw new ArgumentNullException(nameof(onEventAsync));
             _log = log;
             _accessToken = accessToken;
             _eventsUri = BuildEventsUri(baseUrl, guildId);
@@ -78,7 +79,7 @@ namespace mbottrilby.Services
             StopAsync().GetAwaiter().GetResult();
         }
 
-        internal static ClipPlayedEvent? ParseClipPlayedEvent(string json)
+        internal static TrilbyEvent? ParseEvent(string json)
         {
             if (string.IsNullOrWhiteSpace(json))
             {
@@ -86,25 +87,17 @@ namespace mbottrilby.Services
             }
 
             var envelope = JsonSerializer.Deserialize<EventEnvelopePayload>(json, JsonOptions);
-            if (envelope is null ||
-                !string.Equals(envelope.EventType, "clip_played", StringComparison.OrdinalIgnoreCase) ||
-                envelope.Payload is null ||
-                string.IsNullOrWhiteSpace(envelope.Payload.Trigger) ||
-                string.IsNullOrWhiteSpace(envelope.Payload.Mode) ||
-                string.IsNullOrWhiteSpace(envelope.Payload.PlayedAtUtc))
+            if (envelope is null || string.IsNullOrWhiteSpace(envelope.EventType))
             {
                 return null;
             }
 
-            return new ClipPlayedEvent(
-                envelope.GuildId,
-                envelope.Payload.Trigger,
-                envelope.Payload.Mode,
-                envelope.Payload.RequesterUserId,
-                string.IsNullOrWhiteSpace(envelope.Payload.RequesterDisplayName)
-                    ? (envelope.Payload.RequesterUserId?.ToString() ?? string.Empty)
-                    : envelope.Payload.RequesterDisplayName.Trim(),
-                envelope.Payload.PlayedAtUtc);
+            if (string.Equals(envelope.EventType, ClipPlayedEventType, StringComparison.OrdinalIgnoreCase))
+            {
+                return ParseClipPlayedEvent(envelope);
+            }
+
+            return null;
         }
 
         private async Task RunAsync(CancellationToken cancellationToken)
@@ -163,13 +156,13 @@ namespace mbottrilby.Services
                     return;
                 }
 
-                var clipPlayedEvent = ParseClipPlayedEvent(message);
-                if (clipPlayedEvent is null)
+                var trilbyEvent = ParseEvent(message);
+                if (trilbyEvent is null)
                 {
                     continue;
                 }
 
-                await _onClipPlayedAsync(clipPlayedEvent).ConfigureAwait(false);
+                await _onEventAsync(trilbyEvent).ConfigureAwait(false);
             }
         }
 
@@ -203,6 +196,27 @@ namespace mbottrilby.Services
             return Encoding.UTF8.GetString(stream.ToArray());
         }
 
+        private static ClipPlayedEvent? ParseClipPlayedEvent(EventEnvelopePayload envelope)
+        {
+            if (envelope.Payload is null ||
+                string.IsNullOrWhiteSpace(envelope.Payload.Trigger) ||
+                string.IsNullOrWhiteSpace(envelope.Payload.Mode) ||
+                string.IsNullOrWhiteSpace(envelope.Payload.PlayedAtUtc))
+            {
+                return null;
+            }
+
+            return new ClipPlayedEvent(
+                envelope.GuildId,
+                envelope.Payload.Trigger,
+                envelope.Payload.Mode,
+                envelope.Payload.RequesterUserId,
+                string.IsNullOrWhiteSpace(envelope.Payload.RequesterDisplayName)
+                    ? (envelope.Payload.RequesterUserId?.ToString() ?? string.Empty)
+                    : envelope.Payload.RequesterDisplayName.Trim(),
+                envelope.Payload.PlayedAtUtc);
+        }
+
         private static Uri BuildEventsUri(string baseUrl, long guildId)
         {
             var baseUri = new Uri(baseUrl, UriKind.Absolute);
@@ -218,7 +232,19 @@ namespace mbottrilby.Services
             return builder.Uri;
         }
 
-        internal sealed class ClipPlayedEvent
+        internal abstract class TrilbyEvent
+        {
+            protected TrilbyEvent(string eventType, long guildId)
+            {
+                EventType = eventType;
+                GuildId = guildId;
+            }
+
+            public string EventType { get; }
+            public long GuildId { get; }
+        }
+
+        internal sealed class ClipPlayedEvent : TrilbyEvent
         {
             public ClipPlayedEvent(
                 long guildId,
@@ -227,8 +253,8 @@ namespace mbottrilby.Services
                 long? requesterUserId,
                 string requesterDisplayName,
                 string playedAtUtc)
+                : base(ClipPlayedEventType, guildId)
             {
-                GuildId = guildId;
                 Trigger = trigger;
                 Mode = mode;
                 RequesterUserId = requesterUserId;
@@ -236,7 +262,6 @@ namespace mbottrilby.Services
                 PlayedAtUtc = playedAtUtc;
             }
 
-            public long GuildId { get; }
             public string Trigger { get; }
             public string Mode { get; }
             public long? RequesterUserId { get; }

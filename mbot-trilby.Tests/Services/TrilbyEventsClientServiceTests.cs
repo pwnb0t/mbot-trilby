@@ -6,7 +6,7 @@ namespace mbottrilby.Tests.Services
     public sealed class TrilbyEventsClientServiceTests
     {
         [Fact]
-        public void ParseClipPlayedEvent_ParsesValidEnvelope()
+        public void ParseEvent_ParsesClipPlayedEnvelope()
         {
             var json = """
             {
@@ -23,20 +23,21 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseClipPlayedEvent(json);
+            var parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            Assert.Equal(123, parsed!.GuildId);
-            Assert.Equal("hello", parsed.Trigger);
-            Assert.Equal("random", parsed.Mode);
-            Assert.Equal(456, parsed.RequesterUserId);
-            Assert.Equal("Vic", parsed.RequesterDisplayName);
-            Assert.Equal("2026-03-25T20:00:00Z", parsed.PlayedAtUtc);
-            Assert.True(parsed.IsRandom);
+            var clipPlayedEvent = Assert.IsType<TrilbyEventsClientService.ClipPlayedEvent>(parsed);
+            Assert.Equal(123, clipPlayedEvent.GuildId);
+            Assert.Equal("hello", clipPlayedEvent.Trigger);
+            Assert.Equal("random", clipPlayedEvent.Mode);
+            Assert.Equal(456, clipPlayedEvent.RequesterUserId);
+            Assert.Equal("Vic", clipPlayedEvent.RequesterDisplayName);
+            Assert.Equal("2026-03-25T20:00:00Z", clipPlayedEvent.PlayedAtUtc);
+            Assert.True(clipPlayedEvent.IsRandom);
         }
 
         [Fact]
-        public void ParseClipPlayedEvent_FallsBackToUserIdWhenNameMissing()
+        public void ParseEvent_FallsBackToUserIdWhenNameMissing()
         {
             var json = """
             {
@@ -51,10 +52,27 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseClipPlayedEvent(json);
+            var parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            Assert.Equal("456", parsed!.RequesterDisplayName);
+            var clipPlayedEvent = Assert.IsType<TrilbyEventsClientService.ClipPlayedEvent>(parsed);
+            Assert.Equal("456", clipPlayedEvent.RequesterDisplayName);
+        }
+
+        [Fact]
+        public void ParseEvent_ReturnsNullForUnknownEventType()
+        {
+            var json = """
+            {
+              "event_type": "unknown_event",
+              "guild_id": 123,
+              "payload": {}
+            }
+            """;
+
+            var parsed = TrilbyEventsClientService.ParseEvent(json);
+
+            Assert.Null(parsed);
         }
     }
 }

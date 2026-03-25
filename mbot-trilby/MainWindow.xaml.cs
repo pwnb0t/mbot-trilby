@@ -1435,9 +1435,17 @@ namespace mbottrilby
             }
         }
 
-        private async System.Threading.Tasks.Task OnClipPlayedEventAsync(TrilbyEventsClientService.ClipPlayedEvent clipPlayedEvent)
+        private async System.Threading.Tasks.Task OnTrilbyEventAsync(TrilbyEventsClientService.TrilbyEvent trilbyEvent)
         {
-            await Dispatcher.InvokeAsync(() => ApplyClipPlayedEvent(clipPlayedEvent));
+            await Dispatcher.InvokeAsync(() => ApplyTrilbyEvent(trilbyEvent));
+        }
+
+        private void ApplyTrilbyEvent(TrilbyEventsClientService.TrilbyEvent trilbyEvent)
+        {
+            if (trilbyEvent is TrilbyEventsClientService.ClipPlayedEvent clipPlayedEvent)
+            {
+                ApplyClipPlayedEvent(clipPlayedEvent);
+            }
         }
 
         private void ApplyClipPlayedEvent(TrilbyEventsClientService.ClipPlayedEvent clipPlayedEvent)
@@ -1632,7 +1640,7 @@ namespace mbottrilby
                 environment.BaseUrl,
                 session.AccessToken,
                 selectedGuildId.Value,
-                OnClipPlayedEventAsync,
+                OnTrilbyEventAsync,
                 log: message => Log(message));
             _eventsClientBaseUrl = environment.BaseUrl;
             _eventsClientAccessToken = session.AccessToken;
