@@ -198,16 +198,30 @@ namespace mbottrilby
 
         private async void RefreshClipsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!await EnsureAuthenticatedApiClientAsync("manual refresh"))
+            if (_viewModel.IsRefreshInProgress)
             {
                 return;
             }
 
-            await LoadClipCatalogAsync("manual refresh");
-            await LoadTagCatalogAsync("manual refresh");
-            await LoadTopClipStatsAsync("manual refresh");
-            await LoadRecentClipStatsAsync("manual refresh");
-            await LoadCurrentIntroAsync("manual refresh");
+            _viewModel.IsRefreshInProgress = true;
+
+            try
+            {
+                if (!await EnsureAuthenticatedApiClientAsync("manual refresh"))
+                {
+                    return;
+                }
+
+                await LoadClipCatalogAsync("manual refresh");
+                await LoadTagCatalogAsync("manual refresh");
+                await LoadTopClipStatsAsync("manual refresh");
+                await LoadRecentClipStatsAsync("manual refresh");
+                await LoadCurrentIntroAsync("manual refresh");
+            }
+            finally
+            {
+                _viewModel.IsRefreshInProgress = false;
+            }
         }
 
         private async void PlayRandomButton_Click(object sender, RoutedEventArgs e)

@@ -21,6 +21,7 @@ namespace mbottrilby.ViewModels
         private IReadOnlyList<RecentClipEntryViewModel> _recentClipStats = new List<RecentClipEntryViewModel>();
         private IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots = new List<QuickPlaySlotViewModel>();
         private CurrentIntroSlotViewModel _currentIntroSlot = new();
+        private bool _isRefreshInProgress;
         private TagWidgetViewModel _sharedTagWidget = new("Server Tag");
         private TagWidgetViewModel _tagWidget = new();
         private ClipDetailViewModel _clipDetail = new();
@@ -114,6 +115,22 @@ namespace mbottrilby.ViewModels
             get => _currentIntroSlot;
             set => SetField(ref _currentIntroSlot, value);
         }
+
+        public bool IsRefreshInProgress
+        {
+            get => _isRefreshInProgress;
+            set
+            {
+                if (!SetField(ref _isRefreshInProgress, value))
+                {
+                    return;
+                }
+
+                OnPropertyChanged(nameof(IsRefreshAvailable));
+            }
+        }
+
+        public bool IsRefreshAvailable => !IsRefreshInProgress;
 
         public TagWidgetViewModel SharedTagWidget
         {

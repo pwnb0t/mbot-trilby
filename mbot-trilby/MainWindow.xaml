@@ -70,9 +70,46 @@
                                        FontSize="13"
                                        VerticalAlignment="Center"
                                        Margin="0,0,10,0" />
-                            <Button Content="Refresh"
-                                    Style="{StaticResource TopBarButtonStyle}"
-                                    Click="RefreshClipsButton_Click" />
+                            <Button Style="{StaticResource TopBarButtonStyle}"
+                                    Click="RefreshClipsButton_Click"
+                                    MinWidth="120"
+                                    IsEnabled="{Binding IsRefreshAvailable}">
+                                <Grid>
+                                    <TextBlock Text="Refresh">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsRefreshInProgress}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <StackPanel Orientation="Horizontal"
+                                                VerticalAlignment="Center"
+                                                Visibility="Collapsed">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsRefreshInProgress}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <ProgressBar Width="20"
+                                                     Height="10"
+                                                     Margin="0,0,8,0"
+                                                     VerticalAlignment="Center"
+                                                     IsIndeterminate="True" />
+                                        <TextBlock Text="Refreshing..."
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
                             <Button Content="X"
                                     Style="{StaticResource TopBarButtonStyle}"
                                     Width="32"
