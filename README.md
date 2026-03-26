@@ -3,12 +3,20 @@
 See the paired `mbot` repo for the server/API side.
 That repo's `TODO.md` also has a section about this Trilby app.
 
-## Build/Run Verification (PowerShell)
+## Build
+
+From the repo root:
+
 ```powershell
-dotnet build E:\g\mbot-trilby\mbot-trilby\mbot-trilby.csproj -nologo
-dotnet build E:\g\mbot-trilby\mbot-trilby\mbot-trilby.csproj -c Release -nologo
+dotnet build .\mbot-trilby\mbot-trilby.csproj -nologo
+dotnet build .\mbot-trilby\mbot-trilby.csproj -c Release -nologo
 ```
-Both builds pass with 0 errors and 0 warnings as of 2026-02-25.
+
+Run tests:
+
+```powershell
+dotnet test .\mbot-trilby.Tests\mbot-trilby.Tests.csproj -nologo
+```
 
 ## Notes
 - Solution file appears as `.slnx` in VS 2026 (`mbot-trilby.slnx`).
