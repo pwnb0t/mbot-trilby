@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-test-publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore app for win-x64
+        run: dotnet restore .\mbot-trilby\mbot-trilby.csproj -r win-x64
+
+      - name: Build
+        run: dotnet build .\mbot-trilby\mbot-trilby.csproj -c Release --no-restore
+
+      - name: Test
+        run: dotnet test .\mbot-trilby.Tests\mbot-trilby.Tests.csproj -c Release -nologo
+
+      - name: Publish win-x64
+        run: dotnet publish .\mbot-trilby\mbot-trilby.csproj -c Release -r win-x64 --self-contained true --no-restore -o .\artifacts\publish\win-x64
+
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mbot-trilby-win-x64-publish
+          path: .\artifacts\publish\win-x64
