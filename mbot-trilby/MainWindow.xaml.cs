@@ -80,6 +80,7 @@ namespace mbottrilby
         private bool _tagWidgetPanelHover;
         private bool _recentStatsGuildWide = true;
         private bool _recentStatsIncludeRandom = true;
+        private bool _tagDropRequestInFlight;
         private bool _hotkeyRegistered;
         private bool _exitRequested;
         private TrilbyApiClientService? _trilbyApiClient;
@@ -226,7 +227,7 @@ namespace mbottrilby
 
             if (result.Success)
             {
-                _ = LoadTopClipStatsAsync("after random play");
+                // Top clips now update from websocket events.
             }
         }
 
@@ -488,9 +489,10 @@ namespace mbottrilby
         private async void TagDropZone_Drop(object sender, System.Windows.DragEventArgs e)
         {
             _tagDropZoneHover = false;
+            e.Handled = true;
             var dragData = TryGetDroppedClipAssignment(e);
             var selectedTagName = _tagWidget.SelectedTagName;
-            if (dragData is null || string.IsNullOrWhiteSpace(selectedTagName))
+            if (_tagDropRequestInFlight || dragData is null || string.IsNullOrWhiteSpace(selectedTagName))
             {
                 UpdateTagDropZone();
                 return;
@@ -502,6 +504,7 @@ namespace mbottrilby
                 return;
             }
 
+            _tagDropRequestInFlight = true;
             try
             {
                 if (IsSelectedTagRemovalDrag(dragData, selectedTagName))
@@ -514,13 +517,15 @@ namespace mbottrilby
                     await _trilbyApiClient.AddClipToTagAsync(selectedTagName, dragData.Trigger);
                     Log($"Added clip '{dragData.Trigger}' to &{selectedTagName}");
                 }
-
-                await SelectTagAsync(selectedTagName, "tag drop refresh");
             }
             catch (Exception ex)
             {
                 var action = IsSelectedTagRemovalDrag(dragData, selectedTagName) ? "remove" : "add";
                 Log($"Failed to {action} clip '{dragData.Trigger}' {(action == "remove" ? "from" : "to")} &{selectedTagName}: {ex.Message}");
+            }
+            finally
+            {
+                _tagDropRequestInFlight = false;
                 UpdateTagDropZone();
             }
         }
@@ -886,7 +891,7 @@ namespace mbottrilby
 
             if (result.Success)
             {
-                _ = LoadTopClipStatsAsync("after clip play");
+                // Top clips now update from websocket events.
             }
 
             return result.Success;
@@ -1445,6 +1450,54 @@ namespace mbottrilby
             if (trilbyEvent is TrilbyEventsClientService.ClipPlayedEvent clipPlayedEvent)
             {
                 ApplyClipPlayedEvent(clipPlayedEvent);
+                return;
+            }
+
+            if (trilbyEvent is TrilbyEventsClientService.ClipPlayCountChangedEvent clipPlayCountChangedEvent)
+            {
+                ApplyClipPlayCountChangedEvent(clipPlayCountChangedEvent);
+                return;
+            }
+
+            if (trilbyEvent is TrilbyEventsClientService.ClipCreatedEvent clipCreatedEvent)
+            {
+                ApplyClipCreatedEvent(clipCreatedEvent);
+                return;
+            }
+
+            if (trilbyEvent is TrilbyEventsClientService.ClipDeletedEvent clipDeletedEvent)
+            {
+                ApplyClipDeletedEvent(clipDeletedEvent);
+                return;
+            }
+
+            if (trilbyEvent is TrilbyEventsClientService.ClipTaggedEvent clipTaggedEvent)
+            {
+                ApplyClipTaggedEvent(clipTaggedEvent);
+                return;
+            }
+
+            if (trilbyEvent is TrilbyEventsClientService.ClipUntaggedEvent clipUntaggedEvent)
+            {
+                ApplyClipUntaggedEvent(clipUntaggedEvent);
+                return;
+            }
+
+            if (trilbyEvent is TrilbyEventsClientService.CurrentIntroUpdatedEvent currentIntroUpdatedEvent)
+            {
+                ApplyCurrentIntroUpdatedEvent(currentIntroUpdatedEvent);
+                return;
+            }
+
+            if (trilbyEvent is TrilbyEventsClientService.TagCreatedEvent tagCreatedEvent)
+            {
+                ApplyTagCreatedEvent(tagCreatedEvent);
+                return;
+            }
+
+            if (trilbyEvent is TrilbyEventsClientService.TagDeletedEvent tagDeletedEvent)
+            {
+                ApplyTagDeletedEvent(tagDeletedEvent);
             }
         }
 
@@ -1488,6 +1541,365 @@ namespace mbottrilby
             _viewModel.RecentClipStats = rows.Take(RecentClipStatsLimit).ToArray();
             _viewModel.RecentStatsStatusText = string.Empty;
             UpdateRecentClipTimeTexts();
+        }
+
+        private void ApplyClipPlayCountChangedEvent(TrilbyEventsClientService.ClipPlayCountChangedEvent clipPlayCountChangedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipPlayCountChangedEvent.GuildId)
+            {
+                return;
+            }
+
+            Log(
+                $"Received clip_play_count_changed event: trigger={clipPlayCountChangedEvent.Trigger} " +
+                $"mode={clipPlayCountChangedEvent.Mode} server={clipPlayCountChangedEvent.GuildId}");
+
+            if (!_topClipStatsGuildWide)
+            {
+                var session = _userSettings.GetSession(GetSelectedEnvironmentName());
+                if (session?.UserId is not > 0 || session.UserId != clipPlayCountChangedEvent.RequesterUserId)
+                {
+                    return;
+                }
+            }
+
+            if (!clipPlayCountChangedEvent.IsRandom)
+            {
+                _ = LoadTopClipStatsAsync("clip_play_count_changed event");
+                return;
+            }
+
+            // Current top-stats load excludes random plays, so ignore random-only updates.
+        }
+
+        private void ApplyClipCreatedEvent(TrilbyEventsClientService.ClipCreatedEvent clipCreatedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipCreatedEvent.GuildId)
+            {
+                return;
+            }
+
+            Log($"Received clip_created event: trigger={clipCreatedEvent.Trigger} server={clipCreatedEvent.GuildId}");
+
+            UpsertClipCatalogEntry(
+                new TrilbyApiClientService.ClipCatalogEntry(
+                    clipCreatedEvent.Trigger,
+                    clipCreatedEvent.SourceUrl,
+                    clipCreatedEvent.StartOffsetText,
+                    clipCreatedEvent.ClipLengthText,
+                    clipCreatedEvent.AddedByText,
+                    clipCreatedEvent.TagNames
+                        .Where(tagName => !string.IsNullOrWhiteSpace(tagName))
+                        .OrderBy(tagName => tagName, StringComparer.OrdinalIgnoreCase)
+                        .ToList()));
+            foreach (var tagName in clipCreatedEvent.TagNames.Where(tagName => !string.IsNullOrWhiteSpace(tagName)))
+            {
+                UpdateTagCatalogEntry(tagName, clipCreatedEvent.Trigger, isAdd: true);
+            }
+
+            if (string.Equals(_clipDetail.CurrentClipTrigger, clipCreatedEvent.Trigger, StringComparison.OrdinalIgnoreCase) &&
+                _clipCatalogByTrigger.TryGetValue(clipCreatedEvent.Trigger, out var clipCatalogEntry))
+            {
+                _clipDetail.ShowClip(
+                    clipCatalogEntry.Trigger,
+                    clipCatalogEntry.SourceUrl,
+                    clipCatalogEntry.StartOffsetText,
+                    clipCatalogEntry.ClipLengthText,
+                    clipCatalogEntry.AddedByText,
+                    clipCatalogEntry.TagNames);
+            }
+        }
+
+        private void ApplyClipDeletedEvent(TrilbyEventsClientService.ClipDeletedEvent clipDeletedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipDeletedEvent.GuildId)
+            {
+                return;
+            }
+
+            Log($"Received clip_deleted event: trigger={clipDeletedEvent.Trigger} server={clipDeletedEvent.GuildId}");
+            RemoveClipFromCatalogState(clipDeletedEvent.Trigger);
+        }
+
+        private void ApplyClipTaggedEvent(TrilbyEventsClientService.ClipTaggedEvent clipTaggedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipTaggedEvent.GuildId)
+            {
+                return;
+            }
+
+            Log(
+                $"Received clip_tagged event: tag=&{clipTaggedEvent.TagName} clip={clipTaggedEvent.ClipTrigger} " +
+                $"server={clipTaggedEvent.GuildId}");
+            UpdateTagMembershipState(clipTaggedEvent.TagName, clipTaggedEvent.ClipTrigger, isAdd: true);
+        }
+
+        private void ApplyClipUntaggedEvent(TrilbyEventsClientService.ClipUntaggedEvent clipUntaggedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipUntaggedEvent.GuildId)
+            {
+                return;
+            }
+
+            Log(
+                $"Received clip_untagged event: tag=&{clipUntaggedEvent.TagName} clip={clipUntaggedEvent.ClipTrigger} " +
+                $"server={clipUntaggedEvent.GuildId}");
+            UpdateTagMembershipState(clipUntaggedEvent.TagName, clipUntaggedEvent.ClipTrigger, isAdd: false);
+        }
+
+        private void ApplyCurrentIntroUpdatedEvent(TrilbyEventsClientService.CurrentIntroUpdatedEvent currentIntroUpdatedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != currentIntroUpdatedEvent.GuildId)
+            {
+                return;
+            }
+
+            var session = _userSettings.GetSession(GetSelectedEnvironmentName());
+            if (session?.UserId is not > 0 || session.UserId != currentIntroUpdatedEvent.UserId)
+            {
+                return;
+            }
+
+            Log(
+                $"Received current_intro_updated event: trigger={currentIntroUpdatedEvent.Trigger ?? "<none>"} " +
+                $"server={currentIntroUpdatedEvent.GuildId}");
+            _currentIntroSlot.Trigger = currentIntroUpdatedEvent.Trigger;
+            UpdateCurrentIntroSlot();
+        }
+
+        private void ApplyTagCreatedEvent(TrilbyEventsClientService.TagCreatedEvent tagCreatedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != tagCreatedEvent.GuildId)
+            {
+                return;
+            }
+
+            Log($"Received tag_created event: tag=&{tagCreatedEvent.TagName} server={tagCreatedEvent.GuildId}");
+            EnsureTagCatalogEntryExists(tagCreatedEvent.TagName);
+        }
+
+        private void ApplyTagDeletedEvent(TrilbyEventsClientService.TagDeletedEvent tagDeletedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != tagDeletedEvent.GuildId)
+            {
+                return;
+            }
+
+            Log($"Received tag_deleted event: tag=&{tagDeletedEvent.TagName} server={tagDeletedEvent.GuildId}");
+            RemoveTagFromCatalogState(tagDeletedEvent.TagName);
+        }
+
+        private void UpdateTagMembershipState(string tagName, string clipTrigger, bool isAdd)
+        {
+            var normalizedTagName = tagName.Trim();
+            var normalizedTrigger = clipTrigger.Trim();
+            if (normalizedTagName.Length == 0 || normalizedTrigger.Length == 0)
+            {
+                return;
+            }
+
+            UpdateTagCatalogEntry(normalizedTagName, normalizedTrigger, isAdd);
+            UpdateClipCatalogEntryTags(normalizedTrigger, normalizedTagName, isAdd);
+            UpdateSelectedTagWidget(normalizedTagName);
+            UpdateClipDetailForTagMembershipChange(normalizedTagName, normalizedTrigger);
+        }
+
+        private void UpdateTagCatalogEntry(string tagName, string clipTrigger, bool isAdd)
+        {
+            if (!_tagCatalogByName.TryGetValue(tagName, out var existingTag))
+            {
+                if (!isAdd)
+                {
+                    return;
+                }
+
+                EnsureTagCatalogEntryExists(tagName);
+                existingTag = _tagCatalogByName[tagName];
+
+            }
+
+            var updatedTriggers = existingTag.ClipTriggers.ToList();
+            if (isAdd)
+            {
+                if (!updatedTriggers.Contains(clipTrigger, StringComparer.OrdinalIgnoreCase))
+                {
+                    updatedTriggers.Add(clipTrigger);
+                }
+            }
+            else
+            {
+                updatedTriggers.RemoveAll(trigger => string.Equals(trigger, clipTrigger, StringComparison.OrdinalIgnoreCase));
+            }
+
+            updatedTriggers.Sort(StringComparer.OrdinalIgnoreCase);
+            _tagCatalogByName[tagName] = new TrilbyApiClientService.TagCatalogEntry(tagName, updatedTriggers);
+        }
+
+        private void EnsureTagCatalogEntryExists(string tagName)
+        {
+            if (_tagCatalogByName.ContainsKey(tagName))
+            {
+                return;
+            }
+
+            _tagCatalogByName[tagName] = new TrilbyApiClientService.TagCatalogEntry(tagName, Array.Empty<string>());
+            if (_allTagNames.Contains(tagName, StringComparer.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            _allTagNames.Add(tagName);
+            _allTagNames.Sort(StringComparer.OrdinalIgnoreCase);
+            _clipSearchState.SetSource(_allClipTriggers, _allTagNames);
+            RenderSearchState();
+        }
+
+        private void UpsertClipCatalogEntry(TrilbyApiClientService.ClipCatalogEntry clipEntry)
+        {
+            _clipCatalogByTrigger[clipEntry.Trigger] = clipEntry;
+            if (!_allClipTriggers.Contains(clipEntry.Trigger, StringComparer.OrdinalIgnoreCase))
+            {
+                _allClipTriggers.Add(clipEntry.Trigger);
+                _allClipTriggers.Sort(StringComparer.OrdinalIgnoreCase);
+            }
+
+            _clipSearchState.SetSource(_allClipTriggers, _allTagNames);
+            RenderSearchState();
+            UpdateClipCountText(_allClipTriggers.Count, "loaded");
+        }
+
+        private void RemoveClipFromCatalogState(string trigger)
+        {
+            if (!_clipCatalogByTrigger.Remove(trigger))
+            {
+                return;
+            }
+
+            _allClipTriggers.RemoveAll(existingTrigger =>
+                string.Equals(existingTrigger, trigger, StringComparison.OrdinalIgnoreCase));
+            foreach (var tagName in _tagCatalogByName.Keys.ToList())
+            {
+                UpdateTagCatalogEntry(tagName, trigger, isAdd: false);
+            }
+
+            _clipSearchState.SetSource(_allClipTriggers, _allTagNames);
+            RenderSearchState();
+            UpdateClipCountText(_allClipTriggers.Count, "loaded");
+
+            if (string.Equals(_clipDetail.CurrentClipTrigger, trigger, StringComparison.OrdinalIgnoreCase))
+            {
+                _clipDetail.ShowPlaceholder();
+            }
+        }
+
+        private void RemoveTagFromCatalogState(string tagName)
+        {
+            var removed = _tagCatalogByName.Remove(tagName);
+            _allTagNames.RemoveAll(existingTagName =>
+                string.Equals(existingTagName, tagName, StringComparison.OrdinalIgnoreCase));
+            foreach (var clipTrigger in _clipCatalogByTrigger.Keys.ToList())
+            {
+                UpdateClipCatalogEntryTags(clipTrigger, tagName, isAdd: false);
+            }
+
+            _clipSearchState.SetSource(_allClipTriggers, _allTagNames);
+            RenderSearchState();
+
+            if (_tagWidget.HasSelectedTag &&
+                string.Equals(_tagWidget.SelectedTagName, tagName, StringComparison.OrdinalIgnoreCase))
+            {
+                _tagWidget.ClearSelection();
+                SetCurrentSelectedTagName(null);
+                SaveUserSettings();
+            }
+
+            if (string.Equals(_clipDetail.CurrentTagName, tagName, StringComparison.OrdinalIgnoreCase))
+            {
+                _clipDetail.ShowPlaceholder();
+            }
+
+            if (removed)
+            {
+                UpdateSelectedTagWidget(tagName);
+            }
+        }
+
+        private void UpdateClipCatalogEntryTags(string clipTrigger, string tagName, bool isAdd)
+        {
+            if (!_clipCatalogByTrigger.TryGetValue(clipTrigger, out var existingClip))
+            {
+                return;
+            }
+
+            var updatedTagNames = existingClip.TagNames.ToList();
+            if (isAdd)
+            {
+                if (!updatedTagNames.Contains(tagName, StringComparer.OrdinalIgnoreCase))
+                {
+                    updatedTagNames.Add(tagName);
+                }
+            }
+            else
+            {
+                updatedTagNames.RemoveAll(existingTag => string.Equals(existingTag, tagName, StringComparison.OrdinalIgnoreCase));
+            }
+
+            updatedTagNames.Sort(StringComparer.OrdinalIgnoreCase);
+            _clipCatalogByTrigger[clipTrigger] = new TrilbyApiClientService.ClipCatalogEntry(
+                existingClip.Trigger,
+                existingClip.SourceUrl,
+                existingClip.StartOffsetText,
+                existingClip.ClipLengthText,
+                existingClip.AddedByText,
+                updatedTagNames);
+        }
+
+        private void UpdateSelectedTagWidget(string tagName)
+        {
+            if (!_tagWidget.HasSelectedTag ||
+                !string.Equals(_tagWidget.SelectedTagName, tagName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            if (!_tagCatalogByName.TryGetValue(tagName, out var tagCatalogEntry))
+            {
+                return;
+            }
+
+            var clips = tagCatalogEntry.ClipTriggers
+                .Select(trigger => new TagClipEntryViewModel(trigger, tagCatalogEntry.Name))
+                .ToArray();
+            _tagWidget.SetLoaded(tagCatalogEntry.Name, clips);
+        }
+
+        private void UpdateClipDetailForTagMembershipChange(string tagName, string clipTrigger)
+        {
+            if (string.Equals(_clipDetail.CurrentTagName, tagName, StringComparison.OrdinalIgnoreCase) &&
+                _tagCatalogByName.TryGetValue(tagName, out var tagCatalogEntry))
+            {
+                _clipDetail.ShowTag(tagCatalogEntry.Name, tagCatalogEntry.ClipTriggers);
+            }
+
+            if (string.Equals(_clipDetail.CurrentClipTrigger, clipTrigger, StringComparison.OrdinalIgnoreCase) &&
+                _clipCatalogByTrigger.TryGetValue(clipTrigger, out var clipCatalogEntry))
+            {
+                _clipDetail.ShowClip(
+                    clipCatalogEntry.Trigger,
+                    clipCatalogEntry.SourceUrl,
+                    clipCatalogEntry.StartOffsetText,
+                    clipCatalogEntry.ClipLengthText,
+                    clipCatalogEntry.AddedByText,
+                    clipCatalogEntry.TagNames);
+            }
         }
 
         private void UpdateQuickPlaySlots()

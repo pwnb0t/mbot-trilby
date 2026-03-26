@@ -80,6 +80,10 @@ namespace mbottrilby.ViewModels
 
         public bool HasTag => _contentKind == DetailContentKind.Tag;
 
+        public string? CurrentClipTrigger => HasClip ? TriggerText : null;
+
+        public string? CurrentTagName => HasTag && TriggerText.StartsWith("&") ? TriggerText[1..] : null;
+
         public void ShowPlaceholder()
         {
             TitleText = "Clip Details";
