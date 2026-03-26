@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-package-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            10.0.x
+            9.0.x
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $version = $tag.TrimStart('v')
+          "tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Restore app for win-x64
+        run: dotnet restore .\mbot-trilby\mbot-trilby.csproj -r win-x64
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Build
+        run: dotnet build .\mbot-trilby\mbot-trilby.csproj -c Release --no-restore /p:Version=${{ steps.version.outputs.version }} /p:InformationalVersion=${{ steps.version.outputs.version }}
+
+      - name: Test
+        run: dotnet test .\mbot-trilby.Tests\mbot-trilby.Tests.csproj -c Release -nologo /p:Version=${{ steps.version.outputs.version }} /p:InformationalVersion=${{ steps.version.outputs.version }}
+
+      - name: Publish win-x64
+        run: dotnet publish .\mbot-trilby\mbot-trilby.csproj -c Release -r win-x64 --self-contained true --no-restore /p:Version=${{ steps.version.outputs.version }} /p:InformationalVersion=${{ steps.version.outputs.version }} -o .\artifacts\publish\win-x64
+
+      - name: Package with Velopack
+        run: >
+          dotnet tool run vpk pack
+          --packId mbot-trilby
+          --packVersion ${{ steps.version.outputs.version }}
+          --packDir .\artifacts\publish\win-x64
+          --mainExe mbot-trilby.exe
+          --packTitle "mbot-trilby"
+          --outputDir .\artifacts\velopack
+          --icon .\mbot.ico
+
+      - name: Generate SHA256 checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem .\artifacts\velopack -File |
+            Get-FileHash -Algorithm SHA256 |
+            ForEach-Object { "{0} *{1}" -f $_.Hash.ToLowerInvariant(), (Split-Path $_.Path -Leaf) } |
+            Set-Content .\artifacts\velopack\SHA256SUMS.txt
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: mbot-trilby-release-${{ steps.version.outputs.version }}
+          path: .\artifacts\velopack
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = "${{ steps.version.outputs.tag }}"
+          $title = "mbot-trilby $tag"
+          $files = Get-ChildItem .\artifacts\velopack -File | ForEach-Object { $_.FullName }
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag $files --clobber
+          } else {
+            gh release create $tag $files --title $title --generate-notes
+          }
