@@ -77,6 +77,7 @@ namespace mbottrilby
         private bool _clipAssignmentDragActive;
         private int _quickPlayDragHoverSlot;
         private bool _currentIntroDragHover;
+        private int _refreshOperationCount;
         private bool _recentStatsGuildWide = true;
         private bool _recentStatsIncludeRandom = true;
         private bool _personalTagDropRequestInFlight;
@@ -203,25 +204,14 @@ namespace mbottrilby
                 return;
             }
 
-            _viewModel.IsRefreshInProgress = true;
-
-            try
+            using var refreshScope = BeginRefreshOperation();
+            if (!await EnsureAuthenticatedApiClientAsync("manual refresh"))
             {
-                if (!await EnsureAuthenticatedApiClientAsync("manual refresh"))
-                {
-                    return;
-                }
+                return;
+            }
 
-                await LoadClipCatalogAsync("manual refresh");
-                await LoadTagCatalogAsync("manual refresh");
-                await LoadTopClipStatsAsync("manual refresh");
-                await LoadRecentClipStatsAsync("manual refresh");
-                await LoadCurrentIntroAsync("manual refresh");
-            }
-            finally
-            {
-                _viewModel.IsRefreshInProgress = false;
-            }
+            await EnsureEventsClientAsync("manual refresh");
+            await RefreshOverlayDataAsync("manual refresh");
         }
 
         private async void PlayRandomButton_Click(object sender, RoutedEventArgs e)
@@ -2171,6 +2161,7 @@ namespace mbottrilby
 
         private async System.Threading.Tasks.Task InitializeAuthenticatedStateAsync(string reason)
         {
+            using var refreshScope = BeginRefreshOperation();
             if (!await EnsureAuthenticatedApiClientAsync(reason))
             {
                 await StopEventsClientAsync();
@@ -2190,17 +2181,22 @@ namespace mbottrilby
 
             await EnsureEventsClientAsync(reason);
             _ = InitializeHealthCheckAsync();
-            _ = LoadClipCatalogAsync(reason);
-            _ = InitializeTagStateAsync(reason);
-            _ = LoadTopClipStatsAsync(reason);
-            _ = LoadRecentClipStatsAsync(reason);
-            _ = LoadCurrentIntroAsync(reason);
+            await RefreshOverlayDataAsync(reason);
         }
 
         private async System.Threading.Tasks.Task InitializeTagStateAsync(string reason)
         {
             await LoadTagCatalogAsync(reason);
             await LoadSharedTagAsync(reason);
+        }
+
+        private async System.Threading.Tasks.Task RefreshOverlayDataAsync(string reason)
+        {
+            await LoadClipCatalogAsync(reason);
+            await InitializeTagStateAsync(reason);
+            await LoadTopClipStatsAsync(reason);
+            await LoadRecentClipStatsAsync(reason);
+            await LoadCurrentIntroAsync(reason);
         }
 
         private async System.Threading.Tasks.Task<bool> EnsureAuthenticatedApiClientAsync(string reason)
@@ -2570,6 +2566,23 @@ namespace mbottrilby
             return "No server selected";
         }
 
+        private IDisposable BeginRefreshOperation()
+        {
+            _refreshOperationCount += 1;
+            _viewModel.IsRefreshInProgress = _refreshOperationCount > 0;
+            return new RefreshOperationScope(this);
+        }
+
+        private void EndRefreshOperation()
+        {
+            if (_refreshOperationCount > 0)
+            {
+                _refreshOperationCount -= 1;
+            }
+
+            _viewModel.IsRefreshInProgress = _refreshOperationCount > 0;
+        }
+
         private static int GetQuickPlaySlotIndex(object sender)
         {
             if (sender is not System.Windows.Controls.Button button)
@@ -2694,6 +2707,28 @@ namespace mbottrilby
             Shift = 0x0004,
             Win = 0x0008,
             NoRepeat = 0x4000
+        }
+
+        private sealed class RefreshOperationScope : IDisposable
+        {
+            private readonly MainWindow _owner;
+            private bool _disposed;
+
+            public RefreshOperationScope(MainWindow owner)
+            {
+                _owner = owner;
+            }
+
+            public void Dispose()
+            {
+                if (_disposed)
+                {
+                    return;
+                }
+
+                _disposed = true;
+                _owner.EndRefreshOperation();
+            }
         }
 
     }

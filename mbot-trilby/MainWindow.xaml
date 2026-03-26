@@ -73,6 +73,7 @@
                             <Button Style="{StaticResource TopBarButtonStyle}"
                                     Click="RefreshClipsButton_Click"
                                     MinWidth="120"
+                                    Height="34"
                                     IsEnabled="{Binding IsRefreshAvailable}">
                                 <Grid>
                                     <TextBlock Text="Refresh">
@@ -80,7 +81,7 @@
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="Visibility" Value="Visible" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsRefreshInProgress}" Value="True">
+                                                    <DataTrigger Binding="{Binding DataContext.IsRefreshInProgress, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
                                                         <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -94,7 +95,7 @@
                                             <Style TargetType="StackPanel">
                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsRefreshInProgress}" Value="True">
+                                                    <DataTrigger Binding="{Binding DataContext.IsRefreshInProgress, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
