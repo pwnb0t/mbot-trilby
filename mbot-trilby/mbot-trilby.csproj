@@ -10,11 +10,15 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <StartupObject>mbottrilby.App</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
     <Compile Remove="src\Generated\**\*.cs" />
     <ProjectReference Include="src\Generated\TrilbyApi\src\TrilbyApi\TrilbyApi.csproj" />
+    <PackageReference Include="Velopack" Version="0.0.1298" />
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
