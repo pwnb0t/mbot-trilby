@@ -21,6 +21,7 @@ namespace mbottrilby.ViewModels
         private IReadOnlyList<RecentClipEntryViewModel> _recentClipStats = new List<RecentClipEntryViewModel>();
         private IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots = new List<QuickPlaySlotViewModel>();
         private CurrentIntroSlotViewModel _currentIntroSlot = new();
+        private TagWidgetViewModel _sharedTagWidget = new("Server Tag");
         private TagWidgetViewModel _tagWidget = new();
         private ClipDetailViewModel _clipDetail = new();
 
@@ -112,6 +113,12 @@ namespace mbottrilby.ViewModels
         {
             get => _currentIntroSlot;
             set => SetField(ref _currentIntroSlot, value);
+        }
+
+        public TagWidgetViewModel SharedTagWidget
+        {
+            get => _sharedTagWidget;
+            set => SetField(ref _sharedTagWidget, value);
         }
 
         public TagWidgetViewModel TagWidget

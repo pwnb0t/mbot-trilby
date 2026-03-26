@@ -10,6 +10,7 @@ All URIs are relative to *http://127.0.0.1:28765*
 | [**GetCurrentIntro**](DefaultApi.md#getcurrentintro) | **GET** /v1/guilds/{guild_id}/intros/current | Get Current Intro |
 | [**GetHealth**](DefaultApi.md#gethealth) | **GET** /v1/health | Health |
 | [**GetRecentClipStats**](DefaultApi.md#getrecentclipstats) | **GET** /v1/guilds/{guild_id}/clips/stats/recent | Recent Clip Stats |
+| [**GetSharedTag**](DefaultApi.md#getsharedtag) | **GET** /v1/guilds/{guild_id}/shared-tag | Get Shared Tag |
 | [**GetTopClipStats**](DefaultApi.md#gettopclipstats) | **GET** /v1/guilds/{guild_id}/clips/stats/top | Top Clip Stats |
 | [**ListClips**](DefaultApi.md#listclips) | **GET** /v1/guilds/{guild_id}/clips | List Clips |
 | [**ListTagClips**](DefaultApi.md#listtagclips) | **GET** /v1/guilds/{guild_id}/tags/{tag_name}/clips | List Tag Clips |
@@ -19,6 +20,7 @@ All URIs are relative to *http://127.0.0.1:28765*
 | [**RefreshTrilbySession**](DefaultApi.md#refreshtrilbysession) | **POST** /v1/auth/refresh | Refresh Trilby Session |
 | [**RemoveTagClip**](DefaultApi.md#removetagclip) | **DELETE** /v1/guilds/{guild_id}/tags/{tag_name}/clips/{clip_trigger} | Remove Tag Clip |
 | [**SetCurrentIntro**](DefaultApi.md#setcurrentintro) | **PUT** /v1/guilds/{guild_id}/intros/current | Set Current Intro |
+| [**SetSharedTag**](DefaultApi.md#setsharedtag) | **PUT** /v1/guilds/{guild_id}/shared-tag | Set Shared Tag |
 | [**StartDiscordAuth**](DefaultApi.md#startdiscordauth) | **GET** /v1/auth/discord/start | Start Discord Auth |
 | [**StopClip**](DefaultApi.md#stopclip) | **POST** /v1/guilds/{guild_id}/clips/stop | Stop Clip |
 
@@ -219,6 +221,43 @@ Recent Clip Stats
 ### Return type
 
 [**RecentClipStatsResponse**](RecentClipStatsResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="getsharedtag"></a>
+# **GetSharedTag**
+> GetSharedTagResponse GetSharedTag (long guildId)
+
+Get Shared Tag
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **guildId** | **long** |  |  |
+
+### Return type
+
+[**GetSharedTagResponse**](GetSharedTagResponse.md)
 
 ### Authorization
 
@@ -589,6 +628,45 @@ Set Current Intro
 | **200** | Successful Response |  -  |
 | **401** | Unauthorized error response. |  -  |
 | **400** | Bad request error response. |  -  |
+| **404** | Not found error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="setsharedtag"></a>
+# **SetSharedTag**
+> SetSharedTagResponse SetSharedTag (long guildId, SetSharedTagBody setSharedTagBody)
+
+Set Shared Tag
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **guildId** | **long** |  |  |
+| **setSharedTagBody** | [**SetSharedTagBody**](SetSharedTagBody.md) |  |  |
+
+### Return type
+
+[**SetSharedTagResponse**](SetSharedTagResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
 | **404** | Not found error response. |  -  |
 | **500** | Internal error response. |  -  |
 | **422** | Validation Error |  -  |

@@ -49,6 +49,7 @@ namespace TrilbyApi.Client
             _jsonOptions.Converters.Add(new AuthenticatedTrilbyGuildJsonConverter());
             _jsonOptions.Converters.Add(new ClipSummaryJsonConverter());
             _jsonOptions.Converters.Add(new GetCurrentIntroResponseJsonConverter());
+            _jsonOptions.Converters.Add(new GetSharedTagResponseJsonConverter());
             _jsonOptions.Converters.Add(new HTTPValidationErrorJsonConverter());
             _jsonOptions.Converters.Add(new HealthResponseJsonConverter());
             _jsonOptions.Converters.Add(new ListClipsResponseJsonConverter());
@@ -67,6 +68,8 @@ namespace TrilbyApi.Client
             _jsonOptions.Converters.Add(new SessionSummaryResponseJsonConverter());
             _jsonOptions.Converters.Add(new SetCurrentIntroBodyJsonConverter());
             _jsonOptions.Converters.Add(new SetCurrentIntroResponseJsonConverter());
+            _jsonOptions.Converters.Add(new SetSharedTagBodyJsonConverter());
+            _jsonOptions.Converters.Add(new SetSharedTagResponseJsonConverter());
             _jsonOptions.Converters.Add(new StopClipBodyJsonConverter());
             _jsonOptions.Converters.Add(new StopClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new TagClipSummaryJsonConverter());

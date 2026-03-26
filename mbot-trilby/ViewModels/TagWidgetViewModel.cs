@@ -6,8 +6,10 @@ namespace mbottrilby.ViewModels
 {
     internal sealed class TagWidgetViewModel : INotifyPropertyChanged
     {
-        private string _titleText = "Tag: no &tag selected";
-        private string _statusText = "Search for an existing &tag";
+        private readonly string _widgetLabel;
+        private readonly string _emptyStatusText;
+        private string _titleText;
+        private string _statusText;
         private IReadOnlyList<TagClipEntryViewModel> _clips = new List<TagClipEntryViewModel>();
         private string? _selectedTagName;
         private bool _isDragHoverTarget;
@@ -15,6 +17,14 @@ namespace mbottrilby.ViewModels
         private bool _isRemoveDragOperation;
         private bool _isTagDragHoverTarget;
         private bool _isTagDragAvailableTarget;
+
+        public TagWidgetViewModel(string widgetLabel = "Tag", string emptyStatusText = "Search for an existing &tag")
+        {
+            _widgetLabel = widgetLabel;
+            _emptyStatusText = emptyStatusText;
+            _titleText = $"{_widgetLabel}: no &tag selected";
+            _statusText = _emptyStatusText;
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -142,8 +152,8 @@ namespace mbottrilby.ViewModels
         public void ClearSelection()
         {
             SelectedTagName = null;
-            TitleText = "Tag: no &tag selected";
-            StatusText = "Search for an existing &tag";
+            TitleText = $"{_widgetLabel}: no &tag selected";
+            StatusText = _emptyStatusText;
             Clips = new List<TagClipEntryViewModel>();
             IsDragHoverTarget = false;
             IsDragAvailableTarget = false;
@@ -155,7 +165,7 @@ namespace mbottrilby.ViewModels
         public void SetLoading(string tagName)
         {
             SelectedTagName = tagName;
-            TitleText = $"Tag: &{tagName}";
+            TitleText = $"{_widgetLabel}: &{tagName}";
             StatusText = $"Loading clips for &{tagName}...";
             Clips = new List<TagClipEntryViewModel>();
             IsRemoveDragOperation = false;
@@ -166,7 +176,7 @@ namespace mbottrilby.ViewModels
         public void SetLoaded(string tagName, IReadOnlyList<TagClipEntryViewModel> clips)
         {
             SelectedTagName = tagName;
-            TitleText = $"Tag: &{tagName}";
+            TitleText = $"{_widgetLabel}: &{tagName}";
             StatusText = clips.Count == 0 ? $"No clips in &{tagName} yet." : string.Empty;
             Clips = clips;
             IsRemoveDragOperation = false;
@@ -177,7 +187,7 @@ namespace mbottrilby.ViewModels
         public void SetFailed(string tagName, string message)
         {
             SelectedTagName = tagName;
-            TitleText = $"Tag: &{tagName}";
+            TitleText = $"{_widgetLabel}: &{tagName}";
             StatusText = message;
             Clips = new List<TagClipEntryViewModel>();
             IsRemoveDragOperation = false;

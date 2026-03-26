@@ -673,6 +673,103 @@ paths:
       security:
       - HTTPBearer: []
       summary: Set Current Intro
+  /v1/guilds/{guild_id}/shared-tag:
+    get:
+      operationId: GetSharedTag
+      parameters:
+      - explode: false
+        in: path
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetSharedTagResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get Shared Tag
+    put:
+      operationId: SetSharedTag
+      parameters:
+      - explode: false
+        in: path
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetSharedTagBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SetSharedTagResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Not found error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Set Shared Tag
   /v1/guilds/{guild_id}/tags:
     get:
       operationId: ListTags
@@ -1062,6 +1159,26 @@ components:
       - ok
       - requester_user_id
       title: GetCurrentIntroResponse
+    GetSharedTagResponse:
+      example:
+        tag_name: tag_name
+        guild_id: 0
+        ok: true
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        tag_name:
+          title: Tag Name
+          type: string
+      required:
+      - guild_id
+      - ok
+      title: GetSharedTagResponse
     HTTPValidationError:
       example:
         detail:
@@ -1579,6 +1696,39 @@ components:
       - requester_user_id
       - trigger
       title: SetCurrentIntroResponse
+    SetSharedTagBody:
+      example:
+        tag_name: tag_name
+      properties:
+        tag_name:
+          maxLength: 255
+          minLength: 1
+          title: Tag Name
+          type: string
+      required:
+      - tag_name
+      title: SetSharedTagBody
+    SetSharedTagResponse:
+      example:
+        tag_name: tag_name
+        guild_id: 0
+        ok: true
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        guild_id:
+          format: int64
+          title: Guild Id
+          type: integer
+        tag_name:
+          title: Tag Name
+          type: string
+      required:
+      - guild_id
+      - ok
+      - tag_name
+      title: SetSharedTagResponse
     StopClipBody:
       example:
         request_id: request_id

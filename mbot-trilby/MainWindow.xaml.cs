@@ -68,7 +68,8 @@ namespace mbottrilby
         private readonly IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots;
         private readonly ClipDragSourceBehavior _clipDragSourceBehavior = new();
         private readonly CurrentIntroSlotViewModel _currentIntroSlot = new();
-        private readonly TagWidgetViewModel _tagWidget = new();
+        private readonly TagWidgetViewModel _sharedTagWidget = new("Server Tag");
+        private readonly TagWidgetViewModel _tagWidget = new("Tag");
         private readonly ClipDetailViewModel _clipDetail = new();
         private ClipAssignmentDragData? _activeClipAssignmentDragData;
         private string _topClipStatsDays = "7";
@@ -76,11 +77,10 @@ namespace mbottrilby
         private bool _clipAssignmentDragActive;
         private int _quickPlayDragHoverSlot;
         private bool _currentIntroDragHover;
-        private bool _tagDropZoneHover;
-        private bool _tagWidgetPanelHover;
         private bool _recentStatsGuildWide = true;
         private bool _recentStatsIncludeRandom = true;
-        private bool _tagDropRequestInFlight;
+        private bool _personalTagDropRequestInFlight;
+        private bool _sharedTagDropRequestInFlight;
         private bool _hotkeyRegistered;
         private bool _exitRequested;
         private TrilbyApiClientService? _trilbyApiClient;
@@ -132,6 +132,7 @@ namespace mbottrilby
                 .ToArray();
             _viewModel.QuickPlaySlots = _quickPlaySlots;
             _viewModel.CurrentIntroSlot = _currentIntroSlot;
+            _viewModel.SharedTagWidget = _sharedTagWidget;
             _viewModel.TagWidget = _tagWidget;
             _viewModel.ClipDetail = _clipDetail;
             _clipDetail.ShowPlaceholder();
@@ -351,12 +352,13 @@ namespace mbottrilby
             {
                 _quickPlayDragHoverSlot = 0;
                 _currentIntroDragHover = false;
-                _tagDropZoneHover = false;
+                _tagWidget.IsDragHoverTarget = false;
+                _sharedTagWidget.IsDragHoverTarget = false;
             }
 
             UpdateQuickPlaySlots();
             UpdateCurrentIntroSlot();
-            UpdateTagDropZone();
+            UpdateTagDropZones();
         }
 
         private async void TopClipStatsItemButton_Click(object sender, RoutedEventArgs e)
@@ -397,58 +399,89 @@ namespace mbottrilby
 
         private async void TagWidgetPlayRandomButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(_tagWidget.SelectedTagName))
+            var tagWidget = GetTagWidgetFromSender(sender);
+            if (tagWidget is null || string.IsNullOrWhiteSpace(tagWidget.SelectedTagName))
             {
                 return;
             }
 
-            await PlayRandomTagResultAsync(_tagWidget.SelectedTagName, "tag widget");
+            await PlayRandomTagResultAsync(tagWidget.SelectedTagName, IsSharedTagWidget(tagWidget) ? "shared tag widget" : "tag widget");
         }
 
         private void TagWidgetPanel_DragEnter(object sender, System.Windows.DragEventArgs e)
         {
+            var tagWidget = GetTagWidgetFromSender(sender);
+            if (tagWidget is null)
+            {
+                return;
+            }
+
             if (!HasTagSelectionDragData(e))
             {
                 return;
             }
 
-            _tagWidgetPanelHover = true;
-            UpdateTagDropZone();
+            tagWidget.IsTagDragHoverTarget = true;
+            UpdateTagDropZones();
             e.Effects = System.Windows.DragDropEffects.Copy;
             e.Handled = true;
         }
 
         private void TagWidgetPanel_DragLeave(object sender, System.Windows.DragEventArgs e)
         {
-            _tagWidgetPanelHover = false;
-            UpdateTagDropZone();
+            var tagWidget = GetTagWidgetFromSender(sender);
+            if (tagWidget is null)
+            {
+                return;
+            }
+
+            tagWidget.IsTagDragHoverTarget = false;
+            UpdateTagDropZones();
         }
 
         private void TagWidgetPanel_DragOver(object sender, System.Windows.DragEventArgs e)
         {
+            var tagWidget = GetTagWidgetFromSender(sender);
+            if (tagWidget is null)
+            {
+                return;
+            }
+
             if (!HasTagSelectionDragData(e))
             {
                 return;
             }
 
-            _tagWidgetPanelHover = true;
-            UpdateTagDropZone();
+            tagWidget.IsTagDragHoverTarget = true;
+            UpdateTagDropZones();
             e.Effects = System.Windows.DragDropEffects.Copy;
             e.Handled = true;
         }
 
         private async void TagWidgetPanel_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            _tagWidgetPanelHover = false;
+            var tagWidget = GetTagWidgetFromSender(sender);
+            if (tagWidget is null)
+            {
+                return;
+            }
+
+            tagWidget.IsTagDragHoverTarget = false;
             var dragData = TryGetDroppedClipAssignment(e);
             if (dragData is null || dragData.Kind != OverlayDragDataKind.Tag || string.IsNullOrWhiteSpace(dragData.TagName))
             {
-                UpdateTagDropZone();
+                UpdateTagDropZones();
                 return;
             }
 
             e.Handled = true;
-            UpdateTagDropZone();
+            UpdateTagDropZones();
+            if (IsSharedTagWidget(tagWidget))
+            {
+                await SetSharedTagAsync(dragData.TagName, "shared tag drag drop");
+                return;
+            }
+
             await SelectTagAsync(dragData.TagName, "tag drag drop");
         }
 
@@ -461,26 +494,34 @@ namespace mbottrilby
 
         private void TagDropZone_DragEnter(object sender, System.Windows.DragEventArgs e)
         {
-            if (!_tagWidget.HasSelectedTag || !HasClipTriggerDragData(e))
+            var tagWidget = GetTagWidgetFromSender(sender);
+            if (tagWidget is null || !tagWidget.HasSelectedTag || !HasClipTriggerDragData(e))
             {
                 e.Effects = System.Windows.DragDropEffects.None;
                 return;
             }
 
-            _tagDropZoneHover = true;
+            tagWidget.IsDragHoverTarget = true;
             e.Effects = System.Windows.DragDropEffects.Copy;
-            UpdateTagDropZone();
+            UpdateTagDropZones();
         }
 
         private void TagDropZone_DragLeave(object sender, System.Windows.DragEventArgs e)
         {
-            _tagDropZoneHover = false;
-            UpdateTagDropZone();
+            var tagWidget = GetTagWidgetFromSender(sender);
+            if (tagWidget is null)
+            {
+                return;
+            }
+
+            tagWidget.IsDragHoverTarget = false;
+            UpdateTagDropZones();
         }
 
         private void TagDropZone_DragOver(object sender, System.Windows.DragEventArgs e)
         {
-            e.Effects = _tagWidget.HasSelectedTag && HasClipTriggerDragData(e)
+            var tagWidget = GetTagWidgetFromSender(sender);
+            e.Effects = tagWidget is not null && tagWidget.HasSelectedTag && HasClipTriggerDragData(e)
                 ? System.Windows.DragDropEffects.Copy
                 : System.Windows.DragDropEffects.None;
             e.Handled = true;
@@ -488,23 +529,29 @@ namespace mbottrilby
 
         private async void TagDropZone_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            _tagDropZoneHover = false;
+            var tagWidget = GetTagWidgetFromSender(sender);
+            if (tagWidget is null)
+            {
+                return;
+            }
+
+            tagWidget.IsDragHoverTarget = false;
             e.Handled = true;
             var dragData = TryGetDroppedClipAssignment(e);
-            var selectedTagName = _tagWidget.SelectedTagName;
-            if (_tagDropRequestInFlight || dragData is null || string.IsNullOrWhiteSpace(selectedTagName))
+            var selectedTagName = tagWidget.SelectedTagName;
+            if (GetTagDropRequestInFlight(tagWidget) || dragData is null || string.IsNullOrWhiteSpace(selectedTagName))
             {
-                UpdateTagDropZone();
+                UpdateTagDropZones();
                 return;
             }
 
             if (_trilbyApiClient is null)
             {
-                UpdateTagDropZone();
+                UpdateTagDropZones();
                 return;
             }
 
-            _tagDropRequestInFlight = true;
+            SetTagDropRequestInFlight(tagWidget, true);
             try
             {
                 if (IsSelectedTagRemovalDrag(dragData, selectedTagName))
@@ -525,8 +572,8 @@ namespace mbottrilby
             }
             finally
             {
-                _tagDropRequestInFlight = false;
-                UpdateTagDropZone();
+                SetTagDropRequestInFlight(tagWidget, false);
+                UpdateTagDropZones();
             }
         }
 
@@ -839,7 +886,12 @@ namespace mbottrilby
 
             if (_tagWidget.HasSelectedTag && !string.IsNullOrWhiteSpace(_tagWidget.SelectedTagName))
             {
-                await SelectTagAsync(_tagWidget.SelectedTagName, $"{reason} tag refresh");
+                LoadTagWidgetFromCatalog(_tagWidget, _tagWidget.SelectedTagName);
+            }
+
+            if (_sharedTagWidget.HasSelectedTag && !string.IsNullOrWhiteSpace(_sharedTagWidget.SelectedTagName))
+            {
+                LoadTagWidgetFromCatalog(_sharedTagWidget, _sharedTagWidget.SelectedTagName);
             }
         }
 
@@ -870,6 +922,74 @@ namespace mbottrilby
             {
                 _tagWidget.SetFailed(tagName, $"Failed to load &{tagName}");
                 Log($"Load tag clips failed for &{tagName}: {ex.Message}");
+            }
+        }
+
+        private void LoadTagWidgetFromCatalog(TagWidgetViewModel tagWidget, string tagName)
+        {
+            if (!_tagCatalogByName.TryGetValue(tagName, out var catalog))
+            {
+                tagWidget.SetFailed(tagName, $"Failed to load &{tagName}");
+                return;
+            }
+
+            var clips = catalog.ClipTriggers
+                .Select(trigger => new TagClipEntryViewModel(trigger, catalog.Name))
+                .ToArray();
+            tagWidget.SetLoaded(catalog.Name, clips);
+        }
+
+        private async System.Threading.Tasks.Task LoadSharedTagAsync(string reason)
+        {
+            if (_trilbyApiClient is null)
+            {
+                _sharedTagWidget.ClearSelection();
+                return;
+            }
+
+            try
+            {
+                Log($"Loading shared tag ({reason})...");
+                var sharedTagName = await _trilbyApiClient.GetSharedTagAsync();
+                if (string.IsNullOrWhiteSpace(sharedTagName))
+                {
+                    _sharedTagWidget.ClearSelection();
+                    return;
+                }
+
+                if (_tagCatalogByName.ContainsKey(sharedTagName))
+                {
+                    LoadTagWidgetFromCatalog(_sharedTagWidget, sharedTagName);
+                }
+                else
+                {
+                    _sharedTagWidget.SetLoading(sharedTagName);
+                }
+            }
+            catch (Exception ex)
+            {
+                _sharedTagWidget.SetFailed("shared", "Failed to load shared &tag");
+                Log($"Load shared tag failed: {ex.Message}");
+            }
+        }
+
+        private async System.Threading.Tasks.Task SetSharedTagAsync(string tagName, string reason)
+        {
+            if (_trilbyApiClient is null)
+            {
+                _sharedTagWidget.SetFailed(tagName, "API disabled");
+                return;
+            }
+
+            try
+            {
+                Log($"Setting shared tag ({reason}) to &{tagName}...");
+                await _trilbyApiClient.SetSharedTagAsync(tagName);
+            }
+            catch (Exception ex)
+            {
+                _sharedTagWidget.SetFailed(tagName, $"Failed to set shared &{tagName}");
+                Log($"Set shared tag failed for &{tagName}: {ex.Message}");
             }
         }
 
@@ -1498,6 +1618,18 @@ namespace mbottrilby
             if (trilbyEvent is TrilbyEventsClientService.TagDeletedEvent tagDeletedEvent)
             {
                 ApplyTagDeletedEvent(tagDeletedEvent);
+                return;
+            }
+
+            if (trilbyEvent is TrilbyEventsClientService.SharedTagSelectedEvent sharedTagSelectedEvent)
+            {
+                ApplySharedTagSelectedEvent(sharedTagSelectedEvent);
+                return;
+            }
+
+            if (trilbyEvent is TrilbyEventsClientService.SharedTagClearedEvent sharedTagClearedEvent)
+            {
+                ApplySharedTagClearedEvent(sharedTagClearedEvent);
             }
         }
 
@@ -1597,6 +1729,7 @@ namespace mbottrilby
             foreach (var tagName in clipCreatedEvent.TagNames.Where(tagName => !string.IsNullOrWhiteSpace(tagName)))
             {
                 UpdateTagCatalogEntry(tagName, clipCreatedEvent.Trigger, isAdd: true);
+                UpdateSelectedTagWidgets(tagName);
             }
 
             if (string.Equals(_clipDetail.CurrentClipTrigger, clipCreatedEvent.Trigger, StringComparison.OrdinalIgnoreCase) &&
@@ -1697,6 +1830,37 @@ namespace mbottrilby
             RemoveTagFromCatalogState(tagDeletedEvent.TagName);
         }
 
+        private void ApplySharedTagSelectedEvent(TrilbyEventsClientService.SharedTagSelectedEvent sharedTagSelectedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != sharedTagSelectedEvent.GuildId)
+            {
+                return;
+            }
+
+            Log($"Received shared_tag_selected event: tag=&{sharedTagSelectedEvent.TagName} server={sharedTagSelectedEvent.GuildId}");
+            if (_tagCatalogByName.ContainsKey(sharedTagSelectedEvent.TagName))
+            {
+                LoadTagWidgetFromCatalog(_sharedTagWidget, sharedTagSelectedEvent.TagName);
+            }
+            else
+            {
+                _sharedTagWidget.SetLoading(sharedTagSelectedEvent.TagName);
+            }
+        }
+
+        private void ApplySharedTagClearedEvent(TrilbyEventsClientService.SharedTagClearedEvent sharedTagClearedEvent)
+        {
+            var selectedGuildId = GetSelectedServerId();
+            if (selectedGuildId is not > 0 || selectedGuildId.Value != sharedTagClearedEvent.GuildId)
+            {
+                return;
+            }
+
+            Log($"Received shared_tag_cleared event: tag=&{sharedTagClearedEvent.TagName ?? "<none>"} server={sharedTagClearedEvent.GuildId}");
+            _sharedTagWidget.ClearSelection();
+        }
+
         private void UpdateTagMembershipState(string tagName, string clipTrigger, bool isAdd)
         {
             var normalizedTagName = tagName.Trim();
@@ -1708,7 +1872,7 @@ namespace mbottrilby
 
             UpdateTagCatalogEntry(normalizedTagName, normalizedTrigger, isAdd);
             UpdateClipCatalogEntryTags(normalizedTrigger, normalizedTagName, isAdd);
-            UpdateSelectedTagWidget(normalizedTagName);
+            UpdateSelectedTagWidgets(normalizedTagName);
             UpdateClipDetailForTagMembershipChange(normalizedTagName, normalizedTrigger);
         }
 
@@ -1788,6 +1952,7 @@ namespace mbottrilby
             foreach (var tagName in _tagCatalogByName.Keys.ToList())
             {
                 UpdateTagCatalogEntry(tagName, trigger, isAdd: false);
+                UpdateSelectedTagWidgets(tagName);
             }
 
             _clipSearchState.SetSource(_allClipTriggers, _allTagNames);
@@ -1821,6 +1986,12 @@ namespace mbottrilby
                 SaveUserSettings();
             }
 
+            if (_sharedTagWidget.HasSelectedTag &&
+                string.Equals(_sharedTagWidget.SelectedTagName, tagName, StringComparison.OrdinalIgnoreCase))
+            {
+                _sharedTagWidget.ClearSelection();
+            }
+
             if (string.Equals(_clipDetail.CurrentTagName, tagName, StringComparison.OrdinalIgnoreCase))
             {
                 _clipDetail.ShowPlaceholder();
@@ -1828,7 +1999,7 @@ namespace mbottrilby
 
             if (removed)
             {
-                UpdateSelectedTagWidget(tagName);
+                UpdateSelectedTagWidgets(tagName);
             }
         }
 
@@ -1862,10 +2033,16 @@ namespace mbottrilby
                 updatedTagNames);
         }
 
-        private void UpdateSelectedTagWidget(string tagName)
+        private void UpdateSelectedTagWidgets(string tagName)
         {
-            if (!_tagWidget.HasSelectedTag ||
-                !string.Equals(_tagWidget.SelectedTagName, tagName, StringComparison.OrdinalIgnoreCase))
+            UpdateSelectedTagWidget(_tagWidget, tagName);
+            UpdateSelectedTagWidget(_sharedTagWidget, tagName);
+        }
+
+        private void UpdateSelectedTagWidget(TagWidgetViewModel tagWidget, string tagName)
+        {
+            if (!tagWidget.HasSelectedTag ||
+                !string.Equals(tagWidget.SelectedTagName, tagName, StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -1878,7 +2055,7 @@ namespace mbottrilby
             var clips = tagCatalogEntry.ClipTriggers
                 .Select(trigger => new TagClipEntryViewModel(trigger, tagCatalogEntry.Name))
                 .ToArray();
-            _tagWidget.SetLoaded(tagCatalogEntry.Name, clips);
+            tagWidget.SetLoaded(tagCatalogEntry.Name, clips);
         }
 
         private void UpdateClipDetailForTagMembershipChange(string tagName, string clipTrigger)
@@ -1921,19 +2098,56 @@ namespace mbottrilby
             _currentIntroSlot.IsDragAvailableTarget = _clipAssignmentDragActive && !_currentIntroDragHover;
         }
 
-        private void UpdateTagDropZone()
+        private void UpdateTagDropZones()
+        {
+            UpdateTagDropZone(_tagWidget);
+            UpdateTagDropZone(_sharedTagWidget);
+        }
+
+        private void UpdateTagDropZone(TagWidgetViewModel tagWidget)
         {
             var isTagDragActive = _activeClipAssignmentDragData is not null &&
                 _activeClipAssignmentDragData.Kind == OverlayDragDataKind.Tag;
-            _tagWidget.IsTagDragHoverTarget = isTagDragActive && _tagWidgetPanelHover;
-            _tagWidget.IsTagDragAvailableTarget = isTagDragActive && !_tagWidgetPanelHover;
-            _tagWidget.IsRemoveDragOperation = _clipAssignmentDragActive &&
-                _tagWidget.HasSelectedTag &&
+            tagWidget.IsTagDragAvailableTarget = isTagDragActive && !tagWidget.IsTagDragHoverTarget;
+            tagWidget.IsRemoveDragOperation = _clipAssignmentDragActive &&
+                tagWidget.HasSelectedTag &&
                 _activeClipAssignmentDragData is not null &&
-                !string.IsNullOrWhiteSpace(_tagWidget.SelectedTagName) &&
-                IsSelectedTagRemovalDrag(_activeClipAssignmentDragData, _tagWidget.SelectedTagName);
-            _tagWidget.IsDragHoverTarget = _clipAssignmentDragActive && _tagDropZoneHover && _tagWidget.HasSelectedTag;
-            _tagWidget.IsDragAvailableTarget = _clipAssignmentDragActive && !_tagDropZoneHover && _tagWidget.HasSelectedTag;
+                !string.IsNullOrWhiteSpace(tagWidget.SelectedTagName) &&
+                IsSelectedTagRemovalDrag(_activeClipAssignmentDragData, tagWidget.SelectedTagName);
+            tagWidget.IsDragAvailableTarget = _clipAssignmentDragActive &&
+                tagWidget.HasSelectedTag &&
+                !tagWidget.IsDragHoverTarget;
+        }
+
+        private static TagWidgetViewModel? GetTagWidgetFromSender(object sender)
+        {
+            return sender switch
+            {
+                FrameworkElement element when element.DataContext is TagWidgetViewModel tagWidget => tagWidget,
+                FrameworkContentElement contentElement when contentElement.DataContext is TagWidgetViewModel tagWidget => tagWidget,
+                _ => null,
+            };
+        }
+
+        private bool IsSharedTagWidget(TagWidgetViewModel tagWidget)
+        {
+            return ReferenceEquals(tagWidget, _sharedTagWidget);
+        }
+
+        private bool GetTagDropRequestInFlight(TagWidgetViewModel tagWidget)
+        {
+            return IsSharedTagWidget(tagWidget) ? _sharedTagDropRequestInFlight : _personalTagDropRequestInFlight;
+        }
+
+        private void SetTagDropRequestInFlight(TagWidgetViewModel tagWidget, bool value)
+        {
+            if (IsSharedTagWidget(tagWidget))
+            {
+                _sharedTagDropRequestInFlight = value;
+                return;
+            }
+
+            _personalTagDropRequestInFlight = value;
         }
 
         private void SaveUserSettings()
@@ -1963,10 +2177,16 @@ namespace mbottrilby
             await EnsureEventsClientAsync(reason);
             _ = InitializeHealthCheckAsync();
             _ = LoadClipCatalogAsync(reason);
-            _ = LoadTagCatalogAsync(reason);
+            _ = InitializeTagStateAsync(reason);
             _ = LoadTopClipStatsAsync(reason);
             _ = LoadRecentClipStatsAsync(reason);
             _ = LoadCurrentIntroAsync(reason);
+        }
+
+        private async System.Threading.Tasks.Task InitializeTagStateAsync(string reason)
+        {
+            await LoadTagCatalogAsync(reason);
+            await LoadSharedTagAsync(reason);
         }
 
         private async System.Threading.Tasks.Task<bool> EnsureAuthenticatedApiClientAsync(string reason)
@@ -2220,6 +2440,8 @@ namespace mbottrilby
             {
                 _tagWidget.ClearSelection();
             }
+
+            _sharedTagWidget.ClearSelection();
         }
 
         private void EnsureSelectedServerIsValid(string environmentName, TrilbySessionSettings? session)

@@ -25,6 +25,8 @@ namespace mbottrilby.Services
         private const string TagCreatedEventType = "tag_created";
         private const string TagDeletedEventType = "tag_deleted";
         private const string CurrentIntroUpdatedEventType = "current_intro_updated";
+        private const string SharedTagSelectedEventType = "shared_tag_selected";
+        private const string SharedTagClearedEventType = "shared_tag_cleared";
 
         private readonly Uri _eventsUri;
         private readonly string _accessToken;
@@ -121,6 +123,10 @@ namespace mbottrilby.Services
                     => ParseTagDeletedEvent(envelope),
                 var eventType when string.Equals(eventType, CurrentIntroUpdatedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseCurrentIntroUpdatedEvent(envelope),
+                var eventType when string.Equals(eventType, SharedTagSelectedEventType, StringComparison.OrdinalIgnoreCase)
+                    => ParseSharedTagSelectedEvent(envelope),
+                var eventType when string.Equals(eventType, SharedTagClearedEventType, StringComparison.OrdinalIgnoreCase)
+                    => ParseSharedTagClearedEvent(envelope),
                 _ => null
             };
         }
@@ -353,6 +359,25 @@ namespace mbottrilby.Services
             return new TagDeletedEvent(envelope.GuildId, payload.TagName.Trim());
         }
 
+        private static SharedTagSelectedEvent? ParseSharedTagSelectedEvent(EventEnvelopePayload envelope)
+        {
+            var payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
+            if (payload is null || string.IsNullOrWhiteSpace(payload.TagName))
+            {
+                return null;
+            }
+
+            return new SharedTagSelectedEvent(envelope.GuildId, payload.TagName.Trim());
+        }
+
+        private static SharedTagClearedEvent? ParseSharedTagClearedEvent(EventEnvelopePayload envelope)
+        {
+            var payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
+            return new SharedTagClearedEvent(
+                envelope.GuildId,
+                string.IsNullOrWhiteSpace(payload?.TagName) ? null : payload.TagName.Trim());
+        }
+
         private static TPayload? DeserializePayload<TPayload>(JsonElement payload)
             where TPayload : class
         {
@@ -541,6 +566,28 @@ namespace mbottrilby.Services
             }
 
             public string TagName { get; }
+        }
+
+        internal sealed class SharedTagSelectedEvent : TrilbyEvent
+        {
+            public SharedTagSelectedEvent(long guildId, string tagName)
+                : base(SharedTagSelectedEventType, guildId)
+            {
+                TagName = tagName;
+            }
+
+            public string TagName { get; }
+        }
+
+        internal sealed class SharedTagClearedEvent : TrilbyEvent
+        {
+            public SharedTagClearedEvent(long guildId, string? tagName)
+                : base(SharedTagClearedEventType, guildId)
+            {
+                TagName = string.IsNullOrWhiteSpace(tagName) ? null : tagName.Trim();
+            }
+
+            public string? TagName { get; }
         }
 
         private sealed class EventEnvelopePayload

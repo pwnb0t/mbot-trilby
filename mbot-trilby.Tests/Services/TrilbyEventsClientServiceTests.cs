@@ -266,5 +266,47 @@ namespace mbottrilby.Tests.Services
             Assert.Equal(123, tagDeletedEvent.GuildId);
             Assert.Equal("test", tagDeletedEvent.TagName);
         }
+
+        [Fact]
+        public void ParseEvent_ParsesSharedTagSelectedEnvelope()
+        {
+            var json = """
+            {
+              "event_type": "shared_tag_selected",
+              "guild_id": 123,
+              "payload": {
+                "tag_name": "test"
+              }
+            }
+            """;
+
+            var parsed = TrilbyEventsClientService.ParseEvent(json);
+
+            Assert.NotNull(parsed);
+            var sharedTagSelectedEvent = Assert.IsType<TrilbyEventsClientService.SharedTagSelectedEvent>(parsed);
+            Assert.Equal(123, sharedTagSelectedEvent.GuildId);
+            Assert.Equal("test", sharedTagSelectedEvent.TagName);
+        }
+
+        [Fact]
+        public void ParseEvent_ParsesSharedTagClearedEnvelope()
+        {
+            var json = """
+            {
+              "event_type": "shared_tag_cleared",
+              "guild_id": 123,
+              "payload": {
+                "tag_name": "test"
+              }
+            }
+            """;
+
+            var parsed = TrilbyEventsClientService.ParseEvent(json);
+
+            Assert.NotNull(parsed);
+            var sharedTagClearedEvent = Assert.IsType<TrilbyEventsClientService.SharedTagClearedEvent>(parsed);
+            Assert.Equal(123, sharedTagClearedEvent.GuildId);
+            Assert.Equal("test", sharedTagClearedEvent.TagName);
+        }
     }
 }

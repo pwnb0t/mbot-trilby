@@ -163,6 +163,70 @@ namespace mbottrilby.Services
                 $"List tag clips failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
         }
 
+        public async Task<string?> GetSharedTagAsync(CancellationToken cancellationToken = default)
+        {
+            var response = await _api.GetSharedTagAsync(_guildId, cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            {
+                return string.IsNullOrWhiteSpace(ok.TagName) ? null : ok.TagName.Trim();
+            }
+
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            {
+                throw new InvalidOperationException($"Get shared tag failed: {unauthorized.Message}");
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"Get shared tag failed: {internalError.Message}");
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("Get shared tag failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"Get shared tag failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
+        }
+
+        public async Task SetSharedTagAsync(string tagName, CancellationToken cancellationToken = default)
+        {
+            var request = new SetSharedTagBody(tagName);
+            var response = await _api.SetSharedTagAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
+            if (response.IsOk)
+            {
+                return;
+            }
+
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            {
+                throw new InvalidOperationException($"Set shared tag failed: {unauthorized.Message}");
+            }
+
+            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            {
+                throw new InvalidOperationException($"Set shared tag failed: {notFound.Message}");
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"Set shared tag failed: {internalError.Message}");
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("Set shared tag failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"Set shared tag failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
+        }
+
         public async Task AddClipToTagAsync(
             string tagName,
             string clipTrigger,
