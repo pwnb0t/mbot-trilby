@@ -128,6 +128,7 @@ namespace mbottrilby
             var userStateDirectory = Path.GetDirectoryName(logDirectory) ?? logDirectory;
             _userSettingsStore = new UserSettingsStateStore(userStateDirectory);
             _userSettings = _userSettingsStore.Load();
+            NormalizeSelectedEnvironment();
             _quickPlaySlots = Enumerable.Range(1, 8)
                 .Select(slotIndex => new QuickPlaySlotViewModel(slotIndex))
                 .ToArray();
@@ -2373,7 +2374,10 @@ namespace mbottrilby
 
         private string GetSelectedEnvironmentName()
         {
-            return _userSettings.SelectedEnvironmentName;
+            return _settings.TrilbyEnvironments.GetAvailableEnvironments().Any(
+                entry => string.Equals(entry.Name, _userSettings.SelectedEnvironmentName, StringComparison.OrdinalIgnoreCase))
+                ? _userSettings.SelectedEnvironmentName
+                : _settings.TrilbyEnvironments.GetDefaultEnvironmentName();
         }
 
         private void SetSelectedEnvironmentName(string environmentName)
@@ -2486,6 +2490,18 @@ namespace mbottrilby
             }
 
             return null;
+        }
+
+        private void NormalizeSelectedEnvironment()
+        {
+            var normalizedEnvironmentName = GetSelectedEnvironmentName();
+            if (string.Equals(_userSettings.SelectedEnvironmentName, normalizedEnvironmentName, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            _userSettings.SelectedEnvironmentName = normalizedEnvironmentName;
+            SaveUserSettings();
         }
 
         private static bool ShouldConsumeOverlayKey(int virtualKey, bool isAltDown)

@@ -42,6 +42,7 @@ namespace mbottrilby
             _signInAsync = signInAsync;
             _signOut = signOut;
             _log = log;
+            PopulateEnvironmentOptions();
             SelectEnvironment(_getSelectedEnvironmentName());
             RefreshView();
         }
@@ -80,11 +81,12 @@ namespace mbottrilby
 
         private void EnvironmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (EnvironmentComboBox.SelectedItem is not ComboBoxItem item || item.Tag is not string environmentName)
+            if (EnvironmentComboBox.SelectedItem is not EnvironmentOption option)
             {
                 return;
             }
 
+            var environmentName = option.Name;
             _setSelectedEnvironmentName(environmentName);
             RefreshView();
         }
@@ -128,25 +130,23 @@ namespace mbottrilby
 
         private string GetSelectedEnvironmentName()
         {
-            return EnvironmentComboBox.SelectedItem is ComboBoxItem item && item.Tag is string environmentName
-                ? environmentName
-                : "dev";
+            return EnvironmentComboBox.SelectedItem is EnvironmentOption option
+                ? option.Name
+                : _environments.GetDefaultEnvironmentName();
         }
 
         private void SelectEnvironment(string environmentName)
         {
-            foreach (var item in EnvironmentComboBox.Items)
+            var options = EnvironmentComboBox.ItemsSource as IReadOnlyList<EnvironmentOption>;
+            if (options is null || options.Count == 0)
             {
-                if (item is ComboBoxItem comboBoxItem &&
-                    comboBoxItem.Tag is string itemEnvironmentName &&
-                    string.Equals(itemEnvironmentName, environmentName, StringComparison.OrdinalIgnoreCase))
-                {
-                    EnvironmentComboBox.SelectedItem = comboBoxItem;
-                    return;
-                }
+                EnvironmentComboBox.SelectedItem = null;
+                return;
             }
 
-            EnvironmentComboBox.SelectedIndex = 0;
+            EnvironmentComboBox.SelectedItem = options.FirstOrDefault(
+                option => string.Equals(option.Name, environmentName, StringComparison.OrdinalIgnoreCase))
+                ?? options[0];
         }
 
         private void SetBusyState(bool isBusy, string infoText)
@@ -173,6 +173,35 @@ namespace mbottrilby
             ServerComboBox.ItemsSource = options;
             ServerComboBox.SelectedItem = options.FirstOrDefault(option => option.GuildId == selectedServerId);
             ServerComboBox.SelectionChanged += ServerComboBox_SelectionChanged;
+        }
+
+        private void PopulateEnvironmentOptions()
+        {
+            var options = _environments.GetAvailableEnvironments()
+                .Select(entry => new EnvironmentOption(entry.Name, entry.Settings.DisplayName))
+                .ToArray();
+            EnvironmentComboBox.SelectionChanged -= EnvironmentComboBox_SelectionChanged;
+            EnvironmentComboBox.ItemsSource = options;
+            EnvironmentComboBox.SelectionChanged += EnvironmentComboBox_SelectionChanged;
+
+            var showEnvironmentPicker = options.Length > 1;
+            EnvironmentPanel.Visibility = showEnvironmentPicker ? Visibility.Visible : Visibility.Collapsed;
+            EnvironmentRowDefinition.Height = showEnvironmentPicker
+                ? GridLength.Auto
+                : new GridLength(0);
+        }
+
+        private sealed class EnvironmentOption
+        {
+            public EnvironmentOption(string name, string displayName)
+            {
+                Name = name;
+                DisplayName = displayName;
+            }
+
+            public string Name { get; }
+
+            public string DisplayName { get; }
         }
 
         private sealed class ServerOption

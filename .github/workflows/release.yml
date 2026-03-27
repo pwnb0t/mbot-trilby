@@ -47,14 +47,19 @@ jobs:
       - name: Publish win-x64
         run: dotnet publish .\mbot-trilby\mbot-trilby.csproj -c Release -r win-x64 --self-contained true --no-restore /p:Version=${{ steps.version.outputs.version }} /p:InformationalVersion=${{ steps.version.outputs.version }} -o .\artifacts\publish\win-x64
 
+      - name: Replace runtime config with release appsettings
+        shell: pwsh
+        run: |
+          Copy-Item .\mbot-trilby\appsettings.release.json .\artifacts\publish\win-x64\appsettings.json -Force
+
       - name: Package with Velopack
         run: >
           dotnet tool run vpk pack
           --packId mbot-trilby
           --packVersion ${{ steps.version.outputs.version }}
           --packDir .\artifacts\publish\win-x64
-          --mainExe mbot-trilby.exe
-          --packTitle "mbot-trilby"
+          --mainExe Trilby.exe
+          --packTitle "Trilby"
           --outputDir .\artifacts\velopack
           --icon .\mbot.ico
 

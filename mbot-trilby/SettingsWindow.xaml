@@ -9,6 +9,7 @@
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition x:Name="EnvironmentRowDefinition" Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -22,17 +23,18 @@
                    FontWeight="SemiBold"
                    Margin="0,0,0,16" />
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+        <StackPanel x:Name="EnvironmentPanel"
+                    Grid.Row="1"
+                    Orientation="Horizontal"
+                    Margin="0,0,0,12">
             <TextBlock Text="Environment"
                        Width="110"
                        VerticalAlignment="Center" />
             <ComboBox x:Name="EnvironmentComboBox"
                       Width="260"
-                      SelectionChanged="EnvironmentComboBox_SelectionChanged">
-                <ComboBoxItem Content="Development" Tag="dev" />
-                <ComboBoxItem Content="Test" Tag="test" />
-                <ComboBoxItem Content="Production" Tag="prod" />
-            </ComboBox>
+                      DisplayMemberPath="DisplayName"
+                      SelectedValuePath="Name"
+                      SelectionChanged="EnvironmentComboBox_SelectionChanged" />
         </StackPanel>
 
         <StackPanel Grid.Row="2" Margin="0,0,0,12">
@@ -51,12 +53,12 @@
                       SelectionChanged="ServerComboBox_SelectionChanged" />
         </StackPanel>
 
-        <TextBlock Grid.Row="4"
+        <TextBlock Grid.Row="5"
                    x:Name="InfoTextBlock"
                    TextWrapping="Wrap"
                    Foreground="DimGray" />
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="SignInButton" Width="110" Margin="0,0,8,0" Content="Sign In" Click="SignInButton_Click" />
             <Button x:Name="SignOutButton" Width="110" Margin="0,0,8,0" Content="Sign Out" Click="SignOutButton_Click" />
             <Button Width="110" Content="Close" Click="CloseButton_Click" />
