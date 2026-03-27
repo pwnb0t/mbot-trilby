@@ -15,7 +15,9 @@ namespace mbottrilby
 
             var app = new App();
             app.InitializeComponent();
-            app.Run();
+            var mainWindow = new MainWindow();
+            app.MainWindow = mainWindow;
+            app.Run(mainWindow);
         }
     }
 }
