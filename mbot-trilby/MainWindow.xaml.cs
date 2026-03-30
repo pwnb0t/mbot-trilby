@@ -1248,7 +1248,8 @@ namespace mbottrilby
                 Log($"Failed to prepare update for exit: {ex.Message}");
             }
 
-            Close();
+            _settingsWindow?.Close();
+            System.Windows.Application.Current.Shutdown();
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
