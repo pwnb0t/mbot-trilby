@@ -18,7 +18,7 @@ namespace mbottrilby
         private readonly Func<string, long?> _getSelectedServerId;
         private readonly Action<string, long?> _setSelectedServerId;
         private readonly Func<string, Task> _signInAsync;
-        private readonly Action<string> _signOut;
+        private readonly Func<string, Task> _signOutAsync;
         private readonly Func<TrilbyUpdateStatus> _getUpdateStatus;
         private readonly Func<Task<TrilbyUpdateStatus>> _checkForUpdatesAsync;
         private readonly Action<string> _log;
@@ -31,7 +31,7 @@ namespace mbottrilby
             Func<string, long?> getSelectedServerId,
             Action<string, long?> setSelectedServerId,
             Func<string, Task> signInAsync,
-            Action<string> signOut,
+            Func<string, Task> signOutAsync,
             Func<TrilbyUpdateStatus> getUpdateStatus,
             Func<Task<TrilbyUpdateStatus>> checkForUpdatesAsync,
             Action<string> log)
@@ -44,7 +44,7 @@ namespace mbottrilby
             _getSelectedServerId = getSelectedServerId;
             _setSelectedServerId = setSelectedServerId;
             _signInAsync = signInAsync;
-            _signOut = signOut;
+            _signOutAsync = signOutAsync;
             _getUpdateStatus = getUpdateStatus;
             _checkForUpdatesAsync = checkForUpdatesAsync;
             _log = log;
@@ -73,11 +73,24 @@ namespace mbottrilby
             }
         }
 
-        private void SignOutButton_Click(object sender, RoutedEventArgs e)
+        private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
             var environmentName = GetSelectedEnvironmentName();
-            _signOut(environmentName);
-            RefreshView();
+            try
+            {
+                SetBusyState(true, $"Signing out of {environmentName}...");
+                await _signOutAsync(environmentName);
+                RefreshView();
+            }
+            catch (Exception ex)
+            {
+                _log($"Sign-out failed for {environmentName}: {ex.Message}");
+                InfoTextBlock.Text = ex.Message;
+            }
+            finally
+            {
+                SetBusyState(false, string.Empty);
+            }
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

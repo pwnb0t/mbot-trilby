@@ -2346,7 +2346,7 @@ namespace mbottrilby
                 getSelectedServerId: environmentName => _userSettings.GetSelectedGuildId(environmentName),
                 setSelectedServerId: SetSelectedServerId,
                 signInAsync: SignInToEnvironmentAsync,
-                signOut: SignOutEnvironment,
+                signOutAsync: SignOutEnvironmentAsync,
                 getUpdateStatus: () => _trilbyUpdateService.GetStatus(),
                 checkForUpdatesAsync: CheckForUpdatesAsync,
                 log: Log);
@@ -2374,14 +2374,14 @@ namespace mbottrilby
             _settingsWindow?.RefreshView();
         }
 
-        private void SignOutEnvironment(string environmentName)
+        private async System.Threading.Tasks.Task SignOutEnvironmentAsync(string environmentName)
         {
             _userSettings.SetSession(environmentName, null);
             _userSettings.SetSelectedGuildId(environmentName, null);
             SaveUserSettings();
             if (string.Equals(GetSelectedEnvironmentName(), environmentName, StringComparison.OrdinalIgnoreCase))
             {
-                StopEventsClientAsync().GetAwaiter().GetResult();
+                await StopEventsClientAsync();
                 _trilbyApiClient = null;
                 _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_trilbyApiClient);
                 _overlayController.Hide("Overlay hidden after sign out.");
