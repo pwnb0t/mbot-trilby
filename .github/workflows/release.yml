@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   build-package-release:
@@ -77,17 +79,42 @@ jobs:
           name: mbot-trilby-release-${{ steps.version.outputs.version }}
           path: .\artifacts\velopack
 
-      - name: Create or update GitHub Release
+      - name: Attest packaged artifacts
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: |
+            ${{ github.workspace }}\artifacts\velopack\mbot-trilby-win-Setup.exe
+            ${{ github.workspace }}\artifacts\velopack\mbot-trilby-win-Portable.zip
+            ${{ github.workspace }}\artifacts\velopack\mbot-trilby-*.nupkg
+            ${{ github.workspace }}\artifacts\velopack\SHA256SUMS.txt
+
+      - name: Create draft GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
           $tag = "${{ steps.version.outputs.tag }}"
           $title = "mbot-trilby $tag"
-          $files = Get-ChildItem .\artifacts\velopack -File | ForEach-Object { $_.FullName }
           gh release view $tag *> $null
           if ($LASTEXITCODE -eq 0) {
-            gh release upload $tag $files --clobber
-          } else {
-            gh release create $tag $files --title $title --generate-notes
+            Write-Error "Release $tag already exists. Immutable releases cannot be modified after publication."
+            exit 1
           }
+          gh release create $tag --draft --title $title --generate-notes
+
+      - name: Upload release assets to draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = "${{ steps.version.outputs.tag }}"
+          $files = Get-ChildItem .\artifacts\velopack -File | ForEach-Object { $_.FullName }
+          gh release upload $tag $files
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = "${{ steps.version.outputs.tag }}"
+          gh release edit $tag --draft=false --latest
