@@ -19,6 +19,8 @@ namespace mbottrilby
         private readonly Action<string, long?> _setSelectedServerId;
         private readonly Func<string, Task> _signInAsync;
         private readonly Action<string> _signOut;
+        private readonly Func<TrilbyUpdateStatus> _getUpdateStatus;
+        private readonly Func<Task<TrilbyUpdateStatus>> _checkForUpdatesAsync;
         private readonly Action<string> _log;
 
         public SettingsWindow(
@@ -30,6 +32,8 @@ namespace mbottrilby
             Action<string, long?> setSelectedServerId,
             Func<string, Task> signInAsync,
             Action<string> signOut,
+            Func<TrilbyUpdateStatus> getUpdateStatus,
+            Func<Task<TrilbyUpdateStatus>> checkForUpdatesAsync,
             Action<string> log)
         {
             InitializeComponent();
@@ -41,6 +45,8 @@ namespace mbottrilby
             _setSelectedServerId = setSelectedServerId;
             _signInAsync = signInAsync;
             _signOut = signOut;
+            _getUpdateStatus = getUpdateStatus;
+            _checkForUpdatesAsync = checkForUpdatesAsync;
             _log = log;
             PopulateEnvironmentOptions();
             SelectEnvironment(_getSelectedEnvironmentName());
@@ -79,6 +85,25 @@ namespace mbottrilby
             Close();
         }
 
+        private async void CheckForUpdatesButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SetUpdateBusyState(true, "Checking for updates...");
+                await _checkForUpdatesAsync();
+                RefreshView();
+            }
+            catch (Exception ex)
+            {
+                _log($"Update check failed: {ex.Message}");
+                UpdateStatusTextBlock.Text = $"Update check failed: {ex.Message}";
+            }
+            finally
+            {
+                SetUpdateBusyState(false, _getUpdateStatus().StatusText);
+            }
+        }
+
         private void EnvironmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (EnvironmentComboBox.SelectedItem is not EnvironmentOption option)
@@ -107,7 +132,11 @@ namespace mbottrilby
             var environmentName = GetSelectedEnvironmentName();
             var environment = _environments.GetByName(environmentName);
             var session = _getSession(environmentName);
+            var updateStatus = _getUpdateStatus();
             BaseUrlTextBlock.Text = $"Base URL: {environment.BaseUrl}";
+            VersionTextBlock.Text = $"Current version: {updateStatus.CurrentVersionText}";
+            UpdateStatusTextBlock.Text = updateStatus.StatusText;
+            CheckForUpdatesButton.IsEnabled = updateStatus.CanCheckForUpdates && !updateStatus.IsBusy;
             PopulateServerOptions(environmentName, session);
             if (session is null || !session.IsAuthenticated)
             {
@@ -156,6 +185,12 @@ namespace mbottrilby
             SignInButton.IsEnabled = !isBusy;
             SignOutButton.IsEnabled = !isBusy;
             InfoTextBlock.Text = infoText;
+        }
+
+        private void SetUpdateBusyState(bool isBusy, string statusText)
+        {
+            CheckForUpdatesButton.IsEnabled = !isBusy && _getUpdateStatus().CanCheckForUpdates;
+            UpdateStatusTextBlock.Text = statusText;
         }
 
         private void PopulateServerOptions(string environmentName, TrilbySessionSettings? session)

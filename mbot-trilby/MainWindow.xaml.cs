@@ -65,6 +65,7 @@ namespace mbottrilby
         private readonly ClipSearchState _clipSearchState = new(MaxVisibleSearchResults);
         private readonly UserSettingsStateStore _userSettingsStore;
         private readonly UserSettingsState _userSettings;
+        private readonly TrilbyUpdateService _trilbyUpdateService = new();
         private readonly IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots;
         private readonly ClipDragSourceBehavior _clipDragSourceBehavior = new();
         private readonly CurrentIntroSlotViewModel _currentIntroSlot = new();
@@ -1231,10 +1232,22 @@ namespace mbottrilby
             _overlayController.Hide("Overlay hidden from tray.");
         }
 
-        private void ExitFromTray()
+        private async void ExitFromTray()
         {
             _exitRequested = true;
             Log("Exit requested from tray.");
+            try
+            {
+                if (await _trilbyUpdateService.PrepareUpdateForExitAsync())
+                {
+                    Log("Prepared downloaded update to apply after Trilby exits.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to prepare update for exit: {ex.Message}");
+            }
+
             Close();
         }
 
@@ -2334,9 +2347,19 @@ namespace mbottrilby
                 setSelectedServerId: SetSelectedServerId,
                 signInAsync: SignInToEnvironmentAsync,
                 signOut: SignOutEnvironment,
+                getUpdateStatus: () => _trilbyUpdateService.GetStatus(),
+                checkForUpdatesAsync: CheckForUpdatesAsync,
                 log: Log);
             _settingsWindow.Closed += (_, _) => _settingsWindow = null;
             _settingsWindow.Show();
+        }
+
+        private async System.Threading.Tasks.Task<TrilbyUpdateStatus> CheckForUpdatesAsync()
+        {
+            var status = await _trilbyUpdateService.CheckForUpdatesAsync();
+            Log(status.StatusText);
+            _settingsWindow?.RefreshView();
+            return status;
         }
 
         private async System.Threading.Tasks.Task SignInToEnvironmentAsync(string environmentName)
