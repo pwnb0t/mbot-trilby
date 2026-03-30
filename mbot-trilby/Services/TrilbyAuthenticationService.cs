@@ -171,10 +171,10 @@ namespace mbottrilby.Services
         {
             var title = success ? "Trilby sign-in complete" : "Trilby sign-in failed";
             var message = success
-                ? "This window should close automatically."
+                ? "You can safely close this page."
                 : WebUtility.HtmlEncode(errorText ?? "Authentication failed.");
             var secondaryMessage = success
-                ? "If it stays open, you can close it manually."
+                ? string.Empty
                 : "You can close this window and try again.";
             var imageMarkup = BuildMbotImageMarkup();
             var autoCloseScript = success
@@ -263,7 +263,7 @@ namespace mbottrilby.Services
         {imageMarkup}
         <h1>{title}</h1>
         <p class=""message"">{message}</p>
-        <p class=""secondary"">{secondaryMessage}</p>
+        {(string.IsNullOrWhiteSpace(secondaryMessage) ? string.Empty : $@"<p class=""secondary"">{secondaryMessage}</p>")}
     </div>
 </body>
 </html>";
