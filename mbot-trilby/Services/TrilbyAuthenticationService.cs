@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -159,13 +160,133 @@ namespace mbottrilby.Services
         {
             response.StatusCode = success ? 200 : 400;
             response.ContentType = "text/html; charset=utf-8";
-            var html = success
-                ? "<html><body><h1>Trilby sign-in complete</h1><p>You can close this window now.</p></body></html>"
-                : $"<html><body><h1>Trilby sign-in failed</h1><p>{WebUtility.HtmlEncode(errorText ?? "Authentication failed.")}</p><p>You can close this window and try again.</p></body></html>";
+            var html = BuildLoopbackResponseHtml(success, errorText);
             var buffer = Encoding.UTF8.GetBytes(html);
             response.ContentLength64 = buffer.Length;
             await response.OutputStream.WriteAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
             response.OutputStream.Close();
+        }
+
+        private static string BuildLoopbackResponseHtml(bool success, string? errorText)
+        {
+            var title = success ? "Trilby sign-in complete" : "Trilby sign-in failed";
+            var message = success
+                ? "This window should close automatically."
+                : WebUtility.HtmlEncode(errorText ?? "Authentication failed.");
+            var secondaryMessage = success
+                ? "If it stays open, you can close it manually."
+                : "You can close this window and try again.";
+            var imageMarkup = BuildMbotImageMarkup();
+            var autoCloseScript = success
+                ? """
+                <script>
+                window.setTimeout(function () {
+                    window.close();
+                }, 900);
+                </script>
+                """
+                : string.Empty;
+
+            return $@"
+<html>
+<head>
+    <meta charset=""utf-8"">
+    <title>{title}</title>
+    <style>
+        :root {{
+            color-scheme: light;
+        }}
+        body {{
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle at top, #203043 0%, #101923 55%, #0a1219 100%);
+            font-family: ""Segoe UI Variable Text"", ""Segoe UI"", sans-serif;
+            color: #ecf2f7;
+        }}
+        .card {{
+            width: min(520px, calc(100vw - 40px));
+            box-sizing: border-box;
+            padding: 28px 28px 24px;
+            border-radius: 18px;
+            background: rgba(16, 23, 31, 0.88);
+            border: 1px solid rgba(120, 187, 255, 0.28);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+            text-align: center;
+        }}
+        .badge {{
+            display: inline-block;
+            margin-bottom: 14px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(120, 187, 255, 0.14);
+            color: #98d0ff;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }}
+        .image-wrap {{
+            margin: 4px 0 18px;
+        }}
+        .image-wrap img {{
+            width: 112px;
+            height: 112px;
+            object-fit: cover;
+            border-radius: 24px;
+            border: 1px solid rgba(120, 187, 255, 0.22);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+        }}
+        h1 {{
+            margin: 0 0 10px;
+            font-size: 28px;
+            line-height: 1.15;
+        }}
+        .message {{
+            margin: 0;
+            color: #d7e2ec;
+            font-size: 16px;
+            line-height: 1.5;
+        }}
+        .secondary {{
+            margin-top: 10px;
+            color: #9eb2c3;
+            font-size: 14px;
+        }}
+    </style>
+    {autoCloseScript}
+</head>
+<body>
+    <div class=""card"">
+        <div class=""badge"">m'bot Trilby</div>
+        {imageMarkup}
+        <h1>{title}</h1>
+        <p class=""message"">{message}</p>
+        <p class=""secondary"">{secondaryMessage}</p>
+    </div>
+</body>
+</html>";
+        }
+
+        private static string BuildMbotImageMarkup()
+        {
+            var imagePath = Path.Combine(AppContext.BaseDirectory, "mbot.jpg");
+            if (!File.Exists(imagePath))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                var bytes = File.ReadAllBytes(imagePath);
+                var base64 = Convert.ToBase64String(bytes);
+                return $"""<div class="image-wrap"><img src="data:image/jpeg;base64,{base64}" alt="m'bot" /></div>""";
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         private static async Task<SessionSummaryPayload> GetSessionSummaryAsync(

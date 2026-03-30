@@ -25,6 +25,9 @@
     <None Include="..\mbot.ico" Link="mbot.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\mbot.jpg" Link="mbot.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
