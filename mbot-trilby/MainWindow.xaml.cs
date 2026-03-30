@@ -2334,7 +2334,7 @@ namespace mbottrilby
         {
             if (_settingsWindow is not null)
             {
-                _settingsWindow.Activate();
+                BringSettingsWindowToFront(_settingsWindow);
                 return;
             }
 
@@ -2352,6 +2352,28 @@ namespace mbottrilby
                 log: Log);
             _settingsWindow.Closed += (_, _) => _settingsWindow = null;
             _settingsWindow.Show();
+            BringSettingsWindowToFront(_settingsWindow);
+        }
+
+        private static void BringSettingsWindowToFront(Window window)
+        {
+            if (!window.IsVisible)
+            {
+                window.Show();
+            }
+
+            if (window.WindowState == WindowState.Minimized)
+            {
+                window.WindowState = WindowState.Normal;
+            }
+
+            // WPF activation is not always enough on startup when Visual Studio or another
+            // app still has focus. Temporarily toggling Topmost reliably surfaces Settings.
+            var wasTopmost = window.Topmost;
+            window.Topmost = true;
+            window.Activate();
+            window.Focus();
+            window.Topmost = wasTopmost;
         }
 
         private async System.Threading.Tasks.Task<TrilbyUpdateStatus> CheckForUpdatesAsync()

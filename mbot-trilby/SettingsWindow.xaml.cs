@@ -155,11 +155,13 @@ namespace mbottrilby
             {
                 AuthStatusTextBlock.Text = "Not signed in.";
                 InfoTextBlock.Text = "Sign in to load your available servers.";
+                SignInButton.IsEnabled = true;
                 SignOutButton.IsEnabled = false;
                 ServerComboBox.IsEnabled = false;
                 return;
             }
 
+            SignInButton.IsEnabled = true;
             SignOutButton.IsEnabled = true;
             ServerComboBox.IsEnabled = true;
             var selectedServerId = _getSelectedServerId(environmentName);
