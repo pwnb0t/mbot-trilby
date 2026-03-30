@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using mbottrilby.Configuration;
 using mbottrilby.Services;
 
@@ -37,6 +39,7 @@ namespace mbottrilby
             Action<string> log)
         {
             InitializeComponent();
+            ApplyWindowIcon();
             _environments = environments;
             _getSelectedEnvironmentName = getSelectedEnvironmentName;
             _setSelectedEnvironmentName = setSelectedEnvironmentName;
@@ -51,6 +54,24 @@ namespace mbottrilby
             PopulateEnvironmentOptions();
             SelectEnvironment(_getSelectedEnvironmentName());
             RefreshView();
+        }
+
+        private void ApplyWindowIcon()
+        {
+            var iconPath = Path.Combine(AppContext.BaseDirectory, "mbot.ico");
+            if (!File.Exists(iconPath))
+            {
+                return;
+            }
+
+            try
+            {
+                Icon = BitmapFrame.Create(new Uri(iconPath, UriKind.Absolute));
+            }
+            catch
+            {
+                // Fall back to the default window icon if the file cannot be loaded.
+            }
         }
 
         private async void SignInButton_Click(object sender, RoutedEventArgs e)

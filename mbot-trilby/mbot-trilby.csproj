@@ -11,6 +11,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <StartupObject>mbottrilby.App</StartupObject>
+    <ApplicationIcon>..\\mbot.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
