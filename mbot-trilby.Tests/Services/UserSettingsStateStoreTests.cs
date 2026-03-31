@@ -27,10 +27,12 @@ namespace mbottrilby.Tests.Services
             var state = store.Load();
 
             Assert.Null(state.GetSelectedTagName("dev", 123));
+            Assert.False(state.Options.OpaqueBackground);
             Assert.True(File.Exists(Path.Combine(_tempDirectory, "user-settings.json")));
             var json = File.ReadAllText(Path.Combine(_tempDirectory, "user-settings.json"));
             Assert.Contains("\"quickPlay\"", json);
             Assert.Contains("\"tags\"", json);
+            Assert.Contains("\"options\"", json);
             Assert.Contains("\"serverSelections\"", json);
         }
 
@@ -40,6 +42,7 @@ namespace mbottrilby.Tests.Services
             var store = new UserSettingsStateStore(_tempDirectory);
             var state = UserSettingsState.CreateEmpty();
             state.SelectedEnvironmentName = "test";
+            state.Options.OpaqueBackground = true;
             state.SetSelectedGuildId("test", 123);
             state.SetTrigger("test", 123, 1, "alpha");
             state.SetSelectedTagName("test", 123, "test");
@@ -67,11 +70,13 @@ namespace mbottrilby.Tests.Services
             Assert.Equal("alpha", reloaded.GetTrigger("test", 123, 1));
             Assert.Equal("test", reloaded.GetSelectedTagName("test", 123));
             Assert.Equal("test", reloaded.SelectedEnvironmentName);
+            Assert.True(reloaded.Options.OpaqueBackground);
             Assert.Equal("access", reloaded.GetSession("test")?.AccessToken);
             var json = File.ReadAllText(Path.Combine(_tempDirectory, "user-settings.json"));
             Assert.Contains("\"quickPlay\"", json);
             Assert.Contains("\"tags\"", json);
             Assert.Contains("\"environment\"", json);
+            Assert.Contains("\"options\"", json);
             Assert.Contains("\"auth\"", json);
             Assert.Contains("\"serverSelections\"", json);
             Assert.Contains("\"selectedTagName\"", json);

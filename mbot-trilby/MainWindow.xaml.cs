@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Threading;
 using mbottrilby.Configuration;
 using mbottrilby.Controls;
@@ -97,6 +98,9 @@ namespace mbottrilby
         private TrayController? _trayController;
         private OverlayInputRouter? _overlayInputRouter;
         private SettingsWindow? _settingsWindow;
+        private readonly System.Windows.Media.Brush _transparentOverlayBackground = System.Windows.Media.Brushes.Transparent;
+        private readonly System.Windows.Media.Brush _opaqueOverlayBackground =
+            new SolidColorBrush(System.Windows.Media.Color.FromRgb(15, 18, 23));
 
         public MainWindow()
         {
@@ -162,6 +166,7 @@ namespace mbottrilby
                 exitApp: ExitFromTray,
                 appBaseDirectory: AppContext.BaseDirectory
             );
+            ApplyOptionState();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -2343,6 +2348,8 @@ namespace mbottrilby
                 _settings.TrilbyEnvironments,
                 getSelectedEnvironmentName: GetSelectedEnvironmentName,
                 setSelectedEnvironmentName: SetSelectedEnvironmentName,
+                getOpaqueBackground: GetOpaqueBackground,
+                setOpaqueBackground: SetOpaqueBackground,
                 getSession: environmentName => _userSettings.GetSession(environmentName),
                 getSelectedServerId: environmentName => _userSettings.GetSelectedGuildId(environmentName),
                 setSelectedServerId: SetSelectedServerId,
@@ -2394,6 +2401,25 @@ namespace mbottrilby
             SaveUserSettings();
             Log($"Signed in to {environmentName} as {session.Username}.");
             await InitializeAuthenticatedStateAsync($"{environmentName} sign in");
+            _settingsWindow?.RefreshView();
+        }
+
+        private bool GetOpaqueBackground()
+        {
+            return _userSettings.Options.OpaqueBackground;
+        }
+
+        private void SetOpaqueBackground(bool value)
+        {
+            if (_userSettings.Options.OpaqueBackground == value)
+            {
+                return;
+            }
+
+            _userSettings.Options.OpaqueBackground = value;
+            SaveUserSettings();
+            ApplyOptionState();
+            Log(value ? "Enabled opaque overlay background." : "Disabled opaque overlay background.");
             _settingsWindow?.RefreshView();
         }
 
@@ -2749,6 +2775,13 @@ namespace mbottrilby
         private static string DescribeHotkey(HotkeySettings hotkey)
         {
             return $"{hotkey.Modifiers}+{hotkey.Key}";
+        }
+
+        private void ApplyOptionState()
+        {
+            RootOverlayGrid.Background = _userSettings.Options.OpaqueBackground
+                ? _opaqueOverlayBackground
+                : _transparentOverlayBackground;
         }
 
         private static bool IsRunningFromLocalBuildOutput()

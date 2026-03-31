@@ -102,6 +102,28 @@
                                Foreground="DimGray" />
                 </Grid>
             </TabItem>
+
+            <TabItem Header="Options">
+                <Grid Margin="12,10,12,12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <CheckBox x:Name="OpaqueBackgroundCheckBox"
+                              Grid.Row="0"
+                              Content="Opaque background"
+                              VerticalAlignment="Top"
+                              Checked="OpaqueBackgroundCheckBox_Changed"
+                              Unchecked="OpaqueBackgroundCheckBox_Changed" />
+
+                    <TextBlock Grid.Row="1"
+                               Margin="0,12,0,0"
+                               TextWrapping="Wrap"
+                               Foreground="DimGray"
+                               Text="When enabled, Trilby fills the full overlay background instead of leaving the surrounding area transparent. This is useful for screenshots." />
+                </Grid>
+            </TabItem>
         </TabControl>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">

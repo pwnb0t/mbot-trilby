@@ -16,6 +16,8 @@ namespace mbottrilby
         private readonly TrilbyEnvironmentCatalogSettings _environments;
         private readonly Func<string> _getSelectedEnvironmentName;
         private readonly Action<string> _setSelectedEnvironmentName;
+        private readonly Func<bool> _getOpaqueBackground;
+        private readonly Action<bool> _setOpaqueBackground;
         private readonly Func<string, TrilbySessionSettings?> _getSession;
         private readonly Func<string, long?> _getSelectedServerId;
         private readonly Action<string, long?> _setSelectedServerId;
@@ -29,6 +31,8 @@ namespace mbottrilby
             TrilbyEnvironmentCatalogSettings environments,
             Func<string> getSelectedEnvironmentName,
             Action<string> setSelectedEnvironmentName,
+            Func<bool> getOpaqueBackground,
+            Action<bool> setOpaqueBackground,
             Func<string, TrilbySessionSettings?> getSession,
             Func<string, long?> getSelectedServerId,
             Action<string, long?> setSelectedServerId,
@@ -43,6 +47,8 @@ namespace mbottrilby
             _environments = environments;
             _getSelectedEnvironmentName = getSelectedEnvironmentName;
             _setSelectedEnvironmentName = setSelectedEnvironmentName;
+            _getOpaqueBackground = getOpaqueBackground;
+            _setOpaqueBackground = setOpaqueBackground;
             _getSession = getSession;
             _getSelectedServerId = getSelectedServerId;
             _setSelectedServerId = setSelectedServerId;
@@ -54,6 +60,16 @@ namespace mbottrilby
             PopulateEnvironmentOptions();
             SelectEnvironment(_getSelectedEnvironmentName());
             RefreshView();
+        }
+
+        private void OpaqueBackgroundCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            _setOpaqueBackground(OpaqueBackgroundCheckBox.IsChecked == true);
         }
 
         private void ApplyWindowIcon()
@@ -171,6 +187,7 @@ namespace mbottrilby
             VersionTextBlock.Text = $"Current version: {updateStatus.CurrentVersionText}";
             UpdateStatusTextBlock.Text = updateStatus.StatusText;
             CheckForUpdatesButton.IsEnabled = updateStatus.CanCheckForUpdates && !updateStatus.IsBusy;
+            OpaqueBackgroundCheckBox.IsChecked = _getOpaqueBackground();
             PopulateServerOptions(environmentName, session);
             if (session is null || !session.IsAuthenticated)
             {

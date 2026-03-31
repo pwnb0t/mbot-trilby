@@ -80,6 +80,11 @@ namespace mbottrilby.Services
         public string SelectedName { get; set; } = "dev";
     }
 
+    internal sealed class OptionSettings
+    {
+        public bool OpaqueBackground { get; set; }
+    }
+
     internal sealed class ServerSelectionSettings
     {
         public long? Dev { get; set; }
@@ -199,6 +204,7 @@ namespace mbottrilby.Services
         public QuickPlayStateCatalog QuickPlay { get; set; } = new();
         public TagStateCatalog Tags { get; set; } = new();
         public EnvironmentSettings Environment { get; set; } = new();
+        public OptionSettings Options { get; set; } = new();
         public AuthSettings Auth { get; set; } = new();
         public ServerSelectionSettings ServerSelections { get; set; } = new();
 
@@ -360,6 +366,7 @@ namespace mbottrilby.Services
             settings.QuickPlay ??= new QuickPlayStateCatalog();
             settings.Tags ??= new TagStateCatalog();
             settings.Environment ??= new EnvironmentSettings();
+            settings.Options ??= new OptionSettings();
             settings.Auth ??= new AuthSettings();
             settings.ServerSelections ??= new ServerSelectionSettings();
             settings.QuickPlay.Servers ??= new List<ServerQuickPlaySettings>();
@@ -385,6 +392,7 @@ namespace mbottrilby.Services
         {
             var state = UserSettingsState.CreateEmpty();
             state.SelectedEnvironmentName = ReadEnvironmentName(root);
+            state.Options = ReadOptions(root);
             state.Auth = ReadAuthSettings(root);
             state.ServerSelections = ReadServerSelections(root, state.Auth);
             state.QuickPlay = ReadQuickPlaySettings(root, state);
@@ -402,6 +410,28 @@ namespace mbottrilby.Services
             }
 
             return "dev";
+        }
+
+        private static OptionSettings ReadOptions(JsonElement root)
+        {
+            var options = new OptionSettings();
+            if (!TryGetProperty(root, "options", out var optionsElement) || optionsElement.ValueKind != JsonValueKind.Object)
+            {
+                return options;
+            }
+
+            if (TryGetProperty(optionsElement, "opaqueBackground", out var opaqueBackgroundElement))
+            {
+                options.OpaqueBackground = opaqueBackgroundElement.ValueKind switch
+                {
+                    JsonValueKind.True => true,
+                    JsonValueKind.False => false,
+                    JsonValueKind.String when bool.TryParse(opaqueBackgroundElement.GetString(), out var parsed) => parsed,
+                    _ => false
+                };
+            }
+
+            return options;
         }
 
         private static AuthSettings ReadAuthSettings(JsonElement root)
