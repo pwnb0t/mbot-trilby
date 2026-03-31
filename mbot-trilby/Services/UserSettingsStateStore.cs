@@ -83,6 +83,7 @@ namespace mbottrilby.Services
     internal sealed class OptionSettings
     {
         public bool OpaqueBackground { get; set; }
+        public bool DoNotHideWhenPlayingClip { get; set; }
     }
 
     internal sealed class ServerSelectionSettings
@@ -427,6 +428,17 @@ namespace mbottrilby.Services
                     JsonValueKind.True => true,
                     JsonValueKind.False => false,
                     JsonValueKind.String when bool.TryParse(opaqueBackgroundElement.GetString(), out var parsed) => parsed,
+                    _ => false
+                };
+            }
+
+            if (TryGetProperty(optionsElement, "doNotHideWhenPlayingClip", out var doNotHideElement))
+            {
+                options.DoNotHideWhenPlayingClip = doNotHideElement.ValueKind switch
+                {
+                    JsonValueKind.True => true,
+                    JsonValueKind.False => false,
+                    JsonValueKind.String when bool.TryParse(doNotHideElement.GetString(), out var parsed) => parsed,
                     _ => false
                 };
             }

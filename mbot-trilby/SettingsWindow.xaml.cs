@@ -18,6 +18,8 @@ namespace mbottrilby
         private readonly Action<string> _setSelectedEnvironmentName;
         private readonly Func<bool> _getOpaqueBackground;
         private readonly Action<bool> _setOpaqueBackground;
+        private readonly Func<bool> _getDoNotHideWhenPlayingClip;
+        private readonly Action<bool> _setDoNotHideWhenPlayingClip;
         private readonly Func<string, TrilbySessionSettings?> _getSession;
         private readonly Func<string, long?> _getSelectedServerId;
         private readonly Action<string, long?> _setSelectedServerId;
@@ -33,6 +35,8 @@ namespace mbottrilby
             Action<string> setSelectedEnvironmentName,
             Func<bool> getOpaqueBackground,
             Action<bool> setOpaqueBackground,
+            Func<bool> getDoNotHideWhenPlayingClip,
+            Action<bool> setDoNotHideWhenPlayingClip,
             Func<string, TrilbySessionSettings?> getSession,
             Func<string, long?> getSelectedServerId,
             Action<string, long?> setSelectedServerId,
@@ -49,6 +53,8 @@ namespace mbottrilby
             _setSelectedEnvironmentName = setSelectedEnvironmentName;
             _getOpaqueBackground = getOpaqueBackground;
             _setOpaqueBackground = setOpaqueBackground;
+            _getDoNotHideWhenPlayingClip = getDoNotHideWhenPlayingClip;
+            _setDoNotHideWhenPlayingClip = setDoNotHideWhenPlayingClip;
             _getSession = getSession;
             _getSelectedServerId = getSelectedServerId;
             _setSelectedServerId = setSelectedServerId;
@@ -70,6 +76,16 @@ namespace mbottrilby
             }
 
             _setOpaqueBackground(OpaqueBackgroundCheckBox.IsChecked == true);
+        }
+
+        private void DoNotHideWhenPlayingClipCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            _setDoNotHideWhenPlayingClip(DoNotHideWhenPlayingClipCheckBox.IsChecked == true);
         }
 
         private void ApplyWindowIcon()
@@ -188,6 +204,7 @@ namespace mbottrilby
             UpdateStatusTextBlock.Text = updateStatus.StatusText;
             CheckForUpdatesButton.IsEnabled = updateStatus.CanCheckForUpdates && !updateStatus.IsBusy;
             OpaqueBackgroundCheckBox.IsChecked = _getOpaqueBackground();
+            DoNotHideWhenPlayingClipCheckBox.IsChecked = _getDoNotHideWhenPlayingClip();
             PopulateServerOptions(environmentName, session);
             if (session is null || !session.IsAuthenticated)
             {

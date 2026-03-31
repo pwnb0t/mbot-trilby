@@ -257,7 +257,7 @@ namespace mbottrilby
             }
 
             ResetSearchState();
-            _overlayController.Hide("Overlay hidden after random clip play request.");
+            HideOverlayAfterClipPlayIfNeeded("Overlay hidden after random clip play request.");
 
             var result = await _clipPlaybackCoordinator.PlayRandomAsync();
             foreach (var logLine in result.LogLines)
@@ -1040,7 +1040,7 @@ namespace mbottrilby
             }
 
             ResetSearchState();
-            _overlayController.Hide("Overlay hidden after clip play request.");
+            HideOverlayAfterClipPlayIfNeeded("Overlay hidden after clip play request.");
 
             var result = await _clipPlaybackCoordinator.PlayClipAsync(clipName, trigger);
             foreach (var logLine in result.LogLines)
@@ -1054,6 +1054,16 @@ namespace mbottrilby
             }
 
             return result.Success;
+        }
+
+        private void HideOverlayAfterClipPlayIfNeeded(string logMessage)
+        {
+            if (_userSettings.Options.DoNotHideWhenPlayingClip)
+            {
+                return;
+            }
+
+            _overlayController.Hide(logMessage);
         }
 
         private async System.Threading.Tasks.Task PlayQuickPlaySlotAsync(string slotName, string? trigger)
@@ -2404,6 +2414,8 @@ namespace mbottrilby
                 setSelectedEnvironmentName: SetSelectedEnvironmentName,
                 getOpaqueBackground: GetOpaqueBackground,
                 setOpaqueBackground: SetOpaqueBackground,
+                getDoNotHideWhenPlayingClip: GetDoNotHideWhenPlayingClip,
+                setDoNotHideWhenPlayingClip: SetDoNotHideWhenPlayingClip,
                 getSession: environmentName => _userSettings.GetSession(environmentName),
                 getSelectedServerId: environmentName => _userSettings.GetSelectedGuildId(environmentName),
                 setSelectedServerId: SetSelectedServerId,
@@ -2463,6 +2475,11 @@ namespace mbottrilby
             return _userSettings.Options.OpaqueBackground;
         }
 
+        private bool GetDoNotHideWhenPlayingClip()
+        {
+            return _userSettings.Options.DoNotHideWhenPlayingClip;
+        }
+
         private void SetOpaqueBackground(bool value)
         {
             if (_userSettings.Options.OpaqueBackground == value)
@@ -2474,6 +2491,21 @@ namespace mbottrilby
             SaveUserSettings();
             ApplyOptionState();
             Log(value ? "Enabled opaque overlay background." : "Disabled opaque overlay background.");
+            _settingsWindow?.RefreshView();
+        }
+
+        private void SetDoNotHideWhenPlayingClip(bool value)
+        {
+            if (_userSettings.Options.DoNotHideWhenPlayingClip == value)
+            {
+                return;
+            }
+
+            _userSettings.Options.DoNotHideWhenPlayingClip = value;
+            SaveUserSettings();
+            Log(value
+                ? "Enabled keep-open behavior while playing clips."
+                : "Restored auto-hide behavior after clip plays.");
             _settingsWindow?.RefreshView();
         }
 

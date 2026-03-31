@@ -28,6 +28,7 @@ namespace mbottrilby.Tests.Services
 
             Assert.Null(state.GetSelectedTagName("dev", 123));
             Assert.False(state.Options.OpaqueBackground);
+            Assert.False(state.Options.DoNotHideWhenPlayingClip);
             Assert.True(File.Exists(Path.Combine(_tempDirectory, "user-settings.json")));
             var json = File.ReadAllText(Path.Combine(_tempDirectory, "user-settings.json"));
             Assert.Contains("\"quickPlay\"", json);
@@ -43,6 +44,7 @@ namespace mbottrilby.Tests.Services
             var state = UserSettingsState.CreateEmpty();
             state.SelectedEnvironmentName = "test";
             state.Options.OpaqueBackground = true;
+            state.Options.DoNotHideWhenPlayingClip = true;
             state.SetSelectedGuildId("test", 123);
             state.SetTrigger("test", 123, 1, "alpha");
             state.SetSelectedTagName("test", 123, "test");
@@ -71,6 +73,7 @@ namespace mbottrilby.Tests.Services
             Assert.Equal("test", reloaded.GetSelectedTagName("test", 123));
             Assert.Equal("test", reloaded.SelectedEnvironmentName);
             Assert.True(reloaded.Options.OpaqueBackground);
+            Assert.True(reloaded.Options.DoNotHideWhenPlayingClip);
             Assert.Equal("access", reloaded.GetSession("test")?.AccessToken);
             var json = File.ReadAllText(Path.Combine(_tempDirectory, "user-settings.json"));
             Assert.Contains("\"quickPlay\"", json);
