@@ -6,7 +6,9 @@ All URIs are relative to *http://127.0.0.1:28765*
 |--------|--------------|-------------|
 | [**AddTagClip**](DefaultApi.md#addtagclip) | **POST** /v1/guilds/{guild_id}/tags/{tag_name}/clips | Add Tag Clip |
 | [**CompleteDiscordAuth**](DefaultApi.md#completediscordauth) | **GET** /v1/auth/discord/callback | Complete Discord Auth |
+| [**CreateBrowserLaunch**](DefaultApi.md#createbrowserlaunch) | **POST** /v1/browser-auth/launch | Create Browser Launch |
 | [**GetAuthenticatedSession**](DefaultApi.md#getauthenticatedsession) | **GET** /v1/auth/me | Get Authenticated Session |
+| [**GetClipBrowserPageClipBrowserGet**](DefaultApi.md#getclipbrowserpageclipbrowserget) | **GET** /clip-browser | Get Clip Browser Page |
 | [**GetCurrentIntro**](DefaultApi.md#getcurrentintro) | **GET** /v1/guilds/{guild_id}/intros/current | Get Current Intro |
 | [**GetHealth**](DefaultApi.md#gethealth) | **GET** /v1/health | Health |
 | [**GetRecentClipStats**](DefaultApi.md#getrecentclipstats) | **GET** /v1/guilds/{guild_id}/clips/stats/recent | Recent Clip Stats |
@@ -102,6 +104,39 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
+<a id="createbrowserlaunch"></a>
+# **CreateBrowserLaunch**
+> CreateBrowserLaunchResponse CreateBrowserLaunch ()
+
+Create Browser Launch
+
+
+### Parameters
+This endpoint does not need any parameter.
+### Return type
+
+[**CreateBrowserLaunchResponse**](CreateBrowserLaunchResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
+| **403** | Forbidden error response. |  -  |
+| **500** | Internal error response. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
 <a id="getauthenticatedsession"></a>
 # **GetAuthenticatedSession**
 > SessionSummaryResponse GetAuthenticatedSession ()
@@ -130,6 +165,36 @@ This endpoint does not need any parameter.
 |-------------|-------------|------------------|
 | **200** | Successful Response |  -  |
 | **401** | Unauthorized error response. |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="getclipbrowserpageclipbrowserget"></a>
+# **GetClipBrowserPageClipBrowserGet**
+> string GetClipBrowserPageClipBrowserGet ()
+
+Get Clip Browser Page
+
+
+### Parameters
+This endpoint does not need any parameter.
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: text/html
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 

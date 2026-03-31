@@ -16,6 +16,17 @@ paths:
                 $ref: "#/components/schemas/HealthResponse"
           description: Successful Response
       summary: Health
+  /clip-browser:
+    get:
+      operationId: get_clip_browser_page_clip_browser_get
+      responses:
+        "200":
+          content:
+            text/html:
+              schema:
+                type: string
+          description: Successful Response
+      summary: Get Clip Browser Page
   /v1/auth/discord/start:
     get:
       operationId: StartDiscordAuth
@@ -149,6 +160,37 @@ paths:
       security:
       - HTTPBearer: []
       summary: Get Authenticated Session
+  /v1/browser-auth/launch:
+    post:
+      operationId: CreateBrowserLaunch
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateBrowserLaunchResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Forbidden error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+      security:
+      - HTTPBearer: []
+      summary: Create Browser Launch
   /v1/guilds/{guild_id}/clips:
     get:
       operationId: ListClips
@@ -1133,6 +1175,22 @@ components:
       required:
       - trigger
       title: ClipSummary
+    CreateBrowserLaunchResponse:
+      example:
+        browser_url: browser_url
+        ok: true
+      properties:
+        ok:
+          default: true
+          title: Ok
+          type: boolean
+        browser_url:
+          minLength: 1
+          title: Browser Url
+          type: string
+      required:
+      - browser_url
+      title: CreateBrowserLaunchResponse
     GetCurrentIntroResponse:
       example:
         guild_id: 0

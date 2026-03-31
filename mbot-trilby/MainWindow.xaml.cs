@@ -2421,6 +2421,7 @@ namespace mbottrilby
                 setSelectedServerId: SetSelectedServerId,
                 signInAsync: SignInToEnvironmentAsync,
                 signOutAsync: SignOutEnvironmentAsync,
+                openClipBrowserAsync: OpenClipBrowserAsync,
                 getUpdateStatus: () => _trilbyUpdateService.GetStatus(),
                 checkForUpdatesAsync: CheckForUpdatesAsync,
                 log: Log);
@@ -2528,6 +2529,24 @@ namespace mbottrilby
 
             Log($"Signed out of {environmentName}.");
             _settingsWindow?.RefreshView();
+        }
+
+        private async System.Threading.Tasks.Task OpenClipBrowserAsync(string environmentName)
+        {
+            var session = _userSettings.GetSession(environmentName);
+            if (session is null || !session.IsAuthenticated || string.IsNullOrWhiteSpace(session.AccessToken))
+            {
+                throw new InvalidOperationException("Sign in before opening the Clip Browser.");
+            }
+
+            var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
+            using var apiClient = new TrilbyApiClientService(
+                environment.BaseUrl,
+                session.AccessToken,
+                _userSettings.GetSelectedGuildId(environmentName) ?? 0);
+            var browserUrl = await apiClient.CreateBrowserLaunchAsync();
+            Process.Start(new ProcessStartInfo(browserUrl) { UseShellExecute = true });
+            Log($"Opened Clip Browser for {environmentName}.");
         }
 
         private string GetSelectedEnvironmentName()

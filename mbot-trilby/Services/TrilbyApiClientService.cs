@@ -17,7 +17,7 @@ namespace mbottrilby.Services
         private readonly IDefaultApi _api;
         private readonly long _guildId;
 
-        public TrilbyApiClientService(string baseUrl, string accessToken, long guildId)
+        public TrilbyApiClientService(string baseUrl, string accessToken, long guildId = 0)
         {
             _ = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
             _guildId = guildId;
@@ -79,6 +79,35 @@ namespace mbottrilby.Services
 
             throw new InvalidOperationException(
                 $"List clips failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
+        }
+
+        public async Task<string> CreateBrowserLaunchAsync(CancellationToken cancellationToken = default)
+        {
+            var response = await _api.CreateBrowserLaunchAsync(cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            {
+                return ok.BrowserUrl;
+            }
+
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            {
+                throw new InvalidOperationException($"Create browser launch failed: {unauthorized.Message}");
+            }
+
+            if (response.IsForbidden && response.TryForbidden(out var forbidden) && forbidden is not null)
+            {
+                throw new InvalidOperationException($"Create browser launch failed: {forbidden.Message}");
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"Create browser launch failed: {internalError.Message}");
+            }
+
+            throw new InvalidOperationException(
+                $"Create browser launch failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
         }
 
         public async Task<TagCatalog> ListTagsAsync(CancellationToken cancellationToken = default)

@@ -25,6 +25,7 @@ namespace mbottrilby
         private readonly Action<string, long?> _setSelectedServerId;
         private readonly Func<string, Task> _signInAsync;
         private readonly Func<string, Task> _signOutAsync;
+        private readonly Func<string, Task> _openClipBrowserAsync;
         private readonly Func<TrilbyUpdateStatus> _getUpdateStatus;
         private readonly Func<Task<TrilbyUpdateStatus>> _checkForUpdatesAsync;
         private readonly Action<string> _log;
@@ -42,6 +43,7 @@ namespace mbottrilby
             Action<string, long?> setSelectedServerId,
             Func<string, Task> signInAsync,
             Func<string, Task> signOutAsync,
+            Func<string, Task> openClipBrowserAsync,
             Func<TrilbyUpdateStatus> getUpdateStatus,
             Func<Task<TrilbyUpdateStatus>> checkForUpdatesAsync,
             Action<string> log)
@@ -60,6 +62,7 @@ namespace mbottrilby
             _setSelectedServerId = setSelectedServerId;
             _signInAsync = signInAsync;
             _signOutAsync = signOutAsync;
+            _openClipBrowserAsync = openClipBrowserAsync;
             _getUpdateStatus = getUpdateStatus;
             _checkForUpdatesAsync = checkForUpdatesAsync;
             _log = log;
@@ -146,6 +149,26 @@ namespace mbottrilby
             }
         }
 
+        private async void OpenClipBrowserButton_Click(object sender, RoutedEventArgs e)
+        {
+            var environmentName = GetSelectedEnvironmentName();
+            try
+            {
+                SetBusyState(true, $"Opening Clip Browser for {environmentName}...");
+                await _openClipBrowserAsync(environmentName);
+                RefreshView();
+            }
+            catch (Exception ex)
+            {
+                _log($"Open Clip Browser failed for {environmentName}: {ex.Message}");
+                InfoTextBlock.Text = ex.Message;
+            }
+            finally
+            {
+                SetBusyState(false, string.Empty);
+            }
+        }
+
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -210,12 +233,16 @@ namespace mbottrilby
             {
                 AuthStatusTextBlock.Text = "Not signed in.";
                 InfoTextBlock.Text = "Sign in to load your available servers.";
+                OpenClipBrowserButton.Visibility = Visibility.Collapsed;
+                OpenClipBrowserButton.IsEnabled = false;
                 SignInButton.IsEnabled = true;
                 SignOutButton.IsEnabled = false;
                 ServerComboBox.IsEnabled = false;
                 return;
             }
 
+            OpenClipBrowserButton.Visibility = Visibility.Visible;
+            OpenClipBrowserButton.IsEnabled = true;
             SignInButton.IsEnabled = true;
             SignOutButton.IsEnabled = true;
             ServerComboBox.IsEnabled = true;
@@ -252,6 +279,7 @@ namespace mbottrilby
         {
             EnvironmentComboBox.IsEnabled = !isBusy;
             ServerComboBox.IsEnabled = !isBusy;
+            OpenClipBrowserButton.IsEnabled = !isBusy && OpenClipBrowserButton.Visibility == Visibility.Visible;
             SignInButton.IsEnabled = !isBusy;
             SignOutButton.IsEnabled = !isBusy;
             InfoTextBlock.Text = infoText;
