@@ -82,7 +82,10 @@ namespace mbottrilby.Services
             }
 
             var topLeft = _overlayPanelBorder.PointToScreen(new System.Windows.Point(0, 0));
-            var panelRect = new Rect(topLeft.X, topLeft.Y, _overlayPanelBorder.ActualWidth, _overlayPanelBorder.ActualHeight);
+            var bottomRight = _overlayPanelBorder.PointToScreen(
+                new System.Windows.Point(_overlayPanelBorder.ActualWidth, _overlayPanelBorder.ActualHeight)
+            );
+            var panelRect = new Rect(topLeft, bottomRight);
             return panelRect.Contains(screenPoint);
         }
 
