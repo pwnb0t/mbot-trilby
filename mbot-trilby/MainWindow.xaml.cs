@@ -119,15 +119,15 @@ namespace mbottrilby
 
             _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_trilbyApiClient);
 
-            var logDirectory = Path.Combine(
+            var appDataDirectoryName = IsRunningFromLocalBuildOutput() ? "mbot-trilby-dev" : "mbot-trilby";
+            var appDataDirectory = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "mbot-trilby",
-                "logs"
+                appDataDirectoryName
             );
+            var logDirectory = Path.Combine(appDataDirectory, "logs");
             Directory.CreateDirectory(logDirectory);
             _logFilePath = Path.Combine(logDirectory, "overlay.log");
-            var userStateDirectory = Path.GetDirectoryName(logDirectory) ?? logDirectory;
-            _userSettingsStore = new UserSettingsStateStore(userStateDirectory);
+            _userSettingsStore = new UserSettingsStateStore(appDataDirectory);
             _userSettings = _userSettingsStore.Load();
             NormalizeSelectedEnvironment();
             _quickPlaySlots = Enumerable.Range(1, 8)
@@ -2749,6 +2749,13 @@ namespace mbottrilby
         private static string DescribeHotkey(HotkeySettings hotkey)
         {
             return $"{hotkey.Modifiers}+{hotkey.Key}";
+        }
+
+        private static bool IsRunningFromLocalBuildOutput()
+        {
+            var projectFilePath = Path.GetFullPath(
+                Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "mbot-trilby.csproj"));
+            return File.Exists(projectFilePath);
         }
 
         [DllImport("user32.dll", SetLastError = true)]
