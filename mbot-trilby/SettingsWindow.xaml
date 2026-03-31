@@ -60,10 +60,17 @@
                                   SelectionChanged="ServerComboBox_SelectionChanged" />
                     </StackPanel>
 
-                    <TextBlock Grid.Row="3"
-                               x:Name="InfoTextBlock"
-                               TextWrapping="Wrap"
-                               Foreground="DimGray" />
+                    <StackPanel Grid.Row="3">
+                        <TextBlock x:Name="InfoTextBlock"
+                                   TextWrapping="Wrap"
+                                   Foreground="DimGray" />
+                        <TextBlock x:Name="OverlayHotkeyHintTextBlock"
+                                   Margin="0,6,0,0"
+                                   Text="Press alt+` to show/hide overlay"
+                                   TextWrapping="Wrap"
+                                   Foreground="Black"
+                                   Visibility="Collapsed" />
+                    </StackPanel>
 
                     <StackPanel Grid.Row="4"
                                 Orientation="Horizontal"

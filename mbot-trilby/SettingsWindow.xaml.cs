@@ -233,6 +233,7 @@ namespace mbottrilby
             {
                 AuthStatusTextBlock.Text = "Not signed in.";
                 InfoTextBlock.Text = "Sign in to load your available servers.";
+                OverlayHotkeyHintTextBlock.Visibility = Visibility.Collapsed;
                 OpenClipBrowserButton.Visibility = Visibility.Collapsed;
                 OpenClipBrowserButton.IsEnabled = false;
                 SignInButton.IsEnabled = true;
@@ -252,6 +253,7 @@ namespace mbottrilby
             InfoTextBlock.Text = selectedServer is null
                 ? "Choose a server to enable Trilby for this environment."
                 : $"Current server: {selectedServer.GuildName} ({selectedServer.GuildId})";
+            OverlayHotkeyHintTextBlock.Visibility = Visibility.Visible;
         }
 
         private string GetSelectedEnvironmentName()
