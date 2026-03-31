@@ -899,7 +899,7 @@
                                        Height="24"
                                        Margin="0,0,0,10" />
 
-                            <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                            <StackPanel Grid.Row="1" Margin="0,0,0,8">
                                 <TextBlock Text="Filters"
                                            Foreground="{StaticResource TextSecondaryBrush}"
                                            FontSize="12"
@@ -935,7 +935,7 @@
                                         Margin="14,0,14,0"
                                         Background="{StaticResource TextSecondaryBrush}" />
                                 <ScrollViewer x:Name="RecentClipsScrollViewer"
-                                              Margin="0,22,0,0"
+                                              Margin="0,14,0,0"
                                               VerticalScrollBarVisibility="Auto"
                                               HorizontalScrollBarVisibility="Disabled">
                                     <ItemsControl x:Name="RecentClipsItemsControl" ItemsSource="{Binding RecentClipStats}">
@@ -1033,7 +1033,7 @@
                                        Height="24"
                                        Margin="0,0,0,10" />
 
-                            <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                            <StackPanel Grid.Row="1" Margin="0,0,0,8">
                                 <TextBlock Text="Filters"
                                            Foreground="{StaticResource TextSecondaryBrush}"
                                            FontSize="12"
@@ -1081,7 +1081,7 @@
                                         Margin="14,0,14,0"
                                         Background="{StaticResource TextSecondaryBrush}" />
                                 <ScrollViewer x:Name="TopClipsScrollViewer"
-                                              Margin="0,22,0,0"
+                                              Margin="0,14,0,0"
                                               VerticalScrollBarVisibility="Auto"
                                               HorizontalScrollBarVisibility="Disabled">
                                     <ItemsControl x:Name="TopClipsItemsControl" ItemsSource="{Binding TopClipStats}">
