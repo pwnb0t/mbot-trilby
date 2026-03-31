@@ -70,10 +70,27 @@
                                        FontSize="13"
                                        VerticalAlignment="Center"
                                        Margin="0,0,10,0" />
+                            <Button Content="Screenshot"
+                                    Height="34"
+                                    Margin="0,0,8,0"
+                                    Click="ScreenshotButton_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button"
+                                           BasedOn="{StaticResource TopBarButtonStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ShowScreenshotButton}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                             <Button Style="{StaticResource TopBarButtonStyle}"
                                     Click="RefreshClipsButton_Click"
                                     MinWidth="120"
                                     Height="34"
+                                    Margin="0,0,8,0"
                                     IsEnabled="{Binding IsRefreshAvailable}">
                                 <Grid>
                                     <TextBlock Text="Refresh">
@@ -116,7 +133,7 @@
                                     Width="32"
                                     Height="28"
                                     Padding="0"
-                                    Margin="0"
+                                    Margin="0,3,0,0"
                                     Click="CloseOverlayButton_Click" />
                         </StackPanel>
                     </Grid>
@@ -124,167 +141,196 @@
                     <Grid x:Name="QuickPlayAndTransportGrid" Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="660" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                        <ItemsControl Grid.Column="0"
-                                      ItemsSource="{Binding QuickPlaySlots}">
+                        <ItemsControl Grid.Row="0"
+                                      Grid.Column="0"
+                                      Grid.ColumnSpan="8"
+                                      ItemsSource="{Binding QuickPlaySlots}"
+                                      HorizontalAlignment="Stretch"
+                                      Margin="0,0,12,6">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <UniformGrid Rows="1"
                                                  Columns="8" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
-                            <ItemsControl.Template>
-                                <ControlTemplate TargetType="ItemsControl">
-                                    <Border Width="1536"
-                                            HorizontalAlignment="Left"
-                                            Background="Transparent">
-                                        <ItemsPresenter />
-                                    </Border>
-                                </ControlTemplate>
-                            </ItemsControl.Template>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel Margin="4,0,4,8">
-                                        <TextBlock Text="{Binding HotkeyLabel}"
-                                                   Foreground="{StaticResource TextSecondaryBrush}"
-                                                   FontSize="12"
-                                                   FontWeight="SemiBold"
-                                                   Margin="0,0,0,6"
-                                                   TextAlignment="Center" />
-                                        <Button Height="86"
-                                                Tag="{Binding SlotIndex}"
-                                                Click="QuickPlayButton_Click"
-                                                AllowDrop="True"
-                                                DragEnter="QuickPlayButton_DragEnter"
-                                                DragLeave="QuickPlayButton_DragLeave"
-                                                DragOver="QuickPlayButton_DragOver"
-                                                Drop="QuickPlayButton_Drop">
-                                            <TextBlock Text="{Binding DisplayText}"
-                                                       Foreground="{StaticResource TextPrimaryBrush}"
-                                                       FontSize="15"
-                                                       FontWeight="SemiBold"
-                                                       TextAlignment="Center"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <Button.Style>
-                                                <Style TargetType="Button"
-                                                       BasedOn="{StaticResource ClipButtonStyle}">
-                                                    <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
-                                                    <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
-                                                    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsDragHoverTarget}" Value="True">
-                                                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
-                                                            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsDragAvailableTarget}" Value="True">
-                                                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsAssigned}" Value="False">
-                                                            <Setter Property="Background" Value="#AA1C2430" />
-                                                            <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}" />
-                                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-                                    </StackPanel>
+                                    <TextBlock Text="{Binding HotkeyLabel}"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               TextAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Margin="4,0" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
 
-                        <Grid x:Name="TransportControlsGrid"
-                              Grid.Column="1"
-                              HorizontalAlignment="Right">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
+                        <ItemsControl Grid.Row="1"
+                                      Grid.Column="0"
+                                      Grid.ColumnSpan="8"
+                                      ItemsSource="{Binding QuickPlaySlots}"
+                                      HorizontalAlignment="Stretch"
+                                      Margin="0,0,12,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="1"
+                                                 Columns="8" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Height="66"
+                                            Margin="4,0"
+                                            Tag="{Binding SlotIndex}"
+                                            Click="QuickPlayButton_Click"
+                                            AllowDrop="True"
+                                            DragEnter="QuickPlayButton_DragEnter"
+                                            DragLeave="QuickPlayButton_DragLeave"
+                                            DragOver="QuickPlayButton_DragOver"
+                                            Drop="QuickPlayButton_Drop">
+                                        <TextBlock Text="{Binding DisplayText}"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontSize="15"
+                                                   FontWeight="SemiBold"
+                                                   TextAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <Button.Style>
+                                            <Style TargetType="Button"
+                                                   BasedOn="{StaticResource ClipButtonStyle}">
+                                                <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+                                                <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+                                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsDragHoverTarget}" Value="True">
+                                                        <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
+                                                        <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsDragAvailableTarget}" Value="True">
+                                                        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsAssigned}" Value="False">
+                                                        <Setter Property="Background" Value="#AA1C2430" />
+                                                        <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}" />
+                                                        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
-                            <UniformGrid Grid.Row="0"
-                                         Rows="1"
-                                         Columns="3"
-                                         Width="660"
-                                         Margin="0,0,0,6">
-                                <TextBlock Text="Alt+-"
-                                           Foreground="{StaticResource TextSecondaryBrush}"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           TextAlignment="Center"
-                                           VerticalAlignment="Center" />
-                                <TextBlock Text="Alt+="
-                                           Foreground="{StaticResource TextSecondaryBrush}"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           TextAlignment="Center"
-                                           VerticalAlignment="Center" />
-                                <TextBlock Text="Current Intro"
-                                           Foreground="{StaticResource TextSecondaryBrush}"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           TextAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </UniformGrid>
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="8"
+                                   Text="Alt+-"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   TextAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="4,0,4,6" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="9"
+                                   Text="Alt+="
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   TextAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="4,0,4,6" />
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="10"
+                                   Text="Current Intro"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   TextAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="4,0,4,6" />
 
-                            <UniformGrid Grid.Row="1"
-                                         Rows="1"
-                                         Columns="3"
-                                         Width="660"
-                                         Height="86"
-                                         HorizontalAlignment="Right">
-                                <Button Style="{StaticResource ClipButtonStyle}" Content="Play Random" Click="PlayRandomButton_Click" />
-                                <Button Style="{StaticResource ClipButtonStyle}" Content="Stop" Click="StopButton_Click" />
-                                <Button x:Name="CurrentIntroButton"
-                                        DataContext="{Binding CurrentIntroSlot}"
-                                        Click="CurrentIntroButton_Click"
-                                        AllowDrop="True"
-                                        DragEnter="CurrentIntroButton_DragEnter"
-                                        DragLeave="CurrentIntroButton_DragLeave"
-                                        DragOver="CurrentIntroButton_DragOver"
-                                        Drop="CurrentIntroButton_Drop">
-                                    <TextBlock Text="{Binding DisplayText}"
-                                               Foreground="{StaticResource TextPrimaryBrush}"
-                                               FontSize="15"
-                                               FontWeight="SemiBold"
-                                               TextAlignment="Center"
-                                               TextTrimming="CharacterEllipsis" />
-                                    <Button.Style>
-                                        <Style TargetType="Button"
-                                               BasedOn="{StaticResource ClipButtonStyle}">
-                                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
-                                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
-                                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsDragHoverTarget}" Value="True">
-                                                    <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
-                                                    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsDragAvailableTarget}" Value="True">
-                                                    <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsAssigned}" Value="False">
-                                                    <Setter Property="Background" Value="#AA1C2430" />
-                                                    <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}" />
-                                                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                            </UniformGrid>
-                        </Grid>
+                        <Button Grid.Row="1"
+                                Grid.Column="8"
+                                Height="66"
+                                Margin="4,0"
+                                Style="{StaticResource ClipButtonStyle}"
+                                Content="Play Random"
+                                Click="PlayRandomButton_Click" />
+                        <Button Grid.Row="1"
+                                Grid.Column="9"
+                                Height="66"
+                                Margin="4,0"
+                                Style="{StaticResource ClipButtonStyle}"
+                                Content="Stop"
+                                Click="StopButton_Click" />
+                        <Button x:Name="CurrentIntroButton"
+                                Grid.Row="1"
+                                Grid.Column="10"
+                                Height="66"
+                                Margin="4,0"
+                                DataContext="{Binding CurrentIntroSlot}"
+                                Click="CurrentIntroButton_Click"
+                                AllowDrop="True"
+                                DragEnter="CurrentIntroButton_DragEnter"
+                                DragLeave="CurrentIntroButton_DragLeave"
+                                DragOver="CurrentIntroButton_DragOver"
+                                Drop="CurrentIntroButton_Drop">
+                            <TextBlock Text="{Binding DisplayText}"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       TextAlignment="Center"
+                                       TextTrimming="CharacterEllipsis" />
+                            <Button.Style>
+                                <Style TargetType="Button"
+                                       BasedOn="{StaticResource ClipButtonStyle}">
+                                    <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+                                    <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+                                    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsDragHoverTarget}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource ButtonBackgroundHoverBrush}" />
+                                            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsDragAvailableTarget}" Value="True">
+                                            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderHoverBrush}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsAssigned}" Value="False">
+                                            <Setter Property="Background" Value="#AA1C2430" />
+                                            <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrush}" />
+                                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </Grid>
                 </Grid>
 
                 <Grid x:Name="MainContentGrid" Grid.Row="1">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="320" />
-                        <ColumnDefinition Width="320" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="320" />
-                        <ColumnDefinition Width="320" />
+                        <ColumnDefinition Width="2*" MinWidth="220" MaxWidth="320" />
+                        <ColumnDefinition Width="2*" MinWidth="220" MaxWidth="320" />
+                        <ColumnDefinition Width="4*" MinWidth="420" />
+                        <ColumnDefinition Width="2*" MinWidth="220" MaxWidth="320" />
+                        <ColumnDefinition Width="2*" MinWidth="220" MaxWidth="320" />
                     </Grid.ColumnDefinitions>
 
                     <Border x:Name="SharedTagWidgetPanel"

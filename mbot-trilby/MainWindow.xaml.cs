@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows.Threading;
 using mbottrilby.Configuration;
@@ -48,6 +49,7 @@ namespace mbottrilby
         private static readonly TimeSpan RecentClipTimeRefreshInterval = TimeSpan.FromSeconds(15);
 
         private readonly string _logFilePath;
+        private readonly string _appDataDirectory;
         private readonly AppSettings _settings;
         private readonly HotkeyModifiers _overlayHotkeyModifiers;
         private readonly int _overlayHotkeyVirtualKey;
@@ -101,6 +103,7 @@ namespace mbottrilby
         private readonly System.Windows.Media.Brush _transparentOverlayBackground = System.Windows.Media.Brushes.Transparent;
         private readonly System.Windows.Media.Brush _opaqueOverlayBackground =
             new SolidColorBrush(System.Windows.Media.Color.FromRgb(15, 18, 23));
+        private readonly bool _isRunningFromLocalBuildOutput;
 
         public MainWindow()
         {
@@ -123,15 +126,16 @@ namespace mbottrilby
 
             _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_trilbyApiClient);
 
-            var appDataDirectoryName = IsRunningFromLocalBuildOutput() ? "mbot-trilby-dev" : "mbot-trilby";
-            var appDataDirectory = Path.Combine(
+            _isRunningFromLocalBuildOutput = IsRunningFromLocalBuildOutput();
+            var appDataDirectoryName = _isRunningFromLocalBuildOutput ? "mbot-trilby-dev" : "mbot-trilby";
+            _appDataDirectory = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 appDataDirectoryName
             );
-            var logDirectory = Path.Combine(appDataDirectory, "logs");
+            var logDirectory = Path.Combine(_appDataDirectory, "logs");
             Directory.CreateDirectory(logDirectory);
             _logFilePath = Path.Combine(logDirectory, "overlay.log");
-            _userSettingsStore = new UserSettingsStateStore(appDataDirectory);
+            _userSettingsStore = new UserSettingsStateStore(_appDataDirectory);
             _userSettings = _userSettingsStore.Load();
             NormalizeSelectedEnvironment();
             _quickPlaySlots = Enumerable.Range(1, 8)
@@ -142,6 +146,7 @@ namespace mbottrilby
             _viewModel.SharedTagWidget = _sharedTagWidget;
             _viewModel.TagWidget = _tagWidget;
             _viewModel.ClipDetail = _clipDetail;
+            _viewModel.ShowScreenshotButton = _isRunningFromLocalBuildOutput;
             _clipDetail.ShowPlaceholder();
             var initialSelectedTagName = GetCurrentSelectedTagName();
             if (!string.IsNullOrWhiteSpace(initialSelectedTagName))
@@ -219,6 +224,28 @@ namespace mbottrilby
 
             await EnsureEventsClientAsync("manual refresh");
             await RefreshOverlayDataAsync("manual refresh");
+        }
+
+        private void ScreenshotButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_isRunningFromLocalBuildOutput)
+            {
+                return;
+            }
+
+            try
+            {
+                var screenshotsDirectory = Path.Combine(_appDataDirectory, "screenshots");
+                Directory.CreateDirectory(screenshotsDirectory);
+                var fileName = $"trilby-{DateTime.Now:yyyyMMdd-HHmmss}.png";
+                var filePath = Path.Combine(screenshotsDirectory, fileName);
+                SaveOverlayScreenshot(filePath);
+                Log($"Saved overlay screenshot to '{filePath}'.");
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to save overlay screenshot: {ex.Message}");
+            }
         }
 
         private async void PlayRandomButton_Click(object sender, RoutedEventArgs e)
@@ -1255,6 +1282,22 @@ namespace mbottrilby
 
             _settingsWindow?.Close();
             System.Windows.Application.Current.Shutdown();
+        }
+
+        private void SaveOverlayScreenshot(string filePath)
+        {
+            RootOverlayGrid.UpdateLayout();
+
+            var width = Math.Max(1, (int)Math.Ceiling(RootOverlayGrid.ActualWidth));
+            var height = Math.Max(1, (int)Math.Ceiling(RootOverlayGrid.ActualHeight));
+            var renderTarget = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+            renderTarget.Render(RootOverlayGrid);
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(renderTarget));
+
+            using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            encoder.Save(fileStream);
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

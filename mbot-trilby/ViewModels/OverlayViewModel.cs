@@ -22,6 +22,7 @@ namespace mbottrilby.ViewModels
         private IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots = new List<QuickPlaySlotViewModel>();
         private CurrentIntroSlotViewModel _currentIntroSlot = new();
         private bool _isRefreshInProgress;
+        private bool _showScreenshotButton;
         private TagWidgetViewModel _sharedTagWidget = new("Server Tag");
         private TagWidgetViewModel _tagWidget = new();
         private ClipDetailViewModel _clipDetail = new();
@@ -131,6 +132,12 @@ namespace mbottrilby.ViewModels
         }
 
         public bool IsRefreshAvailable => !IsRefreshInProgress;
+
+        public bool ShowScreenshotButton
+        {
+            get => _showScreenshotButton;
+            set => SetField(ref _showScreenshotButton, value);
+        }
 
         public TagWidgetViewModel SharedTagWidget
         {
