@@ -158,7 +158,8 @@ namespace mbottrilby
                 overlayPanelBorder: OverlayPanelBorder,
                 diagnostics: _diagnostics,
                 setOverlayVisible: value => _viewModel.IsOverlayVisible = value,
-                setTopmost: value => Topmost = value
+                setTopmost: value => Topmost = value,
+                prepareWindowForShow: PrepareOverlayWindowForShow
             );
             _recentClipTimeRefreshTimer = new DispatcherTimer
             {
@@ -1298,6 +1299,16 @@ namespace mbottrilby
 
             using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
             encoder.Save(fileStream);
+        }
+
+        private void PrepareOverlayWindowForShow()
+        {
+            var reservedBottomHeight = OverlayController.GetReservedBottomHeight();
+            WindowState = WindowState.Normal;
+            Left = 0;
+            Top = 0;
+            Width = SystemParameters.PrimaryScreenWidth;
+            Height = Math.Max(1, SystemParameters.PrimaryScreenHeight - reservedBottomHeight);
         }
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

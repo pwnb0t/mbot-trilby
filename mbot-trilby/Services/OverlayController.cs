@@ -24,24 +24,29 @@ namespace mbottrilby.Services
         private const uint SwpNoSize = 0x0001;
         private const uint SwpNoOwnerZOrder = 0x0200;
         private const uint SwpShowWindow = 0x0040;
+        private const int SwHide = 0;
+        private const int SwShowNoActivate = 4;
 
         private readonly Border _overlayPanelBorder;
         private readonly OverlayDiagnostics _diagnostics;
         private readonly Action<bool> _setOverlayVisible;
         private readonly Action<bool> _setTopmost;
+        private readonly Action _prepareWindowForShow;
         private IntPtr _windowHandle = IntPtr.Zero;
 
         public OverlayController(
             Border overlayPanelBorder,
             OverlayDiagnostics diagnostics,
             Action<bool> setOverlayVisible,
-            Action<bool> setTopmost
+            Action<bool> setTopmost,
+            Action prepareWindowForShow
         )
         {
             _overlayPanelBorder = overlayPanelBorder;
             _diagnostics = diagnostics;
             _setOverlayVisible = setOverlayVisible;
             _setTopmost = setTopmost;
+            _prepareWindowForShow = prepareWindowForShow;
         }
 
         public bool IsVisible { get; private set; }
@@ -51,17 +56,22 @@ namespace mbottrilby.Services
             _windowHandle = windowHandle;
             EnableNoActivateMode(windowHandle);
             SetOverlayInteractionEnabled(false);
+            HideWindow();
             _diagnostics.Info("app", "Overlay no-activate mode enabled.");
         }
 
         public void ApplyOverlayPanelLayout()
         {
+            _overlayPanelBorder.Margin = new Thickness(0);
+        }
+
+        public static double GetReservedBottomHeight()
+        {
             var taskbarHeightEstimate = Math.Max(0, SystemParameters.PrimaryScreenHeight - SystemParameters.WorkArea.Height);
-            var reservedBottom = Math.Max(
+            return Math.Max(
                 OverlayBottomReserveMinPixels,
                 taskbarHeightEstimate + OverlayBottomReservePaddingPixels
             );
-            _overlayPanelBorder.Margin = new Thickness(0, 0, 0, reservedBottom);
         }
 
         public bool IsPointInsideOverlayPanel(System.Windows.Point screenPoint)
@@ -78,6 +88,8 @@ namespace mbottrilby.Services
 
         public void Show(OverlayShowSource source, bool topmost)
         {
+            _prepareWindowForShow();
+            ShowWindowNoActivate();
             _setOverlayVisible(true);
             IsVisible = true;
             SetOverlayInteractionEnabled(true);
@@ -106,6 +118,8 @@ namespace mbottrilby.Services
             _setOverlayVisible(false);
             IsVisible = false;
             SetOverlayInteractionEnabled(false);
+            _setTopmost(false);
+            HideWindow();
             _diagnostics.OverlayHidden(logMessage);
         }
 
@@ -155,6 +169,26 @@ namespace mbottrilby.Services
             );
         }
 
+        private void ShowWindowNoActivate()
+        {
+            if (_windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            ShowWindow(_windowHandle, SwShowNoActivate);
+        }
+
+        private void HideWindow()
+        {
+            if (_windowHandle == IntPtr.Zero)
+            {
+                return;
+            }
+
+            ShowWindow(_windowHandle, SwHide);
+        }
+
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW", SetLastError = true)]
         private static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
 
@@ -170,5 +204,8 @@ namespace mbottrilby.Services
             int cx,
             int cy,
             uint uFlags);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
     }
 }
