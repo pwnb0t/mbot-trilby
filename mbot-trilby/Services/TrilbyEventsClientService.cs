@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.WebSockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -32,6 +34,11 @@ namespace mbottrilby.Services
         private readonly string _accessToken;
         private readonly Func<TrilbyEvent, Task> _onEventAsync;
         private readonly Action<string>? _log;
+        private readonly string? _environmentName;
+        private readonly long? _userId;
+        private readonly string? _username;
+        private readonly string? _expiresAtUtc;
+        private readonly string _tokenFingerprint;
         private CancellationTokenSource? _stopCts;
         private Task? _runTask;
 
@@ -40,6 +47,10 @@ namespace mbottrilby.Services
             string accessToken,
             long guildId,
             Func<TrilbyEvent, Task> onEventAsync,
+            string? environmentName = null,
+            long? userId = null,
+            string? username = null,
+            string? expiresAtUtc = null,
             Action<string>? log = null)
         {
             _ = baseUrl ?? throw new ArgumentNullException(nameof(baseUrl));
@@ -47,6 +58,11 @@ namespace mbottrilby.Services
             _onEventAsync = onEventAsync ?? throw new ArgumentNullException(nameof(onEventAsync));
             _log = log;
             _accessToken = accessToken;
+            _environmentName = environmentName;
+            _userId = userId;
+            _username = username;
+            _expiresAtUtc = expiresAtUtc;
+            _tokenFingerprint = ComputeTokenFingerprint(accessToken);
             _eventsUri = BuildEventsUri(baseUrl, guildId);
         }
 
@@ -136,14 +152,22 @@ namespace mbottrilby.Services
             var attempt = 0;
             while (!cancellationToken.IsCancellationRequested)
             {
+                ClientWebSocket? websocket = null;
                 try
                 {
-                    using var websocket = new ClientWebSocket();
+                    websocket = new ClientWebSocket();
                     websocket.Options.SetRequestHeader("Authorization", $"Bearer {_accessToken}");
-                    _log?.Invoke($"Connecting to Trilby events at {_eventsUri}.");
+                    _log?.Invoke(
+                        $"Connecting to Trilby events. env={_environmentName ?? "<unknown>"} " +
+                        $"user_id={_userId?.ToString() ?? "<unknown>"} username={_username ?? "<unknown>"} " +
+                        $"guild_id={GetGuildIdFromEventsUri(_eventsUri)} expires_at={_expiresAtUtc ?? "<unknown>"} " +
+                        $"token_fingerprint={_tokenFingerprint} uri={_eventsUri}.");
                     await websocket.ConnectAsync(_eventsUri, cancellationToken).ConfigureAwait(false);
                     attempt = 0;
-                    _log?.Invoke($"Connected to Trilby events for server {_eventsUri.Query}.");
+                    _log?.Invoke(
+                        $"Connected to Trilby events. env={_environmentName ?? "<unknown>"} " +
+                        $"user_id={_userId?.ToString() ?? "<unknown>"} username={_username ?? "<unknown>"} " +
+                        $"guild_id={GetGuildIdFromEventsUri(_eventsUri)}.");
                     await ReceiveLoopAsync(websocket, cancellationToken).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -152,11 +176,24 @@ namespace mbottrilby.Services
                 }
                 catch (WebSocketException ex) when (!cancellationToken.IsCancellationRequested)
                 {
-                    _log?.Invoke($"Trilby events connection failed: {ex.Message}");
+                    _log?.Invoke(
+                        $"Trilby events connection failed. env={_environmentName ?? "<unknown>"} " +
+                        $"user_id={_userId?.ToString() ?? "<unknown>"} username={_username ?? "<unknown>"} " +
+                        $"guild_id={GetGuildIdFromEventsUri(_eventsUri)} expires_at={_expiresAtUtc ?? "<unknown>"} " +
+                        $"token_fingerprint={_tokenFingerprint} status={DescribeHandshakeStatus(websocket)} " +
+                        $"error={ex.Message}");
                 }
                 catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
                 {
-                    _log?.Invoke($"Trilby events error: {ex.Message}");
+                    _log?.Invoke(
+                        $"Trilby events error. env={_environmentName ?? "<unknown>"} " +
+                        $"user_id={_userId?.ToString() ?? "<unknown>"} username={_username ?? "<unknown>"} " +
+                        $"guild_id={GetGuildIdFromEventsUri(_eventsUri)} expires_at={_expiresAtUtc ?? "<unknown>"} " +
+                        $"token_fingerprint={_tokenFingerprint} error={ex.Message}");
+                }
+                finally
+                {
+                    websocket?.Dispose();
                 }
 
                 if (cancellationToken.IsCancellationRequested)
@@ -402,6 +439,51 @@ namespace mbottrilby.Services
                 Query = $"guild_id={guildId}"
             };
             return builder.Uri;
+        }
+
+        private static string ComputeTokenFingerprint(string accessToken)
+        {
+            var hash = SHA256.HashData(Encoding.UTF8.GetBytes(accessToken));
+            return Convert.ToHexString(hash[..6]).ToLowerInvariant();
+        }
+
+        private static string DescribeHandshakeStatus(ClientWebSocket? websocket)
+        {
+            if (websocket is null)
+            {
+                return "<unknown>";
+            }
+
+            try
+            {
+                var statusCode = websocket.HttpStatusCode;
+                return statusCode == 0 ? "<unknown>" : $"{(int)statusCode} ({statusCode})";
+            }
+            catch
+            {
+                return "<unknown>";
+            }
+        }
+
+        private static string GetGuildIdFromEventsUri(Uri eventsUri)
+        {
+            var query = eventsUri.Query;
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return "<unknown>";
+            }
+
+            var trimmedQuery = query.TrimStart('?');
+            foreach (var part in trimmedQuery.Split('&', StringSplitOptions.RemoveEmptyEntries))
+            {
+                var pieces = part.Split('=', 2);
+                if (pieces.Length == 2 && string.Equals(pieces[0], "guild_id", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Uri.UnescapeDataString(pieces[1]);
+                }
+            }
+
+            return "<unknown>";
         }
 
         internal abstract class TrilbyEvent

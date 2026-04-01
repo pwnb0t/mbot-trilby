@@ -2367,11 +2367,18 @@ namespace mbottrilby
                 session.AccessToken,
                 selectedGuildId.Value,
                 OnTrilbyEventAsync,
+                environmentName: environmentName,
+                userId: session.UserId,
+                username: session.Username,
+                expiresAtUtc: session.ExpiresAtUtc,
                 log: message => Log(message));
             _eventsClientBaseUrl = environment.BaseUrl;
             _eventsClientAccessToken = session.AccessToken;
             _eventsClientGuildId = selectedGuildId.Value;
-            Log($"Starting Trilby events stream ({reason})...");
+            Log(
+                $"Starting Trilby events stream ({reason}). env={environmentName} " +
+                $"user_id={session.UserId} username={session.Username ?? "<unknown>"} " +
+                $"guild_id={selectedGuildId.Value} expires_at={session.ExpiresAtUtc ?? "<unknown>"}");
             _trilbyEventsClient.Start();
         }
 
