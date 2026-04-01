@@ -34,18 +34,24 @@ namespace TrilbyApi.Model
         /// Initializes a new instance of the <see cref="ClipSummary" /> class.
         /// </summary>
         /// <param name="trigger">trigger</param>
+        /// <param name="createdAtUtc">createdAtUtc (default to &quot;&quot;)</param>
+        /// <param name="playCount">playCount (default to 0)</param>
         /// <param name="sourceUrl">sourceUrl (default to &quot;&quot;)</param>
         /// <param name="startOffsetText">startOffsetText (default to &quot;&quot;)</param>
         /// <param name="clipLengthText">clipLengthText (default to &quot;&quot;)</param>
+        /// <param name="createdByUserId">createdByUserId</param>
         /// <param name="addedByText">addedByText (default to &quot;&quot;)</param>
         /// <param name="tagNames">tagNames</param>
         [JsonConstructor]
-        public ClipSummary(string trigger, Option<string?> sourceUrl = default, Option<string?> startOffsetText = default, Option<string?> clipLengthText = default, Option<string?> addedByText = default, Option<List<string>?> tagNames = default)
+        public ClipSummary(string trigger, Option<string?> createdAtUtc = default, Option<int?> playCount = default, Option<string?> sourceUrl = default, Option<string?> startOffsetText = default, Option<string?> clipLengthText = default, Option<long?> createdByUserId = default, Option<string?> addedByText = default, Option<List<string>?> tagNames = default)
         {
             Trigger = trigger;
+            CreatedAtUtcOption = createdAtUtc;
+            PlayCountOption = playCount;
             SourceUrlOption = sourceUrl;
             StartOffsetTextOption = startOffsetText;
             ClipLengthTextOption = clipLengthText;
+            CreatedByUserIdOption = createdByUserId;
             AddedByTextOption = addedByText;
             TagNamesOption = tagNames;
             OnCreated();
@@ -58,6 +64,32 @@ namespace TrilbyApi.Model
         /// </summary>
         [JsonPropertyName("trigger")]
         public string Trigger { get; set; }
+
+        /// <summary>
+        /// Used to track the state of CreatedAtUtc
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<string?> CreatedAtUtcOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets CreatedAtUtc
+        /// </summary>
+        [JsonPropertyName("created_at_utc")]
+        public string? CreatedAtUtc { get { return this.CreatedAtUtcOption; } set { this.CreatedAtUtcOption = new(value); } }
+
+        /// <summary>
+        /// Used to track the state of PlayCount
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<int?> PlayCountOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets PlayCount
+        /// </summary>
+        [JsonPropertyName("play_count")]
+        public int? PlayCount { get { return this.PlayCountOption; } set { this.PlayCountOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of SourceUrl
@@ -99,6 +131,19 @@ namespace TrilbyApi.Model
         public string? ClipLengthText { get { return this.ClipLengthTextOption; } set { this.ClipLengthTextOption = new(value); } }
 
         /// <summary>
+        /// Used to track the state of CreatedByUserId
+        /// </summary>
+        [JsonIgnore]
+        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
+        public Option<long?> CreatedByUserIdOption { get; private set; }
+
+        /// <summary>
+        /// Gets or Sets CreatedByUserId
+        /// </summary>
+        [JsonPropertyName("created_by_user_id")]
+        public long? CreatedByUserId { get { return this.CreatedByUserIdOption; } set { this.CreatedByUserIdOption = new(value); } }
+
+        /// <summary>
         /// Used to track the state of AddedByText
         /// </summary>
         [JsonIgnore]
@@ -133,9 +178,12 @@ namespace TrilbyApi.Model
             StringBuilder sb = new StringBuilder();
             sb.Append("class ClipSummary {\n");
             sb.Append("  Trigger: ").Append(Trigger).Append("\n");
+            sb.Append("  CreatedAtUtc: ").Append(CreatedAtUtc).Append("\n");
+            sb.Append("  PlayCount: ").Append(PlayCount).Append("\n");
             sb.Append("  SourceUrl: ").Append(SourceUrl).Append("\n");
             sb.Append("  StartOffsetText: ").Append(StartOffsetText).Append("\n");
             sb.Append("  ClipLengthText: ").Append(ClipLengthText).Append("\n");
+            sb.Append("  CreatedByUserId: ").Append(CreatedByUserId).Append("\n");
             sb.Append("  AddedByText: ").Append(AddedByText).Append("\n");
             sb.Append("  TagNames: ").Append(TagNames).Append("\n");
             sb.Append("}\n");
@@ -176,9 +224,12 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<string?> trigger = default;
+            Option<string?> createdAtUtc = default;
+            Option<int?> playCount = default;
             Option<string?> sourceUrl = default;
             Option<string?> startOffsetText = default;
             Option<string?> clipLengthText = default;
+            Option<long?> createdByUserId = default;
             Option<string?> addedByText = default;
             Option<List<string>?> tagNames = default;
 
@@ -200,6 +251,12 @@ namespace TrilbyApi.Model
                         case "trigger":
                             trigger = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
+                        case "created_at_utc":
+                            createdAtUtc = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "play_count":
+                            playCount = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
+                            break;
                         case "source_url":
                             sourceUrl = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
@@ -208,6 +265,9 @@ namespace TrilbyApi.Model
                             break;
                         case "clip_length_text":
                             clipLengthText = new Option<string?>(utf8JsonReader.GetString()!);
+                            break;
+                        case "created_by_user_id":
+                            createdByUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
                             break;
                         case "added_by_text":
                             addedByText = new Option<string?>(utf8JsonReader.GetString()!);
@@ -227,6 +287,12 @@ namespace TrilbyApi.Model
             if (trigger.IsSet && trigger.Value == null)
                 throw new ArgumentNullException(nameof(trigger), "Property is not nullable for class ClipSummary.");
 
+            if (createdAtUtc.IsSet && createdAtUtc.Value == null)
+                throw new ArgumentNullException(nameof(createdAtUtc), "Property is not nullable for class ClipSummary.");
+
+            if (playCount.IsSet && playCount.Value == null)
+                throw new ArgumentNullException(nameof(playCount), "Property is not nullable for class ClipSummary.");
+
             if (sourceUrl.IsSet && sourceUrl.Value == null)
                 throw new ArgumentNullException(nameof(sourceUrl), "Property is not nullable for class ClipSummary.");
 
@@ -236,13 +302,16 @@ namespace TrilbyApi.Model
             if (clipLengthText.IsSet && clipLengthText.Value == null)
                 throw new ArgumentNullException(nameof(clipLengthText), "Property is not nullable for class ClipSummary.");
 
+            if (createdByUserId.IsSet && createdByUserId.Value == null)
+                throw new ArgumentNullException(nameof(createdByUserId), "Property is not nullable for class ClipSummary.");
+
             if (addedByText.IsSet && addedByText.Value == null)
                 throw new ArgumentNullException(nameof(addedByText), "Property is not nullable for class ClipSummary.");
 
             if (tagNames.IsSet && tagNames.Value == null)
                 throw new ArgumentNullException(nameof(tagNames), "Property is not nullable for class ClipSummary.");
 
-            return new ClipSummary(trigger.Value!, sourceUrl, startOffsetText, clipLengthText, addedByText, tagNames);
+            return new ClipSummary(trigger.Value!, createdAtUtc, playCount, sourceUrl, startOffsetText, clipLengthText, createdByUserId, addedByText, tagNames);
         }
 
         /// <summary>
@@ -272,6 +341,9 @@ namespace TrilbyApi.Model
             if (clipSummary.Trigger == null)
                 throw new ArgumentNullException(nameof(clipSummary.Trigger), "Property is required for class ClipSummary.");
 
+            if (clipSummary.CreatedAtUtcOption.IsSet && clipSummary.CreatedAtUtc == null)
+                throw new ArgumentNullException(nameof(clipSummary.CreatedAtUtc), "Property is required for class ClipSummary.");
+
             if (clipSummary.SourceUrlOption.IsSet && clipSummary.SourceUrl == null)
                 throw new ArgumentNullException(nameof(clipSummary.SourceUrl), "Property is required for class ClipSummary.");
 
@@ -289,6 +361,12 @@ namespace TrilbyApi.Model
 
             writer.WriteString("trigger", clipSummary.Trigger);
 
+            if (clipSummary.CreatedAtUtcOption.IsSet)
+                writer.WriteString("created_at_utc", clipSummary.CreatedAtUtc);
+
+            if (clipSummary.PlayCountOption.IsSet)
+                writer.WriteNumber("play_count", clipSummary.PlayCountOption.Value!.Value);
+
             if (clipSummary.SourceUrlOption.IsSet)
                 writer.WriteString("source_url", clipSummary.SourceUrl);
 
@@ -297,6 +375,9 @@ namespace TrilbyApi.Model
 
             if (clipSummary.ClipLengthTextOption.IsSet)
                 writer.WriteString("clip_length_text", clipSummary.ClipLengthText);
+
+            if (clipSummary.CreatedByUserIdOption.IsSet)
+                writer.WriteNumber("created_by_user_id", clipSummary.CreatedByUserIdOption.Value!.Value);
 
             if (clipSummary.AddedByTextOption.IsSet)
                 writer.WriteString("added_by_text", clipSummary.AddedByText);

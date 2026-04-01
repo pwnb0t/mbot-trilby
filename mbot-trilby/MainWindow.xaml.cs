@@ -69,6 +69,7 @@ namespace mbottrilby
         private readonly UserSettingsStateStore _userSettingsStore;
         private readonly UserSettingsState _userSettings;
         private readonly TrilbyUpdateService _trilbyUpdateService = new();
+        private readonly TrilbySupportLogService _trilbySupportLogService;
         private readonly IReadOnlyList<QuickPlaySlotViewModel> _quickPlaySlots;
         private readonly ClipDragSourceBehavior _clipDragSourceBehavior = new();
         private readonly CurrentIntroSlotViewModel _currentIntroSlot = new();
@@ -137,6 +138,7 @@ namespace mbottrilby
             _logFilePath = Path.Combine(logDirectory, "overlay.log");
             _userSettingsStore = new UserSettingsStateStore(_appDataDirectory);
             _userSettings = _userSettingsStore.Load();
+            _trilbySupportLogService = new TrilbySupportLogService(_appDataDirectory);
             NormalizeSelectedEnvironment();
             _quickPlaySlots = Enumerable.Range(1, 8)
                 .Select(slotIndex => new QuickPlaySlotViewModel(slotIndex))
@@ -2431,6 +2433,7 @@ namespace mbottrilby
                 openClipBrowserAsync: OpenClipBrowserAsync,
                 getUpdateStatus: () => _trilbyUpdateService.GetStatus(),
                 checkForUpdatesAsync: CheckForUpdatesAsync,
+                sendLogsToDeveloperAsync: SendLogsToDeveloperAsync,
                 log: Log);
             _settingsWindow.Closed += (_, _) => _settingsWindow = null;
             _settingsWindow.Show();
@@ -2554,6 +2557,32 @@ namespace mbottrilby
             var browserUrl = await apiClient.CreateBrowserLaunchAsync();
             Process.Start(new ProcessStartInfo(browserUrl) { UseShellExecute = true });
             Log($"Opened Clip Browser for {environmentName}.");
+        }
+
+        private async System.Threading.Tasks.Task<string> SendLogsToDeveloperAsync(string environmentName)
+        {
+            var session = _userSettings.GetSession(environmentName);
+            if (session is null || !session.IsAuthenticated || string.IsNullOrWhiteSpace(session.AccessToken))
+            {
+                throw new InvalidOperationException("Sign in before sending logs to the developer.");
+            }
+
+            var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
+            var selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
+            var preparedBundle = _trilbySupportLogService.CreateBundle(
+                environmentName,
+                session.UserId,
+                session.Username,
+                selectedGuildId);
+            using var apiClient = new TrilbyApiClientService(
+                environment.BaseUrl,
+                session.AccessToken,
+                selectedGuildId ?? 0);
+            var storedFileName = await apiClient.UploadLogBundleAsync(
+                preparedBundle.FileName,
+                preparedBundle.ContentBase64);
+            Log($"Sent Trilby log bundle '{storedFileName}' for {environmentName}.");
+            return storedFileName;
         }
 
         private string GetSelectedEnvironmentName()

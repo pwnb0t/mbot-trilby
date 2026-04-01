@@ -92,6 +92,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
@@ -112,6 +113,20 @@
                                Margin="0,12,0,0"
                                TextWrapping="Wrap"
                                Foreground="DimGray" />
+
+                    <StackPanel Grid.Row="3"
+                                Margin="0,16,0,0"
+                                VerticalAlignment="Top">
+                        <Button x:Name="SendLogsToDeveloperButton"
+                                Width="180"
+                                HorizontalAlignment="Left"
+                                Content="Send logs to developer"
+                                Click="SendLogsToDeveloperButton_Click" />
+                        <TextBlock x:Name="SupportStatusTextBlock"
+                                   Margin="0,8,0,0"
+                                   TextWrapping="Wrap"
+                                   Foreground="DimGray" />
+                    </StackPanel>
                 </Grid>
             </TabItem>
 

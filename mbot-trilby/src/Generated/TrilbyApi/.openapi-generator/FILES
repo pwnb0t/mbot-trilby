@@ -9,6 +9,8 @@ docs/models/AddTagClipResponse.md
 docs/models/ApiErrorResponse.md
 docs/models/AuthenticatedTrilbyGuild.md
 docs/models/ClipSummary.md
+docs/models/CopyClipBody.md
+docs/models/CopyClipResponse.md
 docs/models/CreateBrowserLaunchResponse.md
 docs/models/GetCurrentIntroResponse.md
 docs/models/GetSharedTagResponse.md
@@ -38,11 +40,14 @@ docs/models/TagClipSummary.md
 docs/models/TagSummary.md
 docs/models/TopClipStatsItem.md
 docs/models/TopClipStatsResponse.md
+docs/models/UploadLogBundleBody.md
+docs/models/UploadLogBundleResponse.md
 docs/models/ValidationError.md
 docs/scripts/git_push.ps1
 docs/scripts/git_push.sh
 src/TrilbyApi.Test/Api/DependencyInjectionTests.cs
-src/TrilbyApi.Test/Model/CreateBrowserLaunchResponseTests.cs
+src/TrilbyApi.Test/Model/UploadLogBundleBodyTests.cs
+src/TrilbyApi.Test/Model/UploadLogBundleResponseTests.cs
 src/TrilbyApi.Test/README.md
 src/TrilbyApi.Test/TrilbyApi.Test.csproj
 src/TrilbyApi/Api/DefaultApi.cs
@@ -74,6 +79,8 @@ src/TrilbyApi/Model/AddTagClipResponse.cs
 src/TrilbyApi/Model/ApiErrorResponse.cs
 src/TrilbyApi/Model/AuthenticatedTrilbyGuild.cs
 src/TrilbyApi/Model/ClipSummary.cs
+src/TrilbyApi/Model/CopyClipBody.cs
+src/TrilbyApi/Model/CopyClipResponse.cs
 src/TrilbyApi/Model/CreateBrowserLaunchResponse.cs
 src/TrilbyApi/Model/GetCurrentIntroResponse.cs
 src/TrilbyApi/Model/GetSharedTagResponse.cs
@@ -103,6 +110,8 @@ src/TrilbyApi/Model/TagClipSummary.cs
 src/TrilbyApi/Model/TagSummary.cs
 src/TrilbyApi/Model/TopClipStatsItem.cs
 src/TrilbyApi/Model/TopClipStatsResponse.cs
+src/TrilbyApi/Model/UploadLogBundleBody.cs
+src/TrilbyApi/Model/UploadLogBundleResponse.cs
 src/TrilbyApi/Model/ValidationError.cs
 src/TrilbyApi/README.md
 src/TrilbyApi/TrilbyApi.csproj

@@ -28,6 +28,7 @@ namespace mbottrilby
         private readonly Func<string, Task> _openClipBrowserAsync;
         private readonly Func<TrilbyUpdateStatus> _getUpdateStatus;
         private readonly Func<Task<TrilbyUpdateStatus>> _checkForUpdatesAsync;
+        private readonly Func<string, Task<string>> _sendLogsToDeveloperAsync;
         private readonly Action<string> _log;
 
         public SettingsWindow(
@@ -46,6 +47,7 @@ namespace mbottrilby
             Func<string, Task> openClipBrowserAsync,
             Func<TrilbyUpdateStatus> getUpdateStatus,
             Func<Task<TrilbyUpdateStatus>> checkForUpdatesAsync,
+            Func<string, Task<string>> sendLogsToDeveloperAsync,
             Action<string> log)
         {
             InitializeComponent();
@@ -65,6 +67,7 @@ namespace mbottrilby
             _openClipBrowserAsync = openClipBrowserAsync;
             _getUpdateStatus = getUpdateStatus;
             _checkForUpdatesAsync = checkForUpdatesAsync;
+            _sendLogsToDeveloperAsync = sendLogsToDeveloperAsync;
             _log = log;
             PopulateEnvironmentOptions();
             SelectEnvironment(_getSelectedEnvironmentName());
@@ -193,6 +196,36 @@ namespace mbottrilby
             }
         }
 
+        private async void SendLogsToDeveloperButton_Click(object sender, RoutedEventArgs e)
+        {
+            var environmentName = GetSelectedEnvironmentName();
+            var confirmation = System.Windows.MessageBox.Show(
+                "This will send recent local Trilby logs to the developer for debugging. Continue?",
+                "Send Logs to Developer",
+                MessageBoxButton.OKCancel,
+                MessageBoxImage.Question);
+            if (confirmation != MessageBoxResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                SetSupportBusyState(true, "Preparing log bundle...");
+                var storedFileName = await _sendLogsToDeveloperAsync(environmentName);
+                SupportStatusTextBlock.Text = $"Sent logs successfully: {storedFileName}";
+            }
+            catch (Exception ex)
+            {
+                _log($"Send logs failed for {environmentName}: {ex.Message}");
+                SupportStatusTextBlock.Text = $"Send logs failed: {ex.Message}";
+            }
+            finally
+            {
+                SetSupportBusyState(false, SupportStatusTextBlock.Text);
+            }
+        }
+
         private void EnvironmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (EnvironmentComboBox.SelectedItem is not EnvironmentOption option)
@@ -236,6 +269,8 @@ namespace mbottrilby
                 OverlayHotkeyHintTextBlock.Visibility = Visibility.Collapsed;
                 OpenClipBrowserButton.Visibility = Visibility.Collapsed;
                 OpenClipBrowserButton.IsEnabled = false;
+                SendLogsToDeveloperButton.IsEnabled = false;
+                SupportStatusTextBlock.Text = "Sign in to send logs to the developer.";
                 SignInButton.IsEnabled = true;
                 SignOutButton.IsEnabled = false;
                 ServerComboBox.IsEnabled = false;
@@ -244,6 +279,12 @@ namespace mbottrilby
 
             OpenClipBrowserButton.Visibility = Visibility.Visible;
             OpenClipBrowserButton.IsEnabled = true;
+            SendLogsToDeveloperButton.IsEnabled = true;
+            if (string.IsNullOrWhiteSpace(SupportStatusTextBlock.Text) ||
+                string.Equals(SupportStatusTextBlock.Text, "Sign in to send logs to the developer.", StringComparison.Ordinal))
+            {
+                SupportStatusTextBlock.Text = "Sends recent Trilby logs to the developer for debugging.";
+            }
             SignInButton.IsEnabled = true;
             SignOutButton.IsEnabled = true;
             ServerComboBox.IsEnabled = true;
@@ -291,6 +332,12 @@ namespace mbottrilby
         {
             CheckForUpdatesButton.IsEnabled = !isBusy && _getUpdateStatus().CanCheckForUpdates;
             UpdateStatusTextBlock.Text = statusText;
+        }
+
+        private void SetSupportBusyState(bool isBusy, string statusText)
+        {
+            SendLogsToDeveloperButton.IsEnabled = !isBusy && (_getSession(GetSelectedEnvironmentName())?.IsAuthenticated ?? false);
+            SupportStatusTextBlock.Text = statusText;
         }
 
         private void PopulateServerOptions(string environmentName, TrilbySessionSettings? session)

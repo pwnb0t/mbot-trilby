@@ -110,6 +110,44 @@ namespace mbottrilby.Services
                 $"Create browser launch failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
         }
 
+        public async Task<string> UploadLogBundleAsync(
+            string fileName,
+            string contentBase64,
+            CancellationToken cancellationToken = default)
+        {
+            var request = new UploadLogBundleBody(fileName, contentBase64);
+            var response = await _api.UploadLogBundleAsync(request, cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            {
+                return ok.StoredFileName;
+            }
+
+            if (response.IsBadRequest && response.TryBadRequest(out var badRequest) && badRequest is not null)
+            {
+                throw new InvalidOperationException($"Upload log bundle failed: {badRequest.Message}");
+            }
+
+            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            {
+                throw new InvalidOperationException($"Upload log bundle failed: {unauthorized.Message}");
+            }
+
+            if (response.IsInternalServerError &&
+                response.TryInternalServerError(out var internalError) &&
+                internalError is not null)
+            {
+                throw new InvalidOperationException($"Upload log bundle failed: {internalError.Message}");
+            }
+
+            if (response.IsUnprocessableContent)
+            {
+                throw new InvalidOperationException("Upload log bundle failed: validation error (422).");
+            }
+
+            throw new InvalidOperationException(
+                $"Upload log bundle failed: HTTP {(int)response.StatusCode} ({response.StatusCode})");
+        }
+
         public async Task<TagCatalog> ListTagsAsync(CancellationToken cancellationToken = default)
         {
             var response = await _api.ListTagsAsync(_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);

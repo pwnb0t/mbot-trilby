@@ -6,6 +6,7 @@ All URIs are relative to *http://127.0.0.1:28765*
 |--------|--------------|-------------|
 | [**AddTagClip**](DefaultApi.md#addtagclip) | **POST** /v1/guilds/{guild_id}/tags/{tag_name}/clips | Add Tag Clip |
 | [**CompleteDiscordAuth**](DefaultApi.md#completediscordauth) | **GET** /v1/auth/discord/callback | Complete Discord Auth |
+| [**CopyClip**](DefaultApi.md#copyclip) | **POST** /v1/guilds/{guild_id}/clips/{clip_trigger}/copy | Copy Clip |
 | [**CreateBrowserLaunch**](DefaultApi.md#createbrowserlaunch) | **POST** /v1/browser-auth/launch | Create Browser Launch |
 | [**GetAuthenticatedSession**](DefaultApi.md#getauthenticatedsession) | **GET** /v1/auth/me | Get Authenticated Session |
 | [**GetClipBrowserPageClipBrowserGet**](DefaultApi.md#getclipbrowserpageclipbrowserget) | **GET** /clip-browser | Get Clip Browser Page |
@@ -25,6 +26,7 @@ All URIs are relative to *http://127.0.0.1:28765*
 | [**SetSharedTag**](DefaultApi.md#setsharedtag) | **PUT** /v1/guilds/{guild_id}/shared-tag | Set Shared Tag |
 | [**StartDiscordAuth**](DefaultApi.md#startdiscordauth) | **GET** /v1/auth/discord/start | Start Discord Auth |
 | [**StopClip**](DefaultApi.md#stopclip) | **POST** /v1/guilds/{guild_id}/clips/stop | Stop Clip |
+| [**UploadLogBundle**](DefaultApi.md#uploadlogbundle) | **POST** /v1/support/log-bundles | Upload Log Bundle |
 
 <a id="addtagclip"></a>
 # **AddTagClip**
@@ -100,6 +102,47 @@ No authorization required
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Successful Response |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="copyclip"></a>
+# **CopyClip**
+> CopyClipResponse CopyClip (long guildId, string clipTrigger, CopyClipBody copyClipBody)
+
+Copy Clip
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **guildId** | **long** |  |  |
+| **clipTrigger** | **string** |  |  |
+| **copyClipBody** | [**CopyClipBody**](CopyClipBody.md) |  |  |
+
+### Return type
+
+[**CopyClipResponse**](CopyClipResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **401** | Unauthorized error response. |  -  |
+| **404** | Clip not found error response. |  -  |
+| **409** | Conflict error response. |  -  |
+| **500** | Internal error response. |  -  |
 | **422** | Validation Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
@@ -808,6 +851,44 @@ Stop Clip
 | **401** | Unauthorized error response. |  -  |
 | **404** | Guild not found error response. |  -  |
 | **409** | Voice not connected error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="uploadlogbundle"></a>
+# **UploadLogBundle**
+> UploadLogBundleResponse UploadLogBundle (UploadLogBundleBody uploadLogBundleBody)
+
+Upload Log Bundle
+
+
+### Parameters
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **uploadLogBundleBody** | [**UploadLogBundleBody**](UploadLogBundleBody.md) |  |  |
+
+### Return type
+
+[**UploadLogBundleResponse**](UploadLogBundleResponse.md)
+
+### Authorization
+
+[HTTPBearer](../README.md#HTTPBearer)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+| **400** | Bad request error response. |  -  |
+| **401** | Unauthorized error response. |  -  |
 | **500** | Internal error response. |  -  |
 | **422** | Validation Error |  -  |
 

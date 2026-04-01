@@ -48,6 +48,8 @@ namespace TrilbyApi.Client
             _jsonOptions.Converters.Add(new ApiErrorResponseJsonConverter());
             _jsonOptions.Converters.Add(new AuthenticatedTrilbyGuildJsonConverter());
             _jsonOptions.Converters.Add(new ClipSummaryJsonConverter());
+            _jsonOptions.Converters.Add(new CopyClipBodyJsonConverter());
+            _jsonOptions.Converters.Add(new CopyClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new CreateBrowserLaunchResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetCurrentIntroResponseJsonConverter());
             _jsonOptions.Converters.Add(new GetSharedTagResponseJsonConverter());
@@ -77,6 +79,8 @@ namespace TrilbyApi.Client
             _jsonOptions.Converters.Add(new TagSummaryJsonConverter());
             _jsonOptions.Converters.Add(new TopClipStatsItemJsonConverter());
             _jsonOptions.Converters.Add(new TopClipStatsResponseJsonConverter());
+            _jsonOptions.Converters.Add(new UploadLogBundleBodyJsonConverter());
+            _jsonOptions.Converters.Add(new UploadLogBundleResponseJsonConverter());
             _jsonOptions.Converters.Add(new ValidationErrorJsonConverter());
             JsonSerializerOptionsProvider jsonSerializerOptionsProvider = new(_jsonOptions);
             _services.AddSingleton(jsonSerializerOptionsProvider);

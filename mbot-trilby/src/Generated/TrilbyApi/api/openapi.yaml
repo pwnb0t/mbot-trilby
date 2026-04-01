@@ -245,6 +245,77 @@ paths:
       security:
       - HTTPBearer: []
       summary: List Clips
+  /v1/guilds/{guild_id}/clips/{clip_trigger}/copy:
+    post:
+      operationId: CopyClip
+      parameters:
+      - explode: false
+        in: path
+        name: guild_id
+        required: true
+        schema:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0
+          title: Guild Id
+          type: integer
+        style: simple
+      - explode: false
+        in: path
+        name: clip_trigger
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 1
+          title: Clip Trigger
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CopyClipBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CopyClipResponse"
+          description: Successful Response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Clip not found error response.
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Conflict error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Copy Clip
   /v1/guilds/{guild_id}/clips/play:
     post:
       operationId: PlayClip
@@ -812,6 +883,49 @@ paths:
       security:
       - HTTPBearer: []
       summary: Set Shared Tag
+  /v1/support/log-bundles:
+    post:
+      operationId: UploadLogBundle
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadLogBundleBody"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadLogBundleResponse"
+          description: Successful Response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Bad request error response.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Upload Log Bundle
   /v1/guilds/{guild_id}/tags:
     get:
       operationId: ListTags
@@ -1138,10 +1252,13 @@ components:
       title: AuthenticatedTrilbyGuild
     ClipSummary:
       example:
+        created_at_utc: ""
         added_by_text: ""
         clip_length_text: ""
         start_offset_text: ""
         trigger: trigger
+        play_count: 6
+        created_by_user_id: 1
         tag_names:
         - tag_names
         - tag_names
@@ -1150,6 +1267,14 @@ components:
         trigger:
           title: Trigger
           type: string
+        created_at_utc:
+          default: ""
+          title: Created At Utc
+          type: string
+        play_count:
+          default: 0
+          title: Play Count
+          type: integer
         source_url:
           default: ""
           title: Source Url
@@ -1162,6 +1287,10 @@ components:
           default: ""
           title: Clip Length Text
           type: string
+        created_by_user_id:
+          format: int64
+          title: Created By User Id
+          type: integer
         added_by_text:
           default: ""
           title: Added By Text
@@ -1175,6 +1304,46 @@ components:
       required:
       - trigger
       title: ClipSummary
+    CopyClipBody:
+      example:
+        target_guild_id: 0
+      properties:
+        target_guild_id:
+          exclusiveMinimum: true
+          format: int64
+          minimum: 0.0
+          title: Target Guild Id
+          type: integer
+      required:
+      - target_guild_id
+      title: CopyClipBody
+    CopyClipResponse:
+      example:
+        source_guild_id: 0
+        clip_trigger: clip_trigger
+        target_guild_id: 6
+        ok: true
+      properties:
+        ok:
+          title: Ok
+          type: boolean
+        source_guild_id:
+          format: int64
+          title: Source Guild Id
+          type: integer
+        target_guild_id:
+          format: int64
+          title: Target Guild Id
+          type: integer
+        clip_trigger:
+          title: Clip Trigger
+          type: string
+      required:
+      - clip_trigger
+      - ok
+      - source_guild_id
+      - target_guild_id
+      title: CopyClipResponse
     CreateBrowserLaunchResponse:
       example:
         browser_url: browser_url
@@ -1283,21 +1452,27 @@ components:
       title: HealthResponse
     ListClipsResponse:
       example:
-        total: 6
+        total: 5
         search: search
         clips:
-        - added_by_text: ""
+        - created_at_utc: ""
+          added_by_text: ""
           clip_length_text: ""
           start_offset_text: ""
           trigger: trigger
+          play_count: 6
+          created_by_user_id: 1
           tag_names:
           - tag_names
           - tag_names
           source_url: ""
-        - added_by_text: ""
+        - created_at_utc: ""
+          added_by_text: ""
           clip_length_text: ""
           start_offset_text: ""
           trigger: trigger
+          play_count: 6
+          created_by_user_id: 1
           tag_names:
           - tag_names
           - tag_names
@@ -1932,6 +2107,41 @@ components:
       - ok
       - rows
       title: TopClipStatsResponse
+    UploadLogBundleBody:
+      example:
+        file_name: file_name
+        content_base64: content_base64
+      properties:
+        file_name:
+          maxLength: 255
+          minLength: 1
+          title: File Name
+          type: string
+        content_base64:
+          maxLength: 20000000
+          minLength: 1
+          title: Content Base64
+          type: string
+      required:
+      - content_base64
+      - file_name
+      title: UploadLogBundleBody
+    UploadLogBundleResponse:
+      example:
+        stored_file_name: stored_file_name
+        ok: true
+      properties:
+        ok:
+          default: true
+          title: Ok
+          type: boolean
+        stored_file_name:
+          minLength: 1
+          title: Stored File Name
+          type: string
+      required:
+      - stored_file_name
+      title: UploadLogBundleResponse
     ValidationError:
       example:
         msg: msg
