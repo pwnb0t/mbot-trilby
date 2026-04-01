@@ -38,6 +38,7 @@ namespace mbottrilby.Services
         private readonly long? _userId;
         private readonly string? _username;
         private readonly string? _expiresAtUtc;
+        private readonly string _trilbyVersion;
         private readonly string _tokenFingerprint;
         private CancellationTokenSource? _stopCts;
         private Task? _runTask;
@@ -62,6 +63,7 @@ namespace mbottrilby.Services
             _userId = userId;
             _username = username;
             _expiresAtUtc = expiresAtUtc;
+            _trilbyVersion = TrilbyVersionInfo.CurrentVersion;
             _tokenFingerprint = ComputeTokenFingerprint(accessToken);
             _eventsUri = BuildEventsUri(baseUrl, guildId);
         }
@@ -157,10 +159,12 @@ namespace mbottrilby.Services
                 {
                     websocket = new ClientWebSocket();
                     websocket.Options.SetRequestHeader("Authorization", $"Bearer {_accessToken}");
+                    websocket.Options.SetRequestHeader("X-Trilby-Version", _trilbyVersion);
                     _log?.Invoke(
                         $"Connecting to Trilby events. env={_environmentName ?? "<unknown>"} " +
                         $"user_id={_userId?.ToString() ?? "<unknown>"} username={_username ?? "<unknown>"} " +
                         $"guild_id={GetGuildIdFromEventsUri(_eventsUri)} expires_at={_expiresAtUtc ?? "<unknown>"} " +
+                        $"trilby_version={_trilbyVersion} " +
                         $"token_fingerprint={_tokenFingerprint} uri={_eventsUri}.");
                     await websocket.ConnectAsync(_eventsUri, cancellationToken).ConfigureAwait(false);
                     attempt = 0;
@@ -180,6 +184,7 @@ namespace mbottrilby.Services
                         $"Trilby events connection failed. env={_environmentName ?? "<unknown>"} " +
                         $"user_id={_userId?.ToString() ?? "<unknown>"} username={_username ?? "<unknown>"} " +
                         $"guild_id={GetGuildIdFromEventsUri(_eventsUri)} expires_at={_expiresAtUtc ?? "<unknown>"} " +
+                        $"trilby_version={_trilbyVersion} " +
                         $"token_fingerprint={_tokenFingerprint} status={DescribeHandshakeStatus(websocket)} " +
                         $"error={ex.Message}");
                 }
@@ -189,6 +194,7 @@ namespace mbottrilby.Services
                         $"Trilby events error. env={_environmentName ?? "<unknown>"} " +
                         $"user_id={_userId?.ToString() ?? "<unknown>"} username={_username ?? "<unknown>"} " +
                         $"guild_id={GetGuildIdFromEventsUri(_eventsUri)} expires_at={_expiresAtUtc ?? "<unknown>"} " +
+                        $"trilby_version={_trilbyVersion} " +
                         $"token_fingerprint={_tokenFingerprint} error={ex.Message}");
                 }
                 finally

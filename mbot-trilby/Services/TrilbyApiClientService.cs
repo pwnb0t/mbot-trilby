@@ -30,6 +30,7 @@ namespace mbottrilby.Services
                 options.AddApiHttpClients(client =>
                 {
                     client.BaseAddress = new Uri(baseUrl, UriKind.Absolute);
+                    client.DefaultRequestHeaders.Add("X-Trilby-Version", TrilbyVersionInfo.CurrentVersion);
                 });
             });
 
