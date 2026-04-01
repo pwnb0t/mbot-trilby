@@ -10,6 +10,7 @@
 *.userosscache
 *.sln.docstates
 .tools/
+.dotnet-cli/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
