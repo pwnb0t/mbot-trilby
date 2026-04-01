@@ -2406,6 +2406,7 @@ namespace mbottrilby
                 return;
             }
 
+            await EnsureEventsClientAsync("show overlay");
             ShowOverlay(source);
         }
 
