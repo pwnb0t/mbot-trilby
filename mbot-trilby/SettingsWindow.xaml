@@ -101,12 +101,20 @@
                                Margin="0,0,0,12"
                                FontWeight="SemiBold" />
 
-                    <Button x:Name="CheckForUpdatesButton"
-                            Grid.Row="1"
-                            Width="160"
-                            HorizontalAlignment="Left"
-                            Content="Check for updates"
-                            Click="CheckForUpdatesButton_Click" />
+                    <StackPanel Grid.Row="1"
+                                Orientation="Horizontal">
+                        <Button x:Name="CheckForUpdatesButton"
+                                Width="160"
+                                HorizontalAlignment="Left"
+                                Content="Check for updates"
+                                Click="CheckForUpdatesButton_Click" />
+                        <Button x:Name="RestartAndApplyUpdateButton"
+                                Width="180"
+                                Margin="8,0,0,0"
+                                HorizontalAlignment="Left"
+                                Content="Restart and apply update"
+                                Click="RestartAndApplyUpdateButton_Click" />
+                    </StackPanel>
 
                     <TextBlock x:Name="UpdateStatusTextBlock"
                                Grid.Row="2"

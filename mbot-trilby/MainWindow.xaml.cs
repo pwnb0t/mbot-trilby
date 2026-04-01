@@ -2434,6 +2434,7 @@ namespace mbottrilby
                 openClipBrowserAsync: OpenClipBrowserAsync,
                 getUpdateStatus: () => _trilbyUpdateService.GetStatus(),
                 checkForUpdatesAsync: CheckForUpdatesAsync,
+                restartAndApplyUpdateAsync: RestartAndApplyUpdateAsync,
                 sendLogsToDeveloperAsync: SendLogsToDeveloperAsync,
                 log: Log);
             _settingsWindow.Closed += (_, _) => _settingsWindow = null;
@@ -2584,6 +2585,20 @@ namespace mbottrilby
                 preparedBundle.ContentBase64);
             Log($"Sent Trilby log bundle '{storedFileName}' for {environmentName}.");
             return storedFileName;
+        }
+
+        private async System.Threading.Tasks.Task RestartAndApplyUpdateAsync()
+        {
+            _exitRequested = true;
+            Log("Restart requested to apply downloaded update.");
+            if (!await _trilbyUpdateService.PrepareUpdateForImmediateRestartAsync())
+            {
+                throw new InvalidOperationException("No downloaded update is ready to apply.");
+            }
+
+            Log("Prepared downloaded update to apply after Trilby exits and restarts.");
+            _settingsWindow?.Close();
+            System.Windows.Application.Current.Shutdown();
         }
 
         private string GetSelectedEnvironmentName()

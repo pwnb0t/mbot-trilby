@@ -145,6 +145,22 @@ namespace mbottrilby.Services
             return true;
         }
 
+        public async Task<bool> PrepareUpdateForImmediateRestartAsync()
+        {
+            var pendingUpdate = _updateManager.UpdatePendingRestart;
+            if (pendingUpdate is null)
+            {
+                return false;
+            }
+
+            await _updateManager.WaitExitThenApplyUpdatesAsync(
+                pendingUpdate,
+                silent: false,
+                restart: true,
+                restartArgs: Array.Empty<string>());
+            return true;
+        }
+
         private TrilbyUpdateStatus BuildInitialStatus()
         {
             var currentVersion = _updateManager.CurrentVersion?.ToString()

@@ -28,6 +28,7 @@ namespace mbottrilby
         private readonly Func<string, Task> _openClipBrowserAsync;
         private readonly Func<TrilbyUpdateStatus> _getUpdateStatus;
         private readonly Func<Task<TrilbyUpdateStatus>> _checkForUpdatesAsync;
+        private readonly Func<Task> _restartAndApplyUpdateAsync;
         private readonly Func<string, Task<string>> _sendLogsToDeveloperAsync;
         private readonly Action<string> _log;
 
@@ -47,6 +48,7 @@ namespace mbottrilby
             Func<string, Task> openClipBrowserAsync,
             Func<TrilbyUpdateStatus> getUpdateStatus,
             Func<Task<TrilbyUpdateStatus>> checkForUpdatesAsync,
+            Func<Task> restartAndApplyUpdateAsync,
             Func<string, Task<string>> sendLogsToDeveloperAsync,
             Action<string> log)
         {
@@ -67,6 +69,7 @@ namespace mbottrilby
             _openClipBrowserAsync = openClipBrowserAsync;
             _getUpdateStatus = getUpdateStatus;
             _checkForUpdatesAsync = checkForUpdatesAsync;
+            _restartAndApplyUpdateAsync = restartAndApplyUpdateAsync;
             _sendLogsToDeveloperAsync = sendLogsToDeveloperAsync;
             _log = log;
             PopulateEnvironmentOptions();
@@ -226,6 +229,31 @@ namespace mbottrilby
             }
         }
 
+        private async void RestartAndApplyUpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            var confirmation = System.Windows.MessageBox.Show(
+                "Trilby will close, apply the downloaded update, and restart. Continue?",
+                "Restart and Apply Update",
+                MessageBoxButton.OKCancel,
+                MessageBoxImage.Question);
+            if (confirmation != MessageBoxResult.OK)
+            {
+                return;
+            }
+
+            try
+            {
+                SetUpdateBusyState(true, "Restarting to apply update...");
+                await _restartAndApplyUpdateAsync();
+            }
+            catch (Exception ex)
+            {
+                _log($"Restart and apply update failed: {ex.Message}");
+                UpdateStatusTextBlock.Text = $"Restart and apply update failed: {ex.Message}";
+                SetUpdateBusyState(false, UpdateStatusTextBlock.Text);
+            }
+        }
+
         private void EnvironmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (EnvironmentComboBox.SelectedItem is not EnvironmentOption option)
@@ -259,6 +287,10 @@ namespace mbottrilby
             VersionTextBlock.Text = $"Current version: {updateStatus.CurrentVersionText}";
             UpdateStatusTextBlock.Text = updateStatus.StatusText;
             CheckForUpdatesButton.IsEnabled = updateStatus.CanCheckForUpdates && !updateStatus.IsBusy;
+            RestartAndApplyUpdateButton.IsEnabled = updateStatus.IsReadyToApply && !updateStatus.IsBusy;
+            RestartAndApplyUpdateButton.Visibility = updateStatus.IsReadyToApply
+                ? Visibility.Visible
+                : Visibility.Collapsed;
             OpaqueBackgroundCheckBox.IsChecked = _getOpaqueBackground();
             DoNotHideWhenPlayingClipCheckBox.IsChecked = _getDoNotHideWhenPlayingClip();
             PopulateServerOptions(environmentName, session);
