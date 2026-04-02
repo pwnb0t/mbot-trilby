@@ -178,6 +178,7 @@ namespace mbottrilby.Services
                 ? string.Empty
                 : "You can close this window and try again.";
             var imageMarkup = BuildMbotImageMarkup();
+            var faviconMarkup = BuildAppFaviconMarkup();
             var autoCloseScript = success
                 ? """
                 <script>
@@ -193,6 +194,7 @@ namespace mbottrilby.Services
 <head>
     <meta charset=""utf-8"">
     <title>{title}</title>
+    {faviconMarkup}
     <style>
         :root {{
             color-scheme: light;
@@ -268,6 +270,28 @@ namespace mbottrilby.Services
     </div>
 </body>
 </html>";
+        }
+
+        private static string BuildAppFaviconMarkup()
+        {
+            var iconPath = Path.Combine(AppContext.BaseDirectory, "mbot.ico");
+            if (!File.Exists(iconPath))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                var bytes = File.ReadAllBytes(iconPath);
+                var base64 = Convert.ToBase64String(bytes);
+                return
+                    $"""<link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,{base64}" />""" +
+                    $"""<link rel="shortcut icon" type="image/x-icon" href="data:image/x-icon;base64,{base64}" />""";
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         private static string BuildMbotImageMarkup()
