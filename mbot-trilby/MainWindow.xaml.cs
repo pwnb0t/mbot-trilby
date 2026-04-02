@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
+using System.Net;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -89,6 +90,7 @@ namespace mbottrilby
         private bool _sharedTagDropRequestInFlight;
         private bool _hotkeyRegistered;
         private bool _exitRequested;
+        private bool _eventsAuthRecoveryInFlight;
         private TrilbyApiClientService? _trilbyApiClient;
         private TrilbyEventsClientService? _trilbyEventsClient;
         private ClipPlaybackCoordinator? _clipPlaybackCoordinator;
@@ -2369,6 +2371,8 @@ namespace mbottrilby
                 session.AccessToken,
                 selectedGuildId.Value,
                 OnTrilbyEventAsync,
+                onAuthenticationFailure: (statusCode, errorMessage) =>
+                    Dispatcher.BeginInvoke(new Action(() => _ = HandleEventsAuthenticationFailureAsync(statusCode, errorMessage))),
                 environmentName: environmentName,
                 userId: session.UserId,
                 username: session.Username,
@@ -2382,6 +2386,72 @@ namespace mbottrilby
                 $"user_id={session.UserId} username={session.Username ?? "<unknown>"} " +
                 $"guild_id={selectedGuildId.Value} expires_at={session.ExpiresAtUtc ?? "<unknown>"}");
             _trilbyEventsClient.Start();
+        }
+
+        private async System.Threading.Tasks.Task HandleEventsAuthenticationFailureAsync(HttpStatusCode statusCode, string errorMessage)
+        {
+            if (_eventsAuthRecoveryInFlight || _exitRequested)
+            {
+                return;
+            }
+
+            _eventsAuthRecoveryInFlight = true;
+            try
+            {
+                var environmentName = GetSelectedEnvironmentName();
+                Log(
+                    $"Trilby events auth failed ({(int)statusCode} {statusCode}) for {environmentName}; " +
+                    $"attempting session refresh. error={errorMessage}");
+
+                if (!await TryRefreshSessionForEventsRecoveryAsync(environmentName))
+                {
+                    Log($"Trilby events auth recovery failed for {environmentName}; stopping events stream.");
+                    await StopEventsClientAsync();
+                    OpenSettingsWindow();
+                    return;
+                }
+
+                if (!await EnsureAuthenticatedApiClientAsync("events auth recovery"))
+                {
+                    Log($"Trilby events auth recovery could not restore an authenticated API client for {environmentName}.");
+                    await StopEventsClientAsync();
+                    OpenSettingsWindow();
+                    return;
+                }
+
+                await EnsureEventsClientAsync("events auth recovery");
+                Log($"Recovered Trilby events stream after auth refresh for {environmentName}.");
+            }
+            finally
+            {
+                _eventsAuthRecoveryInFlight = false;
+            }
+        }
+
+        private async System.Threading.Tasks.Task<bool> TryRefreshSessionForEventsRecoveryAsync(string environmentName)
+        {
+            var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
+            var session = _userSettings.GetSession(environmentName);
+            if (session is null || !session.IsAuthenticated || string.IsNullOrWhiteSpace(session.RefreshToken))
+            {
+                return false;
+            }
+
+            try
+            {
+                var refreshedSession = await _trilbyAuthenticationService.RefreshSessionAsync(
+                    environment.BaseUrl,
+                    session.RefreshToken);
+                _userSettings.SetSession(environmentName, refreshedSession);
+                EnsureSelectedServerIsValid(environmentName, refreshedSession);
+                SaveUserSettings();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log($"Session refresh failed for {environmentName} during events auth recovery: {ex.Message}");
+                return false;
+            }
         }
 
         private async System.Threading.Tasks.Task StopEventsClientAsync()

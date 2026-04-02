@@ -34,6 +34,7 @@ namespace mbottrilby.Services
         private readonly string _accessToken;
         private readonly Func<TrilbyEvent, Task> _onEventAsync;
         private readonly Action<string>? _log;
+        private readonly Action<HttpStatusCode, string>? _onAuthenticationFailure;
         private readonly string? _environmentName;
         private readonly long? _userId;
         private readonly string? _username;
@@ -48,6 +49,7 @@ namespace mbottrilby.Services
             string accessToken,
             long guildId,
             Func<TrilbyEvent, Task> onEventAsync,
+            Action<HttpStatusCode, string>? onAuthenticationFailure = null,
             string? environmentName = null,
             long? userId = null,
             string? username = null,
@@ -57,6 +59,7 @@ namespace mbottrilby.Services
             _ = baseUrl ?? throw new ArgumentNullException(nameof(baseUrl));
             _ = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
             _onEventAsync = onEventAsync ?? throw new ArgumentNullException(nameof(onEventAsync));
+            _onAuthenticationFailure = onAuthenticationFailure;
             _log = log;
             _accessToken = accessToken;
             _environmentName = environmentName;
@@ -180,6 +183,7 @@ namespace mbottrilby.Services
                 }
                 catch (WebSocketException ex) when (!cancellationToken.IsCancellationRequested)
                 {
+                    var handshakeStatus = GetHandshakeStatusCode(websocket);
                     _log?.Invoke(
                         $"Trilby events connection failed. env={_environmentName ?? "<unknown>"} " +
                         $"user_id={_userId?.ToString() ?? "<unknown>"} username={_username ?? "<unknown>"} " +
@@ -187,6 +191,11 @@ namespace mbottrilby.Services
                         $"trilby_version={_trilbyVersion} " +
                         $"token_fingerprint={_tokenFingerprint} status={DescribeHandshakeStatus(websocket)} " +
                         $"error={ex.Message}");
+                    if (handshakeStatus is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+                    {
+                        _onAuthenticationFailure?.Invoke(handshakeStatus.Value, ex.Message);
+                        break;
+                    }
                 }
                 catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
                 {
@@ -455,19 +464,25 @@ namespace mbottrilby.Services
 
         private static string DescribeHandshakeStatus(ClientWebSocket? websocket)
         {
+            var statusCode = GetHandshakeStatusCode(websocket);
+            return statusCode is null ? "<unknown>" : $"{(int)statusCode.Value} ({statusCode.Value})";
+        }
+
+        private static HttpStatusCode? GetHandshakeStatusCode(ClientWebSocket? websocket)
+        {
             if (websocket is null)
             {
-                return "<unknown>";
+                return null;
             }
 
             try
             {
                 var statusCode = websocket.HttpStatusCode;
-                return statusCode == 0 ? "<unknown>" : $"{(int)statusCode} ({statusCode})";
+                return statusCode == 0 ? null : statusCode;
             }
             catch
             {
-                return "<unknown>";
+                return null;
             }
         }
 
