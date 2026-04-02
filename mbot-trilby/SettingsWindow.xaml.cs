@@ -160,13 +160,13 @@ namespace mbottrilby
             var environmentName = GetSelectedEnvironmentName();
             try
             {
-                SetBusyState(true, $"Opening Clip Browser for {environmentName}...");
+                SetBusyState(true, $"Opening Haberdashery for {environmentName}...");
                 await _openClipBrowserAsync(environmentName);
                 RefreshView();
             }
             catch (Exception ex)
             {
-                _log($"Open Clip Browser failed for {environmentName}: {ex.Message}");
+                _log($"Open Haberdashery failed for {environmentName}: {ex.Message}");
                 InfoTextBlock.Text = ex.Message;
             }
             finally

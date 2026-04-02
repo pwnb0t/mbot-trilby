@@ -2618,7 +2618,7 @@ namespace mbottrilby
             var session = _userSettings.GetSession(environmentName);
             if (session is null || !session.IsAuthenticated || string.IsNullOrWhiteSpace(session.AccessToken))
             {
-                throw new InvalidOperationException("Sign in before opening the Clip Browser.");
+                throw new InvalidOperationException("Sign in before opening Haberdashery.");
             }
 
             var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
@@ -2628,7 +2628,7 @@ namespace mbottrilby
                 _userSettings.GetSelectedGuildId(environmentName) ?? 0);
             var browserUrl = await apiClient.CreateBrowserLaunchAsync();
             Process.Start(new ProcessStartInfo(browserUrl) { UseShellExecute = true });
-            Log($"Opened Clip Browser for {environmentName}.");
+            Log($"Opened Haberdashery for {environmentName}.");
         }
 
         private async System.Threading.Tasks.Task<string> SendLogsToDeveloperAsync(string environmentName)
