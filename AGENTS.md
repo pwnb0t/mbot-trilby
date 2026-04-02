@@ -15,3 +15,5 @@ Originally used a different codename and now named Trilby
 - If an expected API method is missing from the generated SDK, assume stale generated output first: verify the source OpenAPI in the sibling `mbot` repo, rerun SDK generation, and confirm the generated files actually contain the operation before adding any manual `HttpClient` workaround.
 - Discord snowflake fields such as `guild_id` and `requester_user_id` must remain `long`/`long?` in the generated SDK; if they regress to `int`, fix the OpenAPI contract generation instead of adding casts in Trilby.
 - Trilby user identity now comes from bearer auth; do not add client-supplied `requester_user_id` parameters back into Trilby API calls.
+- In authored C# code, prefer explicit local variable types instead of `var` when the type can be written directly. Leave generated SDK code alone unless explicitly requested.
+- Avoid opaque relational pattern negation such as `if (guildId is not > 0)`. Prefer clearer nullable/value checks such as `if (guildId is null or <= 0)` or `if (guildId is null || guildId <= 0)`.
