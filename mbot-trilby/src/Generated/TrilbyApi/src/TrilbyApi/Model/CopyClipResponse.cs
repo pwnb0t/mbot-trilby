@@ -38,7 +38,7 @@ namespace TrilbyApi.Model
         /// <param name="targetGuildId">targetGuildId</param>
         /// <param name="clipTrigger">clipTrigger</param>
         [JsonConstructor]
-        public CopyClipResponse(bool ok, long sourceGuildId, long targetGuildId, string clipTrigger)
+        public CopyClipResponse(bool ok, string sourceGuildId, string targetGuildId, string clipTrigger)
         {
             Ok = ok;
             SourceGuildId = sourceGuildId;
@@ -59,13 +59,13 @@ namespace TrilbyApi.Model
         /// Gets or Sets SourceGuildId
         /// </summary>
         [JsonPropertyName("source_guild_id")]
-        public long SourceGuildId { get; set; }
+        public string SourceGuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets TargetGuildId
         /// </summary>
         [JsonPropertyName("target_guild_id")]
-        public long TargetGuildId { get; set; }
+        public string TargetGuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets ClipTrigger
@@ -96,6 +96,38 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // SourceGuildId (string) minLength
+            if (this.SourceGuildId != null && this.SourceGuildId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for SourceGuildId, length must be greater than 1.", new [] { "SourceGuildId" });
+            }
+
+            if (this.SourceGuildId != null) {
+                // SourceGuildId (string) pattern
+                Regex regexSourceGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexSourceGuildId.Match(this.SourceGuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for SourceGuildId, must match a pattern of " + regexSourceGuildId, new [] { "SourceGuildId" });
+                }
+            }
+
+            // TargetGuildId (string) minLength
+            if (this.TargetGuildId != null && this.TargetGuildId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for TargetGuildId, length must be greater than 1.", new [] { "TargetGuildId" });
+            }
+
+            if (this.TargetGuildId != null) {
+                // TargetGuildId (string) pattern
+                Regex regexTargetGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexTargetGuildId.Match(this.TargetGuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for TargetGuildId, must match a pattern of " + regexTargetGuildId, new [] { "TargetGuildId" });
+                }
+            }
+
             yield break;
         }
     }
@@ -123,8 +155,8 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<long?> sourceGuildId = default;
-            Option<long?> targetGuildId = default;
+            Option<string?> sourceGuildId = default;
+            Option<string?> targetGuildId = default;
             Option<string?> clipTrigger = default;
 
             while (utf8JsonReader.Read())
@@ -146,10 +178,10 @@ namespace TrilbyApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "source_guild_id":
-                            sourceGuildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            sourceGuildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "target_guild_id":
-                            targetGuildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            targetGuildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "clip_trigger":
                             clipTrigger = new Option<string?>(utf8JsonReader.GetString()!);
@@ -184,7 +216,7 @@ namespace TrilbyApi.Model
             if (clipTrigger.IsSet && clipTrigger.Value == null)
                 throw new ArgumentNullException(nameof(clipTrigger), "Property is not nullable for class CopyClipResponse.");
 
-            return new CopyClipResponse(ok.Value!.Value!, sourceGuildId.Value!.Value!, targetGuildId.Value!.Value!, clipTrigger.Value!);
+            return new CopyClipResponse(ok.Value!.Value!, sourceGuildId.Value!, targetGuildId.Value!, clipTrigger.Value!);
         }
 
         /// <summary>
@@ -211,14 +243,20 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CopyClipResponse copyClipResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (copyClipResponse.SourceGuildId == null)
+                throw new ArgumentNullException(nameof(copyClipResponse.SourceGuildId), "Property is required for class CopyClipResponse.");
+
+            if (copyClipResponse.TargetGuildId == null)
+                throw new ArgumentNullException(nameof(copyClipResponse.TargetGuildId), "Property is required for class CopyClipResponse.");
+
             if (copyClipResponse.ClipTrigger == null)
                 throw new ArgumentNullException(nameof(copyClipResponse.ClipTrigger), "Property is required for class CopyClipResponse.");
 
             writer.WriteBoolean("ok", copyClipResponse.Ok);
 
-            writer.WriteNumber("source_guild_id", copyClipResponse.SourceGuildId);
+            writer.WriteString("source_guild_id", copyClipResponse.SourceGuildId);
 
-            writer.WriteNumber("target_guild_id", copyClipResponse.TargetGuildId);
+            writer.WriteString("target_guild_id", copyClipResponse.TargetGuildId);
 
             writer.WriteString("clip_trigger", copyClipResponse.ClipTrigger);
         }

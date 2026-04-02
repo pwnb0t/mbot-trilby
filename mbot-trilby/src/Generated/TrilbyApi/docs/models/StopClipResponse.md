@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Ok** | **bool** |  | 
-**GuildId** | **long** |  | 
+**GuildId** | **string** |  | 
 **Status** | **string** |  | 
 **RequestId** | **string** |  | [optional] 
 

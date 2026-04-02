@@ -9,8 +9,12 @@ All URIs are relative to *http://127.0.0.1:28765*
 | [**CopyClip**](DefaultApi.md#copyclip) | **POST** /v1/guilds/{guild_id}/clips/{clip_trigger}/copy | Copy Clip |
 | [**CreateBrowserLaunch**](DefaultApi.md#createbrowserlaunch) | **POST** /v1/browser-auth/launch | Create Browser Launch |
 | [**GetAuthenticatedSession**](DefaultApi.md#getauthenticatedsession) | **GET** /v1/auth/me | Get Authenticated Session |
-| [**GetClipBrowserPageClipBrowserGet**](DefaultApi.md#getclipbrowserpageclipbrowserget) | **GET** /clip-browser | Get Clip Browser Page |
+| [**GetClipAudio**](DefaultApi.md#getclipaudio) | **GET** /v1/guilds/{guild_id}/clips/{clip_trigger}/audio | Get Clip Audio |
 | [**GetCurrentIntro**](DefaultApi.md#getcurrentintro) | **GET** /v1/guilds/{guild_id}/intros/current | Get Current Intro |
+| [**GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet**](DefaultApi.md#gethaberdasherybundlejshaberdasherystaticdisthaberdasherybundlejsget) | **GET** /haberdashery/static/dist/haberdashery.bundle.js | Get Haberdashery Bundle Js |
+| [**GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet**](DefaultApi.md#gethaberdasherycsshaberdasherystatichaberdasherycssget) | **GET** /haberdashery/static/haberdashery.css | Get Haberdashery Css |
+| [**GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet**](DefaultApi.md#gethaberdasheryjshaberdasherystatichaberdasheryjsget) | **GET** /haberdashery/static/haberdashery.js | Get Haberdashery Js |
+| [**GetHaberdasheryPageHaberdasheryGet**](DefaultApi.md#gethaberdasherypagehaberdasheryget) | **GET** /haberdashery | Get Haberdashery Page |
 | [**GetHealth**](DefaultApi.md#gethealth) | **GET** /v1/health | Health |
 | [**GetRecentClipStats**](DefaultApi.md#getrecentclipstats) | **GET** /v1/guilds/{guild_id}/clips/stats/recent | Recent Clip Stats |
 | [**GetSharedTag**](DefaultApi.md#getsharedtag) | **GET** /v1/guilds/{guild_id}/shared-tag | Get Shared Tag |
@@ -30,7 +34,7 @@ All URIs are relative to *http://127.0.0.1:28765*
 
 <a id="addtagclip"></a>
 # **AddTagClip**
-> AddTagClipResponse AddTagClip (long guildId, string tagName, AddTagClipBody addTagClipBody)
+> AddTagClipResponse AddTagClip (string guildId, string tagName, AddTagClipBody addTagClipBody)
 
 Add Tag Clip
 
@@ -39,7 +43,7 @@ Add Tag Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **tagName** | **string** |  |  |
 | **addTagClipBody** | [**AddTagClipBody**](AddTagClipBody.md) |  |  |
 
@@ -108,7 +112,7 @@ No authorization required
 
 <a id="copyclip"></a>
 # **CopyClip**
-> CopyClipResponse CopyClip (long guildId, string clipTrigger, CopyClipBody copyClipBody)
+> CopyClipResponse CopyClip (string guildId, string clipTrigger, CopyClipBody copyClipBody)
 
 Copy Clip
 
@@ -117,7 +121,7 @@ Copy Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **clipTrigger** | **string** |  |  |
 | **copyClipBody** | [**CopyClipBody**](CopyClipBody.md) |  |  |
 
@@ -211,39 +215,48 @@ This endpoint does not need any parameter.
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
-<a id="getclipbrowserpageclipbrowserget"></a>
-# **GetClipBrowserPageClipBrowserGet**
-> string GetClipBrowserPageClipBrowserGet ()
+<a id="getclipaudio"></a>
+# **GetClipAudio**
+> Object GetClipAudio (string guildId, string clipTrigger)
 
-Get Clip Browser Page
+Get Clip Audio
 
 
 ### Parameters
-This endpoint does not need any parameter.
+
+| Name | Type | Description | Notes |
+|------|------|-------------|-------|
+| **guildId** | **string** |  |  |
+| **clipTrigger** | **string** |  |  |
+
 ### Return type
 
-**string**
+**Object**
 
 ### Authorization
 
-No authorization required
+[HTTPBearer](../README.md#HTTPBearer)
 
 ### HTTP request headers
 
  - **Content-Type**: Not defined
- - **Accept**: text/html
+ - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Successful Response |  -  |
+| **200** | Clip audio stream. |  -  |
+| **401** | Unauthorized error response. |  -  |
+| **404** | Clip not found error response. |  -  |
+| **500** | Internal error response. |  -  |
+| **422** | Validation Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
 <a id="getcurrentintro"></a>
 # **GetCurrentIntro**
-> GetCurrentIntroResponse GetCurrentIntro (long guildId)
+> GetCurrentIntroResponse GetCurrentIntro (string guildId)
 
 Get Current Intro
 
@@ -252,7 +265,7 @@ Get Current Intro
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 
 ### Return type
 
@@ -277,6 +290,126 @@ Get Current Intro
 | **404** | Not found error response. |  -  |
 | **500** | Internal error response. |  -  |
 | **422** | Validation Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="gethaberdasherybundlejshaberdasherystaticdisthaberdasherybundlejsget"></a>
+# **GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet**
+> void GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet ()
+
+Get Haberdashery Bundle Js
+
+
+### Parameters
+This endpoint does not need any parameter.
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="gethaberdasherycsshaberdasherystatichaberdasherycssget"></a>
+# **GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet**
+> void GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet ()
+
+Get Haberdashery Css
+
+
+### Parameters
+This endpoint does not need any parameter.
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="gethaberdasheryjshaberdasherystatichaberdasheryjsget"></a>
+# **GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet**
+> void GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet ()
+
+Get Haberdashery Js
+
+
+### Parameters
+This endpoint does not need any parameter.
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
+
+[[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
+
+<a id="gethaberdasherypagehaberdasheryget"></a>
+# **GetHaberdasheryPageHaberdasheryGet**
+> string GetHaberdasheryPageHaberdasheryGet ()
+
+Get Haberdashery Page
+
+
+### Parameters
+This endpoint does not need any parameter.
+### Return type
+
+**string**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: text/html
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Successful Response |  -  |
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
 
@@ -312,7 +445,7 @@ No authorization required
 
 <a id="getrecentclipstats"></a>
 # **GetRecentClipStats**
-> RecentClipStatsResponse GetRecentClipStats (long guildId, string scope = null, int limit = null, bool includeRandom = null)
+> RecentClipStatsResponse GetRecentClipStats (string guildId, string scope = null, int limit = null, bool includeRandom = null)
 
 Recent Clip Stats
 
@@ -321,7 +454,7 @@ Recent Clip Stats
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **scope** | **string** |  | [optional] [default to me] |
 | **limit** | **int** |  | [optional] [default to 10] |
 | **includeRandom** | **bool** |  | [optional] [default to true] |
@@ -352,7 +485,7 @@ Recent Clip Stats
 
 <a id="getsharedtag"></a>
 # **GetSharedTag**
-> GetSharedTagResponse GetSharedTag (long guildId)
+> GetSharedTagResponse GetSharedTag (string guildId)
 
 Get Shared Tag
 
@@ -361,7 +494,7 @@ Get Shared Tag
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 
 ### Return type
 
@@ -389,7 +522,7 @@ Get Shared Tag
 
 <a id="gettopclipstats"></a>
 # **GetTopClipStats**
-> TopClipStatsResponse GetTopClipStats (long guildId, string scope = null, string days = null, int limit = null, bool includeRandom = null)
+> TopClipStatsResponse GetTopClipStats (string guildId, string scope = null, string days = null, int limit = null, bool includeRandom = null)
 
 Top Clip Stats
 
@@ -398,7 +531,7 @@ Top Clip Stats
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **scope** | **string** |  | [optional] [default to me] |
 | **days** | **string** |  | [optional] [default to &quot;7&quot;] |
 | **limit** | **int** |  | [optional] [default to 10] |
@@ -431,7 +564,7 @@ Top Clip Stats
 
 <a id="listclips"></a>
 # **ListClips**
-> ListClipsResponse ListClips (long guildId, string search = null)
+> ListClipsResponse ListClips (string guildId, string search = null)
 
 List Clips
 
@@ -440,7 +573,7 @@ List Clips
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **search** | **string** |  | [optional]  |
 
 ### Return type
@@ -469,7 +602,7 @@ List Clips
 
 <a id="listtagclips"></a>
 # **ListTagClips**
-> ListTagClipsResponse ListTagClips (string tagName, long guildId)
+> ListTagClipsResponse ListTagClips (string tagName, string guildId)
 
 List Tag Clips
 
@@ -479,7 +612,7 @@ List Tag Clips
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
 | **tagName** | **string** |  |  |
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 
 ### Return type
 
@@ -508,7 +641,7 @@ List Tag Clips
 
 <a id="listtags"></a>
 # **ListTags**
-> ListTagsResponse ListTags (long guildId, string search = null)
+> ListTagsResponse ListTags (string guildId, string search = null)
 
 List Tags
 
@@ -517,7 +650,7 @@ List Tags
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **search** | **string** |  | [optional]  |
 
 ### Return type
@@ -546,7 +679,7 @@ List Tags
 
 <a id="playclip"></a>
 # **PlayClip**
-> PlayClipResponse PlayClip (long guildId, PlayClipBody playClipBody)
+> PlayClipResponse PlayClip (string guildId, PlayClipBody playClipBody)
 
 Play Clip
 
@@ -555,7 +688,7 @@ Play Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **playClipBody** | [**PlayClipBody**](PlayClipBody.md) |  |  |
 
 ### Return type
@@ -587,7 +720,7 @@ Play Clip
 
 <a id="playrandomclip"></a>
 # **PlayRandomClip**
-> PlayRandomClipResponse PlayRandomClip (long guildId, PlayRandomClipBody playRandomClipBody)
+> PlayRandomClipResponse PlayRandomClip (string guildId, PlayRandomClipBody playRandomClipBody)
 
 Play Random Clip
 
@@ -596,7 +729,7 @@ Play Random Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **playRandomClipBody** | [**PlayRandomClipBody**](PlayRandomClipBody.md) |  |  |
 
 ### Return type
@@ -664,7 +797,7 @@ No authorization required
 
 <a id="removetagclip"></a>
 # **RemoveTagClip**
-> RemoveTagClipResponse RemoveTagClip (long guildId, string tagName, string clipTrigger)
+> RemoveTagClipResponse RemoveTagClip (string guildId, string tagName, string clipTrigger)
 
 Remove Tag Clip
 
@@ -673,7 +806,7 @@ Remove Tag Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **tagName** | **string** |  |  |
 | **clipTrigger** | **string** |  |  |
 
@@ -704,7 +837,7 @@ Remove Tag Clip
 
 <a id="setcurrentintro"></a>
 # **SetCurrentIntro**
-> SetCurrentIntroResponse SetCurrentIntro (long guildId, SetCurrentIntroBody setCurrentIntroBody)
+> SetCurrentIntroResponse SetCurrentIntro (string guildId, SetCurrentIntroBody setCurrentIntroBody)
 
 Set Current Intro
 
@@ -713,7 +846,7 @@ Set Current Intro
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **setCurrentIntroBody** | [**SetCurrentIntroBody**](SetCurrentIntroBody.md) |  |  |
 
 ### Return type
@@ -744,7 +877,7 @@ Set Current Intro
 
 <a id="setsharedtag"></a>
 # **SetSharedTag**
-> SetSharedTagResponse SetSharedTag (long guildId, SetSharedTagBody setSharedTagBody)
+> SetSharedTagResponse SetSharedTag (string guildId, SetSharedTagBody setSharedTagBody)
 
 Set Shared Tag
 
@@ -753,7 +886,7 @@ Set Shared Tag
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **setSharedTagBody** | [**SetSharedTagBody**](SetSharedTagBody.md) |  |  |
 
 ### Return type
@@ -818,7 +951,7 @@ No authorization required
 
 <a id="stopclip"></a>
 # **StopClip**
-> StopClipResponse StopClip (long guildId, StopClipBody stopClipBody)
+> StopClipResponse StopClip (string guildId, StopClipBody stopClipBody)
 
 Stop Clip
 
@@ -827,7 +960,7 @@ Stop Clip
 
 | Name | Type | Description | Notes |
 |------|------|-------------|-------|
-| **guildId** | **long** |  |  |
+| **guildId** | **string** |  |  |
 | **stopClipBody** | [**StopClipBody**](StopClipBody.md) |  |  |
 
 ### Return type

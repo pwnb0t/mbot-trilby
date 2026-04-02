@@ -38,7 +38,7 @@ namespace TrilbyApi.Model
         /// <param name="status">status</param>
         /// <param name="requestId">requestId</param>
         [JsonConstructor]
-        public StopClipResponse(bool ok, long guildId, StatusEnum status, Option<string?> requestId = default)
+        public StopClipResponse(bool ok, string guildId, StatusEnum status, Option<string?> requestId = default)
         {
             Ok = ok;
             GuildId = guildId;
@@ -117,7 +117,7 @@ namespace TrilbyApi.Model
         /// Gets or Sets GuildId
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public long GuildId { get; set; }
+        public string GuildId { get; set; }
 
         /// <summary>
         /// Used to track the state of RequestId
@@ -155,6 +155,22 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // GuildId (string) minLength
+            if (this.GuildId != null && this.GuildId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for GuildId, length must be greater than 1.", new [] { "GuildId" });
+            }
+
+            if (this.GuildId != null) {
+                // GuildId (string) pattern
+                Regex regexGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexGuildId.Match(this.GuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for GuildId, must match a pattern of " + regexGuildId, new [] { "GuildId" });
+                }
+            }
+
             yield break;
         }
     }
@@ -182,7 +198,7 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<long?> guildId = default;
+            Option<string?> guildId = default;
             Option<StopClipResponse.StatusEnum?> status = default;
             Option<string?> requestId = default;
 
@@ -205,7 +221,7 @@ namespace TrilbyApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            guildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "status":
                             string? statusRawValue = utf8JsonReader.GetString();
@@ -242,7 +258,7 @@ namespace TrilbyApi.Model
             if (requestId.IsSet && requestId.Value == null)
                 throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class StopClipResponse.");
 
-            return new StopClipResponse(ok.Value!.Value!, guildId.Value!.Value!, status.Value!.Value!, requestId);
+            return new StopClipResponse(ok.Value!.Value!, guildId.Value!, status.Value!.Value!, requestId);
         }
 
         /// <summary>
@@ -269,12 +285,15 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, StopClipResponse stopClipResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (stopClipResponse.GuildId == null)
+                throw new ArgumentNullException(nameof(stopClipResponse.GuildId), "Property is required for class StopClipResponse.");
+
             if (stopClipResponse.RequestIdOption.IsSet && stopClipResponse.RequestId == null)
                 throw new ArgumentNullException(nameof(stopClipResponse.RequestId), "Property is required for class StopClipResponse.");
 
             writer.WriteBoolean("ok", stopClipResponse.Ok);
 
-            writer.WriteNumber("guild_id", stopClipResponse.GuildId);
+            writer.WriteString("guild_id", stopClipResponse.GuildId);
 
             var statusRawValue = StopClipResponse.StatusEnumToJsonValue(stopClipResponse.Status);
             writer.WriteString("status", statusRawValue);

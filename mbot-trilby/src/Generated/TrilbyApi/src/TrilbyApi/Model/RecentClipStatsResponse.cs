@@ -40,7 +40,7 @@ namespace TrilbyApi.Model
         /// <param name="rows">rows</param>
         /// <param name="requesterUserId">requesterUserId</param>
         [JsonConstructor]
-        public RecentClipStatsResponse(bool ok, long guildId, int limit, bool includeRandom, List<RecentClipStatsItem> rows, Option<long?> requesterUserId = default)
+        public RecentClipStatsResponse(bool ok, string guildId, int limit, bool includeRandom, List<RecentClipStatsItem> rows, Option<string?> requesterUserId = default)
         {
             Ok = ok;
             GuildId = guildId;
@@ -63,7 +63,7 @@ namespace TrilbyApi.Model
         /// Gets or Sets GuildId
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public long GuildId { get; set; }
+        public string GuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets Limit
@@ -88,13 +88,13 @@ namespace TrilbyApi.Model
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<long?> RequesterUserIdOption { get; private set; }
+        public Option<string?> RequesterUserIdOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets RequesterUserId
         /// </summary>
         [JsonPropertyName("requester_user_id")]
-        public long? RequesterUserId { get { return this.RequesterUserIdOption; } set { this.RequesterUserIdOption = new(value); } }
+        public string? RequesterUserId { get { return this.RequesterUserIdOption; } set { this.RequesterUserIdOption = new(value); } }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -121,6 +121,38 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // GuildId (string) minLength
+            if (this.GuildId != null && this.GuildId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for GuildId, length must be greater than 1.", new [] { "GuildId" });
+            }
+
+            if (this.GuildId != null) {
+                // GuildId (string) pattern
+                Regex regexGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexGuildId.Match(this.GuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for GuildId, must match a pattern of " + regexGuildId, new [] { "GuildId" });
+                }
+            }
+
+            // RequesterUserId (string) minLength
+            if (this.RequesterUserId != null && this.RequesterUserId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for RequesterUserId, length must be greater than 1.", new [] { "RequesterUserId" });
+            }
+
+            if (this.RequesterUserIdOption.Value != null) {
+                // RequesterUserId (string) pattern
+                Regex regexRequesterUserId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (this.RequesterUserIdOption.Value != null &&!regexRequesterUserId.Match(this.RequesterUserIdOption.Value).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for RequesterUserId, must match a pattern of " + regexRequesterUserId, new [] { "RequesterUserId" });
+                }
+            }
+
             yield break;
         }
     }
@@ -148,11 +180,11 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<long?> guildId = default;
+            Option<string?> guildId = default;
             Option<int?> limit = default;
             Option<bool?> includeRandom = default;
             Option<List<RecentClipStatsItem>?> rows = default;
-            Option<long?> requesterUserId = default;
+            Option<string?> requesterUserId = default;
 
             while (utf8JsonReader.Read())
             {
@@ -173,7 +205,7 @@ namespace TrilbyApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            guildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "limit":
                             limit = new Option<int?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (int?)null : utf8JsonReader.GetInt32());
@@ -185,7 +217,7 @@ namespace TrilbyApi.Model
                             rows = new Option<List<RecentClipStatsItem>?>(JsonSerializer.Deserialize<List<RecentClipStatsItem>>(ref utf8JsonReader, jsonSerializerOptions)!);
                             break;
                         case "requester_user_id":
-                            requesterUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            requesterUserId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -226,7 +258,7 @@ namespace TrilbyApi.Model
             if (requesterUserId.IsSet && requesterUserId.Value == null)
                 throw new ArgumentNullException(nameof(requesterUserId), "Property is not nullable for class RecentClipStatsResponse.");
 
-            return new RecentClipStatsResponse(ok.Value!.Value!, guildId.Value!.Value!, limit.Value!.Value!, includeRandom.Value!.Value!, rows.Value!, requesterUserId);
+            return new RecentClipStatsResponse(ok.Value!.Value!, guildId.Value!, limit.Value!.Value!, includeRandom.Value!.Value!, rows.Value!, requesterUserId);
         }
 
         /// <summary>
@@ -253,12 +285,18 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, RecentClipStatsResponse recentClipStatsResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (recentClipStatsResponse.GuildId == null)
+                throw new ArgumentNullException(nameof(recentClipStatsResponse.GuildId), "Property is required for class RecentClipStatsResponse.");
+
             if (recentClipStatsResponse.Rows == null)
                 throw new ArgumentNullException(nameof(recentClipStatsResponse.Rows), "Property is required for class RecentClipStatsResponse.");
 
+            if (recentClipStatsResponse.RequesterUserIdOption.IsSet && recentClipStatsResponse.RequesterUserId == null)
+                throw new ArgumentNullException(nameof(recentClipStatsResponse.RequesterUserId), "Property is required for class RecentClipStatsResponse.");
+
             writer.WriteBoolean("ok", recentClipStatsResponse.Ok);
 
-            writer.WriteNumber("guild_id", recentClipStatsResponse.GuildId);
+            writer.WriteString("guild_id", recentClipStatsResponse.GuildId);
 
             writer.WriteNumber("limit", recentClipStatsResponse.Limit);
 
@@ -267,7 +305,7 @@ namespace TrilbyApi.Model
             writer.WritePropertyName("rows");
             JsonSerializer.Serialize(writer, recentClipStatsResponse.Rows, jsonSerializerOptions);
             if (recentClipStatsResponse.RequesterUserIdOption.IsSet)
-                writer.WriteNumber("requester_user_id", recentClipStatsResponse.RequesterUserIdOption.Value!.Value);
+                writer.WriteString("requester_user_id", recentClipStatsResponse.RequesterUserId);
         }
     }
 }

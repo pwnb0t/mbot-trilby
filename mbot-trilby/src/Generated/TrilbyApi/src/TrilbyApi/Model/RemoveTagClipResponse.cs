@@ -38,7 +38,7 @@ namespace TrilbyApi.Model
         /// <param name="tagName">tagName</param>
         /// <param name="clipTrigger">clipTrigger</param>
         [JsonConstructor]
-        public RemoveTagClipResponse(bool ok, long guildId, string tagName, string clipTrigger)
+        public RemoveTagClipResponse(bool ok, string guildId, string tagName, string clipTrigger)
         {
             Ok = ok;
             GuildId = guildId;
@@ -59,7 +59,7 @@ namespace TrilbyApi.Model
         /// Gets or Sets GuildId
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public long GuildId { get; set; }
+        public string GuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets TagName
@@ -96,6 +96,22 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // GuildId (string) minLength
+            if (this.GuildId != null && this.GuildId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for GuildId, length must be greater than 1.", new [] { "GuildId" });
+            }
+
+            if (this.GuildId != null) {
+                // GuildId (string) pattern
+                Regex regexGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexGuildId.Match(this.GuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for GuildId, must match a pattern of " + regexGuildId, new [] { "GuildId" });
+                }
+            }
+
             yield break;
         }
     }
@@ -123,7 +139,7 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<long?> guildId = default;
+            Option<string?> guildId = default;
             Option<string?> tagName = default;
             Option<string?> clipTrigger = default;
 
@@ -146,7 +162,7 @@ namespace TrilbyApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            guildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "tag_name":
                             tagName = new Option<string?>(utf8JsonReader.GetString()!);
@@ -184,7 +200,7 @@ namespace TrilbyApi.Model
             if (clipTrigger.IsSet && clipTrigger.Value == null)
                 throw new ArgumentNullException(nameof(clipTrigger), "Property is not nullable for class RemoveTagClipResponse.");
 
-            return new RemoveTagClipResponse(ok.Value!.Value!, guildId.Value!.Value!, tagName.Value!, clipTrigger.Value!);
+            return new RemoveTagClipResponse(ok.Value!.Value!, guildId.Value!, tagName.Value!, clipTrigger.Value!);
         }
 
         /// <summary>
@@ -211,6 +227,9 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, RemoveTagClipResponse removeTagClipResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (removeTagClipResponse.GuildId == null)
+                throw new ArgumentNullException(nameof(removeTagClipResponse.GuildId), "Property is required for class RemoveTagClipResponse.");
+
             if (removeTagClipResponse.TagName == null)
                 throw new ArgumentNullException(nameof(removeTagClipResponse.TagName), "Property is required for class RemoveTagClipResponse.");
 
@@ -219,7 +238,7 @@ namespace TrilbyApi.Model
 
             writer.WriteBoolean("ok", removeTagClipResponse.Ok);
 
-            writer.WriteNumber("guild_id", removeTagClipResponse.GuildId);
+            writer.WriteString("guild_id", removeTagClipResponse.GuildId);
 
             writer.WriteString("tag_name", removeTagClipResponse.TagName);
 

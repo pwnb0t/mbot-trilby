@@ -39,7 +39,7 @@ namespace TrilbyApi.Model
         /// <param name="total">total</param>
         /// <param name="search">search</param>
         [JsonConstructor]
-        public ListTagsResponse(bool ok, long guildId, List<TagSummary> tags, int total, Option<string?> search = default)
+        public ListTagsResponse(bool ok, string guildId, List<TagSummary> tags, int total, Option<string?> search = default)
         {
             Ok = ok;
             GuildId = guildId;
@@ -61,7 +61,7 @@ namespace TrilbyApi.Model
         /// Gets or Sets GuildId
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public long GuildId { get; set; }
+        public string GuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets Tags
@@ -112,6 +112,22 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // GuildId (string) minLength
+            if (this.GuildId != null && this.GuildId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for GuildId, length must be greater than 1.", new [] { "GuildId" });
+            }
+
+            if (this.GuildId != null) {
+                // GuildId (string) pattern
+                Regex regexGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexGuildId.Match(this.GuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for GuildId, must match a pattern of " + regexGuildId, new [] { "GuildId" });
+                }
+            }
+
             yield break;
         }
     }
@@ -139,7 +155,7 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<long?> guildId = default;
+            Option<string?> guildId = default;
             Option<List<TagSummary>?> tags = default;
             Option<int?> total = default;
             Option<string?> search = default;
@@ -163,7 +179,7 @@ namespace TrilbyApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            guildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "tags":
                             tags = new Option<List<TagSummary>?>(JsonSerializer.Deserialize<List<TagSummary>>(ref utf8JsonReader, jsonSerializerOptions)!);
@@ -207,7 +223,7 @@ namespace TrilbyApi.Model
             if (search.IsSet && search.Value == null)
                 throw new ArgumentNullException(nameof(search), "Property is not nullable for class ListTagsResponse.");
 
-            return new ListTagsResponse(ok.Value!.Value!, guildId.Value!.Value!, tags.Value!, total.Value!.Value!, search);
+            return new ListTagsResponse(ok.Value!.Value!, guildId.Value!, tags.Value!, total.Value!.Value!, search);
         }
 
         /// <summary>
@@ -234,6 +250,9 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ListTagsResponse listTagsResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (listTagsResponse.GuildId == null)
+                throw new ArgumentNullException(nameof(listTagsResponse.GuildId), "Property is required for class ListTagsResponse.");
+
             if (listTagsResponse.Tags == null)
                 throw new ArgumentNullException(nameof(listTagsResponse.Tags), "Property is required for class ListTagsResponse.");
 
@@ -242,7 +261,7 @@ namespace TrilbyApi.Model
 
             writer.WriteBoolean("ok", listTagsResponse.Ok);
 
-            writer.WriteNumber("guild_id", listTagsResponse.GuildId);
+            writer.WriteString("guild_id", listTagsResponse.GuildId);
 
             writer.WritePropertyName("tags");
             JsonSerializer.Serialize(writer, listTagsResponse.Tags, jsonSerializerOptions);

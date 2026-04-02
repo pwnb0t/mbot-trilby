@@ -35,7 +35,7 @@ namespace TrilbyApi.Model
         /// </summary>
         /// <param name="targetGuildId">targetGuildId</param>
         [JsonConstructor]
-        public CopyClipBody(long targetGuildId)
+        public CopyClipBody(string targetGuildId)
         {
             TargetGuildId = targetGuildId;
             OnCreated();
@@ -47,7 +47,7 @@ namespace TrilbyApi.Model
         /// Gets or Sets TargetGuildId
         /// </summary>
         [JsonPropertyName("target_guild_id")]
-        public long TargetGuildId { get; set; }
+        public string TargetGuildId { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -69,10 +69,20 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
-            // TargetGuildId (long) minimum
-            if (this.TargetGuildId < (long)0)
+            // TargetGuildId (string) minLength
+            if (this.TargetGuildId != null && this.TargetGuildId.Length < 1)
             {
-                yield return new ValidationResult("Invalid value for TargetGuildId, must be a value greater than 0.", new [] { "TargetGuildId" });
+                yield return new ValidationResult("Invalid value for TargetGuildId, length must be greater than 1.", new [] { "TargetGuildId" });
+            }
+
+            if (this.TargetGuildId != null) {
+                // TargetGuildId (string) pattern
+                Regex regexTargetGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexTargetGuildId.Match(this.TargetGuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for TargetGuildId, must match a pattern of " + regexTargetGuildId, new [] { "TargetGuildId" });
+                }
             }
 
             yield break;
@@ -101,7 +111,7 @@ namespace TrilbyApi.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<long?> targetGuildId = default;
+            Option<string?> targetGuildId = default;
 
             while (utf8JsonReader.Read())
             {
@@ -119,7 +129,7 @@ namespace TrilbyApi.Model
                     switch (localVarJsonPropertyName)
                     {
                         case "target_guild_id":
-                            targetGuildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            targetGuildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -133,7 +143,7 @@ namespace TrilbyApi.Model
             if (targetGuildId.IsSet && targetGuildId.Value == null)
                 throw new ArgumentNullException(nameof(targetGuildId), "Property is not nullable for class CopyClipBody.");
 
-            return new CopyClipBody(targetGuildId.Value!.Value!);
+            return new CopyClipBody(targetGuildId.Value!);
         }
 
         /// <summary>
@@ -160,7 +170,10 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, CopyClipBody copyClipBody, JsonSerializerOptions jsonSerializerOptions)
         {
-            writer.WriteNumber("target_guild_id", copyClipBody.TargetGuildId);
+            if (copyClipBody.TargetGuildId == null)
+                throw new ArgumentNullException(nameof(copyClipBody.TargetGuildId), "Property is required for class CopyClipBody.");
+
+            writer.WriteString("target_guild_id", copyClipBody.TargetGuildId);
         }
     }
 }

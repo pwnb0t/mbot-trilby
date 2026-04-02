@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Ok** | **bool** |  | 
-**GuildId** | **long** |  | 
+**GuildId** | **string** |  | 
 **Tags** | [**List&lt;TagSummary&gt;**](TagSummary.md) |  | 
 **Total** | **int** |  | 
 **Search** | **string** |  | [optional] 

@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Ok** | **bool** |  | 
-**GuildId** | **long** |  | 
+**GuildId** | **string** |  | 
 **TagName** | **string** |  | 
 **ClipTrigger** | **string** |  | 
 

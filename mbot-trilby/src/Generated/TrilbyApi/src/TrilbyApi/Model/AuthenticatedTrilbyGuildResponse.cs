@@ -26,32 +26,24 @@ using TrilbyApi.Client;
 namespace TrilbyApi.Model
 {
     /// <summary>
-    /// GetSharedTagResponse
+    /// AuthenticatedTrilbyGuildResponse
     /// </summary>
-    public partial class GetSharedTagResponse : IValidatableObject
+    public partial class AuthenticatedTrilbyGuildResponse : IValidatableObject
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GetSharedTagResponse" /> class.
+        /// Initializes a new instance of the <see cref="AuthenticatedTrilbyGuildResponse" /> class.
         /// </summary>
-        /// <param name="ok">ok</param>
         /// <param name="guildId">guildId</param>
-        /// <param name="tagName">tagName</param>
+        /// <param name="guildName">guildName</param>
         [JsonConstructor]
-        public GetSharedTagResponse(bool ok, string guildId, Option<string?> tagName = default)
+        public AuthenticatedTrilbyGuildResponse(string guildId, string guildName)
         {
-            Ok = ok;
             GuildId = guildId;
-            TagNameOption = tagName;
+            GuildName = guildName;
             OnCreated();
         }
 
         partial void OnCreated();
-
-        /// <summary>
-        /// Gets or Sets Ok
-        /// </summary>
-        [JsonPropertyName("ok")]
-        public bool Ok { get; set; }
 
         /// <summary>
         /// Gets or Sets GuildId
@@ -60,17 +52,10 @@ namespace TrilbyApi.Model
         public string GuildId { get; set; }
 
         /// <summary>
-        /// Used to track the state of TagName
+        /// Gets or Sets GuildName
         /// </summary>
-        [JsonIgnore]
-        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<string?> TagNameOption { get; private set; }
-
-        /// <summary>
-        /// Gets or Sets TagName
-        /// </summary>
-        [JsonPropertyName("tag_name")]
-        public string? TagName { get { return this.TagNameOption; } set { this.TagNameOption = new(value); } }
+        [JsonPropertyName("guild_name")]
+        public string GuildName { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -79,10 +64,9 @@ namespace TrilbyApi.Model
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("class GetSharedTagResponse {\n");
-            sb.Append("  Ok: ").Append(Ok).Append("\n");
+            sb.Append("class AuthenticatedTrilbyGuildResponse {\n");
             sb.Append("  GuildId: ").Append(GuildId).Append("\n");
-            sb.Append("  TagName: ").Append(TagName).Append("\n");
+            sb.Append("  GuildName: ").Append(GuildName).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -115,19 +99,19 @@ namespace TrilbyApi.Model
     }
 
     /// <summary>
-    /// A Json converter for type <see cref="GetSharedTagResponse" />
+    /// A Json converter for type <see cref="AuthenticatedTrilbyGuildResponse" />
     /// </summary>
-    public class GetSharedTagResponseJsonConverter : JsonConverter<GetSharedTagResponse>
+    public class AuthenticatedTrilbyGuildResponseJsonConverter : JsonConverter<AuthenticatedTrilbyGuildResponse>
     {
         /// <summary>
-        /// Deserializes json to <see cref="GetSharedTagResponse" />
+        /// Deserializes json to <see cref="AuthenticatedTrilbyGuildResponse" />
         /// </summary>
         /// <param name="utf8JsonReader"></param>
         /// <param name="typeToConvert"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <returns></returns>
         /// <exception cref="JsonException"></exception>
-        public override GetSharedTagResponse Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
+        public override AuthenticatedTrilbyGuildResponse Read(ref Utf8JsonReader utf8JsonReader, Type typeToConvert, JsonSerializerOptions jsonSerializerOptions)
         {
             int currentDepth = utf8JsonReader.CurrentDepth;
 
@@ -136,9 +120,8 @@ namespace TrilbyApi.Model
 
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
-            Option<bool?> ok = default;
             Option<string?> guildId = default;
-            Option<string?> tagName = default;
+            Option<string?> guildName = default;
 
             while (utf8JsonReader.Read())
             {
@@ -155,14 +138,11 @@ namespace TrilbyApi.Model
 
                     switch (localVarJsonPropertyName)
                     {
-                        case "ok":
-                            ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
-                            break;
                         case "guild_id":
                             guildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
-                        case "tag_name":
-                            tagName = new Option<string?>(utf8JsonReader.GetString()!);
+                        case "guild_name":
+                            guildName = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         default:
                             break;
@@ -170,60 +150,54 @@ namespace TrilbyApi.Model
                 }
             }
 
-            if (!ok.IsSet)
-                throw new ArgumentException("Property is required for class GetSharedTagResponse.", nameof(ok));
-
             if (!guildId.IsSet)
-                throw new ArgumentException("Property is required for class GetSharedTagResponse.", nameof(guildId));
+                throw new ArgumentException("Property is required for class AuthenticatedTrilbyGuildResponse.", nameof(guildId));
 
-            if (ok.IsSet && ok.Value == null)
-                throw new ArgumentNullException(nameof(ok), "Property is not nullable for class GetSharedTagResponse.");
+            if (!guildName.IsSet)
+                throw new ArgumentException("Property is required for class AuthenticatedTrilbyGuildResponse.", nameof(guildName));
 
             if (guildId.IsSet && guildId.Value == null)
-                throw new ArgumentNullException(nameof(guildId), "Property is not nullable for class GetSharedTagResponse.");
+                throw new ArgumentNullException(nameof(guildId), "Property is not nullable for class AuthenticatedTrilbyGuildResponse.");
 
-            if (tagName.IsSet && tagName.Value == null)
-                throw new ArgumentNullException(nameof(tagName), "Property is not nullable for class GetSharedTagResponse.");
+            if (guildName.IsSet && guildName.Value == null)
+                throw new ArgumentNullException(nameof(guildName), "Property is not nullable for class AuthenticatedTrilbyGuildResponse.");
 
-            return new GetSharedTagResponse(ok.Value!.Value!, guildId.Value!, tagName);
+            return new AuthenticatedTrilbyGuildResponse(guildId.Value!, guildName.Value!);
         }
 
         /// <summary>
-        /// Serializes a <see cref="GetSharedTagResponse" />
+        /// Serializes a <see cref="AuthenticatedTrilbyGuildResponse" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="getSharedTagResponse"></param>
+        /// <param name="authenticatedTrilbyGuildResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public override void Write(Utf8JsonWriter writer, GetSharedTagResponse getSharedTagResponse, JsonSerializerOptions jsonSerializerOptions)
+        public override void Write(Utf8JsonWriter writer, AuthenticatedTrilbyGuildResponse authenticatedTrilbyGuildResponse, JsonSerializerOptions jsonSerializerOptions)
         {
             writer.WriteStartObject();
 
-            WriteProperties(writer, getSharedTagResponse, jsonSerializerOptions);
+            WriteProperties(writer, authenticatedTrilbyGuildResponse, jsonSerializerOptions);
             writer.WriteEndObject();
         }
 
         /// <summary>
-        /// Serializes the properties of <see cref="GetSharedTagResponse" />
+        /// Serializes the properties of <see cref="AuthenticatedTrilbyGuildResponse" />
         /// </summary>
         /// <param name="writer"></param>
-        /// <param name="getSharedTagResponse"></param>
+        /// <param name="authenticatedTrilbyGuildResponse"></param>
         /// <param name="jsonSerializerOptions"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void WriteProperties(Utf8JsonWriter writer, GetSharedTagResponse getSharedTagResponse, JsonSerializerOptions jsonSerializerOptions)
+        public void WriteProperties(Utf8JsonWriter writer, AuthenticatedTrilbyGuildResponse authenticatedTrilbyGuildResponse, JsonSerializerOptions jsonSerializerOptions)
         {
-            if (getSharedTagResponse.GuildId == null)
-                throw new ArgumentNullException(nameof(getSharedTagResponse.GuildId), "Property is required for class GetSharedTagResponse.");
+            if (authenticatedTrilbyGuildResponse.GuildId == null)
+                throw new ArgumentNullException(nameof(authenticatedTrilbyGuildResponse.GuildId), "Property is required for class AuthenticatedTrilbyGuildResponse.");
 
-            if (getSharedTagResponse.TagNameOption.IsSet && getSharedTagResponse.TagName == null)
-                throw new ArgumentNullException(nameof(getSharedTagResponse.TagName), "Property is required for class GetSharedTagResponse.");
+            if (authenticatedTrilbyGuildResponse.GuildName == null)
+                throw new ArgumentNullException(nameof(authenticatedTrilbyGuildResponse.GuildName), "Property is required for class AuthenticatedTrilbyGuildResponse.");
 
-            writer.WriteBoolean("ok", getSharedTagResponse.Ok);
+            writer.WriteString("guild_id", authenticatedTrilbyGuildResponse.GuildId);
 
-            writer.WriteString("guild_id", getSharedTagResponse.GuildId);
-
-            if (getSharedTagResponse.TagNameOption.IsSet)
-                writer.WriteString("tag_name", getSharedTagResponse.TagName);
+            writer.WriteString("guild_name", authenticatedTrilbyGuildResponse.GuildName);
         }
     }
 }

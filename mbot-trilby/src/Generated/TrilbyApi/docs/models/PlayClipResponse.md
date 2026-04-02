@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Ok** | **bool** |  | 
-**GuildId** | **long** |  | 
+**GuildId** | **string** |  | 
 **Trigger** | **string** |  | 
 **ResolvedTrigger** | **string** |  | 
 **Status** | **string** |  | 

@@ -38,7 +38,7 @@ namespace TrilbyApi.Model
         /// <param name="requesterUserId">requesterUserId</param>
         /// <param name="trigger">trigger</param>
         [JsonConstructor]
-        public GetCurrentIntroResponse(bool ok, long guildId, long requesterUserId, Option<string?> trigger = default)
+        public GetCurrentIntroResponse(bool ok, string guildId, string requesterUserId, Option<string?> trigger = default)
         {
             Ok = ok;
             GuildId = guildId;
@@ -59,13 +59,13 @@ namespace TrilbyApi.Model
         /// Gets or Sets GuildId
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public long GuildId { get; set; }
+        public string GuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets RequesterUserId
         /// </summary>
         [JsonPropertyName("requester_user_id")]
-        public long RequesterUserId { get; set; }
+        public string RequesterUserId { get; set; }
 
         /// <summary>
         /// Used to track the state of Trigger
@@ -103,6 +103,38 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // GuildId (string) minLength
+            if (this.GuildId != null && this.GuildId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for GuildId, length must be greater than 1.", new [] { "GuildId" });
+            }
+
+            if (this.GuildId != null) {
+                // GuildId (string) pattern
+                Regex regexGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexGuildId.Match(this.GuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for GuildId, must match a pattern of " + regexGuildId, new [] { "GuildId" });
+                }
+            }
+
+            // RequesterUserId (string) minLength
+            if (this.RequesterUserId != null && this.RequesterUserId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for RequesterUserId, length must be greater than 1.", new [] { "RequesterUserId" });
+            }
+
+            if (this.RequesterUserId != null) {
+                // RequesterUserId (string) pattern
+                Regex regexRequesterUserId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexRequesterUserId.Match(this.RequesterUserId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for RequesterUserId, must match a pattern of " + regexRequesterUserId, new [] { "RequesterUserId" });
+                }
+            }
+
             yield break;
         }
     }
@@ -130,8 +162,8 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<long?> guildId = default;
-            Option<long?> requesterUserId = default;
+            Option<string?> guildId = default;
+            Option<string?> requesterUserId = default;
             Option<string?> trigger = default;
 
             while (utf8JsonReader.Read())
@@ -153,10 +185,10 @@ namespace TrilbyApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            guildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "requester_user_id":
-                            requesterUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            requesterUserId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "trigger":
                             trigger = new Option<string?>(utf8JsonReader.GetString()!);
@@ -188,7 +220,7 @@ namespace TrilbyApi.Model
             if (trigger.IsSet && trigger.Value == null)
                 throw new ArgumentNullException(nameof(trigger), "Property is not nullable for class GetCurrentIntroResponse.");
 
-            return new GetCurrentIntroResponse(ok.Value!.Value!, guildId.Value!.Value!, requesterUserId.Value!.Value!, trigger);
+            return new GetCurrentIntroResponse(ok.Value!.Value!, guildId.Value!, requesterUserId.Value!, trigger);
         }
 
         /// <summary>
@@ -215,14 +247,20 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, GetCurrentIntroResponse getCurrentIntroResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (getCurrentIntroResponse.GuildId == null)
+                throw new ArgumentNullException(nameof(getCurrentIntroResponse.GuildId), "Property is required for class GetCurrentIntroResponse.");
+
+            if (getCurrentIntroResponse.RequesterUserId == null)
+                throw new ArgumentNullException(nameof(getCurrentIntroResponse.RequesterUserId), "Property is required for class GetCurrentIntroResponse.");
+
             if (getCurrentIntroResponse.TriggerOption.IsSet && getCurrentIntroResponse.Trigger == null)
                 throw new ArgumentNullException(nameof(getCurrentIntroResponse.Trigger), "Property is required for class GetCurrentIntroResponse.");
 
             writer.WriteBoolean("ok", getCurrentIntroResponse.Ok);
 
-            writer.WriteNumber("guild_id", getCurrentIntroResponse.GuildId);
+            writer.WriteString("guild_id", getCurrentIntroResponse.GuildId);
 
-            writer.WriteNumber("requester_user_id", getCurrentIntroResponse.RequesterUserId);
+            writer.WriteString("requester_user_id", getCurrentIntroResponse.RequesterUserId);
 
             if (getCurrentIntroResponse.TriggerOption.IsSet)
                 writer.WriteString("trigger", getCurrentIntroResponse.Trigger);

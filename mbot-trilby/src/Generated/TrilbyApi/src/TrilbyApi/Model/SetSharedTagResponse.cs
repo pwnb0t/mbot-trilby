@@ -37,7 +37,7 @@ namespace TrilbyApi.Model
         /// <param name="guildId">guildId</param>
         /// <param name="tagName">tagName</param>
         [JsonConstructor]
-        public SetSharedTagResponse(bool ok, long guildId, string tagName)
+        public SetSharedTagResponse(bool ok, string guildId, string tagName)
         {
             Ok = ok;
             GuildId = guildId;
@@ -57,7 +57,7 @@ namespace TrilbyApi.Model
         /// Gets or Sets GuildId
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public long GuildId { get; set; }
+        public string GuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets TagName
@@ -87,6 +87,22 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // GuildId (string) minLength
+            if (this.GuildId != null && this.GuildId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for GuildId, length must be greater than 1.", new [] { "GuildId" });
+            }
+
+            if (this.GuildId != null) {
+                // GuildId (string) pattern
+                Regex regexGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexGuildId.Match(this.GuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for GuildId, must match a pattern of " + regexGuildId, new [] { "GuildId" });
+                }
+            }
+
             yield break;
         }
     }
@@ -114,7 +130,7 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<long?> guildId = default;
+            Option<string?> guildId = default;
             Option<string?> tagName = default;
 
             while (utf8JsonReader.Read())
@@ -136,7 +152,7 @@ namespace TrilbyApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            guildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "tag_name":
                             tagName = new Option<string?>(utf8JsonReader.GetString()!);
@@ -165,7 +181,7 @@ namespace TrilbyApi.Model
             if (tagName.IsSet && tagName.Value == null)
                 throw new ArgumentNullException(nameof(tagName), "Property is not nullable for class SetSharedTagResponse.");
 
-            return new SetSharedTagResponse(ok.Value!.Value!, guildId.Value!.Value!, tagName.Value!);
+            return new SetSharedTagResponse(ok.Value!.Value!, guildId.Value!, tagName.Value!);
         }
 
         /// <summary>
@@ -192,12 +208,15 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, SetSharedTagResponse setSharedTagResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (setSharedTagResponse.GuildId == null)
+                throw new ArgumentNullException(nameof(setSharedTagResponse.GuildId), "Property is required for class SetSharedTagResponse.");
+
             if (setSharedTagResponse.TagName == null)
                 throw new ArgumentNullException(nameof(setSharedTagResponse.TagName), "Property is required for class SetSharedTagResponse.");
 
             writer.WriteBoolean("ok", setSharedTagResponse.Ok);
 
-            writer.WriteNumber("guild_id", setSharedTagResponse.GuildId);
+            writer.WriteString("guild_id", setSharedTagResponse.GuildId);
 
             writer.WriteString("tag_name", setSharedTagResponse.TagName);
         }

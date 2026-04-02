@@ -39,7 +39,7 @@ namespace TrilbyApi.Model
         /// <param name="status">status</param>
         /// <param name="requestId">requestId</param>
         [JsonConstructor]
-        public PlayRandomClipResponse(bool ok, long guildId, string resolvedTrigger, StatusEnum status, Option<string?> requestId = default)
+        public PlayRandomClipResponse(bool ok, string guildId, string resolvedTrigger, StatusEnum status, Option<string?> requestId = default)
         {
             Ok = ok;
             GuildId = guildId;
@@ -119,7 +119,7 @@ namespace TrilbyApi.Model
         /// Gets or Sets GuildId
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public long GuildId { get; set; }
+        public string GuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets ResolvedTrigger
@@ -164,6 +164,22 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // GuildId (string) minLength
+            if (this.GuildId != null && this.GuildId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for GuildId, length must be greater than 1.", new [] { "GuildId" });
+            }
+
+            if (this.GuildId != null) {
+                // GuildId (string) pattern
+                Regex regexGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexGuildId.Match(this.GuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for GuildId, must match a pattern of " + regexGuildId, new [] { "GuildId" });
+                }
+            }
+
             yield break;
         }
     }
@@ -191,7 +207,7 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<long?> guildId = default;
+            Option<string?> guildId = default;
             Option<string?> resolvedTrigger = default;
             Option<PlayRandomClipResponse.StatusEnum?> status = default;
             Option<string?> requestId = default;
@@ -215,7 +231,7 @@ namespace TrilbyApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            guildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "resolved_trigger":
                             resolvedTrigger = new Option<string?>(utf8JsonReader.GetString()!);
@@ -261,7 +277,7 @@ namespace TrilbyApi.Model
             if (requestId.IsSet && requestId.Value == null)
                 throw new ArgumentNullException(nameof(requestId), "Property is not nullable for class PlayRandomClipResponse.");
 
-            return new PlayRandomClipResponse(ok.Value!.Value!, guildId.Value!.Value!, resolvedTrigger.Value!, status.Value!.Value!, requestId);
+            return new PlayRandomClipResponse(ok.Value!.Value!, guildId.Value!, resolvedTrigger.Value!, status.Value!.Value!, requestId);
         }
 
         /// <summary>
@@ -288,6 +304,9 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, PlayRandomClipResponse playRandomClipResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (playRandomClipResponse.GuildId == null)
+                throw new ArgumentNullException(nameof(playRandomClipResponse.GuildId), "Property is required for class PlayRandomClipResponse.");
+
             if (playRandomClipResponse.ResolvedTrigger == null)
                 throw new ArgumentNullException(nameof(playRandomClipResponse.ResolvedTrigger), "Property is required for class PlayRandomClipResponse.");
 
@@ -296,7 +315,7 @@ namespace TrilbyApi.Model
 
             writer.WriteBoolean("ok", playRandomClipResponse.Ok);
 
-            writer.WriteNumber("guild_id", playRandomClipResponse.GuildId);
+            writer.WriteString("guild_id", playRandomClipResponse.GuildId);
 
             writer.WriteString("resolved_trigger", playRandomClipResponse.ResolvedTrigger);
 

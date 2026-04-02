@@ -43,7 +43,7 @@ namespace TrilbyApi.Model
         /// <param name="addedByText">addedByText (default to &quot;&quot;)</param>
         /// <param name="tagNames">tagNames</param>
         [JsonConstructor]
-        public ClipSummary(string trigger, Option<string?> createdAtUtc = default, Option<int?> playCount = default, Option<string?> sourceUrl = default, Option<string?> startOffsetText = default, Option<string?> clipLengthText = default, Option<long?> createdByUserId = default, Option<string?> addedByText = default, Option<List<string>?> tagNames = default)
+        public ClipSummary(string trigger, Option<string?> createdAtUtc = default, Option<int?> playCount = default, Option<string?> sourceUrl = default, Option<string?> startOffsetText = default, Option<string?> clipLengthText = default, Option<string?> createdByUserId = default, Option<string?> addedByText = default, Option<List<string>?> tagNames = default)
         {
             Trigger = trigger;
             CreatedAtUtcOption = createdAtUtc;
@@ -135,13 +135,13 @@ namespace TrilbyApi.Model
         /// </summary>
         [JsonIgnore]
         [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]
-        public Option<long?> CreatedByUserIdOption { get; private set; }
+        public Option<string?> CreatedByUserIdOption { get; private set; }
 
         /// <summary>
         /// Gets or Sets CreatedByUserId
         /// </summary>
         [JsonPropertyName("created_by_user_id")]
-        public long? CreatedByUserId { get { return this.CreatedByUserIdOption; } set { this.CreatedByUserIdOption = new(value); } }
+        public string? CreatedByUserId { get { return this.CreatedByUserIdOption; } set { this.CreatedByUserIdOption = new(value); } }
 
         /// <summary>
         /// Used to track the state of AddedByText
@@ -197,6 +197,22 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // CreatedByUserId (string) minLength
+            if (this.CreatedByUserId != null && this.CreatedByUserId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for CreatedByUserId, length must be greater than 1.", new [] { "CreatedByUserId" });
+            }
+
+            if (this.CreatedByUserIdOption.Value != null) {
+                // CreatedByUserId (string) pattern
+                Regex regexCreatedByUserId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (this.CreatedByUserIdOption.Value != null &&!regexCreatedByUserId.Match(this.CreatedByUserIdOption.Value).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for CreatedByUserId, must match a pattern of " + regexCreatedByUserId, new [] { "CreatedByUserId" });
+                }
+            }
+
             yield break;
         }
     }
@@ -229,7 +245,7 @@ namespace TrilbyApi.Model
             Option<string?> sourceUrl = default;
             Option<string?> startOffsetText = default;
             Option<string?> clipLengthText = default;
-            Option<long?> createdByUserId = default;
+            Option<string?> createdByUserId = default;
             Option<string?> addedByText = default;
             Option<List<string>?> tagNames = default;
 
@@ -267,7 +283,7 @@ namespace TrilbyApi.Model
                             clipLengthText = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "created_by_user_id":
-                            createdByUserId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            createdByUserId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "added_by_text":
                             addedByText = new Option<string?>(utf8JsonReader.GetString()!);
@@ -353,6 +369,9 @@ namespace TrilbyApi.Model
             if (clipSummary.ClipLengthTextOption.IsSet && clipSummary.ClipLengthText == null)
                 throw new ArgumentNullException(nameof(clipSummary.ClipLengthText), "Property is required for class ClipSummary.");
 
+            if (clipSummary.CreatedByUserIdOption.IsSet && clipSummary.CreatedByUserId == null)
+                throw new ArgumentNullException(nameof(clipSummary.CreatedByUserId), "Property is required for class ClipSummary.");
+
             if (clipSummary.AddedByTextOption.IsSet && clipSummary.AddedByText == null)
                 throw new ArgumentNullException(nameof(clipSummary.AddedByText), "Property is required for class ClipSummary.");
 
@@ -377,7 +396,7 @@ namespace TrilbyApi.Model
                 writer.WriteString("clip_length_text", clipSummary.ClipLengthText);
 
             if (clipSummary.CreatedByUserIdOption.IsSet)
-                writer.WriteNumber("created_by_user_id", clipSummary.CreatedByUserIdOption.Value!.Value);
+                writer.WriteString("created_by_user_id", clipSummary.CreatedByUserId);
 
             if (clipSummary.AddedByTextOption.IsSet)
                 writer.WriteString("added_by_text", clipSummary.AddedByText);

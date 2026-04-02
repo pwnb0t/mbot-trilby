@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace mbottrilby.Services
 {
@@ -282,7 +283,9 @@ namespace mbottrilby.Services
         private static ClipPlayedEvent? ParseClipPlayedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<ClipPlayedEventPayload>(envelope.Payload);
+            var guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null ||
+                guildId is null ||
                 string.IsNullOrWhiteSpace(payload.Trigger) ||
                 string.IsNullOrWhiteSpace(payload.Mode) ||
                 string.IsNullOrWhiteSpace(payload.PlayedAtUtc))
@@ -291,12 +294,12 @@ namespace mbottrilby.Services
             }
 
             return new ClipPlayedEvent(
-                envelope.GuildId,
+                guildId.Value,
                 payload.Trigger,
                 payload.Mode,
-                payload.RequesterUserId,
+                ParseSnowflake(payload.RequesterUserId),
                 string.IsNullOrWhiteSpace(payload.RequesterDisplayName)
-                    ? (payload.RequesterUserId?.ToString() ?? string.Empty)
+                    ? FormatSnowflake(payload.RequesterUserId)
                     : payload.RequesterDisplayName.Trim(),
                 payload.PlayedAtUtc);
         }
@@ -304,44 +307,52 @@ namespace mbottrilby.Services
         private static ClipTaggedEvent? ParseClipTaggedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<ClipTagMembershipEventPayload>(envelope.Payload);
+            var guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null ||
+                guildId is null ||
                 string.IsNullOrWhiteSpace(payload.TagName) ||
                 string.IsNullOrWhiteSpace(payload.ClipTrigger))
             {
                 return null;
             }
 
-            return new ClipTaggedEvent(envelope.GuildId, payload.TagName, payload.ClipTrigger);
+            return new ClipTaggedEvent(guildId.Value, payload.TagName, payload.ClipTrigger);
         }
 
         private static ClipUntaggedEvent? ParseClipUntaggedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<ClipTagMembershipEventPayload>(envelope.Payload);
+            var guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null ||
+                guildId is null ||
                 string.IsNullOrWhiteSpace(payload.TagName) ||
                 string.IsNullOrWhiteSpace(payload.ClipTrigger))
             {
                 return null;
             }
 
-            return new ClipUntaggedEvent(envelope.GuildId, payload.TagName, payload.ClipTrigger);
+            return new ClipUntaggedEvent(guildId.Value, payload.TagName, payload.ClipTrigger);
         }
 
         private static CurrentIntroUpdatedEvent? ParseCurrentIntroUpdatedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<CurrentIntroUpdatedEventPayload>(envelope.Payload);
-            if (payload is null || payload.UserId <= 0)
+            var guildId = ParseSnowflake(envelope.GuildId);
+            var userId = payload is null ? null : ParseSnowflake(payload.UserId);
+            if (payload is null || guildId is null || userId is null)
             {
                 return null;
             }
 
-            return new CurrentIntroUpdatedEvent(envelope.GuildId, payload.UserId, payload.Trigger);
+            return new CurrentIntroUpdatedEvent(guildId.Value, userId.Value, payload.Trigger);
         }
 
         private static ClipPlayCountChangedEvent? ParseClipPlayCountChangedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<ClipPlayedEventPayload>(envelope.Payload);
+            var guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null ||
+                guildId is null ||
                 string.IsNullOrWhiteSpace(payload.Trigger) ||
                 string.IsNullOrWhiteSpace(payload.Mode) ||
                 string.IsNullOrWhiteSpace(payload.PlayedAtUtc))
@@ -350,12 +361,12 @@ namespace mbottrilby.Services
             }
 
             return new ClipPlayCountChangedEvent(
-                envelope.GuildId,
+                guildId.Value,
                 payload.Trigger,
                 payload.Mode,
-                payload.RequesterUserId,
+                ParseSnowflake(payload.RequesterUserId),
                 string.IsNullOrWhiteSpace(payload.RequesterDisplayName)
-                    ? (payload.RequesterUserId?.ToString() ?? string.Empty)
+                    ? FormatSnowflake(payload.RequesterUserId)
                     : payload.RequesterDisplayName.Trim(),
                 payload.PlayedAtUtc);
         }
@@ -363,13 +374,14 @@ namespace mbottrilby.Services
         private static ClipCreatedEvent? ParseClipCreatedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<ClipCreatedEventPayload>(envelope.Payload);
-            if (payload is null || string.IsNullOrWhiteSpace(payload.Trigger))
+            var guildId = ParseSnowflake(envelope.GuildId);
+            if (payload is null || guildId is null || string.IsNullOrWhiteSpace(payload.Trigger))
             {
                 return null;
             }
 
             return new ClipCreatedEvent(
-                envelope.GuildId,
+                guildId.Value,
                 payload.Trigger.Trim(),
                 payload.SourceUrl,
                 payload.StartOffsetText,
@@ -381,53 +393,95 @@ namespace mbottrilby.Services
         private static ClipDeletedEvent? ParseClipDeletedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<ClipDeletedEventPayload>(envelope.Payload);
-            if (payload is null || string.IsNullOrWhiteSpace(payload.Trigger))
+            var guildId = ParseSnowflake(envelope.GuildId);
+            if (payload is null || guildId is null || string.IsNullOrWhiteSpace(payload.Trigger))
             {
                 return null;
             }
 
-            return new ClipDeletedEvent(envelope.GuildId, payload.Trigger.Trim());
+            return new ClipDeletedEvent(guildId.Value, payload.Trigger.Trim());
         }
 
         private static TagCreatedEvent? ParseTagCreatedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
-            if (payload is null || string.IsNullOrWhiteSpace(payload.TagName))
+            var guildId = ParseSnowflake(envelope.GuildId);
+            if (payload is null || guildId is null || string.IsNullOrWhiteSpace(payload.TagName))
             {
                 return null;
             }
 
-            return new TagCreatedEvent(envelope.GuildId, payload.TagName.Trim());
+            return new TagCreatedEvent(guildId.Value, payload.TagName.Trim());
         }
 
         private static TagDeletedEvent? ParseTagDeletedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
-            if (payload is null || string.IsNullOrWhiteSpace(payload.TagName))
+            var guildId = ParseSnowflake(envelope.GuildId);
+            if (payload is null || guildId is null || string.IsNullOrWhiteSpace(payload.TagName))
             {
                 return null;
             }
 
-            return new TagDeletedEvent(envelope.GuildId, payload.TagName.Trim());
+            return new TagDeletedEvent(guildId.Value, payload.TagName.Trim());
         }
 
         private static SharedTagSelectedEvent? ParseSharedTagSelectedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
-            if (payload is null || string.IsNullOrWhiteSpace(payload.TagName))
+            var guildId = ParseSnowflake(envelope.GuildId);
+            if (payload is null || guildId is null || string.IsNullOrWhiteSpace(payload.TagName))
             {
                 return null;
             }
 
-            return new SharedTagSelectedEvent(envelope.GuildId, payload.TagName.Trim());
+            return new SharedTagSelectedEvent(guildId.Value, payload.TagName.Trim());
         }
 
         private static SharedTagClearedEvent? ParseSharedTagClearedEvent(EventEnvelopePayload envelope)
         {
             var payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
+            var guildId = ParseSnowflake(envelope.GuildId);
+            if (guildId is null)
+            {
+                return null;
+            }
+
             return new SharedTagClearedEvent(
-                envelope.GuildId,
+                guildId.Value,
                 string.IsNullOrWhiteSpace(payload?.TagName) ? null : payload.TagName.Trim());
+        }
+
+        private static long? ParseSnowflake(JsonElement value)
+        {
+            return value.ValueKind switch
+            {
+                JsonValueKind.String => ParseSnowflake(value.GetString()),
+                JsonValueKind.Number when value.TryGetInt64(out var parsed) => parsed,
+                _ => null,
+            };
+        }
+
+        private static string FormatSnowflake(JsonElement value)
+        {
+            return value.ValueKind switch
+            {
+                JsonValueKind.String => value.GetString() ?? string.Empty,
+                JsonValueKind.Number => value.GetRawText(),
+                _ => string.Empty,
+            };
+        }
+
+        private static long? ParseSnowflake(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            return long.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed)
+                ? parsed
+                : null;
         }
 
         private static TPayload? DeserializePayload<TPayload>(JsonElement payload)
@@ -699,7 +753,7 @@ namespace mbottrilby.Services
             public string? EventType { get; set; }
 
             [JsonPropertyName("guild_id")]
-            public long GuildId { get; set; }
+            public JsonElement GuildId { get; set; }
 
             [JsonPropertyName("occurred_at_utc")]
             public string? OccurredAtUtc { get; set; }
@@ -717,7 +771,7 @@ namespace mbottrilby.Services
             public string? Mode { get; set; }
 
             [JsonPropertyName("requester_user_id")]
-            public long? RequesterUserId { get; set; }
+            public JsonElement RequesterUserId { get; set; }
 
             [JsonPropertyName("requester_display_name")]
             public string? RequesterDisplayName { get; set; }
@@ -738,7 +792,7 @@ namespace mbottrilby.Services
         private sealed class CurrentIntroUpdatedEventPayload
         {
             [JsonPropertyName("user_id")]
-            public long UserId { get; set; }
+            public JsonElement UserId { get; set; }
 
             [JsonPropertyName("trigger")]
             public string? Trigger { get; set; }

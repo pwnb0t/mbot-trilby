@@ -16,9 +16,9 @@ paths:
                 $ref: "#/components/schemas/HealthResponse"
           description: Successful Response
       summary: Health
-  /clip-browser:
+  /haberdashery:
     get:
-      operationId: get_clip_browser_page_clip_browser_get
+      operationId: get_haberdashery_page_haberdashery_get
       responses:
         "200":
           content:
@@ -26,7 +26,28 @@ paths:
               schema:
                 type: string
           description: Successful Response
-      summary: Get Clip Browser Page
+      summary: Get Haberdashery Page
+  /haberdashery/static/haberdashery.css:
+    get:
+      operationId: get_haberdashery_css_haberdashery_static_haberdashery_css_get
+      responses:
+        "200":
+          description: Successful Response
+      summary: Get Haberdashery Css
+  /haberdashery/static/haberdashery.js:
+    get:
+      operationId: get_haberdashery_js_haberdashery_static_haberdashery_js_get
+      responses:
+        "200":
+          description: Successful Response
+      summary: Get Haberdashery Js
+  /haberdashery/static/dist/haberdashery.bundle.js:
+    get:
+      operationId: get_haberdashery_bundle_js_haberdashery_static_dist_haberdashery_bundle_js_get
+      responses:
+        "200":
+          description: Successful Response
+      summary: Get Haberdashery Bundle Js
   /v1/auth/discord/start:
     get:
       operationId: StartDiscordAuth
@@ -200,11 +221,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       - explode: true
         in: query
@@ -254,11 +273,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       - explode: false
         in: path
@@ -316,6 +333,62 @@ paths:
       security:
       - HTTPBearer: []
       summary: Copy Clip
+  /v1/guilds/{guild_id}/clips/{clip_trigger}/audio:
+    get:
+      operationId: GetClipAudio
+      parameters:
+      - explode: false
+        in: path
+        name: guild_id
+        required: true
+        schema:
+          pattern: ^\d+$
+          title: Guild Id
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: clip_trigger
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 1
+          title: Clip Trigger
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Clip audio stream.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Unauthorized error response.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Clip not found error response.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+          description: Internal error response.
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get Clip Audio
   /v1/guilds/{guild_id}/clips/play:
     post:
       operationId: PlayClip
@@ -325,11 +398,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       requestBody:
         content:
@@ -392,11 +463,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       requestBody:
         content:
@@ -453,11 +522,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       requestBody:
         content:
@@ -514,11 +581,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       - explode: true
         in: query
@@ -605,11 +670,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       - explode: true
         in: query
@@ -680,11 +743,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       responses:
         "200":
@@ -734,11 +795,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       requestBody:
         content:
@@ -795,11 +854,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       responses:
         "200":
@@ -837,11 +894,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       requestBody:
         content:
@@ -935,11 +990,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       - explode: true
         in: query
@@ -999,11 +1052,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       responses:
         "200":
@@ -1047,11 +1098,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       - explode: false
         in: path
@@ -1112,11 +1161,9 @@ paths:
         name: guild_id
         required: true
         schema:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         style: simple
       - explode: false
         in: path
@@ -1189,7 +1236,7 @@ components:
     AddTagClipResponse:
       example:
         tag_name: tag_name
-        guild_id: 0
+        guild_id: guild_id
         clip_trigger: clip_trigger
         ok: true
       properties:
@@ -1197,9 +1244,10 @@ components:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         tag_name:
           title: Tag Name
           type: string
@@ -1232,24 +1280,23 @@ components:
       - message
       - ok
       title: ApiErrorResponse
-    AuthenticatedTrilbyGuild:
+    AuthenticatedTrilbyGuildResponse:
       example:
         guild_name: guild_name
-        guild_id: 0
+        guild_id: guild_id
       properties:
         guild_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         guild_name:
           title: Guild Name
           type: string
       required:
       - guild_id
       - guild_name
-      title: AuthenticatedTrilbyGuild
+      title: AuthenticatedTrilbyGuildResponse
     ClipSummary:
       example:
         created_at_utc: ""
@@ -1257,8 +1304,8 @@ components:
         clip_length_text: ""
         start_offset_text: ""
         trigger: trigger
-        play_count: 6
-        created_by_user_id: 1
+        play_count: 0
+        created_by_user_id: created_by_user_id
         tag_names:
         - tag_names
         - tag_names
@@ -1288,9 +1335,10 @@ components:
           title: Clip Length Text
           type: string
         created_by_user_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Created By User Id
-          type: integer
+          type: string
         added_by_text:
           default: ""
           title: Added By Text
@@ -1306,35 +1354,36 @@ components:
       title: ClipSummary
     CopyClipBody:
       example:
-        target_guild_id: 0
+        target_guild_id: target_guild_id
       properties:
         target_guild_id:
-          exclusiveMinimum: true
-          format: int64
-          minimum: 0.0
+          minLength: 1
+          pattern: ^\d+$
           title: Target Guild Id
-          type: integer
+          type: string
       required:
       - target_guild_id
       title: CopyClipBody
     CopyClipResponse:
       example:
-        source_guild_id: 0
+        source_guild_id: source_guild_id
         clip_trigger: clip_trigger
-        target_guild_id: 6
+        target_guild_id: target_guild_id
         ok: true
       properties:
         ok:
           title: Ok
           type: boolean
         source_guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Source Guild Id
-          type: integer
+          type: string
         target_guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Target Guild Id
-          type: integer
+          type: string
         clip_trigger:
           title: Clip Trigger
           type: string
@@ -1362,8 +1411,8 @@ components:
       title: CreateBrowserLaunchResponse
     GetCurrentIntroResponse:
       example:
-        guild_id: 0
-        requester_user_id: 6
+        guild_id: guild_id
+        requester_user_id: requester_user_id
         trigger: trigger
         ok: true
       properties:
@@ -1371,13 +1420,15 @@ components:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         requester_user_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Requester User Id
-          type: integer
+          type: string
         trigger:
           title: Trigger
           type: string
@@ -1389,16 +1440,17 @@ components:
     GetSharedTagResponse:
       example:
         tag_name: tag_name
-        guild_id: 0
+        guild_id: guild_id
         ok: true
       properties:
         ok:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         tag_name:
           title: Tag Name
           type: string
@@ -1452,7 +1504,7 @@ components:
       title: HealthResponse
     ListClipsResponse:
       example:
-        total: 5
+        total: 6
         search: search
         clips:
         - created_at_utc: ""
@@ -1460,8 +1512,8 @@ components:
           clip_length_text: ""
           start_offset_text: ""
           trigger: trigger
-          play_count: 6
-          created_by_user_id: 1
+          play_count: 0
+          created_by_user_id: created_by_user_id
           tag_names:
           - tag_names
           - tag_names
@@ -1471,22 +1523,23 @@ components:
           clip_length_text: ""
           start_offset_text: ""
           trigger: trigger
-          play_count: 6
-          created_by_user_id: 1
+          play_count: 0
+          created_by_user_id: created_by_user_id
           tag_names:
           - tag_names
           - tag_names
           source_url: ""
-        guild_id: 0
+        guild_id: guild_id
         ok: true
       properties:
         ok:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         clips:
           items:
             $ref: "#/components/schemas/ClipSummary"
@@ -1506,21 +1559,22 @@ components:
       title: ListClipsResponse
     ListTagClipsResponse:
       example:
-        total: 6
+        total: 0
         tag_name: tag_name
         clips:
         - trigger: trigger
         - trigger: trigger
-        guild_id: 0
+        guild_id: guild_id
         ok: true
       properties:
         ok:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         tag_name:
           title: Tag Name
           type: string
@@ -1541,9 +1595,9 @@ components:
       title: ListTagClipsResponse
     ListTagsResponse:
       example:
-        total: 6
+        total: 0
         search: search
-        guild_id: 0
+        guild_id: guild_id
         ok: true
         tags:
         - clip_triggers:
@@ -1559,9 +1613,10 @@ components:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         tags:
           items:
             $ref: "#/components/schemas/TagSummary"
@@ -1597,7 +1652,7 @@ components:
       title: PlayClipBody
     PlayClipResponse:
       example:
-        guild_id: 0
+        guild_id: guild_id
         resolved_trigger: resolved_trigger
         trigger: trigger
         ok: true
@@ -1608,9 +1663,10 @@ components:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         trigger:
           title: Trigger
           type: string
@@ -1642,7 +1698,7 @@ components:
       title: PlayRandomClipBody
     PlayRandomClipResponse:
       example:
-        guild_id: 0
+        guild_id: guild_id
         resolved_trigger: resolved_trigger
         ok: true
         request_id: request_id
@@ -1652,9 +1708,10 @@ components:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         resolved_trigger:
           title: Resolved Trigger
           type: string
@@ -1677,7 +1734,7 @@ components:
         mode: direct
         requester_display_name: requester_display_name
         played_at_utc: played_at_utc
-        clip_id: 5
+        clip_id: 6
         trigger: trigger
       properties:
         clip_id:
@@ -1707,33 +1764,35 @@ components:
     RecentClipStatsResponse:
       example:
         include_random: true
-        guild_id: 0
-        limit: 1
-        requester_user_id: 6
+        guild_id: guild_id
+        limit: 0
+        requester_user_id: requester_user_id
         ok: true
         rows:
         - mode: direct
           requester_display_name: requester_display_name
           played_at_utc: played_at_utc
-          clip_id: 5
+          clip_id: 6
           trigger: trigger
         - mode: direct
           requester_display_name: requester_display_name
           played_at_utc: played_at_utc
-          clip_id: 5
+          clip_id: 6
           trigger: trigger
       properties:
         ok:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         requester_user_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Requester User Id
-          type: integer
+          type: string
         limit:
           title: Limit
           type: integer
@@ -1766,7 +1825,7 @@ components:
     RemoveTagClipResponse:
       example:
         tag_name: tag_name
-        guild_id: 0
+        guild_id: guild_id
         clip_trigger: clip_trigger
         ok: true
       properties:
@@ -1774,9 +1833,10 @@ components:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         tag_name:
           title: Tag Name
           type: string
@@ -1794,13 +1854,13 @@ components:
         access_token: access_token
         refresh_token: refresh_token
         expires_at_utc: expires_at_utc
-        default_guild_id: 1
-        user_id: 0
+        default_guild_id: default_guild_id
+        user_id: user_id
         guilds:
         - guild_name: guild_name
-          guild_id: 0
+          guild_id: guild_id
         - guild_name: guild_name
-          guild_id: 0
+          guild_id: guild_id
         ok: true
         token_type: Bearer
         username: username
@@ -1824,21 +1884,23 @@ components:
           title: Expires At Utc
           type: string
         user_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: User Id
-          type: integer
+          type: string
         username:
           title: Username
           type: string
         guilds:
           items:
-            $ref: "#/components/schemas/AuthenticatedTrilbyGuild"
+            $ref: "#/components/schemas/AuthenticatedTrilbyGuildResponse"
           title: Guilds
           type: array
         default_guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Default Guild Id
-          type: integer
+          type: string
       required:
       - access_token
       - expires_at_utc
@@ -1851,13 +1913,13 @@ components:
     SessionSummaryResponse:
       example:
         expires_at_utc: expires_at_utc
-        default_guild_id: 6
-        user_id: 0
+        default_guild_id: default_guild_id
+        user_id: user_id
         guilds:
         - guild_name: guild_name
-          guild_id: 0
+          guild_id: guild_id
         - guild_name: guild_name
-          guild_id: 0
+          guild_id: guild_id
         ok: true
         username: username
       properties:
@@ -1865,9 +1927,10 @@ components:
           title: Ok
           type: boolean
         user_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: User Id
-          type: integer
+          type: string
         username:
           title: Username
           type: string
@@ -1876,13 +1939,14 @@ components:
           type: string
         guilds:
           items:
-            $ref: "#/components/schemas/AuthenticatedTrilbyGuild"
+            $ref: "#/components/schemas/AuthenticatedTrilbyGuildResponse"
           title: Guilds
           type: array
         default_guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Default Guild Id
-          type: integer
+          type: string
       required:
       - expires_at_utc
       - guilds
@@ -1904,8 +1968,8 @@ components:
       title: SetCurrentIntroBody
     SetCurrentIntroResponse:
       example:
-        guild_id: 0
-        requester_user_id: 6
+        guild_id: guild_id
+        requester_user_id: requester_user_id
         trigger: trigger
         ok: true
       properties:
@@ -1913,13 +1977,15 @@ components:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         requester_user_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Requester User Id
-          type: integer
+          type: string
         trigger:
           title: Trigger
           type: string
@@ -1944,16 +2010,17 @@ components:
     SetSharedTagResponse:
       example:
         tag_name: tag_name
-        guild_id: 0
+        guild_id: guild_id
         ok: true
       properties:
         ok:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         tag_name:
           title: Tag Name
           type: string
@@ -1972,7 +2039,7 @@ components:
       title: StopClipBody
     StopClipResponse:
       example:
-        guild_id: 0
+        guild_id: guild_id
         ok: true
         request_id: request_id
         status: stopped
@@ -1981,9 +2048,10 @@ components:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         status:
           enum:
           - stopped
@@ -2028,9 +2096,9 @@ components:
       title: TagSummary
     TopClipStatsItem:
       example:
-        clip_id: 5
+        clip_id: 6
         trigger: trigger
-        play_count: 5
+        play_count: 1
         last_played_at_utc: last_played_at_utc
       properties:
         clip_id:
@@ -2054,32 +2122,34 @@ components:
     TopClipStatsResponse:
       example:
         include_random: true
-        guild_id: 0
-        limit: 1
-        requester_user_id: 6
+        guild_id: guild_id
+        limit: 0
+        requester_user_id: requester_user_id
         days: "1"
         ok: true
         rows:
-        - clip_id: 5
+        - clip_id: 6
           trigger: trigger
-          play_count: 5
+          play_count: 1
           last_played_at_utc: last_played_at_utc
-        - clip_id: 5
+        - clip_id: 6
           trigger: trigger
-          play_count: 5
+          play_count: 1
           last_played_at_utc: last_played_at_utc
       properties:
         ok:
           title: Ok
           type: boolean
         guild_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Guild Id
-          type: integer
+          type: string
         requester_user_id:
-          format: int64
+          minLength: 1
+          pattern: ^\d+$
           title: Requester User Id
-          type: integer
+          type: string
         days:
           enum:
           - "1"

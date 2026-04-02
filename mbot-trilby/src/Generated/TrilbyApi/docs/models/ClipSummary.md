@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **SourceUrl** | **string** |  | [optional] [default to ""]
 **StartOffsetText** | **string** |  | [optional] [default to ""]
 **ClipLengthText** | **string** |  | [optional] [default to ""]
-**CreatedByUserId** | **long** |  | [optional] 
+**CreatedByUserId** | **string** |  | [optional] 
 **AddedByText** | **string** |  | [optional] [default to ""]
 **TagNames** | **List&lt;string&gt;** |  | [optional] 
 

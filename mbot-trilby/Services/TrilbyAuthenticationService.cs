@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace mbottrilby.Services
 {
@@ -335,17 +336,19 @@ namespace mbottrilby.Services
 
             public TrilbySessionSettings ApplySummary(SessionSummaryPayload summary)
             {
+                var summaryUserId = ParseSnowflake(summary.UserId);
                 return new TrilbySessionSettings
                 {
                     AccessToken = AccessToken,
                     RefreshToken = RefreshToken,
                     ExpiresAtUtc = ExpiresAtUtc,
-                    UserId = summary.UserId > 0 ? summary.UserId : UserId,
+                    UserId = summaryUserId is > 0 ? summaryUserId.Value : UserId,
                     Username = summary.Username ?? Username,
-                    DefaultGuildId = summary.DefaultGuildId,
+                    DefaultGuildId = ParseSnowflake(summary.DefaultGuildId),
                     Servers = summary.Guilds?
-                        .Where(guild => guild.GuildId > 0)
                         .Select(guild => guild.ToSettings())
+                        .Where(guild => guild is not null)
+                        .Select(guild => guild!)
                         .OrderBy(guild => guild.GuildName, StringComparer.OrdinalIgnoreCase)
                         .ToList()
                         ?? new List<TrilbyGuildSettings>()
@@ -365,7 +368,7 @@ namespace mbottrilby.Services
             public string? ExpiresAtUtc { get; set; }
 
             [JsonPropertyName("user_id")]
-            public long UserId { get; set; }
+            public string? UserId { get; set; }
 
             [JsonPropertyName("username")]
             public string? Username { get; set; }
@@ -374,7 +377,7 @@ namespace mbottrilby.Services
             public List<GuildPayload>? Guilds { get; set; }
 
             [JsonPropertyName("default_guild_id")]
-            public long? DefaultGuildId { get; set; }
+            public string? DefaultGuildId { get; set; }
 
             public TrilbySessionSettings ToSettings()
             {
@@ -383,12 +386,13 @@ namespace mbottrilby.Services
                     AccessToken = AccessToken,
                     RefreshToken = RefreshToken,
                     ExpiresAtUtc = ExpiresAtUtc,
-                    UserId = UserId,
+                    UserId = ParseSnowflake(UserId) ?? 0,
                     Username = Username,
-                    DefaultGuildId = DefaultGuildId,
+                    DefaultGuildId = ParseSnowflake(DefaultGuildId),
                     Servers = Guilds?
-                        .Where(guild => guild.GuildId > 0)
                         .Select(guild => guild.ToSettings())
+                        .Where(guild => guild is not null)
+                        .Select(guild => guild!)
                         .OrderBy(guild => guild.GuildName, StringComparer.OrdinalIgnoreCase)
                         .ToList()
                         ?? new List<TrilbyGuildSettings>()
@@ -399,7 +403,7 @@ namespace mbottrilby.Services
         private sealed class SessionSummaryPayload
         {
             [JsonPropertyName("user_id")]
-            public long UserId { get; set; }
+            public string? UserId { get; set; }
 
             [JsonPropertyName("username")]
             public string? Username { get; set; }
@@ -411,25 +415,43 @@ namespace mbottrilby.Services
             public List<GuildPayload>? Guilds { get; set; }
 
             [JsonPropertyName("default_guild_id")]
-            public long? DefaultGuildId { get; set; }
+            public string? DefaultGuildId { get; set; }
         }
 
         private sealed class GuildPayload
         {
             [JsonPropertyName("guild_id")]
-            public long GuildId { get; set; }
+            public string? GuildId { get; set; }
 
             [JsonPropertyName("guild_name")]
             public string? GuildName { get; set; }
 
-            public TrilbyGuildSettings ToSettings()
+            public TrilbyGuildSettings? ToSettings()
             {
+                var guildId = ParseSnowflake(GuildId);
+                if (guildId is not > 0)
+                {
+                    return null;
+                }
+
                 return new TrilbyGuildSettings
                 {
-                    GuildId = GuildId,
+                    GuildId = guildId.Value,
                     GuildName = GuildName
                 };
             }
+        }
+
+        private static long? ParseSnowflake(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            return long.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed)
+                ? parsed
+                : null;
         }
     }
 }

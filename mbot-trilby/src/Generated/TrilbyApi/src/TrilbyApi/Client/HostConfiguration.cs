@@ -46,7 +46,7 @@ namespace TrilbyApi.Client
             _jsonOptions.Converters.Add(new AddTagClipBodyJsonConverter());
             _jsonOptions.Converters.Add(new AddTagClipResponseJsonConverter());
             _jsonOptions.Converters.Add(new ApiErrorResponseJsonConverter());
-            _jsonOptions.Converters.Add(new AuthenticatedTrilbyGuildJsonConverter());
+            _jsonOptions.Converters.Add(new AuthenticatedTrilbyGuildResponseJsonConverter());
             _jsonOptions.Converters.Add(new ClipSummaryJsonConverter());
             _jsonOptions.Converters.Add(new CopyClipBodyJsonConverter());
             _jsonOptions.Converters.Add(new CopyClipResponseJsonConverter());

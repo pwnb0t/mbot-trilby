@@ -49,7 +49,7 @@ namespace TrilbyApi.Api
         /// <param name="addTagClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>&gt;</returns>
-        Task<IAddTagClipApiResponse> AddTagClipAsync(long guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<IAddTagClipApiResponse> AddTagClipAsync(string guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Add Tag Clip
@@ -62,7 +62,7 @@ namespace TrilbyApi.Api
         /// <param name="addTagClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>?&gt;</returns>
-        Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(long guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(string guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Complete Discord Auth
@@ -105,7 +105,7 @@ namespace TrilbyApi.Api
         /// <param name="copyClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ICopyClipApiResponse"/>&gt;</returns>
-        Task<ICopyClipApiResponse> CopyClipAsync(long guildId, string clipTrigger, CopyClipBody copyClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<ICopyClipApiResponse> CopyClipAsync(string guildId, string clipTrigger, CopyClipBody copyClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Copy Clip
@@ -118,7 +118,7 @@ namespace TrilbyApi.Api
         /// <param name="copyClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ICopyClipApiResponse"/>?&gt;</returns>
-        Task<ICopyClipApiResponse?> CopyClipOrDefaultAsync(long guildId, string clipTrigger, CopyClipBody copyClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<ICopyClipApiResponse?> CopyClipOrDefaultAsync(string guildId, string clipTrigger, CopyClipBody copyClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create Browser Launch
@@ -163,25 +163,29 @@ namespace TrilbyApi.Api
         Task<IGetAuthenticatedSessionApiResponse?> GetAuthenticatedSessionOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Get Clip Browser Page
+        /// Get Clip Audio
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="guildId"></param>
+        /// <param name="clipTrigger"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns><see cref="Task"/>&lt;<see cref="IGetClipBrowserPageClipBrowserGetApiResponse"/>&gt;</returns>
-        Task<IGetClipBrowserPageClipBrowserGetApiResponse> GetClipBrowserPageClipBrowserGetAsync(System.Threading.CancellationToken cancellationToken = default);
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetClipAudioApiResponse"/>&gt;</returns>
+        Task<IGetClipAudioApiResponse> GetClipAudioAsync(string guildId, string clipTrigger, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Get Clip Browser Page
+        /// Get Clip Audio
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
+        /// <param name="guildId"></param>
+        /// <param name="clipTrigger"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns><see cref="Task"/>&lt;<see cref="IGetClipBrowserPageClipBrowserGetApiResponse"/>?&gt;</returns>
-        Task<IGetClipBrowserPageClipBrowserGetApiResponse?> GetClipBrowserPageClipBrowserGetOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetClipAudioApiResponse"/>?&gt;</returns>
+        Task<IGetClipAudioApiResponse?> GetClipAudioOrDefaultAsync(string guildId, string clipTrigger, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get Current Intro
@@ -193,7 +197,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>&gt;</returns>
-        Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(long guildId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(string guildId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get Current Intro
@@ -204,7 +208,91 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>?&gt;</returns>
-        Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(long guildId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(string guildId, System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Haberdashery Bundle Js
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse"/>&gt;</returns>
+        Task<IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse> GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Haberdashery Bundle Js
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse"/>?&gt;</returns>
+        Task<IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse?> GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Haberdashery Css
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse"/>&gt;</returns>
+        Task<IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse> GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Haberdashery Css
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse"/>?&gt;</returns>
+        Task<IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse?> GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Haberdashery Js
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse"/>&gt;</returns>
+        Task<IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse> GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Haberdashery Js
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse"/>?&gt;</returns>
+        Task<IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse?> GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Haberdashery Page
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryPageHaberdasheryGetApiResponse"/>&gt;</returns>
+        Task<IGetHaberdasheryPageHaberdasheryGetApiResponse> GetHaberdasheryPageHaberdasheryGetAsync(System.Threading.CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Get Haberdashery Page
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryPageHaberdasheryGetApiResponse"/>?&gt;</returns>
+        Task<IGetHaberdasheryPageHaberdasheryGetApiResponse?> GetHaberdasheryPageHaberdasheryGetOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Health
@@ -240,7 +328,7 @@ namespace TrilbyApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(string guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Recent Clip Stats
@@ -254,7 +342,7 @@ namespace TrilbyApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>?&gt;</returns>
-        Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(string guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get Shared Tag
@@ -266,7 +354,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetSharedTagApiResponse"/>&gt;</returns>
-        Task<IGetSharedTagApiResponse> GetSharedTagAsync(long guildId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetSharedTagApiResponse> GetSharedTagAsync(string guildId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get Shared Tag
@@ -277,7 +365,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetSharedTagApiResponse"/>?&gt;</returns>
-        Task<IGetSharedTagApiResponse?> GetSharedTagOrDefaultAsync(long guildId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetSharedTagApiResponse?> GetSharedTagOrDefaultAsync(string guildId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Top Clip Stats
@@ -293,7 +381,7 @@ namespace TrilbyApi.Api
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(string guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Top Clip Stats
@@ -308,7 +396,7 @@ namespace TrilbyApi.Api
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>?&gt;</returns>
-        Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(string guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Clips
@@ -321,7 +409,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
-        Task<IListClipsApiResponse> ListClipsAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListClipsApiResponse> ListClipsAsync(string guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Clips
@@ -333,7 +421,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>?&gt;</returns>
-        Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(string guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Tag Clips
@@ -346,7 +434,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagClipsApiResponse"/>&gt;</returns>
-        Task<IListTagClipsApiResponse> ListTagClipsAsync(string tagName, long guildId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTagClipsApiResponse> ListTagClipsAsync(string tagName, string guildId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Tag Clips
@@ -358,7 +446,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagClipsApiResponse"/>?&gt;</returns>
-        Task<IListTagClipsApiResponse?> ListTagClipsOrDefaultAsync(string tagName, long guildId, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTagClipsApiResponse?> ListTagClipsOrDefaultAsync(string tagName, string guildId, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Tags
@@ -371,7 +459,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>&gt;</returns>
-        Task<IListTagsApiResponse> ListTagsAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTagsApiResponse> ListTagsAsync(string guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// List Tags
@@ -383,7 +471,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>?&gt;</returns>
-        Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
+        Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(string guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Play Clip
@@ -396,7 +484,7 @@ namespace TrilbyApi.Api
         /// <param name="playClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>&gt;</returns>
-        Task<IPlayClipApiResponse> PlayClipAsync(long guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<IPlayClipApiResponse> PlayClipAsync(string guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Play Clip
@@ -408,7 +496,7 @@ namespace TrilbyApi.Api
         /// <param name="playClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>?&gt;</returns>
-        Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(long guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(string guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Play Random Clip
@@ -421,7 +509,7 @@ namespace TrilbyApi.Api
         /// <param name="playRandomClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>&gt;</returns>
-        Task<IPlayRandomClipApiResponse> PlayRandomClipAsync(long guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<IPlayRandomClipApiResponse> PlayRandomClipAsync(string guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Play Random Clip
@@ -433,7 +521,7 @@ namespace TrilbyApi.Api
         /// <param name="playRandomClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>?&gt;</returns>
-        Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(long guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(string guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Refresh Trilby Session
@@ -470,7 +558,7 @@ namespace TrilbyApi.Api
         /// <param name="clipTrigger"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRemoveTagClipApiResponse"/>&gt;</returns>
-        Task<IRemoveTagClipApiResponse> RemoveTagClipAsync(long guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default);
+        Task<IRemoveTagClipApiResponse> RemoveTagClipAsync(string guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Remove Tag Clip
@@ -483,7 +571,7 @@ namespace TrilbyApi.Api
         /// <param name="clipTrigger"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRemoveTagClipApiResponse"/>?&gt;</returns>
-        Task<IRemoveTagClipApiResponse?> RemoveTagClipOrDefaultAsync(long guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default);
+        Task<IRemoveTagClipApiResponse?> RemoveTagClipOrDefaultAsync(string guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Set Current Intro
@@ -496,7 +584,7 @@ namespace TrilbyApi.Api
         /// <param name="setCurrentIntroBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetCurrentIntroApiResponse"/>&gt;</returns>
-        Task<ISetCurrentIntroApiResponse> SetCurrentIntroAsync(long guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<ISetCurrentIntroApiResponse> SetCurrentIntroAsync(string guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Set Current Intro
@@ -508,7 +596,7 @@ namespace TrilbyApi.Api
         /// <param name="setCurrentIntroBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetCurrentIntroApiResponse"/>?&gt;</returns>
-        Task<ISetCurrentIntroApiResponse?> SetCurrentIntroOrDefaultAsync(long guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<ISetCurrentIntroApiResponse?> SetCurrentIntroOrDefaultAsync(string guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Set Shared Tag
@@ -521,7 +609,7 @@ namespace TrilbyApi.Api
         /// <param name="setSharedTagBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetSharedTagApiResponse"/>&gt;</returns>
-        Task<ISetSharedTagApiResponse> SetSharedTagAsync(long guildId, SetSharedTagBody setSharedTagBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<ISetSharedTagApiResponse> SetSharedTagAsync(string guildId, SetSharedTagBody setSharedTagBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Set Shared Tag
@@ -533,7 +621,7 @@ namespace TrilbyApi.Api
         /// <param name="setSharedTagBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetSharedTagApiResponse"/>?&gt;</returns>
-        Task<ISetSharedTagApiResponse?> SetSharedTagOrDefaultAsync(long guildId, SetSharedTagBody setSharedTagBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<ISetSharedTagApiResponse?> SetSharedTagOrDefaultAsync(string guildId, SetSharedTagBody setSharedTagBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Start Discord Auth
@@ -569,7 +657,7 @@ namespace TrilbyApi.Api
         /// <param name="stopClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IStopClipApiResponse"/>&gt;</returns>
-        Task<IStopClipApiResponse> StopClipAsync(long guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<IStopClipApiResponse> StopClipAsync(string guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Stop Clip
@@ -581,7 +669,7 @@ namespace TrilbyApi.Api
         /// <param name="stopClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IStopClipApiResponse"/>?&gt;</returns>
-        Task<IStopClipApiResponse?> StopClipOrDefaultAsync(long guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default);
+        Task<IStopClipApiResponse?> StopClipOrDefaultAsync(string guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Upload Log Bundle
@@ -752,15 +840,39 @@ namespace TrilbyApi.Api
     }
 
     /// <summary>
-    /// The <see cref="IGetClipBrowserPageClipBrowserGetApiResponse"/>
+    /// The <see cref="IGetClipAudioApiResponse"/>
     /// </summary>
-    public interface IGetClipBrowserPageClipBrowserGetApiResponse : TrilbyApi.Client.IApiResponse, IOk<string?>
+    public interface IGetClipAudioApiResponse : TrilbyApi.Client.IApiResponse, IOk<Object?>, IUnauthorized<TrilbyApi.Model.ApiErrorResponse?>, INotFound<TrilbyApi.Model.ApiErrorResponse?>, IInternalServerError<TrilbyApi.Model.ApiErrorResponse?>, IUnprocessableContent<TrilbyApi.Model.HTTPValidationError?>
     {
         /// <summary>
         /// Returns true if the response is 200 Ok
         /// </summary>
         /// <returns></returns>
         bool IsOk { get; }
+
+        /// <summary>
+        /// Returns true if the response is 401 Unauthorized
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnauthorized { get; }
+
+        /// <summary>
+        /// Returns true if the response is 404 NotFound
+        /// </summary>
+        /// <returns></returns>
+        bool IsNotFound { get; }
+
+        /// <summary>
+        /// Returns true if the response is 500 InternalServerError
+        /// </summary>
+        /// <returns></returns>
+        bool IsInternalServerError { get; }
+
+        /// <summary>
+        /// Returns true if the response is 422 UnprocessableContent
+        /// </summary>
+        /// <returns></returns>
+        bool IsUnprocessableContent { get; }
     }
 
     /// <summary>
@@ -803,6 +915,54 @@ namespace TrilbyApi.Api
         /// </summary>
         /// <returns></returns>
         bool IsUnprocessableContent { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse"/>
+    /// </summary>
+    public interface IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse : TrilbyApi.Client.IApiResponse
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse"/>
+    /// </summary>
+    public interface IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse : TrilbyApi.Client.IApiResponse
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse"/>
+    /// </summary>
+    public interface IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse : TrilbyApi.Client.IApiResponse
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
+    }
+
+    /// <summary>
+    /// The <see cref="IGetHaberdasheryPageHaberdasheryGetApiResponse"/>
+    /// </summary>
+    public interface IGetHaberdasheryPageHaberdasheryGetApiResponse : TrilbyApi.Client.IApiResponse, IOk<string?>
+    {
+        /// <summary>
+        /// Returns true if the response is 200 Ok
+        /// </summary>
+        /// <returns></returns>
+        bool IsOk { get; }
     }
 
     /// <summary>
@@ -1447,21 +1607,21 @@ namespace TrilbyApi.Api
         /// <summary>
         /// The event raised after the server response
         /// </summary>
-        public event EventHandler<ApiResponseEventArgs>? OnGetClipBrowserPageClipBrowserGet;
+        public event EventHandler<ApiResponseEventArgs>? OnGetClipAudio;
 
         /// <summary>
         /// The event raised after an error querying the server
         /// </summary>
-        public event EventHandler<ExceptionEventArgs>? OnErrorGetClipBrowserPageClipBrowserGet;
+        public event EventHandler<ExceptionEventArgs>? OnErrorGetClipAudio;
 
-        internal void ExecuteOnGetClipBrowserPageClipBrowserGet(DefaultApi.GetClipBrowserPageClipBrowserGetApiResponse apiResponse)
+        internal void ExecuteOnGetClipAudio(DefaultApi.GetClipAudioApiResponse apiResponse)
         {
-            OnGetClipBrowserPageClipBrowserGet?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+            OnGetClipAudio?.Invoke(this, new ApiResponseEventArgs(apiResponse));
         }
 
-        internal void ExecuteOnErrorGetClipBrowserPageClipBrowserGet(Exception exception)
+        internal void ExecuteOnErrorGetClipAudio(Exception exception)
         {
-            OnErrorGetClipBrowserPageClipBrowserGet?.Invoke(this, new ExceptionEventArgs(exception));
+            OnErrorGetClipAudio?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -1482,6 +1642,86 @@ namespace TrilbyApi.Api
         internal void ExecuteOnErrorGetCurrentIntro(Exception exception)
         {
             OnErrorGetCurrentIntro?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet;
+
+        internal void ExecuteOnGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet(DefaultApi.GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse apiResponse)
+        {
+            OnGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet(Exception exception)
+        {
+            OnErrorGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet;
+
+        internal void ExecuteOnGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet(DefaultApi.GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse apiResponse)
+        {
+            OnGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet(Exception exception)
+        {
+            OnErrorGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet;
+
+        internal void ExecuteOnGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet(DefaultApi.GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse apiResponse)
+        {
+            OnGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet(Exception exception)
+        {
+            OnErrorGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet?.Invoke(this, new ExceptionEventArgs(exception));
+        }
+
+        /// <summary>
+        /// The event raised after the server response
+        /// </summary>
+        public event EventHandler<ApiResponseEventArgs>? OnGetHaberdasheryPageHaberdasheryGet;
+
+        /// <summary>
+        /// The event raised after an error querying the server
+        /// </summary>
+        public event EventHandler<ExceptionEventArgs>? OnErrorGetHaberdasheryPageHaberdasheryGet;
+
+        internal void ExecuteOnGetHaberdasheryPageHaberdasheryGet(DefaultApi.GetHaberdasheryPageHaberdasheryGetApiResponse apiResponse)
+        {
+            OnGetHaberdasheryPageHaberdasheryGet?.Invoke(this, new ApiResponseEventArgs(apiResponse));
+        }
+
+        internal void ExecuteOnErrorGetHaberdasheryPageHaberdasheryGet(Exception exception)
+        {
+            OnErrorGetHaberdasheryPageHaberdasheryGet?.Invoke(this, new ExceptionEventArgs(exception));
         }
 
         /// <summary>
@@ -1852,16 +2092,20 @@ namespace TrilbyApi.Api
             BearerTokenProvider = bearerTokenProvider;
         }
 
-        partial void FormatAddTagClip(ref long guildId, ref string tagName, AddTagClipBody addTagClipBody);
+        partial void FormatAddTagClip(ref string guildId, ref string tagName, AddTagClipBody addTagClipBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
         /// <returns></returns>
-        private void ValidateAddTagClip(string tagName, AddTagClipBody addTagClipBody)
+        private void ValidateAddTagClip(string guildId, string tagName, AddTagClipBody addTagClipBody)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (tagName == null)
                 throw new ArgumentNullException(nameof(tagName));
 
@@ -1876,7 +2120,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
-        private void AfterAddTagClipDefaultImplementation(IAddTagClipApiResponse apiResponseLocalVar, long guildId, string tagName, AddTagClipBody addTagClipBody)
+        private void AfterAddTagClipDefaultImplementation(IAddTagClipApiResponse apiResponseLocalVar, string guildId, string tagName, AddTagClipBody addTagClipBody)
         {
             bool suppressDefaultLog = false;
             AfterAddTagClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, tagName, addTagClipBody);
@@ -1892,7 +2136,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
-        partial void AfterAddTagClip(ref bool suppressDefaultLog, IAddTagClipApiResponse apiResponseLocalVar, long guildId, string tagName, AddTagClipBody addTagClipBody);
+        partial void AfterAddTagClip(ref bool suppressDefaultLog, IAddTagClipApiResponse apiResponseLocalVar, string guildId, string tagName, AddTagClipBody addTagClipBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -1903,7 +2147,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
-        private void OnErrorAddTagClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, string tagName, AddTagClipBody addTagClipBody)
+        private void OnErrorAddTagClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, string tagName, AddTagClipBody addTagClipBody)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorAddTagClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, tagName, addTagClipBody);
@@ -1921,7 +2165,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="addTagClipBody"></param>
-        partial void OnErrorAddTagClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, string tagName, AddTagClipBody addTagClipBody);
+        partial void OnErrorAddTagClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, string tagName, AddTagClipBody addTagClipBody);
 
         /// <summary>
         /// Add Tag Clip 
@@ -1931,7 +2175,7 @@ namespace TrilbyApi.Api
         /// <param name="addTagClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>&gt;</returns>
-        public async Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(long guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IAddTagClipApiResponse?> AddTagClipOrDefaultAsync(string guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -1952,13 +2196,13 @@ namespace TrilbyApi.Api
         /// <param name="addTagClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IAddTagClipApiResponse"/>&gt;</returns>
-        public async Task<IAddTagClipApiResponse> AddTagClipAsync(long guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IAddTagClipApiResponse> AddTagClipAsync(string guildId, string tagName, AddTagClipBody addTagClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateAddTagClip(tagName, addTagClipBody);
+                ValidateAddTagClip(guildId, tagName, addTagClipBody);
 
                 FormatAddTagClip(ref guildId, ref tagName, addTagClipBody);
 
@@ -2612,16 +2856,20 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatCopyClip(ref long guildId, ref string clipTrigger, CopyClipBody copyClipBody);
+        partial void FormatCopyClip(ref string guildId, ref string clipTrigger, CopyClipBody copyClipBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="clipTrigger"></param>
         /// <param name="copyClipBody"></param>
         /// <returns></returns>
-        private void ValidateCopyClip(string clipTrigger, CopyClipBody copyClipBody)
+        private void ValidateCopyClip(string guildId, string clipTrigger, CopyClipBody copyClipBody)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (clipTrigger == null)
                 throw new ArgumentNullException(nameof(clipTrigger));
 
@@ -2636,7 +2884,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="clipTrigger"></param>
         /// <param name="copyClipBody"></param>
-        private void AfterCopyClipDefaultImplementation(ICopyClipApiResponse apiResponseLocalVar, long guildId, string clipTrigger, CopyClipBody copyClipBody)
+        private void AfterCopyClipDefaultImplementation(ICopyClipApiResponse apiResponseLocalVar, string guildId, string clipTrigger, CopyClipBody copyClipBody)
         {
             bool suppressDefaultLog = false;
             AfterCopyClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, clipTrigger, copyClipBody);
@@ -2652,7 +2900,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="clipTrigger"></param>
         /// <param name="copyClipBody"></param>
-        partial void AfterCopyClip(ref bool suppressDefaultLog, ICopyClipApiResponse apiResponseLocalVar, long guildId, string clipTrigger, CopyClipBody copyClipBody);
+        partial void AfterCopyClip(ref bool suppressDefaultLog, ICopyClipApiResponse apiResponseLocalVar, string guildId, string clipTrigger, CopyClipBody copyClipBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -2663,7 +2911,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="clipTrigger"></param>
         /// <param name="copyClipBody"></param>
-        private void OnErrorCopyClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, string clipTrigger, CopyClipBody copyClipBody)
+        private void OnErrorCopyClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, string clipTrigger, CopyClipBody copyClipBody)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorCopyClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, clipTrigger, copyClipBody);
@@ -2681,7 +2929,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="clipTrigger"></param>
         /// <param name="copyClipBody"></param>
-        partial void OnErrorCopyClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, string clipTrigger, CopyClipBody copyClipBody);
+        partial void OnErrorCopyClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, string clipTrigger, CopyClipBody copyClipBody);
 
         /// <summary>
         /// Copy Clip 
@@ -2691,7 +2939,7 @@ namespace TrilbyApi.Api
         /// <param name="copyClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ICopyClipApiResponse"/>&gt;</returns>
-        public async Task<ICopyClipApiResponse?> CopyClipOrDefaultAsync(long guildId, string clipTrigger, CopyClipBody copyClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<ICopyClipApiResponse?> CopyClipOrDefaultAsync(string guildId, string clipTrigger, CopyClipBody copyClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -2712,13 +2960,13 @@ namespace TrilbyApi.Api
         /// <param name="copyClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ICopyClipApiResponse"/>&gt;</returns>
-        public async Task<ICopyClipApiResponse> CopyClipAsync(long guildId, string clipTrigger, CopyClipBody copyClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<ICopyClipApiResponse> CopyClipAsync(string guildId, string clipTrigger, CopyClipBody copyClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateCopyClip(clipTrigger, copyClipBody);
+                ValidateCopyClip(guildId, clipTrigger, copyClipBody);
 
                 FormatCopyClip(ref guildId, ref clipTrigger, copyClipBody);
 
@@ -3695,14 +3943,33 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
+        partial void FormatGetClipAudio(ref string guildId, ref string clipTrigger);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="guildId"></param>
+        /// <param name="clipTrigger"></param>
+        /// <returns></returns>
+        private void ValidateGetClipAudio(string guildId, string clipTrigger)
+        {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
+            if (clipTrigger == null)
+                throw new ArgumentNullException(nameof(clipTrigger));
+        }
+
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
-        private void AfterGetClipBrowserPageClipBrowserGetDefaultImplementation(IGetClipBrowserPageClipBrowserGetApiResponse apiResponseLocalVar)
+        /// <param name="guildId"></param>
+        /// <param name="clipTrigger"></param>
+        private void AfterGetClipAudioDefaultImplementation(IGetClipAudioApiResponse apiResponseLocalVar, string guildId, string clipTrigger)
         {
             bool suppressDefaultLog = false;
-            AfterGetClipBrowserPageClipBrowserGet(ref suppressDefaultLog, apiResponseLocalVar);
+            AfterGetClipAudio(ref suppressDefaultLog, apiResponseLocalVar, guildId, clipTrigger);
             if (!suppressDefaultLog)
                 Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
         }
@@ -3712,7 +3979,9 @@ namespace TrilbyApi.Api
         /// </summary>
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
-        partial void AfterGetClipBrowserPageClipBrowserGet(ref bool suppressDefaultLog, IGetClipBrowserPageClipBrowserGetApiResponse apiResponseLocalVar);
+        /// <param name="guildId"></param>
+        /// <param name="clipTrigger"></param>
+        partial void AfterGetClipAudio(ref bool suppressDefaultLog, IGetClipAudioApiResponse apiResponseLocalVar, string guildId, string clipTrigger);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -3720,10 +3989,12 @@ namespace TrilbyApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        private void OnErrorGetClipBrowserPageClipBrowserGetDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar)
+        /// <param name="guildId"></param>
+        /// <param name="clipTrigger"></param>
+        private void OnErrorGetClipAudioDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, string clipTrigger)
         {
             bool suppressDefaultLogLocalVar = false;
-            OnErrorGetClipBrowserPageClipBrowserGet(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
+            OnErrorGetClipAudio(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, clipTrigger);
             if (!suppressDefaultLogLocalVar)
                 Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
         }
@@ -3735,18 +4006,22 @@ namespace TrilbyApi.Api
         /// <param name="exceptionLocalVar"></param>
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
-        partial void OnErrorGetClipBrowserPageClipBrowserGet(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar);
+        /// <param name="guildId"></param>
+        /// <param name="clipTrigger"></param>
+        partial void OnErrorGetClipAudio(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, string clipTrigger);
 
         /// <summary>
-        /// Get Clip Browser Page 
+        /// Get Clip Audio 
         /// </summary>
+        /// <param name="guildId"></param>
+        /// <param name="clipTrigger"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns><see cref="Task"/>&lt;<see cref="IGetClipBrowserPageClipBrowserGetApiResponse"/>&gt;</returns>
-        public async Task<IGetClipBrowserPageClipBrowserGetApiResponse?> GetClipBrowserPageClipBrowserGetOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default)
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetClipAudioApiResponse"/>&gt;</returns>
+        public async Task<IGetClipAudioApiResponse?> GetClipAudioOrDefaultAsync(string guildId, string clipTrigger, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
-                return await GetClipBrowserPageClipBrowserGetAsync(cancellationToken).ConfigureAwait(false);
+                return await GetClipAudioAsync(guildId, clipTrigger, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -3755,30 +4030,45 @@ namespace TrilbyApi.Api
         }
 
         /// <summary>
-        /// Get Clip Browser Page 
+        /// Get Clip Audio 
         /// </summary>
         /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="guildId"></param>
+        /// <param name="clipTrigger"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
-        /// <returns><see cref="Task"/>&lt;<see cref="IGetClipBrowserPageClipBrowserGetApiResponse"/>&gt;</returns>
-        public async Task<IGetClipBrowserPageClipBrowserGetApiResponse> GetClipBrowserPageClipBrowserGetAsync(System.Threading.CancellationToken cancellationToken = default)
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetClipAudioApiResponse"/>&gt;</returns>
+        public async Task<IGetClipAudioApiResponse> GetClipAudioAsync(string guildId, string clipTrigger, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
+                ValidateGetClipAudio(guildId, clipTrigger);
+
+                FormatGetClipAudio(ref guildId, ref clipTrigger);
+
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
                 {
                     uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
                     uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
                     uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
                     uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
-                        ? "/clip-browser"
-                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/clip-browser");
+                        ? "/v1/guilds/{guild_id}/clips/{clip_trigger}/audio"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/v1/guilds/{guild_id}/clips/{clip_trigger}/audio");
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bguild_id%7D", Uri.EscapeDataString(guildId.ToString()));
+                    uriBuilderLocalVar.Path = uriBuilderLocalVar.Path.Replace("%7Bclip_trigger%7D", Uri.EscapeDataString(clipTrigger.ToString()));
 
+                    List<TokenBase> tokenBaseLocalVars = new List<TokenBase>();
                     httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
 
+                    BearerToken bearerTokenLocalVar1 = (BearerToken) await BearerTokenProvider.GetAsync(cancellation: cancellationToken).ConfigureAwait(false);
+
+                    tokenBaseLocalVars.Add(bearerTokenLocalVar1);
+
+                    bearerTokenLocalVar1.UseInHeader(httpRequestMessageLocalVar, "");
+
                     string[] acceptLocalVars = new string[] {
-                        "text/html"
+                        "application/json"
                     };
 
                     IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
@@ -3792,21 +4082,25 @@ namespace TrilbyApi.Api
 
                     using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
                     {
-                        ILogger<GetClipBrowserPageClipBrowserGetApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetClipBrowserPageClipBrowserGetApiResponse>();
-                        GetClipBrowserPageClipBrowserGetApiResponse apiResponseLocalVar;
+                        ILogger<GetClipAudioApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetClipAudioApiResponse>();
+                        GetClipAudioApiResponse apiResponseLocalVar;
 
                         switch ((int)httpResponseMessageLocalVar.StatusCode) {
                             default: {
                                 string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/clip-browser", requestedAtLocalVar, _jsonSerializerOptions);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/v1/guilds/{guild_id}/clips/{clip_trigger}/audio", requestedAtLocalVar, _jsonSerializerOptions);
 
                                 break;
                             }
                         }
 
-                        AfterGetClipBrowserPageClipBrowserGetDefaultImplementation(apiResponseLocalVar);
+                        AfterGetClipAudioDefaultImplementation(apiResponseLocalVar, guildId, clipTrigger);
 
-                        Events.ExecuteOnGetClipBrowserPageClipBrowserGet(apiResponseLocalVar);
+                        Events.ExecuteOnGetClipAudio(apiResponseLocalVar);
+
+                        if (apiResponseLocalVar.StatusCode == (HttpStatusCode) 429)
+                            foreach(TokenBase tokenBaseLocalVar in tokenBaseLocalVars)
+                                tokenBaseLocalVar.BeginRateLimit();
 
                         return apiResponseLocalVar;
                     }
@@ -3814,24 +4108,24 @@ namespace TrilbyApi.Api
             }
             catch(Exception e)
             {
-                OnErrorGetClipBrowserPageClipBrowserGetDefaultImplementation(e, "/clip-browser", uriBuilderLocalVar.Path);
-                Events.ExecuteOnErrorGetClipBrowserPageClipBrowserGet(e);
+                OnErrorGetClipAudioDefaultImplementation(e, "/v1/guilds/{guild_id}/clips/{clip_trigger}/audio", uriBuilderLocalVar.Path, guildId, clipTrigger);
+                Events.ExecuteOnErrorGetClipAudio(e);
                 throw;
             }
         }
 
         /// <summary>
-        /// The <see cref="GetClipBrowserPageClipBrowserGetApiResponse"/>
+        /// The <see cref="GetClipAudioApiResponse"/>
         /// </summary>
-        public partial class GetClipBrowserPageClipBrowserGetApiResponse : TrilbyApi.Client.ApiResponse, IGetClipBrowserPageClipBrowserGetApiResponse
+        public partial class GetClipAudioApiResponse : TrilbyApi.Client.ApiResponse, IGetClipAudioApiResponse
         {
             /// <summary>
             /// The logger
             /// </summary>
-            public ILogger<GetClipBrowserPageClipBrowserGetApiResponse> Logger { get; }
+            public ILogger<GetClipAudioApiResponse> Logger { get; }
 
             /// <summary>
-            /// The <see cref="GetClipBrowserPageClipBrowserGetApiResponse"/>
+            /// The <see cref="GetClipAudioApiResponse"/>
             /// </summary>
             /// <param name="logger"></param>
             /// <param name="httpRequestMessage"></param>
@@ -3840,14 +4134,14 @@ namespace TrilbyApi.Api
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public GetClipBrowserPageClipBrowserGetApiResponse(ILogger<GetClipBrowserPageClipBrowserGetApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            public GetClipAudioApiResponse(ILogger<GetClipAudioApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
             }
 
             /// <summary>
-            /// The <see cref="GetClipBrowserPageClipBrowserGetApiResponse"/>
+            /// The <see cref="GetClipAudioApiResponse"/>
             /// </summary>
             /// <param name="logger"></param>
             /// <param name="httpRequestMessage"></param>
@@ -3856,7 +4150,7 @@ namespace TrilbyApi.Api
             /// <param name="path"></param>
             /// <param name="requestedAt"></param>
             /// <param name="jsonSerializerOptions"></param>
-            public GetClipBrowserPageClipBrowserGetApiResponse(ILogger<GetClipBrowserPageClipBrowserGetApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            public GetClipAudioApiResponse(ILogger<GetClipAudioApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
             {
                 Logger = logger;
                 OnCreated(httpRequestMessage, httpResponseMessage);
@@ -3874,11 +4168,11 @@ namespace TrilbyApi.Api
             /// Deserializes the response if the response is 200 Ok
             /// </summary>
             /// <returns></returns>
-            public string? Ok()
+            public Object? Ok()
             {
                 // This logic may be modified with the AsModel.mustache template
                 return IsOk
-                    ? System.Text.Json.JsonSerializer.Deserialize<string>(RawContent, _jsonSerializerOptions)
+                    ? System.Text.Json.JsonSerializer.Deserialize<Object>(RawContent, _jsonSerializerOptions)
                     : null;
             }
 
@@ -3887,7 +4181,7 @@ namespace TrilbyApi.Api
             /// </summary>
             /// <param name="result"></param>
             /// <returns></returns>
-            public bool TryOk([NotNullWhen(true)]out string? result)
+            public bool TryOk([NotNullWhen(true)]out Object? result)
             {
                 result = null;
 
@@ -3897,6 +4191,158 @@ namespace TrilbyApi.Api
                 } catch (Exception e)
                 {
                     OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnauthorized => 401 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 401 Unauthorized
+            /// </summary>
+            /// <returns></returns>
+            public TrilbyApi.Model.ApiErrorResponse? Unauthorized()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnauthorized
+                    ? System.Text.Json.JsonSerializer.Deserialize<TrilbyApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 401 Unauthorized and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnauthorized([NotNullWhen(true)]out TrilbyApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Unauthorized();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)401);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public bool IsNotFound => 404 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 404 NotFound
+            /// </summary>
+            /// <returns></returns>
+            public TrilbyApi.Model.ApiErrorResponse? NotFound()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsNotFound
+                    ? System.Text.Json.JsonSerializer.Deserialize<TrilbyApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 404 NotFound and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryNotFound([NotNullWhen(true)]out TrilbyApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = NotFound();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)404);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public bool IsInternalServerError => 500 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 500 InternalServerError
+            /// </summary>
+            /// <returns></returns>
+            public TrilbyApi.Model.ApiErrorResponse? InternalServerError()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsInternalServerError
+                    ? System.Text.Json.JsonSerializer.Deserialize<TrilbyApi.Model.ApiErrorResponse>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 500 InternalServerError and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryInternalServerError([NotNullWhen(true)]out TrilbyApi.Model.ApiErrorResponse? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = InternalServerError();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)500);
+                }
+
+                return result != null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public bool IsUnprocessableContent => 422 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 422 UnprocessableContent
+            /// </summary>
+            /// <returns></returns>
+            public TrilbyApi.Model.HTTPValidationError? UnprocessableContent()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsUnprocessableContent
+                    ? System.Text.Json.JsonSerializer.Deserialize<TrilbyApi.Model.HTTPValidationError>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 422 UnprocessableContent and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryUnprocessableContent([NotNullWhen(true)]out TrilbyApi.Model.HTTPValidationError? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = UnprocessableContent();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)422);
                 }
 
                 return result != null;
@@ -3913,14 +4359,25 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetCurrentIntro(ref long guildId);
+        partial void FormatGetCurrentIntro(ref string guildId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="guildId"></param>
+        /// <returns></returns>
+        private void ValidateGetCurrentIntro(string guildId)
+        {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+        }
 
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
-        private void AfterGetCurrentIntroDefaultImplementation(IGetCurrentIntroApiResponse apiResponseLocalVar, long guildId)
+        private void AfterGetCurrentIntroDefaultImplementation(IGetCurrentIntroApiResponse apiResponseLocalVar, string guildId)
         {
             bool suppressDefaultLog = false;
             AfterGetCurrentIntro(ref suppressDefaultLog, apiResponseLocalVar, guildId);
@@ -3934,7 +4391,7 @@ namespace TrilbyApi.Api
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
-        partial void AfterGetCurrentIntro(ref bool suppressDefaultLog, IGetCurrentIntroApiResponse apiResponseLocalVar, long guildId);
+        partial void AfterGetCurrentIntro(ref bool suppressDefaultLog, IGetCurrentIntroApiResponse apiResponseLocalVar, string guildId);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -3943,7 +4400,7 @@ namespace TrilbyApi.Api
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
-        private void OnErrorGetCurrentIntroDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId)
+        private void OnErrorGetCurrentIntroDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorGetCurrentIntro(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId);
@@ -3959,7 +4416,7 @@ namespace TrilbyApi.Api
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
-        partial void OnErrorGetCurrentIntro(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId);
+        partial void OnErrorGetCurrentIntro(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId);
 
         /// <summary>
         /// Get Current Intro 
@@ -3967,7 +4424,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>&gt;</returns>
-        public async Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(long guildId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetCurrentIntroApiResponse?> GetCurrentIntroOrDefaultAsync(string guildId, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -3986,12 +4443,14 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetCurrentIntroApiResponse"/>&gt;</returns>
-        public async Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(long guildId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetCurrentIntroApiResponse> GetCurrentIntroAsync(string guildId, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
+                ValidateGetCurrentIntro(guildId);
+
                 FormatGetCurrentIntro(ref guildId);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
@@ -4347,6 +4806,755 @@ namespace TrilbyApi.Api
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
+        private void AfterGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetDefaultImplementation(IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse apiResponseLocalVar)
+        {
+            bool suppressDefaultLog = false;
+            AfterGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet(ref suppressDefaultLog, apiResponseLocalVar);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        partial void AfterGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet(ref bool suppressDefaultLog, IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse apiResponseLocalVar);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        private void OnErrorGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        partial void OnErrorGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar);
+
+        /// <summary>
+        /// Get Haberdashery Bundle Js 
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse"/>&gt;</returns>
+        public async Task<IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse?> GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get Haberdashery Bundle Js 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse"/>&gt;</returns>
+        public async Task<IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse> GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/haberdashery/static/dist/haberdashery.bundle.js"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/haberdashery/static/dist/haberdashery.bundle.js");
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse>();
+                        GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/haberdashery/static/dist/haberdashery.bundle.js", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetDefaultImplementation(apiResponseLocalVar);
+
+                        Events.ExecuteOnGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet(apiResponseLocalVar);
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetDefaultImplementation(e, "/haberdashery/static/dist/haberdashery.bundle.js", uriBuilderLocalVar.Path);
+                Events.ExecuteOnErrorGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGet(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse"/>
+        /// </summary>
+        public partial class GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse : TrilbyApi.Client.ApiResponse, IGetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse(ILogger<GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse(ILogger<GetHaberdasheryBundleJsHaberdasheryStaticDistHaberdasheryBundleJsGetApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        private void AfterGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetDefaultImplementation(IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse apiResponseLocalVar)
+        {
+            bool suppressDefaultLog = false;
+            AfterGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet(ref suppressDefaultLog, apiResponseLocalVar);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        partial void AfterGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet(ref bool suppressDefaultLog, IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse apiResponseLocalVar);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        private void OnErrorGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        partial void OnErrorGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar);
+
+        /// <summary>
+        /// Get Haberdashery Css 
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse"/>&gt;</returns>
+        public async Task<IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse?> GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get Haberdashery Css 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse"/>&gt;</returns>
+        public async Task<IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse> GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/haberdashery/static/haberdashery.css"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/haberdashery/static/haberdashery.css");
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse>();
+                        GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/haberdashery/static/haberdashery.css", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetDefaultImplementation(apiResponseLocalVar);
+
+                        Events.ExecuteOnGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet(apiResponseLocalVar);
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetDefaultImplementation(e, "/haberdashery/static/haberdashery.css", uriBuilderLocalVar.Path);
+                Events.ExecuteOnErrorGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGet(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse"/>
+        /// </summary>
+        public partial class GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse : TrilbyApi.Client.ApiResponse, IGetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse(ILogger<GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse(ILogger<GetHaberdasheryCssHaberdasheryStaticHaberdasheryCssGetApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        private void AfterGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetDefaultImplementation(IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse apiResponseLocalVar)
+        {
+            bool suppressDefaultLog = false;
+            AfterGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet(ref suppressDefaultLog, apiResponseLocalVar);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        partial void AfterGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet(ref bool suppressDefaultLog, IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse apiResponseLocalVar);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        private void OnErrorGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        partial void OnErrorGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar);
+
+        /// <summary>
+        /// Get Haberdashery Js 
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse"/>&gt;</returns>
+        public async Task<IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse?> GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get Haberdashery Js 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse"/>&gt;</returns>
+        public async Task<IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse> GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/haberdashery/static/haberdashery.js"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/haberdashery/static/haberdashery.js");
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse>();
+                        GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/haberdashery/static/haberdashery.js", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetDefaultImplementation(apiResponseLocalVar);
+
+                        Events.ExecuteOnGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet(apiResponseLocalVar);
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetDefaultImplementation(e, "/haberdashery/static/haberdashery.js", uriBuilderLocalVar.Path);
+                Events.ExecuteOnErrorGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGet(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse"/>
+        /// </summary>
+        public partial class GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse : TrilbyApi.Client.ApiResponse, IGetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse(ILogger<GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse(ILogger<GetHaberdasheryJsHaberdasheryStaticHaberdasheryJsGetApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
+        private void AfterGetHaberdasheryPageHaberdasheryGetDefaultImplementation(IGetHaberdasheryPageHaberdasheryGetApiResponse apiResponseLocalVar)
+        {
+            bool suppressDefaultLog = false;
+            AfterGetHaberdasheryPageHaberdasheryGet(ref suppressDefaultLog, apiResponseLocalVar);
+            if (!suppressDefaultLog)
+                Logger.LogInformation("{0,-9} | {1} | {2}", (apiResponseLocalVar.DownloadedAt - apiResponseLocalVar.RequestedAt).TotalSeconds, apiResponseLocalVar.StatusCode, apiResponseLocalVar.Path);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="suppressDefaultLog"></param>
+        /// <param name="apiResponseLocalVar"></param>
+        partial void AfterGetHaberdasheryPageHaberdasheryGet(ref bool suppressDefaultLog, IGetHaberdasheryPageHaberdasheryGetApiResponse apiResponseLocalVar);
+
+        /// <summary>
+        /// Logs exceptions that occur while retrieving the server response
+        /// </summary>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        private void OnErrorGetHaberdasheryPageHaberdasheryGetDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar)
+        {
+            bool suppressDefaultLogLocalVar = false;
+            OnErrorGetHaberdasheryPageHaberdasheryGet(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar);
+            if (!suppressDefaultLogLocalVar)
+                Logger.LogError(exceptionLocalVar, "An error occurred while sending the request to the server.");
+        }
+
+        /// <summary>
+        /// A partial method that gives developers a way to provide customized exception handling
+        /// </summary>
+        /// <param name="suppressDefaultLogLocalVar"></param>
+        /// <param name="exceptionLocalVar"></param>
+        /// <param name="pathFormatLocalVar"></param>
+        /// <param name="pathLocalVar"></param>
+        partial void OnErrorGetHaberdasheryPageHaberdasheryGet(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar);
+
+        /// <summary>
+        /// Get Haberdashery Page 
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryPageHaberdasheryGetApiResponse"/>&gt;</returns>
+        public async Task<IGetHaberdasheryPageHaberdasheryGetApiResponse?> GetHaberdasheryPageHaberdasheryGetOrDefaultAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return await GetHaberdasheryPageHaberdasheryGetAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get Haberdashery Page 
+        /// </summary>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
+        /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
+        /// <returns><see cref="Task"/>&lt;<see cref="IGetHaberdasheryPageHaberdasheryGetApiResponse"/>&gt;</returns>
+        public async Task<IGetHaberdasheryPageHaberdasheryGetApiResponse> GetHaberdasheryPageHaberdasheryGetAsync(System.Threading.CancellationToken cancellationToken = default)
+        {
+            UriBuilder uriBuilderLocalVar = new UriBuilder();
+
+            try
+            {
+                using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
+                {
+                    uriBuilderLocalVar.Host = HttpClient.BaseAddress!.Host;
+                    uriBuilderLocalVar.Port = HttpClient.BaseAddress.Port;
+                    uriBuilderLocalVar.Scheme = HttpClient.BaseAddress.Scheme;
+                    uriBuilderLocalVar.Path = HttpClient.BaseAddress.AbsolutePath == "/"
+                        ? "/haberdashery"
+                        : string.Concat(HttpClient.BaseAddress.AbsolutePath, "/haberdashery");
+
+                    httpRequestMessageLocalVar.RequestUri = uriBuilderLocalVar.Uri;
+
+                    string[] acceptLocalVars = new string[] {
+                        "text/html"
+                    };
+
+                    IEnumerable<MediaTypeWithQualityHeaderValue> acceptHeaderValuesLocalVar = ClientUtils.SelectHeaderAcceptArray(acceptLocalVars);
+
+                    foreach (var acceptLocalVar in acceptHeaderValuesLocalVar)
+                        httpRequestMessageLocalVar.Headers.Accept.Add(acceptLocalVar);
+
+                    httpRequestMessageLocalVar.Method = HttpMethod.Get;
+
+                    DateTime requestedAtLocalVar = DateTime.UtcNow;
+
+                    using (HttpResponseMessage httpResponseMessageLocalVar = await HttpClient.SendAsync(httpRequestMessageLocalVar, cancellationToken).ConfigureAwait(false))
+                    {
+                        ILogger<GetHaberdasheryPageHaberdasheryGetApiResponse> apiResponseLoggerLocalVar = LoggerFactory.CreateLogger<GetHaberdasheryPageHaberdasheryGetApiResponse>();
+                        GetHaberdasheryPageHaberdasheryGetApiResponse apiResponseLocalVar;
+
+                        switch ((int)httpResponseMessageLocalVar.StatusCode) {
+                            default: {
+                                string responseContentLocalVar = await httpResponseMessageLocalVar.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                                apiResponseLocalVar = new(apiResponseLoggerLocalVar, httpRequestMessageLocalVar, httpResponseMessageLocalVar, responseContentLocalVar, "/haberdashery", requestedAtLocalVar, _jsonSerializerOptions);
+
+                                break;
+                            }
+                        }
+
+                        AfterGetHaberdasheryPageHaberdasheryGetDefaultImplementation(apiResponseLocalVar);
+
+                        Events.ExecuteOnGetHaberdasheryPageHaberdasheryGet(apiResponseLocalVar);
+
+                        return apiResponseLocalVar;
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                OnErrorGetHaberdasheryPageHaberdasheryGetDefaultImplementation(e, "/haberdashery", uriBuilderLocalVar.Path);
+                Events.ExecuteOnErrorGetHaberdasheryPageHaberdasheryGet(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="GetHaberdasheryPageHaberdasheryGetApiResponse"/>
+        /// </summary>
+        public partial class GetHaberdasheryPageHaberdasheryGetApiResponse : TrilbyApi.Client.ApiResponse, IGetHaberdasheryPageHaberdasheryGetApiResponse
+        {
+            /// <summary>
+            /// The logger
+            /// </summary>
+            public ILogger<GetHaberdasheryPageHaberdasheryGetApiResponse> Logger { get; }
+
+            /// <summary>
+            /// The <see cref="GetHaberdasheryPageHaberdasheryGetApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="rawContent"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetHaberdasheryPageHaberdasheryGetApiResponse(ILogger<GetHaberdasheryPageHaberdasheryGetApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, string rawContent, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, rawContent, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            /// <summary>
+            /// The <see cref="GetHaberdasheryPageHaberdasheryGetApiResponse"/>
+            /// </summary>
+            /// <param name="logger"></param>
+            /// <param name="httpRequestMessage"></param>
+            /// <param name="httpResponseMessage"></param>
+            /// <param name="contentStream"></param>
+            /// <param name="path"></param>
+            /// <param name="requestedAt"></param>
+            /// <param name="jsonSerializerOptions"></param>
+            public GetHaberdasheryPageHaberdasheryGetApiResponse(ILogger<GetHaberdasheryPageHaberdasheryGetApiResponse> logger, System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage, System.IO.Stream contentStream, string path, DateTime requestedAt, System.Text.Json.JsonSerializerOptions jsonSerializerOptions) : base(httpRequestMessage, httpResponseMessage, contentStream, path, requestedAt, jsonSerializerOptions)
+            {
+                Logger = logger;
+                OnCreated(httpRequestMessage, httpResponseMessage);
+            }
+
+            partial void OnCreated(global::System.Net.Http.HttpRequestMessage httpRequestMessage, System.Net.Http.HttpResponseMessage httpResponseMessage);
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public bool IsOk => 200 == (int)StatusCode;
+
+            /// <summary>
+            /// Deserializes the response if the response is 200 Ok
+            /// </summary>
+            /// <returns></returns>
+            public string? Ok()
+            {
+                // This logic may be modified with the AsModel.mustache template
+                return IsOk
+                    ? System.Text.Json.JsonSerializer.Deserialize<string>(RawContent, _jsonSerializerOptions)
+                    : null;
+            }
+
+            /// <summary>
+            /// Returns true if the response is 200 Ok and the deserialized response is not null
+            /// </summary>
+            /// <param name="result"></param>
+            /// <returns></returns>
+            public bool TryOk([NotNullWhen(true)]out string? result)
+            {
+                result = null;
+
+                try
+                {
+                    result = Ok();
+                } catch (Exception e)
+                {
+                    OnDeserializationErrorDefaultImplementation(e, (HttpStatusCode)200);
+                }
+
+                return result != null;
+            }
+
+            private void OnDeserializationErrorDefaultImplementation(Exception exception, HttpStatusCode httpStatusCode)
+            {
+                bool suppressDefaultLog = false;
+                OnDeserializationError(ref suppressDefaultLog, exception, httpStatusCode);
+                if (!suppressDefaultLog)
+                    Logger.LogError(exception, "An error occurred while deserializing the {code} response.", httpStatusCode);
+            }
+
+            partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
+        }
+
+        /// <summary>
+        /// Processes the server response
+        /// </summary>
+        /// <param name="apiResponseLocalVar"></param>
         private void AfterGetHealthDefaultImplementation(IGetHealthApiResponse apiResponseLocalVar)
         {
             bool suppressDefaultLog = false;
@@ -4561,15 +5769,19 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetRecentClipStats(ref long guildId, ref Option<string> scope, ref Option<int> limit, ref Option<bool> includeRandom);
+        partial void FormatGetRecentClipStats(ref string guildId, ref Option<string> scope, ref Option<int> limit, ref Option<bool> includeRandom);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private void ValidateGetRecentClipStats(Option<string> scope)
+        private void ValidateGetRecentClipStats(string guildId, Option<string> scope)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (scope.IsSet && scope.Value == null)
                 throw new ArgumentNullException(nameof(scope));
         }
@@ -4582,7 +5794,7 @@ namespace TrilbyApi.Api
         /// <param name="scope"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void AfterGetRecentClipStatsDefaultImplementation(IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom)
+        private void AfterGetRecentClipStatsDefaultImplementation(IGetRecentClipStatsApiResponse apiResponseLocalVar, string guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLog = false;
             AfterGetRecentClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, scope, limit, includeRandom);
@@ -4599,7 +5811,7 @@ namespace TrilbyApi.Api
         /// <param name="scope"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void AfterGetRecentClipStats(ref bool suppressDefaultLog, IGetRecentClipStatsApiResponse apiResponseLocalVar, long guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom);
+        partial void AfterGetRecentClipStats(ref bool suppressDefaultLog, IGetRecentClipStatsApiResponse apiResponseLocalVar, string guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -4611,7 +5823,7 @@ namespace TrilbyApi.Api
         /// <param name="scope"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void OnErrorGetRecentClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom)
+        private void OnErrorGetRecentClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorGetRecentClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, scope, limit, includeRandom);
@@ -4630,7 +5842,7 @@ namespace TrilbyApi.Api
         /// <param name="scope"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void OnErrorGetRecentClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom);
+        partial void OnErrorGetRecentClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, Option<string> scope, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Recent Clip Stats 
@@ -4641,7 +5853,7 @@ namespace TrilbyApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(long guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetRecentClipStatsApiResponse?> GetRecentClipStatsOrDefaultAsync(string guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -4663,13 +5875,13 @@ namespace TrilbyApi.Api
         /// <param name="includeRandom"> (optional, default to true)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetRecentClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(long guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetRecentClipStatsApiResponse> GetRecentClipStatsAsync(string guildId, Option<string> scope = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateGetRecentClipStats(scope);
+                ValidateGetRecentClipStats(guildId, scope);
 
                 FormatGetRecentClipStats(ref guildId, ref scope, ref limit, ref includeRandom);
 
@@ -4959,14 +6171,25 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetSharedTag(ref long guildId);
+        partial void FormatGetSharedTag(ref string guildId);
+
+        /// <summary>
+        /// Validates the request parameters
+        /// </summary>
+        /// <param name="guildId"></param>
+        /// <returns></returns>
+        private void ValidateGetSharedTag(string guildId)
+        {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+        }
 
         /// <summary>
         /// Processes the server response
         /// </summary>
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
-        private void AfterGetSharedTagDefaultImplementation(IGetSharedTagApiResponse apiResponseLocalVar, long guildId)
+        private void AfterGetSharedTagDefaultImplementation(IGetSharedTagApiResponse apiResponseLocalVar, string guildId)
         {
             bool suppressDefaultLog = false;
             AfterGetSharedTag(ref suppressDefaultLog, apiResponseLocalVar, guildId);
@@ -4980,7 +6203,7 @@ namespace TrilbyApi.Api
         /// <param name="suppressDefaultLog"></param>
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
-        partial void AfterGetSharedTag(ref bool suppressDefaultLog, IGetSharedTagApiResponse apiResponseLocalVar, long guildId);
+        partial void AfterGetSharedTag(ref bool suppressDefaultLog, IGetSharedTagApiResponse apiResponseLocalVar, string guildId);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -4989,7 +6212,7 @@ namespace TrilbyApi.Api
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
-        private void OnErrorGetSharedTagDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId)
+        private void OnErrorGetSharedTagDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorGetSharedTag(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId);
@@ -5005,7 +6228,7 @@ namespace TrilbyApi.Api
         /// <param name="pathFormatLocalVar"></param>
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
-        partial void OnErrorGetSharedTag(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId);
+        partial void OnErrorGetSharedTag(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId);
 
         /// <summary>
         /// Get Shared Tag 
@@ -5013,7 +6236,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetSharedTagApiResponse"/>&gt;</returns>
-        public async Task<IGetSharedTagApiResponse?> GetSharedTagOrDefaultAsync(long guildId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetSharedTagApiResponse?> GetSharedTagOrDefaultAsync(string guildId, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -5032,12 +6255,14 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetSharedTagApiResponse"/>&gt;</returns>
-        public async Task<IGetSharedTagApiResponse> GetSharedTagAsync(long guildId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetSharedTagApiResponse> GetSharedTagAsync(string guildId, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
+                ValidateGetSharedTag(guildId);
+
                 FormatGetSharedTag(ref guildId);
 
                 using (HttpRequestMessage httpRequestMessageLocalVar = new HttpRequestMessage())
@@ -5313,16 +6538,20 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatGetTopClipStats(ref long guildId, ref Option<string> scope, ref Option<string> days, ref Option<int> limit, ref Option<bool> includeRandom);
+        partial void FormatGetTopClipStats(ref string guildId, ref Option<string> scope, ref Option<string> days, ref Option<int> limit, ref Option<bool> includeRandom);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="scope"></param>
         /// <param name="days"></param>
         /// <returns></returns>
-        private void ValidateGetTopClipStats(Option<string> scope, Option<string> days)
+        private void ValidateGetTopClipStats(string guildId, Option<string> scope, Option<string> days)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (scope.IsSet && scope.Value == null)
                 throw new ArgumentNullException(nameof(scope));
 
@@ -5339,7 +6568,7 @@ namespace TrilbyApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void AfterGetTopClipStatsDefaultImplementation(IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom)
+        private void AfterGetTopClipStatsDefaultImplementation(IGetTopClipStatsApiResponse apiResponseLocalVar, string guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLog = false;
             AfterGetTopClipStats(ref suppressDefaultLog, apiResponseLocalVar, guildId, scope, days, limit, includeRandom);
@@ -5357,7 +6586,7 @@ namespace TrilbyApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void AfterGetTopClipStats(ref bool suppressDefaultLog, IGetTopClipStatsApiResponse apiResponseLocalVar, long guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom);
+        partial void AfterGetTopClipStats(ref bool suppressDefaultLog, IGetTopClipStatsApiResponse apiResponseLocalVar, string guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -5370,7 +6599,7 @@ namespace TrilbyApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        private void OnErrorGetTopClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom)
+        private void OnErrorGetTopClipStatsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorGetTopClipStats(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, scope, days, limit, includeRandom);
@@ -5390,7 +6619,7 @@ namespace TrilbyApi.Api
         /// <param name="days"></param>
         /// <param name="limit"></param>
         /// <param name="includeRandom"></param>
-        partial void OnErrorGetTopClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom);
+        partial void OnErrorGetTopClipStats(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, Option<string> scope, Option<string> days, Option<int> limit, Option<bool> includeRandom);
 
         /// <summary>
         /// Top Clip Stats 
@@ -5402,7 +6631,7 @@ namespace TrilbyApi.Api
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(long guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetTopClipStatsApiResponse?> GetTopClipStatsOrDefaultAsync(string guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -5425,13 +6654,13 @@ namespace TrilbyApi.Api
         /// <param name="includeRandom"> (optional, default to false)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IGetTopClipStatsApiResponse"/>&gt;</returns>
-        public async Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(long guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IGetTopClipStatsApiResponse> GetTopClipStatsAsync(string guildId, Option<string> scope = default, Option<string> days = default, Option<int> limit = default, Option<bool> includeRandom = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateGetTopClipStats(scope, days);
+                ValidateGetTopClipStats(guildId, scope, days);
 
                 FormatGetTopClipStats(ref guildId, ref scope, ref days, ref limit, ref includeRandom);
 
@@ -5762,15 +6991,19 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListClips(ref long guildId, ref Option<string> search);
+        partial void FormatListClips(ref string guildId, ref Option<string> search);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="search"></param>
         /// <returns></returns>
-        private void ValidateListClips(Option<string> search)
+        private void ValidateListClips(string guildId, Option<string> search)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (search.IsSet && search.Value == null)
                 throw new ArgumentNullException(nameof(search));
         }
@@ -5781,7 +7014,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void AfterListClipsDefaultImplementation(IListClipsApiResponse apiResponseLocalVar, long guildId, Option<string> search)
+        private void AfterListClipsDefaultImplementation(IListClipsApiResponse apiResponseLocalVar, string guildId, Option<string> search)
         {
             bool suppressDefaultLog = false;
             AfterListClips(ref suppressDefaultLog, apiResponseLocalVar, guildId, search);
@@ -5796,7 +7029,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void AfterListClips(ref bool suppressDefaultLog, IListClipsApiResponse apiResponseLocalVar, long guildId, Option<string> search);
+        partial void AfterListClips(ref bool suppressDefaultLog, IListClipsApiResponse apiResponseLocalVar, string guildId, Option<string> search);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -5806,7 +7039,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void OnErrorListClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> search)
+        private void OnErrorListClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, Option<string> search)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorListClips(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, search);
@@ -5823,7 +7056,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void OnErrorListClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> search);
+        partial void OnErrorListClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, Option<string> search);
 
         /// <summary>
         /// List Clips 
@@ -5832,7 +7065,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
-        public async Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListClipsApiResponse?> ListClipsOrDefaultAsync(string guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -5852,13 +7085,13 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListClipsApiResponse"/>&gt;</returns>
-        public async Task<IListClipsApiResponse> ListClipsAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListClipsApiResponse> ListClipsAsync(string guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateListClips(search);
+                ValidateListClips(guildId, search);
 
                 FormatListClips(ref guildId, ref search);
 
@@ -6142,17 +7375,21 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListTagClips(ref string tagName, ref long guildId);
+        partial void FormatListTagClips(ref string tagName, ref string guildId);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
         /// <param name="tagName"></param>
+        /// <param name="guildId"></param>
         /// <returns></returns>
-        private void ValidateListTagClips(string tagName)
+        private void ValidateListTagClips(string tagName, string guildId)
         {
             if (tagName == null)
                 throw new ArgumentNullException(nameof(tagName));
+
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
         }
 
         /// <summary>
@@ -6161,7 +7398,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="tagName"></param>
         /// <param name="guildId"></param>
-        private void AfterListTagClipsDefaultImplementation(IListTagClipsApiResponse apiResponseLocalVar, string tagName, long guildId)
+        private void AfterListTagClipsDefaultImplementation(IListTagClipsApiResponse apiResponseLocalVar, string tagName, string guildId)
         {
             bool suppressDefaultLog = false;
             AfterListTagClips(ref suppressDefaultLog, apiResponseLocalVar, tagName, guildId);
@@ -6176,7 +7413,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="tagName"></param>
         /// <param name="guildId"></param>
-        partial void AfterListTagClips(ref bool suppressDefaultLog, IListTagClipsApiResponse apiResponseLocalVar, string tagName, long guildId);
+        partial void AfterListTagClips(ref bool suppressDefaultLog, IListTagClipsApiResponse apiResponseLocalVar, string tagName, string guildId);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -6186,7 +7423,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="tagName"></param>
         /// <param name="guildId"></param>
-        private void OnErrorListTagClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, long guildId)
+        private void OnErrorListTagClipsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, string guildId)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorListTagClips(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, tagName, guildId);
@@ -6203,7 +7440,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="tagName"></param>
         /// <param name="guildId"></param>
-        partial void OnErrorListTagClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, long guildId);
+        partial void OnErrorListTagClips(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string tagName, string guildId);
 
         /// <summary>
         /// List Tag Clips 
@@ -6212,7 +7449,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagClipsApiResponse"/>&gt;</returns>
-        public async Task<IListTagClipsApiResponse?> ListTagClipsOrDefaultAsync(string tagName, long guildId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTagClipsApiResponse?> ListTagClipsOrDefaultAsync(string tagName, string guildId, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -6232,13 +7469,13 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagClipsApiResponse"/>&gt;</returns>
-        public async Task<IListTagClipsApiResponse> ListTagClipsAsync(string tagName, long guildId, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTagClipsApiResponse> ListTagClipsAsync(string tagName, string guildId, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateListTagClips(tagName);
+                ValidateListTagClips(tagName, guildId);
 
                 FormatListTagClips(ref tagName, ref guildId);
 
@@ -6554,15 +7791,19 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatListTags(ref long guildId, ref Option<string> search);
+        partial void FormatListTags(ref string guildId, ref Option<string> search);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="search"></param>
         /// <returns></returns>
-        private void ValidateListTags(Option<string> search)
+        private void ValidateListTags(string guildId, Option<string> search)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (search.IsSet && search.Value == null)
                 throw new ArgumentNullException(nameof(search));
         }
@@ -6573,7 +7814,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void AfterListTagsDefaultImplementation(IListTagsApiResponse apiResponseLocalVar, long guildId, Option<string> search)
+        private void AfterListTagsDefaultImplementation(IListTagsApiResponse apiResponseLocalVar, string guildId, Option<string> search)
         {
             bool suppressDefaultLog = false;
             AfterListTags(ref suppressDefaultLog, apiResponseLocalVar, guildId, search);
@@ -6588,7 +7829,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void AfterListTags(ref bool suppressDefaultLog, IListTagsApiResponse apiResponseLocalVar, long guildId, Option<string> search);
+        partial void AfterListTags(ref bool suppressDefaultLog, IListTagsApiResponse apiResponseLocalVar, string guildId, Option<string> search);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -6598,7 +7839,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        private void OnErrorListTagsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> search)
+        private void OnErrorListTagsDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, Option<string> search)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorListTags(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, search);
@@ -6615,7 +7856,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="search"></param>
-        partial void OnErrorListTags(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, Option<string> search);
+        partial void OnErrorListTags(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, Option<string> search);
 
         /// <summary>
         /// List Tags 
@@ -6624,7 +7865,7 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>&gt;</returns>
-        public async Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTagsApiResponse?> ListTagsOrDefaultAsync(string guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -6644,13 +7885,13 @@ namespace TrilbyApi.Api
         /// <param name="search"> (optional)</param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IListTagsApiResponse"/>&gt;</returns>
-        public async Task<IListTagsApiResponse> ListTagsAsync(long guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IListTagsApiResponse> ListTagsAsync(string guildId, Option<string> search = default, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateListTags(search);
+                ValidateListTags(guildId, search);
 
                 FormatListTags(ref guildId, ref search);
 
@@ -6934,15 +8175,19 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatPlayClip(ref long guildId, PlayClipBody playClipBody);
+        partial void FormatPlayClip(ref string guildId, PlayClipBody playClipBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="playClipBody"></param>
         /// <returns></returns>
-        private void ValidatePlayClip(PlayClipBody playClipBody)
+        private void ValidatePlayClip(string guildId, PlayClipBody playClipBody)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (playClipBody == null)
                 throw new ArgumentNullException(nameof(playClipBody));
         }
@@ -6953,7 +8198,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="playClipBody"></param>
-        private void AfterPlayClipDefaultImplementation(IPlayClipApiResponse apiResponseLocalVar, long guildId, PlayClipBody playClipBody)
+        private void AfterPlayClipDefaultImplementation(IPlayClipApiResponse apiResponseLocalVar, string guildId, PlayClipBody playClipBody)
         {
             bool suppressDefaultLog = false;
             AfterPlayClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, playClipBody);
@@ -6968,7 +8213,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="playClipBody"></param>
-        partial void AfterPlayClip(ref bool suppressDefaultLog, IPlayClipApiResponse apiResponseLocalVar, long guildId, PlayClipBody playClipBody);
+        partial void AfterPlayClip(ref bool suppressDefaultLog, IPlayClipApiResponse apiResponseLocalVar, string guildId, PlayClipBody playClipBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -6978,7 +8223,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="playClipBody"></param>
-        private void OnErrorPlayClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, PlayClipBody playClipBody)
+        private void OnErrorPlayClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, PlayClipBody playClipBody)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorPlayClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, playClipBody);
@@ -6995,7 +8240,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="playClipBody"></param>
-        partial void OnErrorPlayClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, PlayClipBody playClipBody);
+        partial void OnErrorPlayClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, PlayClipBody playClipBody);
 
         /// <summary>
         /// Play Clip 
@@ -7004,7 +8249,7 @@ namespace TrilbyApi.Api
         /// <param name="playClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>&gt;</returns>
-        public async Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(long guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IPlayClipApiResponse?> PlayClipOrDefaultAsync(string guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -7024,13 +8269,13 @@ namespace TrilbyApi.Api
         /// <param name="playClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayClipApiResponse"/>&gt;</returns>
-        public async Task<IPlayClipApiResponse> PlayClipAsync(long guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IPlayClipApiResponse> PlayClipAsync(string guildId, PlayClipBody playClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidatePlayClip(playClipBody);
+                ValidatePlayClip(guildId, playClipBody);
 
                 FormatPlayClip(ref guildId, playClipBody);
 
@@ -7434,15 +8679,19 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatPlayRandomClip(ref long guildId, PlayRandomClipBody playRandomClipBody);
+        partial void FormatPlayRandomClip(ref string guildId, PlayRandomClipBody playRandomClipBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="playRandomClipBody"></param>
         /// <returns></returns>
-        private void ValidatePlayRandomClip(PlayRandomClipBody playRandomClipBody)
+        private void ValidatePlayRandomClip(string guildId, PlayRandomClipBody playRandomClipBody)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (playRandomClipBody == null)
                 throw new ArgumentNullException(nameof(playRandomClipBody));
         }
@@ -7453,7 +8702,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="playRandomClipBody"></param>
-        private void AfterPlayRandomClipDefaultImplementation(IPlayRandomClipApiResponse apiResponseLocalVar, long guildId, PlayRandomClipBody playRandomClipBody)
+        private void AfterPlayRandomClipDefaultImplementation(IPlayRandomClipApiResponse apiResponseLocalVar, string guildId, PlayRandomClipBody playRandomClipBody)
         {
             bool suppressDefaultLog = false;
             AfterPlayRandomClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, playRandomClipBody);
@@ -7468,7 +8717,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="playRandomClipBody"></param>
-        partial void AfterPlayRandomClip(ref bool suppressDefaultLog, IPlayRandomClipApiResponse apiResponseLocalVar, long guildId, PlayRandomClipBody playRandomClipBody);
+        partial void AfterPlayRandomClip(ref bool suppressDefaultLog, IPlayRandomClipApiResponse apiResponseLocalVar, string guildId, PlayRandomClipBody playRandomClipBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -7478,7 +8727,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="playRandomClipBody"></param>
-        private void OnErrorPlayRandomClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, PlayRandomClipBody playRandomClipBody)
+        private void OnErrorPlayRandomClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, PlayRandomClipBody playRandomClipBody)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorPlayRandomClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, playRandomClipBody);
@@ -7495,7 +8744,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="playRandomClipBody"></param>
-        partial void OnErrorPlayRandomClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, PlayRandomClipBody playRandomClipBody);
+        partial void OnErrorPlayRandomClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, PlayRandomClipBody playRandomClipBody);
 
         /// <summary>
         /// Play Random Clip 
@@ -7504,7 +8753,7 @@ namespace TrilbyApi.Api
         /// <param name="playRandomClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>&gt;</returns>
-        public async Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(long guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IPlayRandomClipApiResponse?> PlayRandomClipOrDefaultAsync(string guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -7524,13 +8773,13 @@ namespace TrilbyApi.Api
         /// <param name="playRandomClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IPlayRandomClipApiResponse"/>&gt;</returns>
-        public async Task<IPlayRandomClipApiResponse> PlayRandomClipAsync(long guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IPlayRandomClipApiResponse> PlayRandomClipAsync(string guildId, PlayRandomClipBody playRandomClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidatePlayRandomClip(playRandomClipBody);
+                ValidatePlayRandomClip(guildId, playRandomClipBody);
 
                 FormatPlayRandomClip(ref guildId, playRandomClipBody);
 
@@ -8264,16 +9513,20 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatRemoveTagClip(ref long guildId, ref string tagName, ref string clipTrigger);
+        partial void FormatRemoveTagClip(ref string guildId, ref string tagName, ref string clipTrigger);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
         /// <returns></returns>
-        private void ValidateRemoveTagClip(string tagName, string clipTrigger)
+        private void ValidateRemoveTagClip(string guildId, string tagName, string clipTrigger)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (tagName == null)
                 throw new ArgumentNullException(nameof(tagName));
 
@@ -8288,7 +9541,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        private void AfterRemoveTagClipDefaultImplementation(IRemoveTagClipApiResponse apiResponseLocalVar, long guildId, string tagName, string clipTrigger)
+        private void AfterRemoveTagClipDefaultImplementation(IRemoveTagClipApiResponse apiResponseLocalVar, string guildId, string tagName, string clipTrigger)
         {
             bool suppressDefaultLog = false;
             AfterRemoveTagClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, tagName, clipTrigger);
@@ -8304,7 +9557,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        partial void AfterRemoveTagClip(ref bool suppressDefaultLog, IRemoveTagClipApiResponse apiResponseLocalVar, long guildId, string tagName, string clipTrigger);
+        partial void AfterRemoveTagClip(ref bool suppressDefaultLog, IRemoveTagClipApiResponse apiResponseLocalVar, string guildId, string tagName, string clipTrigger);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -8315,7 +9568,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        private void OnErrorRemoveTagClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, string tagName, string clipTrigger)
+        private void OnErrorRemoveTagClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, string tagName, string clipTrigger)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorRemoveTagClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, tagName, clipTrigger);
@@ -8333,7 +9586,7 @@ namespace TrilbyApi.Api
         /// <param name="guildId"></param>
         /// <param name="tagName"></param>
         /// <param name="clipTrigger"></param>
-        partial void OnErrorRemoveTagClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, string tagName, string clipTrigger);
+        partial void OnErrorRemoveTagClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, string tagName, string clipTrigger);
 
         /// <summary>
         /// Remove Tag Clip 
@@ -8343,7 +9596,7 @@ namespace TrilbyApi.Api
         /// <param name="clipTrigger"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRemoveTagClipApiResponse"/>&gt;</returns>
-        public async Task<IRemoveTagClipApiResponse?> RemoveTagClipOrDefaultAsync(long guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IRemoveTagClipApiResponse?> RemoveTagClipOrDefaultAsync(string guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -8364,13 +9617,13 @@ namespace TrilbyApi.Api
         /// <param name="clipTrigger"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IRemoveTagClipApiResponse"/>&gt;</returns>
-        public async Task<IRemoveTagClipApiResponse> RemoveTagClipAsync(long guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IRemoveTagClipApiResponse> RemoveTagClipAsync(string guildId, string tagName, string clipTrigger, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateRemoveTagClip(tagName, clipTrigger);
+                ValidateRemoveTagClip(guildId, tagName, clipTrigger);
 
                 FormatRemoveTagClip(ref guildId, ref tagName, ref clipTrigger);
 
@@ -8687,15 +9940,19 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatSetCurrentIntro(ref long guildId, SetCurrentIntroBody setCurrentIntroBody);
+        partial void FormatSetCurrentIntro(ref string guildId, SetCurrentIntroBody setCurrentIntroBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="setCurrentIntroBody"></param>
         /// <returns></returns>
-        private void ValidateSetCurrentIntro(SetCurrentIntroBody setCurrentIntroBody)
+        private void ValidateSetCurrentIntro(string guildId, SetCurrentIntroBody setCurrentIntroBody)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (setCurrentIntroBody == null)
                 throw new ArgumentNullException(nameof(setCurrentIntroBody));
         }
@@ -8706,7 +9963,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="setCurrentIntroBody"></param>
-        private void AfterSetCurrentIntroDefaultImplementation(ISetCurrentIntroApiResponse apiResponseLocalVar, long guildId, SetCurrentIntroBody setCurrentIntroBody)
+        private void AfterSetCurrentIntroDefaultImplementation(ISetCurrentIntroApiResponse apiResponseLocalVar, string guildId, SetCurrentIntroBody setCurrentIntroBody)
         {
             bool suppressDefaultLog = false;
             AfterSetCurrentIntro(ref suppressDefaultLog, apiResponseLocalVar, guildId, setCurrentIntroBody);
@@ -8721,7 +9978,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="setCurrentIntroBody"></param>
-        partial void AfterSetCurrentIntro(ref bool suppressDefaultLog, ISetCurrentIntroApiResponse apiResponseLocalVar, long guildId, SetCurrentIntroBody setCurrentIntroBody);
+        partial void AfterSetCurrentIntro(ref bool suppressDefaultLog, ISetCurrentIntroApiResponse apiResponseLocalVar, string guildId, SetCurrentIntroBody setCurrentIntroBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -8731,7 +9988,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="setCurrentIntroBody"></param>
-        private void OnErrorSetCurrentIntroDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, SetCurrentIntroBody setCurrentIntroBody)
+        private void OnErrorSetCurrentIntroDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, SetCurrentIntroBody setCurrentIntroBody)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorSetCurrentIntro(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, setCurrentIntroBody);
@@ -8748,7 +10005,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="setCurrentIntroBody"></param>
-        partial void OnErrorSetCurrentIntro(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, SetCurrentIntroBody setCurrentIntroBody);
+        partial void OnErrorSetCurrentIntro(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, SetCurrentIntroBody setCurrentIntroBody);
 
         /// <summary>
         /// Set Current Intro 
@@ -8757,7 +10014,7 @@ namespace TrilbyApi.Api
         /// <param name="setCurrentIntroBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetCurrentIntroApiResponse"/>&gt;</returns>
-        public async Task<ISetCurrentIntroApiResponse?> SetCurrentIntroOrDefaultAsync(long guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<ISetCurrentIntroApiResponse?> SetCurrentIntroOrDefaultAsync(string guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -8777,13 +10034,13 @@ namespace TrilbyApi.Api
         /// <param name="setCurrentIntroBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetCurrentIntroApiResponse"/>&gt;</returns>
-        public async Task<ISetCurrentIntroApiResponse> SetCurrentIntroAsync(long guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<ISetCurrentIntroApiResponse> SetCurrentIntroAsync(string guildId, SetCurrentIntroBody setCurrentIntroBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateSetCurrentIntro(setCurrentIntroBody);
+                ValidateSetCurrentIntro(guildId, setCurrentIntroBody);
 
                 FormatSetCurrentIntro(ref guildId, setCurrentIntroBody);
 
@@ -9149,15 +10406,19 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatSetSharedTag(ref long guildId, SetSharedTagBody setSharedTagBody);
+        partial void FormatSetSharedTag(ref string guildId, SetSharedTagBody setSharedTagBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="setSharedTagBody"></param>
         /// <returns></returns>
-        private void ValidateSetSharedTag(SetSharedTagBody setSharedTagBody)
+        private void ValidateSetSharedTag(string guildId, SetSharedTagBody setSharedTagBody)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (setSharedTagBody == null)
                 throw new ArgumentNullException(nameof(setSharedTagBody));
         }
@@ -9168,7 +10429,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="setSharedTagBody"></param>
-        private void AfterSetSharedTagDefaultImplementation(ISetSharedTagApiResponse apiResponseLocalVar, long guildId, SetSharedTagBody setSharedTagBody)
+        private void AfterSetSharedTagDefaultImplementation(ISetSharedTagApiResponse apiResponseLocalVar, string guildId, SetSharedTagBody setSharedTagBody)
         {
             bool suppressDefaultLog = false;
             AfterSetSharedTag(ref suppressDefaultLog, apiResponseLocalVar, guildId, setSharedTagBody);
@@ -9183,7 +10444,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="setSharedTagBody"></param>
-        partial void AfterSetSharedTag(ref bool suppressDefaultLog, ISetSharedTagApiResponse apiResponseLocalVar, long guildId, SetSharedTagBody setSharedTagBody);
+        partial void AfterSetSharedTag(ref bool suppressDefaultLog, ISetSharedTagApiResponse apiResponseLocalVar, string guildId, SetSharedTagBody setSharedTagBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -9193,7 +10454,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="setSharedTagBody"></param>
-        private void OnErrorSetSharedTagDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, SetSharedTagBody setSharedTagBody)
+        private void OnErrorSetSharedTagDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, SetSharedTagBody setSharedTagBody)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorSetSharedTag(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, setSharedTagBody);
@@ -9210,7 +10471,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="setSharedTagBody"></param>
-        partial void OnErrorSetSharedTag(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, SetSharedTagBody setSharedTagBody);
+        partial void OnErrorSetSharedTag(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, SetSharedTagBody setSharedTagBody);
 
         /// <summary>
         /// Set Shared Tag 
@@ -9219,7 +10480,7 @@ namespace TrilbyApi.Api
         /// <param name="setSharedTagBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetSharedTagApiResponse"/>&gt;</returns>
-        public async Task<ISetSharedTagApiResponse?> SetSharedTagOrDefaultAsync(long guildId, SetSharedTagBody setSharedTagBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<ISetSharedTagApiResponse?> SetSharedTagOrDefaultAsync(string guildId, SetSharedTagBody setSharedTagBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -9239,13 +10500,13 @@ namespace TrilbyApi.Api
         /// <param name="setSharedTagBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="ISetSharedTagApiResponse"/>&gt;</returns>
-        public async Task<ISetSharedTagApiResponse> SetSharedTagAsync(long guildId, SetSharedTagBody setSharedTagBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<ISetSharedTagApiResponse> SetSharedTagAsync(string guildId, SetSharedTagBody setSharedTagBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateSetSharedTag(setSharedTagBody);
+                ValidateSetSharedTag(guildId, setSharedTagBody);
 
                 FormatSetSharedTag(ref guildId, setSharedTagBody);
 
@@ -9858,15 +11119,19 @@ namespace TrilbyApi.Api
             partial void OnDeserializationError(ref bool suppressDefaultLog, Exception exception, HttpStatusCode httpStatusCode);
         }
 
-        partial void FormatStopClip(ref long guildId, StopClipBody stopClipBody);
+        partial void FormatStopClip(ref string guildId, StopClipBody stopClipBody);
 
         /// <summary>
         /// Validates the request parameters
         /// </summary>
+        /// <param name="guildId"></param>
         /// <param name="stopClipBody"></param>
         /// <returns></returns>
-        private void ValidateStopClip(StopClipBody stopClipBody)
+        private void ValidateStopClip(string guildId, StopClipBody stopClipBody)
         {
+            if (guildId == null)
+                throw new ArgumentNullException(nameof(guildId));
+
             if (stopClipBody == null)
                 throw new ArgumentNullException(nameof(stopClipBody));
         }
@@ -9877,7 +11142,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="stopClipBody"></param>
-        private void AfterStopClipDefaultImplementation(IStopClipApiResponse apiResponseLocalVar, long guildId, StopClipBody stopClipBody)
+        private void AfterStopClipDefaultImplementation(IStopClipApiResponse apiResponseLocalVar, string guildId, StopClipBody stopClipBody)
         {
             bool suppressDefaultLog = false;
             AfterStopClip(ref suppressDefaultLog, apiResponseLocalVar, guildId, stopClipBody);
@@ -9892,7 +11157,7 @@ namespace TrilbyApi.Api
         /// <param name="apiResponseLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="stopClipBody"></param>
-        partial void AfterStopClip(ref bool suppressDefaultLog, IStopClipApiResponse apiResponseLocalVar, long guildId, StopClipBody stopClipBody);
+        partial void AfterStopClip(ref bool suppressDefaultLog, IStopClipApiResponse apiResponseLocalVar, string guildId, StopClipBody stopClipBody);
 
         /// <summary>
         /// Logs exceptions that occur while retrieving the server response
@@ -9902,7 +11167,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="stopClipBody"></param>
-        private void OnErrorStopClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, StopClipBody stopClipBody)
+        private void OnErrorStopClipDefaultImplementation(Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, StopClipBody stopClipBody)
         {
             bool suppressDefaultLogLocalVar = false;
             OnErrorStopClip(ref suppressDefaultLogLocalVar, exceptionLocalVar, pathFormatLocalVar, pathLocalVar, guildId, stopClipBody);
@@ -9919,7 +11184,7 @@ namespace TrilbyApi.Api
         /// <param name="pathLocalVar"></param>
         /// <param name="guildId"></param>
         /// <param name="stopClipBody"></param>
-        partial void OnErrorStopClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, long guildId, StopClipBody stopClipBody);
+        partial void OnErrorStopClip(ref bool suppressDefaultLogLocalVar, Exception exceptionLocalVar, string pathFormatLocalVar, string pathLocalVar, string guildId, StopClipBody stopClipBody);
 
         /// <summary>
         /// Stop Clip 
@@ -9928,7 +11193,7 @@ namespace TrilbyApi.Api
         /// <param name="stopClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IStopClipApiResponse"/>&gt;</returns>
-        public async Task<IStopClipApiResponse?> StopClipOrDefaultAsync(long guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IStopClipApiResponse?> StopClipOrDefaultAsync(string guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             try
             {
@@ -9948,13 +11213,13 @@ namespace TrilbyApi.Api
         /// <param name="stopClipBody"></param>
         /// <param name="cancellationToken">Cancellation Token to cancel the request.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="IStopClipApiResponse"/>&gt;</returns>
-        public async Task<IStopClipApiResponse> StopClipAsync(long guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default)
+        public async Task<IStopClipApiResponse> StopClipAsync(string guildId, StopClipBody stopClipBody, System.Threading.CancellationToken cancellationToken = default)
         {
             UriBuilder uriBuilderLocalVar = new UriBuilder();
 
             try
             {
-                ValidateStopClip(stopClipBody);
+                ValidateStopClip(guildId, stopClipBody);
 
                 FormatStopClip(ref guildId, stopClipBody);
 

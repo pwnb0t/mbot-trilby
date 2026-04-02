@@ -39,7 +39,7 @@ namespace TrilbyApi.Model
         /// <param name="clips">clips</param>
         /// <param name="total">total</param>
         [JsonConstructor]
-        public ListTagClipsResponse(bool ok, long guildId, string tagName, List<TagClipSummary> clips, int total)
+        public ListTagClipsResponse(bool ok, string guildId, string tagName, List<TagClipSummary> clips, int total)
         {
             Ok = ok;
             GuildId = guildId;
@@ -61,7 +61,7 @@ namespace TrilbyApi.Model
         /// Gets or Sets GuildId
         /// </summary>
         [JsonPropertyName("guild_id")]
-        public long GuildId { get; set; }
+        public string GuildId { get; set; }
 
         /// <summary>
         /// Gets or Sets TagName
@@ -105,6 +105,22 @@ namespace TrilbyApi.Model
         /// <returns>Validation Result</returns>
         IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
+            // GuildId (string) minLength
+            if (this.GuildId != null && this.GuildId.Length < 1)
+            {
+                yield return new ValidationResult("Invalid value for GuildId, length must be greater than 1.", new [] { "GuildId" });
+            }
+
+            if (this.GuildId != null) {
+                // GuildId (string) pattern
+                Regex regexGuildId = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+
+                if (!regexGuildId.Match(this.GuildId).Success)
+                {
+                    yield return new System.ComponentModel.DataAnnotations.ValidationResult("Invalid value for GuildId, must match a pattern of " + regexGuildId, new [] { "GuildId" });
+                }
+            }
+
             yield break;
         }
     }
@@ -132,7 +148,7 @@ namespace TrilbyApi.Model
             JsonTokenType startingTokenType = utf8JsonReader.TokenType;
 
             Option<bool?> ok = default;
-            Option<long?> guildId = default;
+            Option<string?> guildId = default;
             Option<string?> tagName = default;
             Option<List<TagClipSummary>?> clips = default;
             Option<int?> total = default;
@@ -156,7 +172,7 @@ namespace TrilbyApi.Model
                             ok = new Option<bool?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (bool?)null : utf8JsonReader.GetBoolean());
                             break;
                         case "guild_id":
-                            guildId = new Option<long?>(utf8JsonReader.TokenType == JsonTokenType.Null ? (long?)null : utf8JsonReader.GetInt64());
+                            guildId = new Option<string?>(utf8JsonReader.GetString()!);
                             break;
                         case "tag_name":
                             tagName = new Option<string?>(utf8JsonReader.GetString()!);
@@ -203,7 +219,7 @@ namespace TrilbyApi.Model
             if (total.IsSet && total.Value == null)
                 throw new ArgumentNullException(nameof(total), "Property is not nullable for class ListTagClipsResponse.");
 
-            return new ListTagClipsResponse(ok.Value!.Value!, guildId.Value!.Value!, tagName.Value!, clips.Value!, total.Value!.Value!);
+            return new ListTagClipsResponse(ok.Value!.Value!, guildId.Value!, tagName.Value!, clips.Value!, total.Value!.Value!);
         }
 
         /// <summary>
@@ -230,6 +246,9 @@ namespace TrilbyApi.Model
         /// <exception cref="NotImplementedException"></exception>
         public void WriteProperties(Utf8JsonWriter writer, ListTagClipsResponse listTagClipsResponse, JsonSerializerOptions jsonSerializerOptions)
         {
+            if (listTagClipsResponse.GuildId == null)
+                throw new ArgumentNullException(nameof(listTagClipsResponse.GuildId), "Property is required for class ListTagClipsResponse.");
+
             if (listTagClipsResponse.TagName == null)
                 throw new ArgumentNullException(nameof(listTagClipsResponse.TagName), "Property is required for class ListTagClipsResponse.");
 
@@ -238,7 +257,7 @@ namespace TrilbyApi.Model
 
             writer.WriteBoolean("ok", listTagClipsResponse.Ok);
 
-            writer.WriteNumber("guild_id", listTagClipsResponse.GuildId);
+            writer.WriteString("guild_id", listTagClipsResponse.GuildId);
 
             writer.WriteString("tag_name", listTagClipsResponse.TagName);
 

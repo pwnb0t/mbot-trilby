@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,11 +17,13 @@ namespace mbottrilby.Services
         private readonly ServiceProvider _serviceProvider;
         private readonly IDefaultApi _api;
         private readonly long _guildId;
+        private readonly string _guildIdText;
 
         public TrilbyApiClientService(string baseUrl, string accessToken, long guildId = 0)
         {
             _ = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
             _guildId = guildId;
+            _guildIdText = guildId.ToString(CultureInfo.InvariantCulture);
 
             var services = new ServiceCollection();
             services.AddLogging();
@@ -40,7 +43,7 @@ namespace mbottrilby.Services
 
         public async Task<ClipCatalog> ListClipsAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.ListClipsAsync(_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var response = await _api.ListClipsAsync(_guildIdText, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
                 var clips = ok.Clips
@@ -151,7 +154,7 @@ namespace mbottrilby.Services
 
         public async Task<TagCatalog> ListTagsAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.ListTagsAsync(_guildId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var response = await _api.ListTagsAsync(_guildIdText, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
                 var tags = ok.Tags
@@ -193,7 +196,7 @@ namespace mbottrilby.Services
             string tagName,
             CancellationToken cancellationToken = default)
         {
-            var response = await _api.ListTagClipsAsync(tagName, _guildId, cancellationToken).ConfigureAwait(false);
+            var response = await _api.ListTagClipsAsync(tagName, _guildIdText, cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
                 var triggers = ok.Clips
@@ -233,7 +236,7 @@ namespace mbottrilby.Services
 
         public async Task<string?> GetSharedTagAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.GetSharedTagAsync(_guildId, cancellationToken).ConfigureAwait(false);
+            var response = await _api.GetSharedTagAsync(_guildIdText, cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
                 return string.IsNullOrWhiteSpace(ok.TagName) ? null : ok.TagName.Trim();
@@ -263,7 +266,7 @@ namespace mbottrilby.Services
         public async Task SetSharedTagAsync(string tagName, CancellationToken cancellationToken = default)
         {
             var request = new SetSharedTagBody(tagName);
-            var response = await _api.SetSharedTagAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
+            var response = await _api.SetSharedTagAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
             if (response.IsOk)
             {
                 return;
@@ -301,7 +304,7 @@ namespace mbottrilby.Services
             CancellationToken cancellationToken = default)
         {
             var request = new AddTagClipBody(clipTrigger);
-            var response = await _api.AddTagClipAsync(_guildId, tagName, request, cancellationToken)
+            var response = await _api.AddTagClipAsync(_guildIdText, tagName, request, cancellationToken)
                 .ConfigureAwait(false);
             if (response.IsOk)
             {
@@ -339,7 +342,7 @@ namespace mbottrilby.Services
             string clipTrigger,
             CancellationToken cancellationToken = default)
         {
-            var response = await _api.RemoveTagClipAsync(_guildId, tagName, clipTrigger, cancellationToken)
+            var response = await _api.RemoveTagClipAsync(_guildIdText, tagName, clipTrigger, cancellationToken)
                 .ConfigureAwait(false);
             if (response.IsOk)
             {
@@ -380,7 +383,7 @@ namespace mbottrilby.Services
             CancellationToken cancellationToken = default)
         {
             var response = await _api.GetTopClipStatsAsync(
-                _guildId,
+                _guildIdText,
                 guildWide ? new Option<string>("guild") : new Option<string>("me"),
                 days,
                 limit,
@@ -437,7 +440,7 @@ namespace mbottrilby.Services
             CancellationToken cancellationToken = default)
         {
             var response = await _api.GetRecentClipStatsAsync(
-                _guildId,
+                _guildIdText,
                 guildWide ? new Option<string>("guild") : new Option<string>("me"),
                 limit,
                 includeRandom,
@@ -485,7 +488,7 @@ namespace mbottrilby.Services
                 RequestId = $"play:{Guid.NewGuid():N}"
             };
 
-            var response = await _api.PlayClipAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
+            var response = await _api.PlayClipAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
 
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
@@ -529,7 +532,7 @@ namespace mbottrilby.Services
                 RequestId = $"random:{Guid.NewGuid():N}"
             };
 
-            var response = await _api.PlayRandomClipAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
+            var response = await _api.PlayRandomClipAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
 
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
@@ -568,7 +571,7 @@ namespace mbottrilby.Services
                 RequestId = Guid.NewGuid().ToString("N")
             };
 
-            var response = await _api.StopClipAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
+            var response = await _api.StopClipAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
 
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
@@ -602,7 +605,7 @@ namespace mbottrilby.Services
 
         public async Task<CurrentIntroState> GetCurrentIntroAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.GetCurrentIntroAsync(_guildId, cancellationToken).ConfigureAwait(false);
+            var response = await _api.GetCurrentIntroAsync(_guildIdText, cancellationToken).ConfigureAwait(false);
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
                 return new CurrentIntroState(ok.Trigger);
@@ -642,7 +645,7 @@ namespace mbottrilby.Services
         public async Task<CurrentIntroState> SetCurrentIntroAsync(string trigger, CancellationToken cancellationToken = default)
         {
             var request = new SetCurrentIntroBody(trigger);
-            var response = await _api.SetCurrentIntroAsync(_guildId, request, cancellationToken).ConfigureAwait(false);
+            var response = await _api.SetCurrentIntroAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
 
             if (response.IsOk && response.TryOk(out var ok) && ok is not null)
             {
