@@ -453,7 +453,7 @@ namespace mbottrilby.Services
             public TrilbyGuildSettings? ToSettings()
             {
                 long? guildId = ParseSnowflake(GuildId);
-                if (guildId is not > 0)
+                if (guildId is null or <= 0)
                 {
                     return null;
                 }

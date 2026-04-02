@@ -1728,7 +1728,7 @@ namespace mbottrilby
         private void ApplyClipPlayedEvent(TrilbyEventsClientService.ClipPlayedEvent clipPlayedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipPlayedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != clipPlayedEvent.GuildId)
             {
                 return;
             }
@@ -1740,7 +1740,7 @@ namespace mbottrilby
             if (!_recentStatsGuildWide)
             {
                 mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(GetSelectedEnvironmentName());
-                if (session?.UserId is not > 0 || session.UserId != clipPlayedEvent.RequesterUserId)
+                if (session?.UserId is null or <= 0 || session.UserId != clipPlayedEvent.RequesterUserId)
                 {
                     return;
                 }
@@ -1770,7 +1770,7 @@ namespace mbottrilby
         private void ApplyClipPlayCountChangedEvent(TrilbyEventsClientService.ClipPlayCountChangedEvent clipPlayCountChangedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipPlayCountChangedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != clipPlayCountChangedEvent.GuildId)
             {
                 return;
             }
@@ -1782,7 +1782,7 @@ namespace mbottrilby
             if (!_topClipStatsGuildWide)
             {
                 mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(GetSelectedEnvironmentName());
-                if (session?.UserId is not > 0 || session.UserId != clipPlayCountChangedEvent.RequesterUserId)
+                if (session?.UserId is null or <= 0 || session.UserId != clipPlayCountChangedEvent.RequesterUserId)
                 {
                     return;
                 }
@@ -1800,7 +1800,7 @@ namespace mbottrilby
         private void ApplyClipCreatedEvent(TrilbyEventsClientService.ClipCreatedEvent clipCreatedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipCreatedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != clipCreatedEvent.GuildId)
             {
                 return;
             }
@@ -1840,7 +1840,7 @@ namespace mbottrilby
         private void ApplyClipDeletedEvent(TrilbyEventsClientService.ClipDeletedEvent clipDeletedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipDeletedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != clipDeletedEvent.GuildId)
             {
                 return;
             }
@@ -1852,7 +1852,7 @@ namespace mbottrilby
         private void ApplyClipTaggedEvent(TrilbyEventsClientService.ClipTaggedEvent clipTaggedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipTaggedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != clipTaggedEvent.GuildId)
             {
                 return;
             }
@@ -1866,7 +1866,7 @@ namespace mbottrilby
         private void ApplyClipUntaggedEvent(TrilbyEventsClientService.ClipUntaggedEvent clipUntaggedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != clipUntaggedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != clipUntaggedEvent.GuildId)
             {
                 return;
             }
@@ -1880,13 +1880,13 @@ namespace mbottrilby
         private void ApplyCurrentIntroUpdatedEvent(TrilbyEventsClientService.CurrentIntroUpdatedEvent currentIntroUpdatedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != currentIntroUpdatedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != currentIntroUpdatedEvent.GuildId)
             {
                 return;
             }
 
             mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(GetSelectedEnvironmentName());
-            if (session?.UserId is not > 0 || session.UserId != currentIntroUpdatedEvent.UserId)
+            if (session?.UserId is null or <= 0 || session.UserId != currentIntroUpdatedEvent.UserId)
             {
                 return;
             }
@@ -1901,7 +1901,7 @@ namespace mbottrilby
         private void ApplyTagCreatedEvent(TrilbyEventsClientService.TagCreatedEvent tagCreatedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != tagCreatedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != tagCreatedEvent.GuildId)
             {
                 return;
             }
@@ -1913,7 +1913,7 @@ namespace mbottrilby
         private void ApplyTagDeletedEvent(TrilbyEventsClientService.TagDeletedEvent tagDeletedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != tagDeletedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != tagDeletedEvent.GuildId)
             {
                 return;
             }
@@ -1925,7 +1925,7 @@ namespace mbottrilby
         private void ApplySharedTagSelectedEvent(TrilbyEventsClientService.SharedTagSelectedEvent sharedTagSelectedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != sharedTagSelectedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != sharedTagSelectedEvent.GuildId)
             {
                 return;
             }
@@ -1944,7 +1944,7 @@ namespace mbottrilby
         private void ApplySharedTagClearedEvent(TrilbyEventsClientService.SharedTagClearedEvent sharedTagClearedEvent)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0 || selectedGuildId.Value != sharedTagClearedEvent.GuildId)
+            if (selectedGuildId is null or <= 0 || selectedGuildId.Value != sharedTagClearedEvent.GuildId)
             {
                 return;
             }
@@ -2716,7 +2716,7 @@ namespace mbottrilby
         private void SetCurrentSelectedTagName(string? tagName)
         {
             long? selectedGuildId = GetSelectedServerId();
-            if (selectedGuildId is not > 0)
+            if (selectedGuildId is null or <= 0)
             {
                 return;
             }
