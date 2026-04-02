@@ -141,7 +141,7 @@ namespace mbottrilby.ViewModels
                 return string.Empty;
             }
 
-            var trimmed = sourceUrl.Trim();
+            string trimmed = sourceUrl.Trim();
             if (trimmed.Length <= SourceUrlMaxLength)
             {
                 return trimmed;

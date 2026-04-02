@@ -20,7 +20,7 @@ namespace mbottrilby.Services
 
         public void Error(string category, string message, Exception? exception = null)
         {
-            var fullMessage = exception is null
+            string fullMessage = exception is null
                 ? message
                 : $"{message} Exception={exception.GetType().Name}: {exception.Message}";
             Write("ERROR", category, fullMessage);
@@ -53,7 +53,7 @@ namespace mbottrilby.Services
 
         private void Write(string level, string category, string message)
         {
-            var timestamped = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [{level}] [{category}] {message}";
+            string timestamped = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [{level}] [{category}] {message}";
             Debug.WriteLine(timestamped);
 
             try

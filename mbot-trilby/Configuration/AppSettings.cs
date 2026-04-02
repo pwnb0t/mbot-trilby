@@ -61,7 +61,7 @@ namespace mbottrilby.Configuration
 
         public IReadOnlyList<TrilbyEnvironmentCatalogEntry> GetAvailableEnvironments()
         {
-            var environments = new List<TrilbyEnvironmentCatalogEntry>();
+            System.Collections.Generic.List<mbottrilby.Configuration.TrilbyEnvironmentCatalogEntry> environments = new List<TrilbyEnvironmentCatalogEntry>();
             AddIfConfigured(environments, "dev", Dev);
             AddIfConfigured(environments, "test", Test);
             AddIfConfigured(environments, "prod", Prod);
@@ -70,7 +70,7 @@ namespace mbottrilby.Configuration
 
         public TrilbyEnvironmentSettings GetByName(string environmentName)
         {
-            var configuredEnvironment = environmentName.ToLowerInvariant() switch
+            mbottrilby.Configuration.TrilbyEnvironmentSettings configuredEnvironment = environmentName.ToLowerInvariant() switch
             {
                 "dev" => Dev,
                 "test" => Test,
@@ -83,7 +83,7 @@ namespace mbottrilby.Configuration
                 return configuredEnvironment!;
             }
 
-            var fallback = GetAvailableEnvironments().FirstOrDefault();
+            mbottrilby.Configuration.TrilbyEnvironmentCatalogEntry fallback = GetAvailableEnvironments().FirstOrDefault();
             if (fallback is not null)
             {
                 return fallback.Settings;

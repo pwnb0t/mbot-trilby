@@ -29,21 +29,21 @@ namespace mbottrilby.Tests.Services
             WriteLogFile("overlay-2.log", "second", DateTime.UtcNow.AddMinutes(-2));
             WriteLogFile("overlay-3.log", "third", DateTime.UtcNow.AddMinutes(-1));
 
-            var service = new TrilbySupportLogService(_tempDirectory);
+            mbottrilby.Services.TrilbySupportLogService service = new TrilbySupportLogService(_tempDirectory);
 
-            var bundle = service.CreateBundle("dev", 174346738478481408, "pwn b0t", 123);
+            mbottrilby.Services.PreparedLogBundle bundle = service.CreateBundle("dev", 174346738478481408, "pwn b0t", 123);
 
             Assert.Contains("pwn-b0t_174346738478481408_dev.zip", bundle.FileName);
 
-            using var archiveStream = new MemoryStream(Convert.FromBase64String(bundle.ContentBase64));
-            using var archive = new ZipArchive(archiveStream, ZipArchiveMode.Read);
+            using System.IO.MemoryStream archiveStream = new MemoryStream(Convert.FromBase64String(bundle.ContentBase64));
+            using System.IO.Compression.ZipArchive archive = new ZipArchive(archiveStream, ZipArchiveMode.Read);
             Assert.NotNull(archive.GetEntry("metadata.json"));
             Assert.NotNull(archive.GetEntry("overlay.log"));
             Assert.NotNull(archive.GetEntry("overlay-2.log"));
             Assert.NotNull(archive.GetEntry("overlay-3.log"));
 
-            using var metadataStream = archive.GetEntry("metadata.json")!.Open();
-            using var document = JsonDocument.Parse(metadataStream);
+            using System.IO.Stream metadataStream = archive.GetEntry("metadata.json")!.Open();
+            using System.Text.Json.JsonDocument document = JsonDocument.Parse(metadataStream);
             Assert.Equal("dev", document.RootElement.GetProperty("EnvironmentName").GetString());
             Assert.Equal(174346738478481408, document.RootElement.GetProperty("UserId").GetInt64());
             Assert.Equal("pwn b0t", document.RootElement.GetProperty("Username").GetString());
@@ -53,7 +53,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void CreateBundle_Limits_Log_Files_To_Five_Most_Recent()
         {
-            for (var index = 0; index < 6; index += 1)
+            for (int index = 0; index < 6; index += 1)
             {
                 WriteLogFile(
                     $"overlay-{index}.log",
@@ -61,13 +61,13 @@ namespace mbottrilby.Tests.Services
                     DateTime.UtcNow.AddMinutes(-index));
             }
 
-            var service = new TrilbySupportLogService(_tempDirectory);
+            mbottrilby.Services.TrilbySupportLogService service = new TrilbySupportLogService(_tempDirectory);
 
-            var bundle = service.CreateBundle("prod", 1, "tester", null);
+            mbottrilby.Services.PreparedLogBundle bundle = service.CreateBundle("prod", 1, "tester", null);
 
-            using var archiveStream = new MemoryStream(Convert.FromBase64String(bundle.ContentBase64));
-            using var archive = new ZipArchive(archiveStream, ZipArchiveMode.Read);
-            var logEntryNames = archive.Entries
+            using System.IO.MemoryStream archiveStream = new MemoryStream(Convert.FromBase64String(bundle.ContentBase64));
+            using System.IO.Compression.ZipArchive archive = new ZipArchive(archiveStream, ZipArchiveMode.Read);
+            string[] logEntryNames = archive.Entries
                 .Select(entry => entry.FullName)
                 .Where(name => name.EndsWith(".log", StringComparison.OrdinalIgnoreCase))
                 .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
@@ -78,7 +78,7 @@ namespace mbottrilby.Tests.Services
 
         private void WriteLogFile(string fileName, string content, DateTime lastWriteTimeUtc)
         {
-            var path = Path.Combine(_tempDirectory, "logs", fileName);
+            string path = Path.Combine(_tempDirectory, "logs", fileName);
             File.WriteAllText(path, content);
             File.SetLastWriteTimeUtc(path, lastWriteTimeUtc);
         }

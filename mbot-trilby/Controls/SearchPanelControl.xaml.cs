@@ -63,23 +63,23 @@ namespace mbottrilby.Controls
 
         private static void OnSearchQueryDisplayChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (SearchPanelControl)d;
+            mbottrilby.Controls.SearchPanelControl control = (SearchPanelControl)d;
             control.SearchQueryTextBlock.Text = e.NewValue as string ?? "Start typing to search...";
         }
 
         private static void OnVisibleClipsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (SearchPanelControl)d;
+            mbottrilby.Controls.SearchPanelControl control = (SearchPanelControl)d;
             control.SearchResultsGrid.Children.Clear();
-            var searchResults = e.NewValue as IReadOnlyList<ClipSearchResult>;
+            System.Collections.Generic.IReadOnlyList<mbottrilby.Search.ClipSearchResult> searchResults = e.NewValue as IReadOnlyList<ClipSearchResult>;
             if (searchResults is null)
             {
                 return;
             }
 
-            foreach (var searchResult in searchResults)
+            foreach (mbottrilby.Search.ClipSearchResult searchResult in searchResults)
             {
-                var button = new System.Windows.Controls.Button
+                System.Windows.Controls.Button button = new System.Windows.Controls.Button
                 {
                     Content = CreateHighlightedContent(searchResult),
                     Style = (Style)control.FindResource("ClipButtonStyle"),
@@ -97,18 +97,18 @@ namespace mbottrilby.Controls
 
         private static void OnNoResultsVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (SearchPanelControl)d;
-            var isVisible = e.NewValue is bool b && b;
+            mbottrilby.Controls.SearchPanelControl control = (SearchPanelControl)d;
+            bool isVisible = e.NewValue is bool b && b;
             control.NoResultsTextBlock.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private static System.Windows.Controls.TextBlock CreateHighlightedContent(ClipSearchResult clip)
         {
-            var textBlock = new System.Windows.Controls.TextBlock();
-            var accentBrush = (System.Windows.Media.Brush)System.Windows.Application.Current.FindResource("AccentBrush");
-            foreach (var segment in clip.Segments)
+            System.Windows.Controls.TextBlock textBlock = new System.Windows.Controls.TextBlock();
+            System.Windows.Media.Brush accentBrush = (System.Windows.Media.Brush)System.Windows.Application.Current.FindResource("AccentBrush");
+            foreach (mbottrilby.Search.ClipSearchMatchSegment segment in clip.Segments)
             {
-                var run = new Run(segment.Text);
+                System.Windows.Documents.Run run = new Run(segment.Text);
                 if (segment.IsMatch)
                 {
                     run.FontWeight = FontWeights.SemiBold;

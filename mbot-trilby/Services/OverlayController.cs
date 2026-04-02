@@ -67,7 +67,7 @@ namespace mbottrilby.Services
 
         public static double GetReservedBottomHeight()
         {
-            var taskbarHeightEstimate = Math.Max(0, SystemParameters.PrimaryScreenHeight - SystemParameters.WorkArea.Height);
+            double taskbarHeightEstimate = Math.Max(0, SystemParameters.PrimaryScreenHeight - SystemParameters.WorkArea.Height);
             return Math.Max(
                 OverlayBottomReserveMinPixels,
                 taskbarHeightEstimate + OverlayBottomReservePaddingPixels
@@ -81,11 +81,11 @@ namespace mbottrilby.Services
                 return false;
             }
 
-            var topLeft = _overlayPanelBorder.PointToScreen(new System.Windows.Point(0, 0));
-            var bottomRight = _overlayPanelBorder.PointToScreen(
+            System.Windows.Point topLeft = _overlayPanelBorder.PointToScreen(new System.Windows.Point(0, 0));
+            System.Windows.Point bottomRight = _overlayPanelBorder.PointToScreen(
                 new System.Windows.Point(_overlayPanelBorder.ActualWidth, _overlayPanelBorder.ActualHeight)
             );
-            var panelRect = new Rect(topLeft, bottomRight);
+            System.Windows.Rect panelRect = new Rect(topLeft, bottomRight);
             return panelRect.Contains(screenPoint);
         }
 
@@ -128,8 +128,8 @@ namespace mbottrilby.Services
 
         private void EnableNoActivateMode(IntPtr windowHandle)
         {
-            var currentExStyle = GetWindowLongPtr(windowHandle, GwlExStyle).ToInt64();
-            var updatedExStyle = new IntPtr(currentExStyle | WsExNoActivate);
+            long currentExStyle = GetWindowLongPtr(windowHandle, GwlExStyle).ToInt64();
+            nint updatedExStyle = new IntPtr(currentExStyle | WsExNoActivate);
             SetWindowLongPtr(windowHandle, GwlExStyle, updatedExStyle);
         }
 
@@ -140,7 +140,7 @@ namespace mbottrilby.Services
                 return;
             }
 
-            var currentExStyle = GetWindowLongPtr(_windowHandle, GwlExStyle).ToInt64();
+            long currentExStyle = GetWindowLongPtr(_windowHandle, GwlExStyle).ToInt64();
             long updatedExStyle;
             if (enabled)
             {

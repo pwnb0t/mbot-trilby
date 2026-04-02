@@ -34,7 +34,7 @@ namespace mbottrilby.Services
                 return;
             }
 
-            var trayIconImage = LoadTrayIcon();
+            System.Drawing.Icon trayIconImage = LoadTrayIcon();
             _trayIcon = new Forms.NotifyIcon
             {
                 Icon = trayIconImage,
@@ -42,7 +42,7 @@ namespace mbottrilby.Services
                 Visible = true
             };
 
-            var trayMenu = new Forms.ContextMenuStrip();
+            System.Windows.Forms.ContextMenuStrip trayMenu = new Forms.ContextMenuStrip();
             trayMenu.Items.Add("Settings", null, (_, _) => _openSettings());
             trayMenu.Items.Add(new Forms.ToolStripSeparator());
             trayMenu.Items.Add("Exit", null, (_, _) => _exitApp());
@@ -77,7 +77,7 @@ namespace mbottrilby.Services
 
         private Icon LoadTrayIcon()
         {
-            var iconPath = Path.Combine(_appBaseDirectory, "mbot.ico");
+            string iconPath = Path.Combine(_appBaseDirectory, "mbot.ico");
             if (!File.Exists(iconPath))
             {
                 return SystemIcons.Application;

@@ -130,12 +130,12 @@ namespace mbottrilby
             _clipPlaybackCoordinator = new ClipPlaybackCoordinator(_trilbyApiClient);
 
             _isRunningFromLocalBuildOutput = IsRunningFromLocalBuildOutput();
-            var appDataDirectoryName = _isRunningFromLocalBuildOutput ? "mbot-trilby-dev" : "mbot-trilby";
+            string appDataDirectoryName = _isRunningFromLocalBuildOutput ? "mbot-trilby-dev" : "mbot-trilby";
             _appDataDirectory = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 appDataDirectoryName
             );
-            var logDirectory = Path.Combine(_appDataDirectory, "logs");
+            string logDirectory = Path.Combine(_appDataDirectory, "logs");
             Directory.CreateDirectory(logDirectory);
             _logFilePath = Path.Combine(logDirectory, "overlay.log");
             _userSettingsStore = new UserSettingsStateStore(_appDataDirectory);
@@ -152,7 +152,7 @@ namespace mbottrilby
             _viewModel.ClipDetail = _clipDetail;
             _viewModel.ShowScreenshotButton = _isRunningFromLocalBuildOutput;
             _clipDetail.ShowPlaceholder();
-            var initialSelectedTagName = GetCurrentSelectedTagName();
+            string initialSelectedTagName = GetCurrentSelectedTagName();
             if (!string.IsNullOrWhiteSpace(initialSelectedTagName))
             {
                 _tagWidget.SetLoading(initialSelectedTagName);
@@ -205,7 +205,7 @@ namespace mbottrilby
 
         private async void QuickPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            var slot = TryGetQuickPlaySlot(sender);
+            mbottrilby.ViewModels.QuickPlaySlotViewModel slot = TryGetQuickPlaySlot(sender);
             if (slot is null)
             {
                 return;
@@ -221,7 +221,7 @@ namespace mbottrilby
                 return;
             }
 
-            using var refreshScope = BeginRefreshOperation();
+            using System.IDisposable refreshScope = BeginRefreshOperation();
             if (!await EnsureAuthenticatedApiClientAsync("manual refresh"))
             {
                 return;
@@ -240,10 +240,10 @@ namespace mbottrilby
 
             try
             {
-                var screenshotsDirectory = Path.Combine(_appDataDirectory, "screenshots");
+                string screenshotsDirectory = Path.Combine(_appDataDirectory, "screenshots");
                 Directory.CreateDirectory(screenshotsDirectory);
-                var fileName = $"trilby-{DateTime.Now:yyyyMMdd-HHmmss}.png";
-                var filePath = Path.Combine(screenshotsDirectory, fileName);
+                string fileName = $"trilby-{DateTime.Now:yyyyMMdd-HHmmss}.png";
+                string filePath = Path.Combine(screenshotsDirectory, fileName);
                 SaveOverlayScreenshot(filePath);
                 Log($"Saved overlay screenshot to '{filePath}'.");
             }
@@ -263,8 +263,8 @@ namespace mbottrilby
             ResetSearchState();
             HideOverlayAfterClipPlayIfNeeded("Overlay hidden after random clip play request.");
 
-            var result = await _clipPlaybackCoordinator.PlayRandomAsync();
-            foreach (var logLine in result.LogLines)
+            mbottrilby.Services.ClipPlaybackCoordinator.PlayClipResult result = await _clipPlaybackCoordinator.PlayRandomAsync();
+            foreach (string logLine in result.LogLines)
             {
                 Log(logLine);
             }
@@ -282,8 +282,8 @@ namespace mbottrilby
                 return;
             }
 
-            var result = await _clipPlaybackCoordinator.StopClipAsync();
-            foreach (var logLine in result.LogLines)
+            mbottrilby.Services.ClipPlaybackCoordinator.StopClipResult result = await _clipPlaybackCoordinator.StopClipAsync();
+            foreach (string logLine in result.LogLines)
             {
                 Log(logLine);
             }
@@ -334,7 +334,7 @@ namespace mbottrilby
 
             if (searchResult.Kind == SearchResultKind.Clip)
             {
-                if (!_clipCatalogByTrigger.TryGetValue(searchResult.Value, out var clip))
+                if (!_clipCatalogByTrigger.TryGetValue(searchResult.Value, out mbottrilby.Services.TrilbyApiClientService.ClipCatalogEntry clip))
                 {
                     return;
                 }
@@ -349,7 +349,7 @@ namespace mbottrilby
                 return;
             }
 
-            if (_tagCatalogByName.TryGetValue(searchResult.Value, out var tag))
+            if (_tagCatalogByName.TryGetValue(searchResult.Value, out mbottrilby.Services.TrilbyApiClientService.TagCatalogEntry tag))
             {
                 _clipDetail.ShowTag(tag.Name, tag.ClipTriggers);
             }
@@ -373,13 +373,13 @@ namespace mbottrilby
                 this,
                 button =>
                 {
-                    var trigger = button.Tag as string;
+                    string trigger = button.Tag as string;
                     if (string.IsNullOrWhiteSpace(trigger))
                     {
                         return null;
                     }
 
-                    var sourceTagName = button.DataContext is TagClipEntryViewModel tagClip
+                    string sourceTagName = button.DataContext is TagClipEntryViewModel tagClip
                         ? tagClip.TagName
                         : null;
                     return new ClipAssignmentDragData(OverlayDragDataKind.Clip, trigger, sourceTagName);
@@ -442,7 +442,7 @@ namespace mbottrilby
 
         private async void TagWidgetPlayRandomButton_Click(object sender, RoutedEventArgs e)
         {
-            var tagWidget = GetTagWidgetFromSender(sender);
+            mbottrilby.ViewModels.TagWidgetViewModel tagWidget = GetTagWidgetFromSender(sender);
             if (tagWidget is null || string.IsNullOrWhiteSpace(tagWidget.SelectedTagName))
             {
                 return;
@@ -453,7 +453,7 @@ namespace mbottrilby
 
         private void TagWidgetPanel_DragEnter(object sender, System.Windows.DragEventArgs e)
         {
-            var tagWidget = GetTagWidgetFromSender(sender);
+            mbottrilby.ViewModels.TagWidgetViewModel tagWidget = GetTagWidgetFromSender(sender);
             if (tagWidget is null)
             {
                 return;
@@ -472,7 +472,7 @@ namespace mbottrilby
 
         private void TagWidgetPanel_DragLeave(object sender, System.Windows.DragEventArgs e)
         {
-            var tagWidget = GetTagWidgetFromSender(sender);
+            mbottrilby.ViewModels.TagWidgetViewModel tagWidget = GetTagWidgetFromSender(sender);
             if (tagWidget is null)
             {
                 return;
@@ -484,7 +484,7 @@ namespace mbottrilby
 
         private void TagWidgetPanel_DragOver(object sender, System.Windows.DragEventArgs e)
         {
-            var tagWidget = GetTagWidgetFromSender(sender);
+            mbottrilby.ViewModels.TagWidgetViewModel tagWidget = GetTagWidgetFromSender(sender);
             if (tagWidget is null)
             {
                 return;
@@ -503,14 +503,14 @@ namespace mbottrilby
 
         private async void TagWidgetPanel_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            var tagWidget = GetTagWidgetFromSender(sender);
+            mbottrilby.ViewModels.TagWidgetViewModel tagWidget = GetTagWidgetFromSender(sender);
             if (tagWidget is null)
             {
                 return;
             }
 
             tagWidget.IsTagDragHoverTarget = false;
-            var dragData = TryGetDroppedClipAssignment(e);
+            mbottrilby.Services.ClipAssignmentDragData dragData = TryGetDroppedClipAssignment(e);
             if (dragData is null || dragData.Kind != OverlayDragDataKind.Tag || string.IsNullOrWhiteSpace(dragData.TagName))
             {
                 UpdateTagDropZones();
@@ -537,7 +537,7 @@ namespace mbottrilby
 
         private void TagDropZone_DragEnter(object sender, System.Windows.DragEventArgs e)
         {
-            var tagWidget = GetTagWidgetFromSender(sender);
+            mbottrilby.ViewModels.TagWidgetViewModel tagWidget = GetTagWidgetFromSender(sender);
             if (tagWidget is null || !tagWidget.HasSelectedTag || !HasClipTriggerDragData(e))
             {
                 e.Effects = System.Windows.DragDropEffects.None;
@@ -551,7 +551,7 @@ namespace mbottrilby
 
         private void TagDropZone_DragLeave(object sender, System.Windows.DragEventArgs e)
         {
-            var tagWidget = GetTagWidgetFromSender(sender);
+            mbottrilby.ViewModels.TagWidgetViewModel tagWidget = GetTagWidgetFromSender(sender);
             if (tagWidget is null)
             {
                 return;
@@ -563,7 +563,7 @@ namespace mbottrilby
 
         private void TagDropZone_DragOver(object sender, System.Windows.DragEventArgs e)
         {
-            var tagWidget = GetTagWidgetFromSender(sender);
+            mbottrilby.ViewModels.TagWidgetViewModel tagWidget = GetTagWidgetFromSender(sender);
             e.Effects = tagWidget is not null && tagWidget.HasSelectedTag && HasClipTriggerDragData(e)
                 ? System.Windows.DragDropEffects.Copy
                 : System.Windows.DragDropEffects.None;
@@ -572,7 +572,7 @@ namespace mbottrilby
 
         private async void TagDropZone_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            var tagWidget = GetTagWidgetFromSender(sender);
+            mbottrilby.ViewModels.TagWidgetViewModel tagWidget = GetTagWidgetFromSender(sender);
             if (tagWidget is null)
             {
                 return;
@@ -580,8 +580,8 @@ namespace mbottrilby
 
             tagWidget.IsDragHoverTarget = false;
             e.Handled = true;
-            var dragData = TryGetDroppedClipAssignment(e);
-            var selectedTagName = tagWidget.SelectedTagName;
+            mbottrilby.Services.ClipAssignmentDragData dragData = TryGetDroppedClipAssignment(e);
+            string selectedTagName = tagWidget.SelectedTagName;
             if (GetTagDropRequestInFlight(tagWidget) || dragData is null || string.IsNullOrWhiteSpace(selectedTagName))
             {
                 UpdateTagDropZones();
@@ -610,7 +610,7 @@ namespace mbottrilby
             }
             catch (Exception ex)
             {
-                var action = IsSelectedTagRemovalDrag(dragData, selectedTagName) ? "remove" : "add";
+                string action = IsSelectedTagRemovalDrag(dragData, selectedTagName) ? "remove" : "add";
                 Log($"Failed to {action} clip '{dragData.Trigger}' {(action == "remove" ? "from" : "to")} &{selectedTagName}: {ex.Message}");
             }
             finally
@@ -736,7 +736,7 @@ namespace mbottrilby
         private async void CurrentIntroButton_Drop(object sender, System.Windows.DragEventArgs e)
         {
             _currentIntroDragHover = false;
-            var dragData = TryGetDroppedClipAssignment(e);
+            mbottrilby.Services.ClipAssignmentDragData dragData = TryGetDroppedClipAssignment(e);
             if (dragData is null || string.IsNullOrWhiteSpace(dragData.Trigger))
             {
                 UpdateCurrentIntroSlot();
@@ -751,7 +751,7 @@ namespace mbottrilby
 
             try
             {
-                var currentIntro = await _trilbyApiClient.SetCurrentIntroAsync(dragData.Trigger);
+                mbottrilby.Services.TrilbyApiClientService.CurrentIntroState currentIntro = await _trilbyApiClient.SetCurrentIntroAsync(dragData.Trigger);
                 _currentIntroSlot.Trigger = currentIntro.Trigger;
                 Log($"Assigned current intro -> {dragData.Trigger}");
             }
@@ -779,8 +779,8 @@ namespace mbottrilby
         {
             base.OnSourceInitialized(e);
 
-            var helper = new WindowInteropHelper(this);
-            var source = HwndSource.FromHwnd(helper.Handle);
+            System.Windows.Interop.WindowInteropHelper helper = new WindowInteropHelper(this);
+            System.Windows.Interop.HwndSource source = HwndSource.FromHwnd(helper.Handle);
             source?.AddHook(WndProc);
             _overlayController.InitializeWindowHandle(helper.Handle);
 
@@ -814,7 +814,7 @@ namespace mbottrilby
         {
             if (_hotkeyRegistered)
             {
-                var helper = new WindowInteropHelper(this);
+                System.Windows.Interop.WindowInteropHelper helper = new WindowInteropHelper(this);
                 UnregisterHotKey(helper.Handle, HotkeyId);
                 _hotkeyRegistered = false;
             }
@@ -847,7 +847,7 @@ namespace mbottrilby
                     return;
                 }
 
-                var message = await _trilbyApiClient.GetHealthSummaryAsync();
+                string message = await _trilbyApiClient.GetHealthSummaryAsync();
                 Log(message);
             }
             catch (Exception ex)
@@ -863,8 +863,8 @@ namespace mbottrilby
                 return;
             }
 
-            var result = await _clipPlaybackCoordinator.LoadClipsAsync(reason);
-            foreach (var logLine in result.LogLines)
+            mbottrilby.Services.ClipPlaybackCoordinator.LoadClipsResult result = await _clipPlaybackCoordinator.LoadClipsAsync(reason);
+            foreach (string logLine in result.LogLines)
             {
                 Log(logLine);
             }
@@ -872,7 +872,7 @@ namespace mbottrilby
             if (result.Success)
             {
                 _clipCatalogByTrigger.Clear();
-                foreach (var clip in result.Clips)
+                foreach (mbottrilby.Services.TrilbyApiClientService.ClipCatalogEntry clip in result.Clips)
                 {
                     _clipCatalogByTrigger[clip.Trigger] = clip;
                 }
@@ -902,8 +902,8 @@ namespace mbottrilby
                 return;
             }
 
-            var result = await _clipPlaybackCoordinator.LoadTagsAsync(reason);
-            foreach (var logLine in result.LogLines)
+            mbottrilby.Services.ClipPlaybackCoordinator.LoadTagsResult result = await _clipPlaybackCoordinator.LoadTagsAsync(reason);
+            foreach (string logLine in result.LogLines)
             {
                 Log(logLine);
             }
@@ -912,7 +912,7 @@ namespace mbottrilby
             {
                 _tagCatalogByName.Clear();
                 _allTagNames.Clear();
-                foreach (var tag in result.Tags)
+                foreach (mbottrilby.Services.TrilbyApiClientService.TagCatalogEntry tag in result.Tags)
                 {
                     _tagCatalogByName[tag.Name] = tag;
                     _allTagNames.Add(tag.Name);
@@ -952,8 +952,8 @@ namespace mbottrilby
             try
             {
                 Log($"Loading tag clips ({reason}) for &{tagName}...");
-                var catalog = await _trilbyApiClient.ListTagClipsAsync(tagName);
-                var clips = catalog.Triggers
+                mbottrilby.Services.TrilbyApiClientService.TagClipCatalog catalog = await _trilbyApiClient.ListTagClipsAsync(tagName);
+                mbottrilby.ViewModels.TagClipEntryViewModel[] clips = catalog.Triggers
                     .Select(trigger => new TagClipEntryViewModel(trigger, catalog.TagName))
                     .ToArray();
                 _tagWidget.SetLoaded(catalog.TagName, clips);
@@ -970,13 +970,13 @@ namespace mbottrilby
 
         private void LoadTagWidgetFromCatalog(TagWidgetViewModel tagWidget, string tagName)
         {
-            if (!_tagCatalogByName.TryGetValue(tagName, out var catalog))
+            if (!_tagCatalogByName.TryGetValue(tagName, out mbottrilby.Services.TrilbyApiClientService.TagCatalogEntry catalog))
             {
                 tagWidget.SetFailed(tagName, $"Failed to load &{tagName}");
                 return;
             }
 
-            var clips = catalog.ClipTriggers
+            mbottrilby.ViewModels.TagClipEntryViewModel[] clips = catalog.ClipTriggers
                 .Select(trigger => new TagClipEntryViewModel(trigger, catalog.Name))
                 .ToArray();
             tagWidget.SetLoaded(catalog.Name, clips);
@@ -993,7 +993,7 @@ namespace mbottrilby
             try
             {
                 Log($"Loading shared tag ({reason})...");
-                var sharedTagName = await _trilbyApiClient.GetSharedTagAsync();
+                string sharedTagName = await _trilbyApiClient.GetSharedTagAsync();
                 if (string.IsNullOrWhiteSpace(sharedTagName))
                 {
                     _sharedTagWidget.ClearSelection();
@@ -1046,8 +1046,8 @@ namespace mbottrilby
             ResetSearchState();
             HideOverlayAfterClipPlayIfNeeded("Overlay hidden after clip play request.");
 
-            var result = await _clipPlaybackCoordinator.PlayClipAsync(clipName, trigger);
-            foreach (var logLine in result.LogLines)
+            mbottrilby.Services.ClipPlaybackCoordinator.PlayClipResult result = await _clipPlaybackCoordinator.PlayClipAsync(clipName, trigger);
+            foreach (string logLine in result.LogLines)
             {
                 Log(logLine);
             }
@@ -1083,7 +1083,7 @@ namespace mbottrilby
 
         private async System.Threading.Tasks.Task PlayQuickPlaySlotByIndexAsync(int slotIndex)
         {
-            var slot = _quickPlaySlots.FirstOrDefault(item => item.SlotIndex == slotIndex);
+            mbottrilby.ViewModels.QuickPlaySlotViewModel slot = _quickPlaySlots.FirstOrDefault(item => item.SlotIndex == slotIndex);
             if (slot is null)
             {
                 return;
@@ -1106,14 +1106,14 @@ namespace mbottrilby
             try
             {
                 Log($"Loading top clip stats ({reason})...");
-                var catalog = await _trilbyApiClient.GetTopClipStatsAsync(
+                mbottrilby.Services.TrilbyApiClientService.TopClipStatsCatalog catalog = await _trilbyApiClient.GetTopClipStatsAsync(
                     days: _topClipStatsDays,
                     limit: TopClipStatsLimit,
                     includeRandom: false,
                     guildWide: _topClipStatsGuildWide
                 );
 
-                var rows = catalog.Rows
+                mbottrilby.ViewModels.TopClipStatEntryViewModel[] rows = catalog.Rows
                     .Select(row => new TopClipStatEntryViewModel(
                         row.Trigger,
                         row.PlayCount == 1 ? "1 play" : $"{row.PlayCount} plays"
@@ -1135,8 +1135,8 @@ namespace mbottrilby
 
         private void UpdateTopStatsFilterButtonVisuals()
         {
-            var defaultStyle = (Style)FindResource("StatsFilterButtonStyle");
-            var selectedStyle = (Style)FindResource("StatsFilterButtonSelectedStyle");
+            System.Windows.Style defaultStyle = (Style)FindResource("StatsFilterButtonStyle");
+            System.Windows.Style selectedStyle = (Style)FindResource("StatsFilterButtonSelectedStyle");
 
             TopStatsScopeMeButton.Style = _topClipStatsGuildWide ? defaultStyle : selectedStyle;
             TopStatsScopeServerButton.Style = _topClipStatsGuildWide ? selectedStyle : defaultStyle;
@@ -1161,13 +1161,13 @@ namespace mbottrilby
             try
             {
                 Log($"Loading recent clip stats ({reason})...");
-                var catalog = await _trilbyApiClient.GetRecentClipStatsAsync(
+                mbottrilby.Services.TrilbyApiClientService.RecentClipStatsCatalog catalog = await _trilbyApiClient.GetRecentClipStatsAsync(
                     limit: RecentClipStatsLimit,
                     includeRandom: _recentStatsIncludeRandom,
                     guildWide: _recentStatsGuildWide
                 );
 
-                var rows = catalog.Rows
+                mbottrilby.ViewModels.RecentClipEntryViewModel[] rows = catalog.Rows
                     .Select(row => new RecentClipEntryViewModel(
                         row.Trigger,
                         row.Trigger,
@@ -1202,7 +1202,7 @@ namespace mbottrilby
             try
             {
                 Log($"Loading current intro ({reason})...");
-                var currentIntro = await _trilbyApiClient.GetCurrentIntroAsync();
+                mbottrilby.Services.TrilbyApiClientService.CurrentIntroState currentIntro = await _trilbyApiClient.GetCurrentIntroAsync();
                 _currentIntroSlot.Trigger = currentIntro.Trigger;
             }
             catch (Exception ex)
@@ -1215,8 +1215,8 @@ namespace mbottrilby
 
         private void UpdateRecentStatsFilterButtonVisuals()
         {
-            var defaultStyle = (Style)FindResource("StatsFilterButtonStyle");
-            var selectedStyle = (Style)FindResource("StatsFilterButtonSelectedStyle");
+            System.Windows.Style defaultStyle = (Style)FindResource("StatsFilterButtonStyle");
+            System.Windows.Style selectedStyle = (Style)FindResource("StatsFilterButtonSelectedStyle");
 
             RecentStatsScopeMeButton.Style = _recentStatsGuildWide ? defaultStyle : selectedStyle;
             RecentStatsScopeEveryoneButton.Style = _recentStatsGuildWide ? selectedStyle : defaultStyle;
@@ -1225,9 +1225,9 @@ namespace mbottrilby
 
         private void RegisterOverlayHotkey(IntPtr hwnd)
         {
-            var modifiers = ParseModifiers(_settings.Hotkey.Modifiers) | HotkeyModifiers.NoRepeat;
-            var key = ParseKey(_settings.Hotkey.Key);
-            var virtualKey = KeyInterop.VirtualKeyFromKey(key);
+            mbottrilby.MainWindow.HotkeyModifiers modifiers = ParseModifiers(_settings.Hotkey.Modifiers) | HotkeyModifiers.NoRepeat;
+            System.Windows.Input.Key key = ParseKey(_settings.Hotkey.Key);
+            int virtualKey = KeyInterop.VirtualKeyFromKey(key);
 
             _hotkeyRegistered = RegisterHotKey(hwnd, HotkeyId, (uint)modifiers, (uint)virtualKey);
             if (_hotkeyRegistered)
@@ -1303,21 +1303,21 @@ namespace mbottrilby
         {
             RootOverlayGrid.UpdateLayout();
 
-            var width = Math.Max(1, (int)Math.Ceiling(RootOverlayGrid.ActualWidth));
-            var height = Math.Max(1, (int)Math.Ceiling(RootOverlayGrid.ActualHeight));
-            var renderTarget = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+            int width = Math.Max(1, (int)Math.Ceiling(RootOverlayGrid.ActualWidth));
+            int height = Math.Max(1, (int)Math.Ceiling(RootOverlayGrid.ActualHeight));
+            System.Windows.Media.Imaging.RenderTargetBitmap renderTarget = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
             renderTarget.Render(RootOverlayGrid);
 
-            var encoder = new PngBitmapEncoder();
+            System.Windows.Media.Imaging.PngBitmapEncoder encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(renderTarget));
 
-            using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            using System.IO.FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
             encoder.Save(fileStream);
         }
 
         private void PrepareOverlayWindowForShow()
         {
-            var reservedBottomHeight = OverlayController.GetReservedBottomHeight();
+            double reservedBottomHeight = OverlayController.GetReservedBottomHeight();
             WindowState = WindowState.Normal;
             Left = 0;
             Top = 0;
@@ -1350,8 +1350,8 @@ namespace mbottrilby
 
         private void RenderSearchState()
         {
-            var query = _clipSearchState.Query;
-            var filteredResults = _clipSearchState.FilteredResults;
+            string query = _clipSearchState.Query;
+            System.Collections.Generic.IReadOnlyList<mbottrilby.Search.ClipSearchResult> filteredResults = _clipSearchState.FilteredResults;
             _viewModel.SearchQueryDisplay = string.IsNullOrEmpty(query)
                 ? "Start typing to search..."
                 : query;
@@ -1366,7 +1366,7 @@ namespace mbottrilby
                 return;
             }
 
-            var first = _clipSearchState.FirstResultOrDefault();
+            mbottrilby.Search.ClipSearchResult first = _clipSearchState.FirstResultOrDefault();
             if (first is null)
             {
                 return;
@@ -1392,14 +1392,14 @@ namespace mbottrilby
             try
             {
                 Log($"Loading tag clips ({reason}) for random &{tagName} play...");
-                var catalog = await _trilbyApiClient.ListTagClipsAsync(tagName);
+                mbottrilby.Services.TrilbyApiClientService.TagClipCatalog catalog = await _trilbyApiClient.ListTagClipsAsync(tagName);
                 if (catalog.Triggers.Count == 0)
                 {
                     Log($"Play tag failed for &{tagName}: tag has no clips.");
                     return;
                 }
 
-                var selectedTrigger = catalog.Triggers[RandomNumberGenerator.GetInt32(catalog.Triggers.Count)];
+                string selectedTrigger = catalog.Triggers[RandomNumberGenerator.GetInt32(catalog.Triggers.Count)];
                 await PlayClipAsync($"&{tagName}", selectedTrigger);
             }
             catch (Exception ex)
@@ -1412,7 +1412,7 @@ namespace mbottrilby
         {
             if (isAltDown)
             {
-                var quickPlaySlotIndex = TryGetQuickPlaySlotIndexFromAltHotkey(virtualKey);
+                int quickPlaySlotIndex = TryGetQuickPlaySlotIndexFromAltHotkey(virtualKey);
                 if (quickPlaySlotIndex > 0)
                 {
                     _ = PlayQuickPlaySlotByIndexAsync(quickPlaySlotIndex);
@@ -1465,7 +1465,7 @@ namespace mbottrilby
                 return true;
             }
 
-            var character = TryGetSearchCharacter(virtualKey);
+            char? character = TryGetSearchCharacter(virtualKey);
             if (character is null)
             {
                 return ShouldConsumeOverlayKey(virtualKey, isAltDown);
@@ -1558,12 +1558,12 @@ namespace mbottrilby
 
         private static string FormatTimeAgo(string playedAtUtc)
         {
-            if (!DateTimeOffset.TryParse(playedAtUtc, out var playedAt))
+            if (!DateTimeOffset.TryParse(playedAtUtc, out System.DateTimeOffset playedAt))
             {
                 return string.Empty;
             }
 
-            var delta = DateTimeOffset.UtcNow - playedAt.ToUniversalTime();
+            System.TimeSpan delta = DateTimeOffset.UtcNow - playedAt.ToUniversalTime();
             if (delta < TimeSpan.Zero)
             {
                 delta = TimeSpan.Zero;
@@ -1599,8 +1599,8 @@ namespace mbottrilby
 
         private void HideOverlayWithConditionalSearchReset(string logMessage)
         {
-            var hasQuery = !string.IsNullOrEmpty(_clipSearchState.Query);
-            var hasResults = _clipSearchState.FilteredResults.Count > 0;
+            bool hasQuery = !string.IsNullOrEmpty(_clipSearchState.Query);
+            bool hasResults = _clipSearchState.FilteredResults.Count > 0;
             if (!hasQuery || !hasResults)
             {
                 ResetSearchState();
@@ -1613,7 +1613,7 @@ namespace mbottrilby
         private void HandleQuickPlayDrop(int slotIndex, System.Windows.DragEventArgs e)
         {
             _quickPlayDragHoverSlot = 0;
-            var dragData = TryGetDroppedClipAssignment(e);
+            mbottrilby.Services.ClipAssignmentDragData dragData = TryGetDroppedClipAssignment(e);
             if (dragData is null || string.IsNullOrWhiteSpace(dragData.Trigger))
             {
                 UpdateQuickPlaySlots();
@@ -1646,7 +1646,7 @@ namespace mbottrilby
 
         private void UpdateRecentClipTimeTexts()
         {
-            foreach (var row in _viewModel.RecentClipStats)
+            foreach (mbottrilby.ViewModels.RecentClipEntryViewModel row in _viewModel.RecentClipStats)
             {
                 row.PlayedAgoText = FormatTimeAgo(row.PlayedAtUtc);
             }
@@ -1727,7 +1727,7 @@ namespace mbottrilby
 
         private void ApplyClipPlayedEvent(TrilbyEventsClientService.ClipPlayedEvent clipPlayedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != clipPlayedEvent.GuildId)
             {
                 return;
@@ -1739,7 +1739,7 @@ namespace mbottrilby
 
             if (!_recentStatsGuildWide)
             {
-                var session = _userSettings.GetSession(GetSelectedEnvironmentName());
+                mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(GetSelectedEnvironmentName());
                 if (session?.UserId is not > 0 || session.UserId != clipPlayedEvent.RequesterUserId)
                 {
                     return;
@@ -1751,7 +1751,7 @@ namespace mbottrilby
                 return;
             }
 
-            var rows = _viewModel.RecentClipStats.ToList();
+            System.Collections.Generic.List<mbottrilby.ViewModels.RecentClipEntryViewModel> rows = _viewModel.RecentClipStats.ToList();
             rows.Insert(
                 0,
                 new RecentClipEntryViewModel(
@@ -1769,7 +1769,7 @@ namespace mbottrilby
 
         private void ApplyClipPlayCountChangedEvent(TrilbyEventsClientService.ClipPlayCountChangedEvent clipPlayCountChangedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != clipPlayCountChangedEvent.GuildId)
             {
                 return;
@@ -1781,7 +1781,7 @@ namespace mbottrilby
 
             if (!_topClipStatsGuildWide)
             {
-                var session = _userSettings.GetSession(GetSelectedEnvironmentName());
+                mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(GetSelectedEnvironmentName());
                 if (session?.UserId is not > 0 || session.UserId != clipPlayCountChangedEvent.RequesterUserId)
                 {
                     return;
@@ -1799,7 +1799,7 @@ namespace mbottrilby
 
         private void ApplyClipCreatedEvent(TrilbyEventsClientService.ClipCreatedEvent clipCreatedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != clipCreatedEvent.GuildId)
             {
                 return;
@@ -1818,14 +1818,14 @@ namespace mbottrilby
                         .Where(tagName => !string.IsNullOrWhiteSpace(tagName))
                         .OrderBy(tagName => tagName, StringComparer.OrdinalIgnoreCase)
                         .ToList()));
-            foreach (var tagName in clipCreatedEvent.TagNames.Where(tagName => !string.IsNullOrWhiteSpace(tagName)))
+            foreach (string tagName in clipCreatedEvent.TagNames.Where(tagName => !string.IsNullOrWhiteSpace(tagName)))
             {
                 UpdateTagCatalogEntry(tagName, clipCreatedEvent.Trigger, isAdd: true);
                 UpdateSelectedTagWidgets(tagName);
             }
 
             if (string.Equals(_clipDetail.CurrentClipTrigger, clipCreatedEvent.Trigger, StringComparison.OrdinalIgnoreCase) &&
-                _clipCatalogByTrigger.TryGetValue(clipCreatedEvent.Trigger, out var clipCatalogEntry))
+                _clipCatalogByTrigger.TryGetValue(clipCreatedEvent.Trigger, out mbottrilby.Services.TrilbyApiClientService.ClipCatalogEntry clipCatalogEntry))
             {
                 _clipDetail.ShowClip(
                     clipCatalogEntry.Trigger,
@@ -1839,7 +1839,7 @@ namespace mbottrilby
 
         private void ApplyClipDeletedEvent(TrilbyEventsClientService.ClipDeletedEvent clipDeletedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != clipDeletedEvent.GuildId)
             {
                 return;
@@ -1851,7 +1851,7 @@ namespace mbottrilby
 
         private void ApplyClipTaggedEvent(TrilbyEventsClientService.ClipTaggedEvent clipTaggedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != clipTaggedEvent.GuildId)
             {
                 return;
@@ -1865,7 +1865,7 @@ namespace mbottrilby
 
         private void ApplyClipUntaggedEvent(TrilbyEventsClientService.ClipUntaggedEvent clipUntaggedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != clipUntaggedEvent.GuildId)
             {
                 return;
@@ -1879,13 +1879,13 @@ namespace mbottrilby
 
         private void ApplyCurrentIntroUpdatedEvent(TrilbyEventsClientService.CurrentIntroUpdatedEvent currentIntroUpdatedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != currentIntroUpdatedEvent.GuildId)
             {
                 return;
             }
 
-            var session = _userSettings.GetSession(GetSelectedEnvironmentName());
+            mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(GetSelectedEnvironmentName());
             if (session?.UserId is not > 0 || session.UserId != currentIntroUpdatedEvent.UserId)
             {
                 return;
@@ -1900,7 +1900,7 @@ namespace mbottrilby
 
         private void ApplyTagCreatedEvent(TrilbyEventsClientService.TagCreatedEvent tagCreatedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != tagCreatedEvent.GuildId)
             {
                 return;
@@ -1912,7 +1912,7 @@ namespace mbottrilby
 
         private void ApplyTagDeletedEvent(TrilbyEventsClientService.TagDeletedEvent tagDeletedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != tagDeletedEvent.GuildId)
             {
                 return;
@@ -1924,7 +1924,7 @@ namespace mbottrilby
 
         private void ApplySharedTagSelectedEvent(TrilbyEventsClientService.SharedTagSelectedEvent sharedTagSelectedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != sharedTagSelectedEvent.GuildId)
             {
                 return;
@@ -1943,7 +1943,7 @@ namespace mbottrilby
 
         private void ApplySharedTagClearedEvent(TrilbyEventsClientService.SharedTagClearedEvent sharedTagClearedEvent)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0 || selectedGuildId.Value != sharedTagClearedEvent.GuildId)
             {
                 return;
@@ -1955,8 +1955,8 @@ namespace mbottrilby
 
         private void UpdateTagMembershipState(string tagName, string clipTrigger, bool isAdd)
         {
-            var normalizedTagName = tagName.Trim();
-            var normalizedTrigger = clipTrigger.Trim();
+            string normalizedTagName = tagName.Trim();
+            string normalizedTrigger = clipTrigger.Trim();
             if (normalizedTagName.Length == 0 || normalizedTrigger.Length == 0)
             {
                 return;
@@ -1970,7 +1970,7 @@ namespace mbottrilby
 
         private void UpdateTagCatalogEntry(string tagName, string clipTrigger, bool isAdd)
         {
-            if (!_tagCatalogByName.TryGetValue(tagName, out var existingTag))
+            if (!_tagCatalogByName.TryGetValue(tagName, out mbottrilby.Services.TrilbyApiClientService.TagCatalogEntry existingTag))
             {
                 if (!isAdd)
                 {
@@ -1982,7 +1982,7 @@ namespace mbottrilby
 
             }
 
-            var updatedTriggers = existingTag.ClipTriggers.ToList();
+            System.Collections.Generic.List<string> updatedTriggers = existingTag.ClipTriggers.ToList();
             if (isAdd)
             {
                 if (!updatedTriggers.Contains(clipTrigger, StringComparer.OrdinalIgnoreCase))
@@ -2041,7 +2041,7 @@ namespace mbottrilby
 
             _allClipTriggers.RemoveAll(existingTrigger =>
                 string.Equals(existingTrigger, trigger, StringComparison.OrdinalIgnoreCase));
-            foreach (var tagName in _tagCatalogByName.Keys.ToList())
+            foreach (string tagName in _tagCatalogByName.Keys.ToList())
             {
                 UpdateTagCatalogEntry(tagName, trigger, isAdd: false);
                 UpdateSelectedTagWidgets(tagName);
@@ -2059,10 +2059,10 @@ namespace mbottrilby
 
         private void RemoveTagFromCatalogState(string tagName)
         {
-            var removed = _tagCatalogByName.Remove(tagName);
+            bool removed = _tagCatalogByName.Remove(tagName);
             _allTagNames.RemoveAll(existingTagName =>
                 string.Equals(existingTagName, tagName, StringComparison.OrdinalIgnoreCase));
-            foreach (var clipTrigger in _clipCatalogByTrigger.Keys.ToList())
+            foreach (string clipTrigger in _clipCatalogByTrigger.Keys.ToList())
             {
                 UpdateClipCatalogEntryTags(clipTrigger, tagName, isAdd: false);
             }
@@ -2097,12 +2097,12 @@ namespace mbottrilby
 
         private void UpdateClipCatalogEntryTags(string clipTrigger, string tagName, bool isAdd)
         {
-            if (!_clipCatalogByTrigger.TryGetValue(clipTrigger, out var existingClip))
+            if (!_clipCatalogByTrigger.TryGetValue(clipTrigger, out mbottrilby.Services.TrilbyApiClientService.ClipCatalogEntry existingClip))
             {
                 return;
             }
 
-            var updatedTagNames = existingClip.TagNames.ToList();
+            System.Collections.Generic.List<string> updatedTagNames = existingClip.TagNames.ToList();
             if (isAdd)
             {
                 if (!updatedTagNames.Contains(tagName, StringComparer.OrdinalIgnoreCase))
@@ -2139,12 +2139,12 @@ namespace mbottrilby
                 return;
             }
 
-            if (!_tagCatalogByName.TryGetValue(tagName, out var tagCatalogEntry))
+            if (!_tagCatalogByName.TryGetValue(tagName, out mbottrilby.Services.TrilbyApiClientService.TagCatalogEntry tagCatalogEntry))
             {
                 return;
             }
 
-            var clips = tagCatalogEntry.ClipTriggers
+            mbottrilby.ViewModels.TagClipEntryViewModel[] clips = tagCatalogEntry.ClipTriggers
                 .Select(trigger => new TagClipEntryViewModel(trigger, tagCatalogEntry.Name))
                 .ToArray();
             tagWidget.SetLoaded(tagCatalogEntry.Name, clips);
@@ -2153,13 +2153,13 @@ namespace mbottrilby
         private void UpdateClipDetailForTagMembershipChange(string tagName, string clipTrigger)
         {
             if (string.Equals(_clipDetail.CurrentTagName, tagName, StringComparison.OrdinalIgnoreCase) &&
-                _tagCatalogByName.TryGetValue(tagName, out var tagCatalogEntry))
+                _tagCatalogByName.TryGetValue(tagName, out mbottrilby.Services.TrilbyApiClientService.TagCatalogEntry tagCatalogEntry))
             {
                 _clipDetail.ShowTag(tagCatalogEntry.Name, tagCatalogEntry.ClipTriggers);
             }
 
             if (string.Equals(_clipDetail.CurrentClipTrigger, clipTrigger, StringComparison.OrdinalIgnoreCase) &&
-                _clipCatalogByTrigger.TryGetValue(clipTrigger, out var clipCatalogEntry))
+                _clipCatalogByTrigger.TryGetValue(clipTrigger, out mbottrilby.Services.TrilbyApiClientService.ClipCatalogEntry clipCatalogEntry))
             {
                 _clipDetail.ShowClip(
                     clipCatalogEntry.Trigger,
@@ -2173,8 +2173,8 @@ namespace mbottrilby
 
         private void UpdateQuickPlaySlots()
         {
-            var selectedGuildId = GetSelectedServerId();
-            foreach (var slot in _quickPlaySlots)
+            long? selectedGuildId = GetSelectedServerId();
+            foreach (mbottrilby.ViewModels.QuickPlaySlotViewModel slot in _quickPlaySlots)
             {
                 slot.Trigger = selectedGuildId is > 0
                     ? _userSettings.GetTrigger(GetSelectedEnvironmentName(), selectedGuildId.Value, slot.SlotIndex)
@@ -2198,7 +2198,7 @@ namespace mbottrilby
 
         private void UpdateTagDropZone(TagWidgetViewModel tagWidget)
         {
-            var isTagDragActive = _activeClipAssignmentDragData is not null &&
+            bool isTagDragActive = _activeClipAssignmentDragData is not null &&
                 _activeClipAssignmentDragData.Kind == OverlayDragDataKind.Tag;
             tagWidget.IsTagDragAvailableTarget = isTagDragActive && !tagWidget.IsTagDragHoverTarget;
             tagWidget.IsRemoveDragOperation = _clipAssignmentDragActive &&
@@ -2249,11 +2249,11 @@ namespace mbottrilby
 
         private async System.Threading.Tasks.Task InitializeAuthenticatedStateAsync(string reason)
         {
-            using var refreshScope = BeginRefreshOperation();
+            using System.IDisposable refreshScope = BeginRefreshOperation();
             if (!await EnsureAuthenticatedApiClientAsync(reason))
             {
                 await StopEventsClientAsync();
-                var status = GetInactiveServerStatusText();
+                string status = GetInactiveServerStatusText();
                 UpdateClipCountText(0, status);
                 _viewModel.TopStatsStatusText = status;
                 _viewModel.RecentStatsStatusText = status;
@@ -2289,9 +2289,9 @@ namespace mbottrilby
 
         private async System.Threading.Tasks.Task<bool> EnsureAuthenticatedApiClientAsync(string reason)
         {
-            var environmentName = GetSelectedEnvironmentName();
-            var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
-            var session = _userSettings.GetSession(environmentName);
+            string environmentName = GetSelectedEnvironmentName();
+            mbottrilby.Configuration.TrilbyEnvironmentSettings environment = _settings.TrilbyEnvironments.GetByName(environmentName);
+            mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(environmentName);
             if (session is null || !session.IsAuthenticated)
             {
                 _trilbyApiClient = null;
@@ -2304,7 +2304,7 @@ namespace mbottrilby
                 try
                 {
                     Log($"Refreshing expired session for {environmentName} ({reason})...");
-                    var refreshedSession = await _trilbyAuthenticationService.RefreshSessionAsync(
+                    mbottrilby.Services.TrilbySessionSettings refreshedSession = await _trilbyAuthenticationService.RefreshSessionAsync(
                         environment.BaseUrl,
                         session.RefreshToken ?? string.Empty);
                     _userSettings.SetSession(environmentName, refreshedSession);
@@ -2325,7 +2325,7 @@ namespace mbottrilby
             }
 
             EnsureSelectedServerIsValid(environmentName, session);
-            var selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
+            long? selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
             if (selectedGuildId is null or <= 0)
             {
                 _trilbyApiClient = null;
@@ -2343,10 +2343,10 @@ namespace mbottrilby
 
         private async System.Threading.Tasks.Task EnsureEventsClientAsync(string reason)
         {
-            var environmentName = GetSelectedEnvironmentName();
-            var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
-            var session = _userSettings.GetSession(environmentName);
-            var selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
+            string environmentName = GetSelectedEnvironmentName();
+            mbottrilby.Configuration.TrilbyEnvironmentSettings environment = _settings.TrilbyEnvironments.GetByName(environmentName);
+            mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(environmentName);
+            long? selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
 
             if (session is null ||
                 !session.IsAuthenticated ||
@@ -2398,7 +2398,7 @@ namespace mbottrilby
             _eventsAuthRecoveryInFlight = true;
             try
             {
-                var environmentName = GetSelectedEnvironmentName();
+                string environmentName = GetSelectedEnvironmentName();
                 Log(
                     $"Trilby events auth failed ({(int)statusCode} {statusCode}) for {environmentName}; " +
                     $"attempting session refresh. error={errorMessage}");
@@ -2430,8 +2430,8 @@ namespace mbottrilby
 
         private async System.Threading.Tasks.Task<bool> TryRefreshSessionForEventsRecoveryAsync(string environmentName)
         {
-            var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
-            var session = _userSettings.GetSession(environmentName);
+            mbottrilby.Configuration.TrilbyEnvironmentSettings environment = _settings.TrilbyEnvironments.GetByName(environmentName);
+            mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(environmentName);
             if (session is null || !session.IsAuthenticated || string.IsNullOrWhiteSpace(session.RefreshToken))
             {
                 return false;
@@ -2439,7 +2439,7 @@ namespace mbottrilby
 
             try
             {
-                var refreshedSession = await _trilbyAuthenticationService.RefreshSessionAsync(
+                mbottrilby.Services.TrilbySessionSettings refreshedSession = await _trilbyAuthenticationService.RefreshSessionAsync(
                     environment.BaseUrl,
                     session.RefreshToken);
                 _userSettings.SetSession(environmentName, refreshedSession);
@@ -2526,7 +2526,7 @@ namespace mbottrilby
 
             // WPF activation is not always enough on startup when Visual Studio or another
             // app still has focus. Temporarily toggling Topmost reliably surfaces Settings.
-            var wasTopmost = window.Topmost;
+            bool wasTopmost = window.Topmost;
             window.Topmost = true;
             window.Activate();
             window.Focus();
@@ -2535,7 +2535,7 @@ namespace mbottrilby
 
         private async System.Threading.Tasks.Task<TrilbyUpdateStatus> CheckForUpdatesAsync()
         {
-            var status = await _trilbyUpdateService.CheckForUpdatesAsync();
+            mbottrilby.Services.TrilbyUpdateStatus status = await _trilbyUpdateService.CheckForUpdatesAsync();
             Log(status.StatusText);
             _settingsWindow?.RefreshView();
             return status;
@@ -2543,8 +2543,8 @@ namespace mbottrilby
 
         private async System.Threading.Tasks.Task SignInToEnvironmentAsync(string environmentName)
         {
-            var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
-            var session = await _trilbyAuthenticationService.SignInAsync(environment.BaseUrl);
+            mbottrilby.Configuration.TrilbyEnvironmentSettings environment = _settings.TrilbyEnvironments.GetByName(environmentName);
+            mbottrilby.Services.TrilbySessionSettings session = await _trilbyAuthenticationService.SignInAsync(environment.BaseUrl);
             _userSettings.SetSession(environmentName, session);
             EnsureSelectedServerIsValid(environmentName, session);
             SaveUserSettings();
@@ -2615,42 +2615,42 @@ namespace mbottrilby
 
         private async System.Threading.Tasks.Task OpenClipBrowserAsync(string environmentName)
         {
-            var session = _userSettings.GetSession(environmentName);
+            mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(environmentName);
             if (session is null || !session.IsAuthenticated || string.IsNullOrWhiteSpace(session.AccessToken))
             {
                 throw new InvalidOperationException("Sign in before opening Haberdashery.");
             }
 
-            var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
-            using var apiClient = new TrilbyApiClientService(
+            mbottrilby.Configuration.TrilbyEnvironmentSettings environment = _settings.TrilbyEnvironments.GetByName(environmentName);
+            using mbottrilby.Services.TrilbyApiClientService apiClient = new TrilbyApiClientService(
                 environment.BaseUrl,
                 session.AccessToken,
                 _userSettings.GetSelectedGuildId(environmentName) ?? 0);
-            var browserUrl = await apiClient.CreateBrowserLaunchAsync();
+            string browserUrl = await apiClient.CreateBrowserLaunchAsync();
             Process.Start(new ProcessStartInfo(browserUrl) { UseShellExecute = true });
             Log($"Opened Haberdashery for {environmentName}.");
         }
 
         private async System.Threading.Tasks.Task<string> SendLogsToDeveloperAsync(string environmentName)
         {
-            var session = _userSettings.GetSession(environmentName);
+            mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(environmentName);
             if (session is null || !session.IsAuthenticated || string.IsNullOrWhiteSpace(session.AccessToken))
             {
                 throw new InvalidOperationException("Sign in before sending logs to the developer.");
             }
 
-            var environment = _settings.TrilbyEnvironments.GetByName(environmentName);
-            var selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
-            var preparedBundle = _trilbySupportLogService.CreateBundle(
+            mbottrilby.Configuration.TrilbyEnvironmentSettings environment = _settings.TrilbyEnvironments.GetByName(environmentName);
+            long? selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
+            mbottrilby.Services.PreparedLogBundle preparedBundle = _trilbySupportLogService.CreateBundle(
                 environmentName,
                 session.UserId,
                 session.Username,
                 selectedGuildId);
-            using var apiClient = new TrilbyApiClientService(
+            using mbottrilby.Services.TrilbyApiClientService apiClient = new TrilbyApiClientService(
                 environment.BaseUrl,
                 session.AccessToken,
                 selectedGuildId ?? 0);
-            var storedFileName = await apiClient.UploadLogBundleAsync(
+            string storedFileName = await apiClient.UploadLogBundleAsync(
                 preparedBundle.FileName,
                 preparedBundle.ContentBase64);
             Log($"Sent Trilby log bundle '{storedFileName}' for {environmentName}.");
@@ -2691,7 +2691,7 @@ namespace mbottrilby
 
         private void SetQuickPlayTrigger(int slotIndex, string trigger)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is null or <= 0)
             {
                 return;
@@ -2707,7 +2707,7 @@ namespace mbottrilby
 
         private string? GetCurrentSelectedTagName()
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             return selectedGuildId is > 0
                 ? _userSettings.GetSelectedTagName(GetSelectedEnvironmentName(), selectedGuildId.Value)
                 : null;
@@ -2715,7 +2715,7 @@ namespace mbottrilby
 
         private void SetCurrentSelectedTagName(string? tagName)
         {
-            var selectedGuildId = GetSelectedServerId();
+            long? selectedGuildId = GetSelectedServerId();
             if (selectedGuildId is not > 0)
             {
                 return;
@@ -2744,7 +2744,7 @@ namespace mbottrilby
         {
             UpdateQuickPlaySlots();
             _clipDetail.ShowPlaceholder();
-            var selectedTagName = GetCurrentSelectedTagName();
+            string selectedTagName = GetCurrentSelectedTagName();
             if (!string.IsNullOrWhiteSpace(selectedTagName))
             {
                 _tagWidget.SetLoading(selectedTagName);
@@ -2759,7 +2759,7 @@ namespace mbottrilby
 
         private void EnsureSelectedServerIsValid(string environmentName, TrilbySessionSettings? session)
         {
-            var selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
+            long? selectedGuildId = _userSettings.GetSelectedGuildId(environmentName);
             if (session is null || !session.IsAuthenticated || session.Servers.Count == 0)
             {
                 _userSettings.SetSelectedGuildId(environmentName, null);
@@ -2793,7 +2793,7 @@ namespace mbottrilby
 
         private void NormalizeSelectedEnvironment()
         {
-            var normalizedEnvironmentName = GetSelectedEnvironmentName();
+            string normalizedEnvironmentName = GetSelectedEnvironmentName();
             if (string.Equals(_userSettings.SelectedEnvironmentName, normalizedEnvironmentName, StringComparison.OrdinalIgnoreCase))
             {
                 return;
@@ -2872,7 +2872,7 @@ namespace mbottrilby
 
         private string GetInactiveServerStatusText()
         {
-            var session = _userSettings.GetSession(GetSelectedEnvironmentName());
+            mbottrilby.Services.TrilbySessionSettings session = _userSettings.GetSession(GetSelectedEnvironmentName());
             if (session is null || !session.IsAuthenticated)
             {
                 return "Not signed in";
@@ -2908,14 +2908,14 @@ namespace mbottrilby
             return button.Name switch
             {
                 _ when button.Tag is int slotIndex => slotIndex,
-                _ when button.Tag is string slotIndexText && int.TryParse(slotIndexText, out var parsedSlotIndex) => parsedSlotIndex,
+                _ when button.Tag is string slotIndexText && int.TryParse(slotIndexText, out int parsedSlotIndex) => parsedSlotIndex,
                 _ => 0
             };
         }
 
         private QuickPlaySlotViewModel? TryGetQuickPlaySlot(object sender)
         {
-            var slotIndex = GetQuickPlaySlotIndex(sender);
+            int slotIndex = GetQuickPlaySlotIndex(sender);
             if (slotIndex <= 0)
             {
                 return null;
@@ -2931,13 +2931,13 @@ namespace mbottrilby
 
         private static bool HasClipTriggerDragData(System.Windows.DragEventArgs e)
         {
-            var dragData = TryGetDroppedClipAssignment(e);
+            mbottrilby.Services.ClipAssignmentDragData dragData = TryGetDroppedClipAssignment(e);
             return dragData is not null && dragData.Kind == OverlayDragDataKind.Clip;
         }
 
         private static bool HasTagSelectionDragData(System.Windows.DragEventArgs e)
         {
-            var dragData = TryGetDroppedClipAssignment(e);
+            mbottrilby.Services.ClipAssignmentDragData dragData = TryGetDroppedClipAssignment(e);
             return dragData is not null && dragData.Kind == OverlayDragDataKind.Tag;
         }
 
@@ -2954,9 +2954,9 @@ namespace mbottrilby
 
         private static HotkeyModifiers ParseModifiers(string configuredModifiers)
         {
-            var result = HotkeyModifiers.None;
-            var pieces = configuredModifiers.Split('+', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            foreach (var piece in pieces)
+            mbottrilby.MainWindow.HotkeyModifiers result = HotkeyModifiers.None;
+            string[] pieces = configuredModifiers.Split('+', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            foreach (string piece in pieces)
             {
                 if (piece.Equals("Alt", StringComparison.OrdinalIgnoreCase))
                 {
@@ -2981,7 +2981,7 @@ namespace mbottrilby
 
         private static Key ParseKey(string configuredKey)
         {
-            if (Enum.TryParse<Key>(configuredKey, true, out var key) && key != Key.None)
+            if (Enum.TryParse<Key>(configuredKey, true, out System.Windows.Input.Key key) && key != Key.None)
             {
                 return key;
             }
@@ -2991,7 +2991,7 @@ namespace mbottrilby
 
         private static int ParseBindingVirtualKey(string configuredKey, Key defaultKey)
         {
-            if (Enum.TryParse<Key>(configuredKey, true, out var key) && key != Key.None)
+            if (Enum.TryParse<Key>(configuredKey, true, out System.Windows.Input.Key key) && key != Key.None)
             {
                 return KeyInterop.VirtualKeyFromKey(key);
             }
@@ -3013,7 +3013,7 @@ namespace mbottrilby
 
         private static bool IsRunningFromLocalBuildOutput()
         {
-            var projectFilePath = Path.GetFullPath(
+            string projectFilePath = Path.GetFullPath(
                 Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "mbot-trilby.csproj"));
             return File.Exists(projectFilePath);
         }

@@ -8,7 +8,7 @@ namespace mbottrilby.Tests.ViewModels
         [Fact]
         public void ShowPlaceholder_Resets_To_Default_Text()
         {
-            var viewModel = new ClipDetailViewModel();
+            mbottrilby.ViewModels.ClipDetailViewModel viewModel = new ClipDetailViewModel();
 
             viewModel.ShowClip("hello", "https://example.com/test", "1.25s", "2.5s", "pwnb0t", new[] { "test" });
             viewModel.ShowPlaceholder();
@@ -22,7 +22,7 @@ namespace mbottrilby.Tests.ViewModels
         [Fact]
         public void ShowClip_Formats_Fields_For_Display()
         {
-            var viewModel = new ClipDetailViewModel();
+            mbottrilby.ViewModels.ClipDetailViewModel viewModel = new ClipDetailViewModel();
 
             viewModel.ShowClip("hello", "https://example.com/test", "1.25s", "2.5s", "pwnb0t", new[] { "test", "wow" });
 
@@ -39,8 +39,8 @@ namespace mbottrilby.Tests.ViewModels
         [Fact]
         public void ShowClip_Trims_Long_Source_Urls()
         {
-            var viewModel = new ClipDetailViewModel();
-            var longUrl = "https://example.com/" + new string('a', 150);
+            mbottrilby.ViewModels.ClipDetailViewModel viewModel = new ClipDetailViewModel();
+            string longUrl = "https://example.com/" + new string('a', 150);
 
             viewModel.ShowClip("hello", longUrl, string.Empty, string.Empty, "pwnb0t", new string[0]);
 
@@ -51,7 +51,7 @@ namespace mbottrilby.Tests.ViewModels
         [Fact]
         public void ShowTag_Displays_Tag_And_Clip_List()
         {
-            var viewModel = new ClipDetailViewModel();
+            mbottrilby.ViewModels.ClipDetailViewModel viewModel = new ClipDetailViewModel();
 
             viewModel.ShowTag("test", new[] { "hello", "bye" });
 

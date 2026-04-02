@@ -14,7 +14,7 @@ namespace mbottrilby
         [STAThread]
         public static void Main()
         {
-            using var singleInstanceMutex = new Mutex(initiallyOwned: true, SingleInstanceMutexName, out var createdNew);
+            using System.Threading.Mutex singleInstanceMutex = new Mutex(initiallyOwned: true, SingleInstanceMutexName, out bool createdNew);
             if (!createdNew)
             {
                 return;
@@ -22,9 +22,9 @@ namespace mbottrilby
 
             VelopackApp.Build().Run();
 
-            var app = new App();
+            mbottrilby.App app = new App();
             app.InitializeComponent();
-            var mainWindow = new MainWindow();
+            mbottrilby.MainWindow mainWindow = new MainWindow();
             app.MainWindow = mainWindow;
             app.Run(mainWindow);
         }

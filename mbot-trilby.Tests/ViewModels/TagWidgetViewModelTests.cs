@@ -9,7 +9,7 @@ namespace mbottrilby.Tests.ViewModels
         [Fact]
         public void ClearSelection_Restores_Empty_State()
         {
-            var viewModel = new TagWidgetViewModel();
+            mbottrilby.ViewModels.TagWidgetViewModel viewModel = new TagWidgetViewModel();
             viewModel.SetLoaded("test", new[] { new TagClipEntryViewModel("alpha", "test") });
             viewModel.IsDragAvailableTarget = true;
             viewModel.IsDragHoverTarget = true;
@@ -31,7 +31,7 @@ namespace mbottrilby.Tests.ViewModels
         [Fact]
         public void SetLoading_Sets_Selected_Tag_And_Loading_Message()
         {
-            var viewModel = new TagWidgetViewModel();
+            mbottrilby.ViewModels.TagWidgetViewModel viewModel = new TagWidgetViewModel();
 
             viewModel.SetLoading("test");
 
@@ -46,7 +46,7 @@ namespace mbottrilby.Tests.ViewModels
         [Fact]
         public void SetLoaded_With_Clips_Clears_Status_And_Keeps_Entries()
         {
-            var viewModel = new TagWidgetViewModel();
+            mbottrilby.ViewModels.TagWidgetViewModel viewModel = new TagWidgetViewModel();
 
             viewModel.SetLoaded(
                 "test",
@@ -66,7 +66,7 @@ namespace mbottrilby.Tests.ViewModels
         [Fact]
         public void DropHintText_Uses_Remove_Copy_When_Remove_Drag_Is_Active()
         {
-            var viewModel = new TagWidgetViewModel();
+            mbottrilby.ViewModels.TagWidgetViewModel viewModel = new TagWidgetViewModel();
             viewModel.SetLoaded("test", new[] { new TagClipEntryViewModel("alpha", "test") });
 
             viewModel.IsRemoveDragOperation = true;
@@ -78,7 +78,7 @@ namespace mbottrilby.Tests.ViewModels
         [Fact]
         public void SetFailed_Keeps_Selected_Tag_And_Error_Message()
         {
-            var viewModel = new TagWidgetViewModel();
+            mbottrilby.ViewModels.TagWidgetViewModel viewModel = new TagWidgetViewModel();
 
             viewModel.SetFailed("missing", "Failed to load &missing");
 

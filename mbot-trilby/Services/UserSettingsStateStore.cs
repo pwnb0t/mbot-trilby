@@ -262,8 +262,8 @@ namespace mbottrilby.Services
 
         private QuickPlaySettings GetOrCreateQuickPlay(string environmentName, long guildId)
         {
-            var normalizedEnvironmentName = NormalizeEnvironmentName(environmentName);
-            var entry = QuickPlay.Servers.FirstOrDefault(candidate =>
+            string normalizedEnvironmentName = NormalizeEnvironmentName(environmentName);
+            mbottrilby.Services.ServerQuickPlaySettings entry = QuickPlay.Servers.FirstOrDefault(candidate =>
                 string.Equals(candidate.EnvironmentName, normalizedEnvironmentName, StringComparison.OrdinalIgnoreCase) &&
                 candidate.GuildId == guildId);
             if (entry is not null)
@@ -283,8 +283,8 @@ namespace mbottrilby.Services
 
         private TagSettings GetOrCreateTagSettings(string environmentName, long guildId)
         {
-            var normalizedEnvironmentName = NormalizeEnvironmentName(environmentName);
-            var entry = Tags.Servers.FirstOrDefault(candidate =>
+            string normalizedEnvironmentName = NormalizeEnvironmentName(environmentName);
+            mbottrilby.Services.ServerTagState entry = Tags.Servers.FirstOrDefault(candidate =>
                 string.Equals(candidate.EnvironmentName, normalizedEnvironmentName, StringComparison.OrdinalIgnoreCase) &&
                 candidate.GuildId == guildId);
             if (entry is not null)
@@ -326,7 +326,7 @@ namespace mbottrilby.Services
 
         public UserSettingsState Load()
         {
-            var fallback = UserSettingsState.CreateEmpty();
+            mbottrilby.Services.UserSettingsState fallback = UserSettingsState.CreateEmpty();
 
             if (File.Exists(_userSettingsPath))
             {
@@ -339,7 +339,7 @@ namespace mbottrilby.Services
 
         public void Save(UserSettingsState settings)
         {
-            var json = JsonSerializer.Serialize(settings, _serializerOptions);
+            string json = JsonSerializer.Serialize(settings, _serializerOptions);
             File.WriteAllText(_userSettingsPath, json);
         }
 
@@ -347,8 +347,8 @@ namespace mbottrilby.Services
         {
             try
             {
-                var json = File.ReadAllText(_userSettingsPath);
-                using var document = JsonDocument.Parse(json);
+                string json = File.ReadAllText(_userSettingsPath);
+                using System.Text.Json.JsonDocument document = JsonDocument.Parse(json);
                 return Normalize(LoadFromDocument(document.RootElement)) ?? fallback;
             }
             catch
@@ -373,7 +373,7 @@ namespace mbottrilby.Services
             settings.QuickPlay.Servers ??= new List<ServerQuickPlaySettings>();
             settings.Tags.Servers ??= new List<ServerTagState>();
 
-            foreach (var session in new[] { settings.Auth.Dev, settings.Auth.Test, settings.Auth.Prod })
+            foreach (mbottrilby.Services.TrilbySessionSettings session in new[] { settings.Auth.Dev, settings.Auth.Test, settings.Auth.Prod })
             {
                 if (session?.Servers is null)
                 {
@@ -391,7 +391,7 @@ namespace mbottrilby.Services
 
         private static UserSettingsState LoadFromDocument(JsonElement root)
         {
-            var state = UserSettingsState.CreateEmpty();
+            mbottrilby.Services.UserSettingsState state = UserSettingsState.CreateEmpty();
             state.SelectedEnvironmentName = ReadEnvironmentName(root);
             state.Options = ReadOptions(root);
             state.Auth = ReadAuthSettings(root);
@@ -403,8 +403,8 @@ namespace mbottrilby.Services
 
         private static string ReadEnvironmentName(JsonElement root)
         {
-            if (TryGetProperty(root, "environment", out var environmentElement) &&
-                TryGetProperty(environmentElement, "selectedName", out var selectedNameElement) &&
+            if (TryGetProperty(root, "environment", out System.Text.Json.JsonElement environmentElement) &&
+                TryGetProperty(environmentElement, "selectedName", out System.Text.Json.JsonElement selectedNameElement) &&
                 selectedNameElement.ValueKind == JsonValueKind.String)
             {
                 return selectedNameElement.GetString() ?? "dev";
@@ -415,30 +415,30 @@ namespace mbottrilby.Services
 
         private static OptionSettings ReadOptions(JsonElement root)
         {
-            var options = new OptionSettings();
-            if (!TryGetProperty(root, "options", out var optionsElement) || optionsElement.ValueKind != JsonValueKind.Object)
+            mbottrilby.Services.OptionSettings options = new OptionSettings();
+            if (!TryGetProperty(root, "options", out System.Text.Json.JsonElement optionsElement) || optionsElement.ValueKind != JsonValueKind.Object)
             {
                 return options;
             }
 
-            if (TryGetProperty(optionsElement, "opaqueBackground", out var opaqueBackgroundElement))
+            if (TryGetProperty(optionsElement, "opaqueBackground", out System.Text.Json.JsonElement opaqueBackgroundElement))
             {
                 options.OpaqueBackground = opaqueBackgroundElement.ValueKind switch
                 {
                     JsonValueKind.True => true,
                     JsonValueKind.False => false,
-                    JsonValueKind.String when bool.TryParse(opaqueBackgroundElement.GetString(), out var parsed) => parsed,
+                    JsonValueKind.String when bool.TryParse(opaqueBackgroundElement.GetString(), out bool parsed) => parsed,
                     _ => false
                 };
             }
 
-            if (TryGetProperty(optionsElement, "doNotHideWhenPlayingClip", out var doNotHideElement))
+            if (TryGetProperty(optionsElement, "doNotHideWhenPlayingClip", out System.Text.Json.JsonElement doNotHideElement))
             {
                 options.DoNotHideWhenPlayingClip = doNotHideElement.ValueKind switch
                 {
                     JsonValueKind.True => true,
                     JsonValueKind.False => false,
-                    JsonValueKind.String when bool.TryParse(doNotHideElement.GetString(), out var parsed) => parsed,
+                    JsonValueKind.String when bool.TryParse(doNotHideElement.GetString(), out bool parsed) => parsed,
                     _ => false
                 };
             }
@@ -448,8 +448,8 @@ namespace mbottrilby.Services
 
         private static AuthSettings ReadAuthSettings(JsonElement root)
         {
-            var auth = new AuthSettings();
-            if (!TryGetProperty(root, "auth", out var authElement) || authElement.ValueKind != JsonValueKind.Object)
+            mbottrilby.Services.AuthSettings auth = new AuthSettings();
+            if (!TryGetProperty(root, "auth", out System.Text.Json.JsonElement authElement) || authElement.ValueKind != JsonValueKind.Object)
             {
                 return auth;
             }
@@ -462,12 +462,12 @@ namespace mbottrilby.Services
 
         private static TrilbySessionSettings? ReadSession(JsonElement authElement, string environmentName)
         {
-            if (!TryGetProperty(authElement, environmentName, out var sessionElement) || sessionElement.ValueKind != JsonValueKind.Object)
+            if (!TryGetProperty(authElement, environmentName, out System.Text.Json.JsonElement sessionElement) || sessionElement.ValueKind != JsonValueKind.Object)
             {
                 return null;
             }
 
-            var session = new TrilbySessionSettings
+            mbottrilby.Services.TrilbySessionSettings session = new TrilbySessionSettings
             {
                 AccessToken = ReadString(sessionElement, "accessToken"),
                 RefreshToken = ReadString(sessionElement, "refreshToken"),
@@ -480,7 +480,7 @@ namespace mbottrilby.Services
 
             if (session.Servers.Count == 0)
             {
-                var legacyGuildId = ReadInt64(sessionElement, "guildId");
+                long legacyGuildId = ReadInt64(sessionElement, "guildId");
                 if (legacyGuildId > 0)
                 {
                     session.Servers.Add(new TrilbyGuildSettings
@@ -496,8 +496,8 @@ namespace mbottrilby.Services
 
         private static List<TrilbyGuildSettings> ReadServers(JsonElement sessionElement)
         {
-            var servers = new List<TrilbyGuildSettings>();
-            if (!TryGetProperty(sessionElement, "servers", out var serversElement) &&
+            System.Collections.Generic.List<mbottrilby.Services.TrilbyGuildSettings> servers = new List<TrilbyGuildSettings>();
+            if (!TryGetProperty(sessionElement, "servers", out System.Text.Json.JsonElement serversElement) &&
                 !TryGetProperty(sessionElement, "guilds", out serversElement))
             {
                 return servers;
@@ -508,9 +508,9 @@ namespace mbottrilby.Services
                 return servers;
             }
 
-            foreach (var serverElement in serversElement.EnumerateArray())
+            foreach (System.Text.Json.JsonElement serverElement in serversElement.EnumerateArray())
             {
-                var guildId = ReadInt64(serverElement, "guildId");
+                long guildId = ReadInt64(serverElement, "guildId");
                 if (guildId <= 0)
                 {
                     guildId = ReadInt64(serverElement, "guild_id");
@@ -535,7 +535,7 @@ namespace mbottrilby.Services
 
         private static ServerSelectionSettings ReadServerSelections(JsonElement root, AuthSettings auth)
         {
-            var selections = new ServerSelectionSettings
+            mbottrilby.Services.ServerSelectionSettings selections = new ServerSelectionSettings
             {
                 Dev = ReadSelectedGuildId(root, "dev"),
                 Test = ReadSelectedGuildId(root, "test"),
@@ -550,9 +550,9 @@ namespace mbottrilby.Services
 
         private static long? ReadSelectedGuildId(JsonElement root, string environmentName)
         {
-            if (!TryGetProperty(root, "serverSelections", out var selectionsElement) ||
+            if (!TryGetProperty(root, "serverSelections", out System.Text.Json.JsonElement selectionsElement) ||
                 selectionsElement.ValueKind != JsonValueKind.Object ||
-                !TryGetProperty(selectionsElement, environmentName, out var guildElement))
+                !TryGetProperty(selectionsElement, environmentName, out System.Text.Json.JsonElement guildElement))
             {
                 return null;
             }
@@ -560,25 +560,25 @@ namespace mbottrilby.Services
             return guildElement.ValueKind switch
             {
                 JsonValueKind.Number => guildElement.GetInt64(),
-                JsonValueKind.String when long.TryParse(guildElement.GetString(), out var parsed) => parsed,
+                JsonValueKind.String when long.TryParse(guildElement.GetString(), out long parsed) => parsed,
                 _ => null
             };
         }
 
         private static QuickPlayStateCatalog ReadQuickPlaySettings(JsonElement root, UserSettingsState state)
         {
-            var catalog = new QuickPlayStateCatalog();
-            if (!TryGetProperty(root, "quickPlay", out var quickPlayElement) || quickPlayElement.ValueKind != JsonValueKind.Object)
+            mbottrilby.Services.QuickPlayStateCatalog catalog = new QuickPlayStateCatalog();
+            if (!TryGetProperty(root, "quickPlay", out System.Text.Json.JsonElement quickPlayElement) || quickPlayElement.ValueKind != JsonValueKind.Object)
             {
                 return catalog;
             }
 
-            if (TryGetProperty(quickPlayElement, "servers", out var serversElement) && serversElement.ValueKind == JsonValueKind.Array)
+            if (TryGetProperty(quickPlayElement, "servers", out System.Text.Json.JsonElement serversElement) && serversElement.ValueKind == JsonValueKind.Array)
             {
-                foreach (var serverElement in serversElement.EnumerateArray())
+                foreach (System.Text.Json.JsonElement serverElement in serversElement.EnumerateArray())
                 {
-                    var environmentName = ReadString(serverElement, "environmentName") ?? "dev";
-                    var guildId = ReadInt64(serverElement, "guildId");
+                    string environmentName = ReadString(serverElement, "environmentName") ?? "dev";
+                    long guildId = ReadInt64(serverElement, "guildId");
                     if (guildId <= 0)
                     {
                         continue;
@@ -588,7 +588,7 @@ namespace mbottrilby.Services
                     {
                         EnvironmentName = environmentName,
                         GuildId = guildId,
-                        QuickPlay = TryGetProperty(serverElement, "quickPlay", out var quickPlayStateElement) &&
+                        QuickPlay = TryGetProperty(serverElement, "quickPlay", out System.Text.Json.JsonElement quickPlayStateElement) &&
                             quickPlayStateElement.ValueKind == JsonValueKind.Object
                             ? ReadLegacyQuickPlay(quickPlayStateElement)
                             : ReadLegacyQuickPlay(serverElement)
@@ -598,8 +598,8 @@ namespace mbottrilby.Services
                 return catalog;
             }
 
-            var selectedEnvironmentName = state.SelectedEnvironmentName;
-            var selectedGuildId = state.GetSelectedGuildId(selectedEnvironmentName);
+            string selectedEnvironmentName = state.SelectedEnvironmentName;
+            long? selectedGuildId = state.GetSelectedGuildId(selectedEnvironmentName);
             if (selectedGuildId is null or <= 0)
             {
                 return catalog;
@@ -631,18 +631,18 @@ namespace mbottrilby.Services
 
         private static TagStateCatalog ReadTagSettings(JsonElement root, UserSettingsState state)
         {
-            var catalog = new TagStateCatalog();
-            if (!TryGetProperty(root, "tags", out var tagsElement) || tagsElement.ValueKind != JsonValueKind.Object)
+            mbottrilby.Services.TagStateCatalog catalog = new TagStateCatalog();
+            if (!TryGetProperty(root, "tags", out System.Text.Json.JsonElement tagsElement) || tagsElement.ValueKind != JsonValueKind.Object)
             {
                 return catalog;
             }
 
-            if (TryGetProperty(tagsElement, "servers", out var serversElement) && serversElement.ValueKind == JsonValueKind.Array)
+            if (TryGetProperty(tagsElement, "servers", out System.Text.Json.JsonElement serversElement) && serversElement.ValueKind == JsonValueKind.Array)
             {
-                foreach (var serverElement in serversElement.EnumerateArray())
+                foreach (System.Text.Json.JsonElement serverElement in serversElement.EnumerateArray())
                 {
-                    var environmentName = ReadString(serverElement, "environmentName") ?? "dev";
-                    var guildId = ReadInt64(serverElement, "guildId");
+                    string environmentName = ReadString(serverElement, "environmentName") ?? "dev";
+                    long guildId = ReadInt64(serverElement, "guildId");
                     if (guildId <= 0)
                     {
                         continue;
@@ -654,7 +654,7 @@ namespace mbottrilby.Services
                         GuildId = guildId,
                         Tags = new TagSettings
                         {
-                            SelectedTagName = TryGetProperty(serverElement, "tags", out var tagStateElement) &&
+                            SelectedTagName = TryGetProperty(serverElement, "tags", out System.Text.Json.JsonElement tagStateElement) &&
                                 tagStateElement.ValueKind == JsonValueKind.Object
                                 ? ReadString(tagStateElement, "selectedTagName")
                                 : ReadString(serverElement, "selectedTagName")
@@ -665,8 +665,8 @@ namespace mbottrilby.Services
                 return catalog;
             }
 
-            var selectedEnvironmentName = state.SelectedEnvironmentName;
-            var selectedGuildId = state.GetSelectedGuildId(selectedEnvironmentName);
+            string selectedEnvironmentName = state.SelectedEnvironmentName;
+            long? selectedGuildId = state.GetSelectedGuildId(selectedEnvironmentName);
             if (selectedGuildId is null or <= 0)
             {
                 return catalog;
@@ -686,7 +686,7 @@ namespace mbottrilby.Services
 
         private static bool TryGetProperty(JsonElement element, string propertyName, out JsonElement propertyValue)
         {
-            foreach (var property in element.EnumerateObject())
+            foreach (System.Text.Json.JsonProperty property in element.EnumerateObject())
             {
                 if (string.Equals(property.Name, propertyName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -701,14 +701,14 @@ namespace mbottrilby.Services
 
         private static string? ReadString(JsonElement element, string propertyName)
         {
-            return TryGetProperty(element, propertyName, out var value) && value.ValueKind == JsonValueKind.String
+            return TryGetProperty(element, propertyName, out System.Text.Json.JsonElement value) && value.ValueKind == JsonValueKind.String
                 ? value.GetString()
                 : null;
         }
 
         private static long ReadInt64(JsonElement element, string propertyName)
         {
-            if (!TryGetProperty(element, propertyName, out var value))
+            if (!TryGetProperty(element, propertyName, out System.Text.Json.JsonElement value))
             {
                 return 0;
             }
@@ -716,14 +716,14 @@ namespace mbottrilby.Services
             return value.ValueKind switch
             {
                 JsonValueKind.Number => value.GetInt64(),
-                JsonValueKind.String when long.TryParse(value.GetString(), out var parsed) => parsed,
+                JsonValueKind.String when long.TryParse(value.GetString(), out long parsed) => parsed,
                 _ => 0
             };
         }
 
         private static long? ReadNullableInt64(JsonElement element, string propertyName)
         {
-            if (!TryGetProperty(element, propertyName, out var value))
+            if (!TryGetProperty(element, propertyName, out System.Text.Json.JsonElement value))
             {
                 return null;
             }
@@ -732,7 +732,7 @@ namespace mbottrilby.Services
             {
                 JsonValueKind.Null => null,
                 JsonValueKind.Number => value.GetInt64(),
-                JsonValueKind.String when long.TryParse(value.GetString(), out var parsed) => parsed,
+                JsonValueKind.String when long.TryParse(value.GetString(), out long parsed) => parsed,
                 _ => null
             };
         }

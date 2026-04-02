@@ -25,40 +25,40 @@ namespace mbottrilby.Services
 
         public async Task<TrilbySessionSettings> SignInAsync(string baseUrl, CancellationToken cancellationToken = default)
         {
-            var callbackPort = LoopbackPortAllocator.GetFreePort();
-            var callbackUrl = $"http://127.0.0.1:{callbackPort}/callback/";
-            var startUrl = $"{baseUrl.TrimEnd('/')}/v1/auth/discord/start?client_callback_url={Uri.EscapeDataString(callbackUrl)}";
+            int callbackPort = LoopbackPortAllocator.GetFreePort();
+            string callbackUrl = $"http://127.0.0.1:{callbackPort}/callback/";
+            string startUrl = $"{baseUrl.TrimEnd('/')}/v1/auth/discord/start?client_callback_url={Uri.EscapeDataString(callbackUrl)}";
 
-            using var listener = new HttpListener();
+            using System.Net.HttpListener listener = new HttpListener();
             listener.Prefixes.Add($"http://127.0.0.1:{callbackPort}/");
             listener.Start();
 
             Process.Start(new ProcessStartInfo(startUrl) { UseShellExecute = true });
 
-            var contextTask = listener.GetContextAsync();
-            var completedTask = await Task.WhenAny(contextTask, Task.Delay(TimeSpan.FromMinutes(5), cancellationToken));
+            System.Threading.Tasks.Task<System.Net.HttpListenerContext> contextTask = listener.GetContextAsync();
+            System.Threading.Tasks.Task completedTask = await Task.WhenAny(contextTask, Task.Delay(TimeSpan.FromMinutes(5), cancellationToken));
             if (completedTask != contextTask)
             {
                 throw new TimeoutException("Timed out waiting for the browser sign-in callback.");
             }
 
-            var context = await contextTask.ConfigureAwait(false);
+            System.Net.HttpListenerContext context = await contextTask.ConfigureAwait(false);
             try
             {
-                var query = context.Request.QueryString;
-                var callback = ParseCallback(query);
-                var errorText = GetErrorText(query);
+                System.Collections.Specialized.NameValueCollection query = context.Request.QueryString;
+                mbottrilby.Services.TrilbyAuthenticationService.TrilbySignInCallback callback = ParseCallback(query);
+                string errorText = GetErrorText(query);
                 await WriteLoopbackResponseAsync(
                     context.Response,
                     success: callback is not null,
                     errorText: errorText).ConfigureAwait(false);
                 if (callback is null)
                 {
-                    var errorMessage = errorText ?? "Authentication failed.";
+                    string errorMessage = errorText ?? "Authentication failed.";
                     throw new InvalidOperationException(errorMessage);
                 }
 
-                var sessionSummary = await GetSessionSummaryAsync(baseUrl, callback.AccessToken ?? string.Empty, cancellationToken)
+                mbottrilby.Services.TrilbyAuthenticationService.SessionSummaryPayload sessionSummary = await GetSessionSummaryAsync(baseUrl, callback.AccessToken ?? string.Empty, cancellationToken)
                     .ConfigureAwait(false);
                 return callback.ApplySummary(sessionSummary);
             }
@@ -73,22 +73,22 @@ namespace mbottrilby.Services
             string refreshToken,
             CancellationToken cancellationToken = default)
         {
-            using var httpClient = new HttpClient { BaseAddress = new Uri(baseUrl, UriKind.Absolute) };
-            using var request = new HttpRequestMessage(HttpMethod.Post, "/v1/auth/refresh")
+            using System.Net.Http.HttpClient httpClient = new HttpClient { BaseAddress = new Uri(baseUrl, UriKind.Absolute) };
+            using System.Net.Http.HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "/v1/auth/refresh")
             {
                 Content = new StringContent(
                     JsonSerializer.Serialize(new { refresh_token = refreshToken }),
                     Encoding.UTF8,
                     "application/json")
             };
-            using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            using System.Net.Http.HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            string responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 throw new InvalidOperationException($"Token refresh failed: {response.StatusCode} {responseText}");
             }
 
-            var payload = JsonSerializer.Deserialize<RefreshSessionPayload>(responseText, JsonOptions);
+            mbottrilby.Services.TrilbyAuthenticationService.RefreshSessionPayload payload = JsonSerializer.Deserialize<RefreshSessionPayload>(responseText, JsonOptions);
             if (payload is null)
             {
                 throw new InvalidOperationException("Token refresh failed: empty response.");
@@ -104,7 +104,7 @@ namespace mbottrilby.Services
                 return true;
             }
 
-            if (!DateTimeOffset.TryParse(session.ExpiresAtUtc, out var expiresAt))
+            if (!DateTimeOffset.TryParse(session.ExpiresAtUtc, out System.DateTimeOffset expiresAt))
             {
                 return true;
             }
@@ -114,13 +114,13 @@ namespace mbottrilby.Services
 
         private static TrilbySignInCallback? ParseCallback(NameValueCollection query)
         {
-            var status = query["status"];
+            string status = query["status"];
             if (!string.Equals(status, "ok", StringComparison.OrdinalIgnoreCase))
             {
                 return null;
             }
 
-            if (!long.TryParse(query["user_id"], out var userId))
+            if (!long.TryParse(query["user_id"], out long userId))
             {
                 throw new InvalidOperationException("Authentication callback did not include a valid user id.");
             }
@@ -137,8 +137,8 @@ namespace mbottrilby.Services
 
         private static string? GetErrorText(NameValueCollection query)
         {
-            var errorCode = query["error_code"];
-            var errorMessage = query["error_message"];
+            string errorCode = query["error_code"];
+            string errorMessage = query["error_message"];
             if (string.IsNullOrWhiteSpace(errorCode) && string.IsNullOrWhiteSpace(errorMessage))
             {
                 return null;
@@ -161,8 +161,8 @@ namespace mbottrilby.Services
         {
             response.StatusCode = success ? 200 : 400;
             response.ContentType = "text/html; charset=utf-8";
-            var html = BuildLoopbackResponseHtml(success, errorText);
-            var buffer = Encoding.UTF8.GetBytes(html);
+            string html = BuildLoopbackResponseHtml(success, errorText);
+            byte[] buffer = Encoding.UTF8.GetBytes(html);
             response.ContentLength64 = buffer.Length;
             await response.OutputStream.WriteAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
             response.OutputStream.Close();
@@ -170,16 +170,16 @@ namespace mbottrilby.Services
 
         private static string BuildLoopbackResponseHtml(bool success, string? errorText)
         {
-            var title = success ? "Trilby sign-in complete" : "Trilby sign-in failed";
-            var message = success
+            string title = success ? "Trilby sign-in complete" : "Trilby sign-in failed";
+            string message = success
                 ? "You can safely close this page."
                 : WebUtility.HtmlEncode(errorText ?? "Authentication failed.");
-            var secondaryMessage = success
+            string secondaryMessage = success
                 ? string.Empty
                 : "You can close this window and try again.";
-            var imageMarkup = BuildMbotImageMarkup();
-            var faviconMarkup = BuildAppFaviconMarkup();
-            var autoCloseScript = success
+            string imageMarkup = BuildMbotImageMarkup();
+            string faviconMarkup = BuildAppFaviconMarkup();
+            string autoCloseScript = success
                 ? """
                 <script>
                 window.setTimeout(function () {
@@ -274,7 +274,7 @@ namespace mbottrilby.Services
 
         private static string BuildAppFaviconMarkup()
         {
-            var iconPath = Path.Combine(AppContext.BaseDirectory, "mbot.ico");
+            string iconPath = Path.Combine(AppContext.BaseDirectory, "mbot.ico");
             if (!File.Exists(iconPath))
             {
                 return string.Empty;
@@ -282,8 +282,8 @@ namespace mbottrilby.Services
 
             try
             {
-                var bytes = File.ReadAllBytes(iconPath);
-                var base64 = Convert.ToBase64String(bytes);
+                byte[] bytes = File.ReadAllBytes(iconPath);
+                string base64 = Convert.ToBase64String(bytes);
                 return
                     $"""<link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,{base64}" />""" +
                     $"""<link rel="shortcut icon" type="image/x-icon" href="data:image/x-icon;base64,{base64}" />""";
@@ -296,7 +296,7 @@ namespace mbottrilby.Services
 
         private static string BuildMbotImageMarkup()
         {
-            var imagePath = Path.Combine(AppContext.BaseDirectory, "mbot.jpg");
+            string imagePath = Path.Combine(AppContext.BaseDirectory, "mbot.jpg");
             if (!File.Exists(imagePath))
             {
                 return string.Empty;
@@ -304,8 +304,8 @@ namespace mbottrilby.Services
 
             try
             {
-                var bytes = File.ReadAllBytes(imagePath);
-                var base64 = Convert.ToBase64String(bytes);
+                byte[] bytes = File.ReadAllBytes(imagePath);
+                string base64 = Convert.ToBase64String(bytes);
                 return $"""<div class="image-wrap"><img src="data:image/jpeg;base64,{base64}" alt="m'bot" /></div>""";
             }
             catch
@@ -319,17 +319,17 @@ namespace mbottrilby.Services
             string accessToken,
             CancellationToken cancellationToken)
         {
-            using var httpClient = new HttpClient { BaseAddress = new Uri(baseUrl, UriKind.Absolute) };
-            using var request = new HttpRequestMessage(HttpMethod.Get, "/v1/auth/me");
+            using System.Net.Http.HttpClient httpClient = new HttpClient { BaseAddress = new Uri(baseUrl, UriKind.Absolute) };
+            using System.Net.Http.HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "/v1/auth/me");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            using var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            var responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            using System.Net.Http.HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            string responseText = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 throw new InvalidOperationException($"Authentication summary failed: {response.StatusCode} {responseText}");
             }
 
-            var payload = JsonSerializer.Deserialize<SessionSummaryPayload>(responseText, JsonOptions);
+            mbottrilby.Services.TrilbyAuthenticationService.SessionSummaryPayload payload = JsonSerializer.Deserialize<SessionSummaryPayload>(responseText, JsonOptions);
             if (payload is null)
             {
                 throw new InvalidOperationException("Authentication summary failed: empty response.");
@@ -342,9 +342,9 @@ namespace mbottrilby.Services
         {
             public static int GetFreePort()
             {
-                var listener = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
+                System.Net.Sockets.TcpListener listener = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
                 listener.Start();
-                var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+                int port = ((IPEndPoint)listener.LocalEndpoint).Port;
                 listener.Stop();
                 return port;
             }
@@ -360,7 +360,7 @@ namespace mbottrilby.Services
 
             public TrilbySessionSettings ApplySummary(SessionSummaryPayload summary)
             {
-                var summaryUserId = ParseSnowflake(summary.UserId);
+                long? summaryUserId = ParseSnowflake(summary.UserId);
                 return new TrilbySessionSettings
                 {
                     AccessToken = AccessToken,
@@ -452,7 +452,7 @@ namespace mbottrilby.Services
 
             public TrilbyGuildSettings? ToSettings()
             {
-                var guildId = ParseSnowflake(GuildId);
+                long? guildId = ParseSnowflake(GuildId);
                 if (guildId is not > 0)
                 {
                     return null;
@@ -473,7 +473,7 @@ namespace mbottrilby.Services
                 return null;
             }
 
-            return long.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed)
+            return long.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out long parsed)
                 ? parsed
                 : null;
         }

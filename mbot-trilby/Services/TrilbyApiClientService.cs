@@ -25,7 +25,7 @@ namespace mbottrilby.Services
             _guildId = guildId;
             _guildIdText = guildId.ToString(CultureInfo.InvariantCulture);
 
-            var services = new ServiceCollection();
+            Microsoft.Extensions.DependencyInjection.ServiceCollection services = new ServiceCollection();
             services.AddLogging();
             services.AddApi(options =>
             {
@@ -43,10 +43,10 @@ namespace mbottrilby.Services
 
         public async Task<ClipCatalog> ListClipsAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.ListClipsAsync(_guildIdText, cancellationToken: cancellationToken).ConfigureAwait(false);
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            TrilbyApi.Api.IListClipsApiResponse response = await _api.ListClipsAsync(_guildIdText, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.ListClipsResponse ok) && ok is not null)
             {
-                var clips = ok.Clips
+                System.Collections.Generic.List<mbottrilby.Services.TrilbyApiClientService.ClipCatalogEntry> clips = ok.Clips
                     .Where(clip => !string.IsNullOrWhiteSpace(clip.Trigger))
                     .Select(clip => new ClipCatalogEntry(
                         clip.Trigger,
@@ -64,13 +64,13 @@ namespace mbottrilby.Services
                 return new ClipCatalog(clips, ok.Total);
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"List clips failed: {unauthorized.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"List clips failed: {internalError.Message}");
@@ -87,24 +87,24 @@ namespace mbottrilby.Services
 
         public async Task<string> CreateBrowserLaunchAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.CreateBrowserLaunchAsync(cancellationToken).ConfigureAwait(false);
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            TrilbyApi.Api.ICreateBrowserLaunchApiResponse response = await _api.CreateBrowserLaunchAsync(cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.CreateBrowserLaunchResponse ok) && ok is not null)
             {
                 return ok.BrowserUrl;
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"Create browser launch failed: {unauthorized.Message}");
             }
 
-            if (response.IsForbidden && response.TryForbidden(out var forbidden) && forbidden is not null)
+            if (response.IsForbidden && response.TryForbidden(out TrilbyApi.Model.ApiErrorResponse forbidden) && forbidden is not null)
             {
                 throw new InvalidOperationException($"Create browser launch failed: {forbidden.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"Create browser launch failed: {internalError.Message}");
@@ -119,25 +119,25 @@ namespace mbottrilby.Services
             string contentBase64,
             CancellationToken cancellationToken = default)
         {
-            var request = new UploadLogBundleBody(fileName, contentBase64);
-            var response = await _api.UploadLogBundleAsync(request, cancellationToken).ConfigureAwait(false);
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            TrilbyApi.Model.UploadLogBundleBody request = new UploadLogBundleBody(fileName, contentBase64);
+            TrilbyApi.Api.IUploadLogBundleApiResponse response = await _api.UploadLogBundleAsync(request, cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.UploadLogBundleResponse ok) && ok is not null)
             {
                 return ok.StoredFileName;
             }
 
-            if (response.IsBadRequest && response.TryBadRequest(out var badRequest) && badRequest is not null)
+            if (response.IsBadRequest && response.TryBadRequest(out TrilbyApi.Model.ApiErrorResponse badRequest) && badRequest is not null)
             {
                 throw new InvalidOperationException($"Upload log bundle failed: {badRequest.Message}");
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"Upload log bundle failed: {unauthorized.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"Upload log bundle failed: {internalError.Message}");
@@ -154,10 +154,10 @@ namespace mbottrilby.Services
 
         public async Task<TagCatalog> ListTagsAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.ListTagsAsync(_guildIdText, cancellationToken: cancellationToken).ConfigureAwait(false);
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            TrilbyApi.Api.IListTagsApiResponse response = await _api.ListTagsAsync(_guildIdText, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.ListTagsResponse ok) && ok is not null)
             {
-                var tags = ok.Tags
+                System.Collections.Generic.List<mbottrilby.Services.TrilbyApiClientService.TagCatalogEntry> tags = ok.Tags
                     .Where(tag => !string.IsNullOrWhiteSpace(tag.Name))
                     .Select(tag => new TagCatalogEntry(
                         tag.Name,
@@ -171,13 +171,13 @@ namespace mbottrilby.Services
                 return new TagCatalog(tags, ok.Total);
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"List tags failed: {unauthorized.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"List tags failed: {internalError.Message}");
@@ -196,10 +196,10 @@ namespace mbottrilby.Services
             string tagName,
             CancellationToken cancellationToken = default)
         {
-            var response = await _api.ListTagClipsAsync(tagName, _guildIdText, cancellationToken).ConfigureAwait(false);
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            TrilbyApi.Api.IListTagClipsApiResponse response = await _api.ListTagClipsAsync(tagName, _guildIdText, cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.ListTagClipsResponse ok) && ok is not null)
             {
-                var triggers = ok.Clips
+                System.Collections.Generic.List<string> triggers = ok.Clips
                     .Select(clip => clip.Trigger)
                     .Where(trigger => !string.IsNullOrWhiteSpace(trigger))
                     .OrderBy(trigger => trigger, StringComparer.OrdinalIgnoreCase)
@@ -208,18 +208,18 @@ namespace mbottrilby.Services
                 return new TagClipCatalog(ok.TagName, triggers, ok.Total);
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"List tag clips failed: {unauthorized.Message}");
             }
 
-            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            if (response.IsNotFound && response.TryNotFound(out TrilbyApi.Model.ApiErrorResponse notFound) && notFound is not null)
             {
                 throw new InvalidOperationException($"List tag clips failed: {notFound.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"List tag clips failed: {internalError.Message}");
@@ -236,19 +236,19 @@ namespace mbottrilby.Services
 
         public async Task<string?> GetSharedTagAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.GetSharedTagAsync(_guildIdText, cancellationToken).ConfigureAwait(false);
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            TrilbyApi.Api.IGetSharedTagApiResponse response = await _api.GetSharedTagAsync(_guildIdText, cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.GetSharedTagResponse ok) && ok is not null)
             {
                 return string.IsNullOrWhiteSpace(ok.TagName) ? null : ok.TagName.Trim();
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"Get shared tag failed: {unauthorized.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"Get shared tag failed: {internalError.Message}");
@@ -265,25 +265,25 @@ namespace mbottrilby.Services
 
         public async Task SetSharedTagAsync(string tagName, CancellationToken cancellationToken = default)
         {
-            var request = new SetSharedTagBody(tagName);
-            var response = await _api.SetSharedTagAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
+            TrilbyApi.Model.SetSharedTagBody request = new SetSharedTagBody(tagName);
+            TrilbyApi.Api.ISetSharedTagApiResponse response = await _api.SetSharedTagAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
             if (response.IsOk)
             {
                 return;
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"Set shared tag failed: {unauthorized.Message}");
             }
 
-            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            if (response.IsNotFound && response.TryNotFound(out TrilbyApi.Model.ApiErrorResponse notFound) && notFound is not null)
             {
                 throw new InvalidOperationException($"Set shared tag failed: {notFound.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"Set shared tag failed: {internalError.Message}");
@@ -303,26 +303,26 @@ namespace mbottrilby.Services
             string clipTrigger,
             CancellationToken cancellationToken = default)
         {
-            var request = new AddTagClipBody(clipTrigger);
-            var response = await _api.AddTagClipAsync(_guildIdText, tagName, request, cancellationToken)
+            TrilbyApi.Model.AddTagClipBody request = new AddTagClipBody(clipTrigger);
+            TrilbyApi.Api.IAddTagClipApiResponse response = await _api.AddTagClipAsync(_guildIdText, tagName, request, cancellationToken)
                 .ConfigureAwait(false);
             if (response.IsOk)
             {
                 return;
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"Add clip to tag failed: {unauthorized.Message}");
             }
 
-            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            if (response.IsNotFound && response.TryNotFound(out TrilbyApi.Model.ApiErrorResponse notFound) && notFound is not null)
             {
                 throw new InvalidOperationException($"Add clip to tag failed: {notFound.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"Add clip to tag failed: {internalError.Message}");
@@ -342,25 +342,25 @@ namespace mbottrilby.Services
             string clipTrigger,
             CancellationToken cancellationToken = default)
         {
-            var response = await _api.RemoveTagClipAsync(_guildIdText, tagName, clipTrigger, cancellationToken)
+            TrilbyApi.Api.IRemoveTagClipApiResponse response = await _api.RemoveTagClipAsync(_guildIdText, tagName, clipTrigger, cancellationToken)
                 .ConfigureAwait(false);
             if (response.IsOk)
             {
                 return;
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"Remove clip from tag failed: {unauthorized.Message}");
             }
 
-            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            if (response.IsNotFound && response.TryNotFound(out TrilbyApi.Model.ApiErrorResponse notFound) && notFound is not null)
             {
                 throw new InvalidOperationException($"Remove clip from tag failed: {notFound.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"Remove clip from tag failed: {internalError.Message}");
@@ -382,7 +382,7 @@ namespace mbottrilby.Services
             bool guildWide = false,
             CancellationToken cancellationToken = default)
         {
-            var response = await _api.GetTopClipStatsAsync(
+            TrilbyApi.Api.IGetTopClipStatsApiResponse response = await _api.GetTopClipStatsAsync(
                 _guildIdText,
                 guildWide ? new Option<string>("guild") : new Option<string>("me"),
                 days,
@@ -390,9 +390,9 @@ namespace mbottrilby.Services
                 includeRandom,
                 cancellationToken).ConfigureAwait(false);
 
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.TopClipStatsResponse ok) && ok is not null)
             {
-                var rows = ok.Rows
+                System.Collections.Generic.List<mbottrilby.Services.TrilbyApiClientService.TopClipStatsRow> rows = ok.Rows
                     .Where(row => !string.IsNullOrWhiteSpace(row.Trigger))
                     .Select(row => new TopClipStatsRow(
                         row.Trigger,
@@ -407,18 +407,18 @@ namespace mbottrilby.Services
                     guildWide);
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"Top clip stats failed: {unauthorized.Message}");
             }
 
-            if (response.IsBadRequest && response.TryBadRequest(out var badRequest) && badRequest is not null)
+            if (response.IsBadRequest && response.TryBadRequest(out TrilbyApi.Model.ApiErrorResponse badRequest) && badRequest is not null)
             {
                 throw new InvalidOperationException($"Top clip stats failed: {badRequest.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"Top clip stats failed: {internalError.Message}");
@@ -439,16 +439,16 @@ namespace mbottrilby.Services
             bool guildWide = false,
             CancellationToken cancellationToken = default)
         {
-            var response = await _api.GetRecentClipStatsAsync(
+            TrilbyApi.Api.IGetRecentClipStatsApiResponse response = await _api.GetRecentClipStatsAsync(
                 _guildIdText,
                 guildWide ? new Option<string>("guild") : new Option<string>("me"),
                 limit,
                 includeRandom,
                 cancellationToken).ConfigureAwait(false);
 
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.RecentClipStatsResponse ok) && ok is not null)
             {
-                var rows = ok.Rows
+                System.Collections.Generic.List<mbottrilby.Services.TrilbyApiClientService.RecentClipStatsRow> rows = ok.Rows
                     .Where(row => !string.IsNullOrWhiteSpace(row.Trigger))
                     .Select(row => new RecentClipStatsRow(
                         row.Trigger,
@@ -460,13 +460,13 @@ namespace mbottrilby.Services
                 return new RecentClipStatsCatalog(rows, ok.IncludeRandom, guildWide);
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"Recent clip stats failed: {unauthorized.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"Recent clip stats failed: {internalError.Message}");
@@ -483,35 +483,35 @@ namespace mbottrilby.Services
 
         public async Task<string> PlayClipAsync(string trigger, CancellationToken cancellationToken = default)
         {
-            var request = new PlayClipBody(trigger)
+            TrilbyApi.Model.PlayClipBody request = new PlayClipBody(trigger)
             {
                 RequestId = $"play:{Guid.NewGuid():N}"
             };
 
-            var response = await _api.PlayClipAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
+            TrilbyApi.Api.IPlayClipApiResponse response = await _api.PlayClipAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
 
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.PlayClipResponse ok) && ok is not null)
             {
                 return $"Played '{ok.ResolvedTrigger}' in guild {ok.GuildId}.";
             }
 
-            if (response.IsConflict && response.TryConflict(out var conflict) && conflict is not null)
+            if (response.IsConflict && response.TryConflict(out TrilbyApi.Model.ApiErrorResponse conflict) && conflict is not null)
             {
                 return $"Conflict ({conflict.Code}): {conflict.Message}";
             }
 
-            if (response.IsBadRequest && response.TryBadRequest(out var badRequest) && badRequest is not null)
+            if (response.IsBadRequest && response.TryBadRequest(out TrilbyApi.Model.ApiErrorResponse badRequest) && badRequest is not null)
             {
                 return $"Bad request ({badRequest.Code}): {badRequest.Message}";
             }
 
-            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            if (response.IsNotFound && response.TryNotFound(out TrilbyApi.Model.ApiErrorResponse notFound) && notFound is not null)
             {
                 return $"Not found ({notFound.Code}): {notFound.Message}";
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 return $"Server error ({internalError.Code}): {internalError.Message}";
@@ -527,30 +527,30 @@ namespace mbottrilby.Services
 
         public async Task<string> PlayRandomClipAsync(CancellationToken cancellationToken = default)
         {
-            var request = new PlayRandomClipBody()
+            TrilbyApi.Model.PlayRandomClipBody request = new PlayRandomClipBody()
             {
                 RequestId = $"random:{Guid.NewGuid():N}"
             };
 
-            var response = await _api.PlayRandomClipAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
+            TrilbyApi.Api.IPlayRandomClipApiResponse response = await _api.PlayRandomClipAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
 
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.PlayRandomClipResponse ok) && ok is not null)
             {
                 return $"Played random '{ok.ResolvedTrigger}' in guild {ok.GuildId}.";
             }
 
-            if (response.IsConflict && response.TryConflict(out var conflict) && conflict is not null)
+            if (response.IsConflict && response.TryConflict(out TrilbyApi.Model.ApiErrorResponse conflict) && conflict is not null)
             {
                 return $"Conflict ({conflict.Code}): {conflict.Message}";
             }
 
-            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            if (response.IsNotFound && response.TryNotFound(out TrilbyApi.Model.ApiErrorResponse notFound) && notFound is not null)
             {
                 return $"Not found ({notFound.Code}): {notFound.Message}";
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 return $"Server error ({internalError.Code}): {internalError.Message}";
@@ -566,30 +566,30 @@ namespace mbottrilby.Services
 
         public async Task<string> StopClipAsync(CancellationToken cancellationToken = default)
         {
-            var request = new StopClipBody()
+            TrilbyApi.Model.StopClipBody request = new StopClipBody()
             {
                 RequestId = Guid.NewGuid().ToString("N")
             };
 
-            var response = await _api.StopClipAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
+            TrilbyApi.Api.IStopClipApiResponse response = await _api.StopClipAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
 
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.StopClipResponse ok) && ok is not null)
             {
                 return $"Stopped playback in guild {ok.GuildId}.";
             }
 
-            if (response.IsConflict && response.TryConflict(out var conflict) && conflict is not null)
+            if (response.IsConflict && response.TryConflict(out TrilbyApi.Model.ApiErrorResponse conflict) && conflict is not null)
             {
                 return $"Conflict ({conflict.Code}): {conflict.Message}";
             }
 
-            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            if (response.IsNotFound && response.TryNotFound(out TrilbyApi.Model.ApiErrorResponse notFound) && notFound is not null)
             {
                 return $"Not found ({notFound.Code}): {notFound.Message}";
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 return $"Server error ({internalError.Code}): {internalError.Message}";
@@ -605,29 +605,29 @@ namespace mbottrilby.Services
 
         public async Task<CurrentIntroState> GetCurrentIntroAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.GetCurrentIntroAsync(_guildIdText, cancellationToken).ConfigureAwait(false);
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            TrilbyApi.Api.IGetCurrentIntroApiResponse response = await _api.GetCurrentIntroAsync(_guildIdText, cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.GetCurrentIntroResponse ok) && ok is not null)
             {
                 return new CurrentIntroState(ok.Trigger);
             }
 
-            if (response.IsUnauthorized && response.TryUnauthorized(out var unauthorized) && unauthorized is not null)
+            if (response.IsUnauthorized && response.TryUnauthorized(out TrilbyApi.Model.ApiErrorResponse unauthorized) && unauthorized is not null)
             {
                 throw new InvalidOperationException($"Get current intro failed: {unauthorized.Message}");
             }
 
-            if (response.IsBadRequest && response.TryBadRequest(out var badRequest) && badRequest is not null)
+            if (response.IsBadRequest && response.TryBadRequest(out TrilbyApi.Model.ApiErrorResponse badRequest) && badRequest is not null)
             {
                 throw new InvalidOperationException($"Get current intro failed: {badRequest.Message}");
             }
 
-            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            if (response.IsNotFound && response.TryNotFound(out TrilbyApi.Model.ApiErrorResponse notFound) && notFound is not null)
             {
                 throw new InvalidOperationException($"Get current intro failed: {notFound.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"Get current intro failed: {internalError.Message}");
@@ -644,26 +644,26 @@ namespace mbottrilby.Services
 
         public async Task<CurrentIntroState> SetCurrentIntroAsync(string trigger, CancellationToken cancellationToken = default)
         {
-            var request = new SetCurrentIntroBody(trigger);
-            var response = await _api.SetCurrentIntroAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
+            TrilbyApi.Model.SetCurrentIntroBody request = new SetCurrentIntroBody(trigger);
+            TrilbyApi.Api.ISetCurrentIntroApiResponse response = await _api.SetCurrentIntroAsync(_guildIdText, request, cancellationToken).ConfigureAwait(false);
 
-            if (response.IsOk && response.TryOk(out var ok) && ok is not null)
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.SetCurrentIntroResponse ok) && ok is not null)
             {
                 return new CurrentIntroState(ok.Trigger);
             }
 
-            if (response.IsBadRequest && response.TryBadRequest(out var badRequest) && badRequest is not null)
+            if (response.IsBadRequest && response.TryBadRequest(out TrilbyApi.Model.ApiErrorResponse badRequest) && badRequest is not null)
             {
                 throw new InvalidOperationException($"Set current intro failed: {badRequest.Message}");
             }
 
-            if (response.IsNotFound && response.TryNotFound(out var notFound) && notFound is not null)
+            if (response.IsNotFound && response.TryNotFound(out TrilbyApi.Model.ApiErrorResponse notFound) && notFound is not null)
             {
                 throw new InvalidOperationException($"Set current intro failed: {notFound.Message}");
             }
 
             if (response.IsInternalServerError &&
-                response.TryInternalServerError(out var internalError) &&
+                response.TryInternalServerError(out TrilbyApi.Model.ApiErrorResponse internalError) &&
                 internalError is not null)
             {
                 throw new InvalidOperationException($"Set current intro failed: {internalError.Message}");
@@ -680,8 +680,8 @@ namespace mbottrilby.Services
 
         public async Task<string> GetHealthSummaryAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _api.GetHealthAsync(cancellationToken).ConfigureAwait(false);
-            if (response.IsOk && response.TryOk(out var health) && health is not null)
+            TrilbyApi.Api.IGetHealthApiResponse response = await _api.GetHealthAsync(cancellationToken).ConfigureAwait(false);
+            if (response.IsOk && response.TryOk(out TrilbyApi.Model.HealthResponse health) && health is not null)
             {
                 return $"API healthy: service={health.Service} version={health.VarVersion}";
             }

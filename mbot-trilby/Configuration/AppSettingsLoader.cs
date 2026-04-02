@@ -7,7 +7,7 @@ namespace mbottrilby.Configuration
     {
         public static AppSettings LoadFromBaseDirectory(string appBaseDirectory)
         {
-            var settingsPath = Path.Combine(appBaseDirectory, "appsettings.json");
+            string settingsPath = Path.Combine(appBaseDirectory, "appsettings.json");
             if (!File.Exists(settingsPath))
             {
                 return new AppSettings();
@@ -15,8 +15,8 @@ namespace mbottrilby.Configuration
 
             try
             {
-                var json = File.ReadAllText(settingsPath);
-                var settings = JsonSerializer.Deserialize<AppSettings>(json, new JsonSerializerOptions
+                string json = File.ReadAllText(settingsPath);
+                mbottrilby.Configuration.AppSettings settings = JsonSerializer.Deserialize<AppSettings>(json, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });

@@ -80,9 +80,9 @@ namespace mbottrilby.Search
 
         private int GetSearchBucket(ClipSearchResult result)
         {
-            var comparableText = GetComparableSearchText(result.Kind, result.Value, result.DisplayText);
-            var isExactMatch = string.Equals(comparableText, _query, StringComparison.OrdinalIgnoreCase);
-            var isStartsWithMatch = comparableText.StartsWith(_query, StringComparison.OrdinalIgnoreCase);
+            string comparableText = GetComparableSearchText(result.Kind, result.Value, result.DisplayText);
+            bool isExactMatch = string.Equals(comparableText, _query, StringComparison.OrdinalIgnoreCase);
+            bool isStartsWithMatch = comparableText.StartsWith(_query, StringComparison.OrdinalIgnoreCase);
 
             if (isExactMatch && result.Kind == SearchResultKind.Clip)
             {
@@ -114,17 +114,17 @@ namespace mbottrilby.Search
 
         private ClipSearchResult? CreateResultOrDefault(SearchResultKind kind, string value)
         {
-            var displayText = kind == SearchResultKind.Tag ? $"&{value}" : value;
-            var comparableText = GetComparableSearchText(kind, value, displayText);
-            var matchIndex = comparableText.IndexOf(_query, StringComparison.OrdinalIgnoreCase);
+            string displayText = kind == SearchResultKind.Tag ? $"&{value}" : value;
+            string comparableText = GetComparableSearchText(kind, value, displayText);
+            int matchIndex = comparableText.IndexOf(_query, StringComparison.OrdinalIgnoreCase);
             if (matchIndex < 0)
             {
                 return null;
             }
 
-            var displayMatchIndex = matchIndex + (displayText.Length - comparableText.Length);
+            int displayMatchIndex = matchIndex + (displayText.Length - comparableText.Length);
 
-            var segments = new List<ClipSearchMatchSegment>();
+            System.Collections.Generic.List<mbottrilby.Search.ClipSearchMatchSegment> segments = new List<ClipSearchMatchSegment>();
             if (displayMatchIndex > 0)
             {
                 segments.Add(new ClipSearchMatchSegment(
@@ -138,7 +138,7 @@ namespace mbottrilby.Search
                 isMatch: true
             ));
 
-            var remainingStartIndex = displayMatchIndex + _query.Length;
+            int remainingStartIndex = displayMatchIndex + _query.Length;
             if (remainingStartIndex < displayText.Length)
             {
                 segments.Add(new ClipSearchMatchSegment(

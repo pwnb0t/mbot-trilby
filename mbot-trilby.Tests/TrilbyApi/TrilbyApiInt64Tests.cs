@@ -25,10 +25,10 @@ namespace mbottrilby.Tests.TrilbyApi
             string parameterName,
             Type expectedType)
         {
-            var method = typeof(IDefaultApi)
+            System.Reflection.MethodInfo method = typeof(IDefaultApi)
                 .GetMethods()
                 .Single(candidate => candidate.Name == methodName && candidate.GetParameters().Length == parameterCount);
-            var parameter = method.GetParameters().Single(candidate => candidate.Name == parameterName);
+            System.Reflection.ParameterInfo parameter = method.GetParameters().Single(candidate => candidate.Name == parameterName);
 
             Assert.Equal(expectedType, parameter.ParameterType);
         }
@@ -53,7 +53,7 @@ namespace mbottrilby.Tests.TrilbyApi
             string propertyName,
             Type expectedType)
         {
-            var property = modelType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+            System.Reflection.PropertyInfo property = modelType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
 
             Assert.NotNull(property);
             Assert.Equal(expectedType, property!.PropertyType);

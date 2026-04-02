@@ -29,20 +29,20 @@ namespace mbottrilby.Services
             string? username,
             long? selectedServerId)
         {
-            var sanitizedUsername = SanitizeFileNameSegment(username);
-            var timestamp = DateTime.UtcNow;
-            var fileName =
+            string sanitizedUsername = SanitizeFileNameSegment(username);
+            System.DateTime timestamp = DateTime.UtcNow;
+            string fileName =
                 $"{timestamp:yyyyMMdd-HHmmss}_{sanitizedUsername}_{userId}_{SanitizeFileNameSegment(environmentName)}.zip";
 
-            using var archiveBuffer = new MemoryStream();
-            using (var archive = new ZipArchive(archiveBuffer, ZipArchiveMode.Create, leaveOpen: true))
+            using System.IO.MemoryStream archiveBuffer = new MemoryStream();
+            using (System.IO.Compression.ZipArchive archive = new ZipArchive(archiveBuffer, ZipArchiveMode.Create, leaveOpen: true))
             {
                 WriteMetadataEntry(archive, environmentName, userId, username, selectedServerId, timestamp);
-                foreach (var logFilePath in GetRecentLogFilePaths())
+                foreach (string logFilePath in GetRecentLogFilePaths())
                 {
-                    var entry = archive.CreateEntry(Path.GetFileName(logFilePath), CompressionLevel.Optimal);
-                    using (var entryStream = entry.Open())
-                    using (var fileStream = File.OpenRead(logFilePath))
+                    System.IO.Compression.ZipArchiveEntry entry = archive.CreateEntry(Path.GetFileName(logFilePath), CompressionLevel.Optimal);
+                    using (System.IO.Stream entryStream = entry.Open())
+                    using (System.IO.FileStream fileStream = File.OpenRead(logFilePath))
                     {
                         fileStream.CopyTo(entryStream);
                     }
@@ -56,7 +56,7 @@ namespace mbottrilby.Services
 
         private IEnumerable<string> GetRecentLogFilePaths()
         {
-            var logsDirectory = Path.Combine(_appDataDirectory, "logs");
+            string logsDirectory = Path.Combine(_appDataDirectory, "logs");
             if (!Directory.Exists(logsDirectory))
             {
                 return Array.Empty<string>();
@@ -76,7 +76,7 @@ namespace mbottrilby.Services
             long? selectedServerId,
             DateTime timestampUtc)
         {
-            var metadata = new LogBundleMetadata(
+            mbottrilby.Services.TrilbySupportLogService.LogBundleMetadata metadata = new LogBundleMetadata(
                 AppVersion: Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "unknown",
                 EnvironmentName: environmentName,
                 UserId: userId,
@@ -84,9 +84,9 @@ namespace mbottrilby.Services
                 SelectedServerId: selectedServerId,
                 OperatingSystem: RuntimeInformation.OSDescription,
                 GeneratedAtUtc: timestampUtc.ToString("O"));
-            var metadataEntry = archive.CreateEntry("metadata.json", CompressionLevel.Optimal);
-            using (var metadataStream = metadataEntry.Open())
-            using (var writer = new Utf8JsonWriter(metadataStream, new JsonWriterOptions { Indented = true }))
+            System.IO.Compression.ZipArchiveEntry metadataEntry = archive.CreateEntry("metadata.json", CompressionLevel.Optimal);
+            using (System.IO.Stream metadataStream = metadataEntry.Open())
+            using (System.Text.Json.Utf8JsonWriter writer = new Utf8JsonWriter(metadataStream, new JsonWriterOptions { Indented = true }))
             {
                 JsonSerializer.Serialize(writer, metadata);
             }
@@ -94,7 +94,7 @@ namespace mbottrilby.Services
 
         private static string SanitizeFileNameSegment(string? value)
         {
-            var sanitized = UnsafeFileNameChars.Replace((value ?? string.Empty).Trim().ToLowerInvariant(), "-");
+            string sanitized = UnsafeFileNameChars.Replace((value ?? string.Empty).Trim().ToLowerInvariant(), "-");
             sanitized = sanitized.Trim('-', '.', '_');
             return string.IsNullOrWhiteSpace(sanitized) ? "unknown-user" : sanitized;
         }

@@ -47,15 +47,15 @@ namespace mbottrilby.Services
                 return;
             }
 
-            var dragData = getDragData(button);
+            mbottrilby.Services.ClipAssignmentDragData dragData = getDragData(button);
             if (dragData is null || string.IsNullOrWhiteSpace(dragData.Value))
             {
                 return;
             }
 
-            var currentPosition = e.GetPosition(relativeTo);
-            var horizontalDistance = Math.Abs(currentPosition.X - _dragStartPoint.Value.X);
-            var verticalDistance = Math.Abs(currentPosition.Y - _dragStartPoint.Value.Y);
+            System.Windows.Point currentPosition = e.GetPosition(relativeTo);
+            double horizontalDistance = Math.Abs(currentPosition.X - _dragStartPoint.Value.X);
+            double verticalDistance = Math.Abs(currentPosition.Y - _dragStartPoint.Value.Y);
             if (
                 horizontalDistance < System.Windows.SystemParameters.MinimumHorizontalDragDistance &&
                 verticalDistance < System.Windows.SystemParameters.MinimumVerticalDragDistance
@@ -67,7 +67,7 @@ namespace mbottrilby.Services
             setDragData(dragData);
             try
             {
-                var dataObject = ClipAssignmentDragDrop.CreateDataObject(dragData.Kind, dragData.Value, dragData.SourceTagName);
+                System.Windows.DataObject dataObject = ClipAssignmentDragDrop.CreateDataObject(dragData.Kind, dragData.Value, dragData.SourceTagName);
                 System.Windows.DragDrop.DoDragDrop(button, dataObject, System.Windows.DragDropEffects.Copy);
             }
             finally

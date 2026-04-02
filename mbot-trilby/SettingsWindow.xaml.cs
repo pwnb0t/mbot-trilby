@@ -99,7 +99,7 @@ namespace mbottrilby
 
         private void ApplyWindowIcon()
         {
-            var iconPath = Path.Combine(AppContext.BaseDirectory, "mbot.ico");
+            string iconPath = Path.Combine(AppContext.BaseDirectory, "mbot.ico");
             if (!File.Exists(iconPath))
             {
                 return;
@@ -117,7 +117,7 @@ namespace mbottrilby
 
         private async void SignInButton_Click(object sender, RoutedEventArgs e)
         {
-            var environmentName = GetSelectedEnvironmentName();
+            string environmentName = GetSelectedEnvironmentName();
             try
             {
                 SetBusyState(true, $"Starting sign-in for {environmentName}...");
@@ -137,7 +137,7 @@ namespace mbottrilby
 
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
-            var environmentName = GetSelectedEnvironmentName();
+            string environmentName = GetSelectedEnvironmentName();
             try
             {
                 SetBusyState(true, $"Signing out of {environmentName}...");
@@ -157,7 +157,7 @@ namespace mbottrilby
 
         private async void OpenClipBrowserButton_Click(object sender, RoutedEventArgs e)
         {
-            var environmentName = GetSelectedEnvironmentName();
+            string environmentName = GetSelectedEnvironmentName();
             try
             {
                 SetBusyState(true, $"Opening Haberdashery for {environmentName}...");
@@ -201,8 +201,8 @@ namespace mbottrilby
 
         private async void SendLogsToDeveloperButton_Click(object sender, RoutedEventArgs e)
         {
-            var environmentName = GetSelectedEnvironmentName();
-            var confirmation = System.Windows.MessageBox.Show(
+            string environmentName = GetSelectedEnvironmentName();
+            System.Windows.MessageBoxResult confirmation = System.Windows.MessageBox.Show(
                 "This will send recent local Trilby logs to the developer for debugging. Continue?",
                 "Send Logs to Developer",
                 MessageBoxButton.OKCancel,
@@ -215,7 +215,7 @@ namespace mbottrilby
             try
             {
                 SetSupportBusyState(true, "Preparing log bundle...");
-                var storedFileName = await _sendLogsToDeveloperAsync(environmentName);
+                string storedFileName = await _sendLogsToDeveloperAsync(environmentName);
                 SupportStatusTextBlock.Text = $"Sent logs successfully: {storedFileName}";
             }
             catch (Exception ex)
@@ -231,7 +231,7 @@ namespace mbottrilby
 
         private async void RestartAndApplyUpdateButton_Click(object sender, RoutedEventArgs e)
         {
-            var confirmation = System.Windows.MessageBox.Show(
+            System.Windows.MessageBoxResult confirmation = System.Windows.MessageBox.Show(
                 "Trilby will close, apply the downloaded update, and restart. Continue?",
                 "Restart and Apply Update",
                 MessageBoxButton.OKCancel,
@@ -261,7 +261,7 @@ namespace mbottrilby
                 return;
             }
 
-            var environmentName = option.Name;
+            string environmentName = option.Name;
             _setSelectedEnvironmentName(environmentName);
             RefreshView();
         }
@@ -279,10 +279,10 @@ namespace mbottrilby
 
         public void RefreshView()
         {
-            var environmentName = GetSelectedEnvironmentName();
-            var environment = _environments.GetByName(environmentName);
-            var session = _getSession(environmentName);
-            var updateStatus = _getUpdateStatus();
+            string environmentName = GetSelectedEnvironmentName();
+            mbottrilby.Configuration.TrilbyEnvironmentSettings environment = _environments.GetByName(environmentName);
+            mbottrilby.Services.TrilbySessionSettings session = _getSession(environmentName);
+            mbottrilby.Services.TrilbyUpdateStatus updateStatus = _getUpdateStatus();
             BaseUrlTextBlock.Text = $"Base URL: {environment.BaseUrl}";
             VersionTextBlock.Text = $"Current version: {updateStatus.CurrentVersionText}";
             UpdateStatusTextBlock.Text = updateStatus.StatusText;
@@ -320,8 +320,8 @@ namespace mbottrilby
             SignInButton.IsEnabled = true;
             SignOutButton.IsEnabled = true;
             ServerComboBox.IsEnabled = true;
-            var selectedServerId = _getSelectedServerId(environmentName);
-            var selectedServer = session.Servers.FirstOrDefault(server => server.GuildId == selectedServerId);
+            long? selectedServerId = _getSelectedServerId(environmentName);
+            mbottrilby.Services.TrilbyGuildSettings selectedServer = session.Servers.FirstOrDefault(server => server.GuildId == selectedServerId);
             AuthStatusTextBlock.Text = $"Signed in as {session.Username}";
             InfoTextBlock.Text = selectedServer is null
                 ? "Choose a server to enable Trilby for this environment."
@@ -338,7 +338,7 @@ namespace mbottrilby
 
         private void SelectEnvironment(string environmentName)
         {
-            var options = EnvironmentComboBox.ItemsSource as IReadOnlyList<EnvironmentOption>;
+            System.Collections.Generic.IReadOnlyList<mbottrilby.SettingsWindow.EnvironmentOption> options = EnvironmentComboBox.ItemsSource as IReadOnlyList<EnvironmentOption>;
             if (options is null || options.Count == 0)
             {
                 EnvironmentComboBox.SelectedItem = null;
@@ -374,8 +374,8 @@ namespace mbottrilby
 
         private void PopulateServerOptions(string environmentName, TrilbySessionSettings? session)
         {
-            var selectedServerId = _getSelectedServerId(environmentName);
-            var options = new List<ServerOption>();
+            long? selectedServerId = _getSelectedServerId(environmentName);
+            System.Collections.Generic.List<mbottrilby.SettingsWindow.ServerOption> options = new List<ServerOption>();
             if (session is not null)
             {
                 options.AddRange(session.Servers
@@ -391,14 +391,14 @@ namespace mbottrilby
 
         private void PopulateEnvironmentOptions()
         {
-            var options = _environments.GetAvailableEnvironments()
+            mbottrilby.SettingsWindow.EnvironmentOption[] options = _environments.GetAvailableEnvironments()
                 .Select(entry => new EnvironmentOption(entry.Name, entry.Settings.DisplayName))
                 .ToArray();
             EnvironmentComboBox.SelectionChanged -= EnvironmentComboBox_SelectionChanged;
             EnvironmentComboBox.ItemsSource = options;
             EnvironmentComboBox.SelectionChanged += EnvironmentComboBox_SelectionChanged;
 
-            var showEnvironmentPicker = options.Length > 1;
+            bool showEnvironmentPicker = options.Length > 1;
             EnvironmentPanel.Visibility = showEnvironmentPicker ? Visibility.Visible : Visibility.Collapsed;
             EnvironmentRowDefinition.Height = showEnvironmentPicker
                 ? GridLength.Auto

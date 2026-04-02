@@ -54,10 +54,10 @@ namespace mbottrilby.Input
 
         public void Start()
         {
-            using var currentProcess = Process.GetCurrentProcess();
-            using var currentModule = currentProcess.MainModule;
-            var moduleName = currentModule?.ModuleName;
-            var moduleHandle = moduleName is null ? IntPtr.Zero : GetModuleHandle(moduleName);
+            using System.Diagnostics.Process currentProcess = Process.GetCurrentProcess();
+            using System.Diagnostics.ProcessModule currentModule = currentProcess.MainModule;
+            string moduleName = currentModule?.ModuleName;
+            nint moduleHandle = moduleName is null ? IntPtr.Zero : GetModuleHandle(moduleName);
 
             _keyboardHookHandle = SetWindowsHookEx(WhKeyboardLl, _keyboardHookProc, moduleHandle, 0);
             if (_keyboardHookHandle == IntPtr.Zero)
@@ -102,14 +102,14 @@ namespace mbottrilby.Input
                 return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
             }
 
-            var message = wParam.ToInt32();
+            int message = wParam.ToInt32();
             if (message != WmKeyDown && message != WmSysKeyDown)
             {
                 return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
             }
 
-            var keyboardData = Marshal.PtrToStructure<KbdLlHookStruct>(lParam);
-            var isAltDown = message == WmSysKeyDown || (keyboardData.Flags & LlkhfAltdown) != 0;
+            mbottrilby.Input.OverlayInputRouter.KbdLlHookStruct keyboardData = Marshal.PtrToStructure<KbdLlHookStruct>(lParam);
+            bool isAltDown = message == WmSysKeyDown || (keyboardData.Flags & LlkhfAltdown) != 0;
             if (_handleGlobalHotkey(keyboardData.VkCode, isAltDown))
             {
                 return (IntPtr)1;
@@ -120,7 +120,7 @@ namespace mbottrilby.Input
                 return CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
             }
 
-            var handled = _handleOverlayVirtualKey(keyboardData.VkCode, isAltDown);
+            bool handled = _handleOverlayVirtualKey(keyboardData.VkCode, isAltDown);
             if (handled)
             {
                 return (IntPtr)1;
@@ -141,14 +141,14 @@ namespace mbottrilby.Input
                 return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
             }
 
-            var message = wParam.ToInt32();
+            int message = wParam.ToInt32();
             if (message != WmLButtonDown && message != WmRButtonDown && message != WmMButtonDown)
             {
                 return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
             }
 
-            var mouseData = Marshal.PtrToStructure<MsLlHookStruct>(lParam);
-            var clickPoint = new System.Windows.Point(mouseData.Pt.X, mouseData.Pt.Y);
+            mbottrilby.Input.OverlayInputRouter.MsLlHookStruct mouseData = Marshal.PtrToStructure<MsLlHookStruct>(lParam);
+            System.Windows.Point clickPoint = new System.Windows.Point(mouseData.Pt.X, mouseData.Pt.Y);
             _dispatcher.BeginInvoke(() =>
             {
                 if (_isOverlayVisible() && !_isPointInsideOverlayPanel(clickPoint))

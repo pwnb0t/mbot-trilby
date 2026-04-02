@@ -18,7 +18,7 @@ namespace mbottrilby.Services
             string value,
             string? sourceTagName = null)
         {
-            var dataObject = new System.Windows.DataObject(DragKindFormat, kind.ToString());
+            System.Windows.DataObject dataObject = new System.Windows.DataObject(DragKindFormat, kind.ToString());
             if (kind == OverlayDragDataKind.Clip)
             {
                 dataObject.SetData(ClipTriggerFormat, value);
@@ -38,10 +38,10 @@ namespace mbottrilby.Services
 
         public static ClipAssignmentDragData? TryRead(System.Windows.IDataObject dataObject)
         {
-            var kind = OverlayDragDataKind.Clip;
+            mbottrilby.Services.OverlayDragDataKind kind = OverlayDragDataKind.Clip;
             if (dataObject.GetDataPresent(DragKindFormat))
             {
-                var kindValue = dataObject.GetData(DragKindFormat) as string;
+                string kindValue = dataObject.GetData(DragKindFormat) as string;
                 if (!Enum.TryParse(kindValue, true, out kind))
                 {
                     return null;
@@ -73,7 +73,7 @@ namespace mbottrilby.Services
                 return null;
             }
 
-            var sourceTagName = dataObject.GetDataPresent(SourceTagNameFormat)
+            string sourceTagName = dataObject.GetDataPresent(SourceTagNameFormat)
                 ? dataObject.GetData(SourceTagNameFormat) as string
                 : null;
 

@@ -119,7 +119,7 @@ namespace mbottrilby.Services
                 return null;
             }
 
-            var envelope = JsonSerializer.Deserialize<EventEnvelopePayload>(json, JsonOptions);
+            mbottrilby.Services.TrilbyEventsClientService.EventEnvelopePayload envelope = JsonSerializer.Deserialize<EventEnvelopePayload>(json, JsonOptions);
             if (envelope is null || string.IsNullOrWhiteSpace(envelope.EventType))
             {
                 return null;
@@ -127,27 +127,27 @@ namespace mbottrilby.Services
 
             return envelope.EventType switch
             {
-                var eventType when string.Equals(eventType, ClipPlayedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, ClipPlayedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseClipPlayedEvent(envelope),
-                var eventType when string.Equals(eventType, ClipPlayCountChangedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, ClipPlayCountChangedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseClipPlayCountChangedEvent(envelope),
-                var eventType when string.Equals(eventType, ClipCreatedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, ClipCreatedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseClipCreatedEvent(envelope),
-                var eventType when string.Equals(eventType, ClipDeletedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, ClipDeletedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseClipDeletedEvent(envelope),
-                var eventType when string.Equals(eventType, ClipTaggedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, ClipTaggedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseClipTaggedEvent(envelope),
-                var eventType when string.Equals(eventType, ClipUntaggedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, ClipUntaggedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseClipUntaggedEvent(envelope),
-                var eventType when string.Equals(eventType, TagCreatedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, TagCreatedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseTagCreatedEvent(envelope),
-                var eventType when string.Equals(eventType, TagDeletedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, TagDeletedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseTagDeletedEvent(envelope),
-                var eventType when string.Equals(eventType, CurrentIntroUpdatedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, CurrentIntroUpdatedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseCurrentIntroUpdatedEvent(envelope),
-                var eventType when string.Equals(eventType, SharedTagSelectedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, SharedTagSelectedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseSharedTagSelectedEvent(envelope),
-                var eventType when string.Equals(eventType, SharedTagClearedEventType, StringComparison.OrdinalIgnoreCase)
+                string eventType when string.Equals(eventType, SharedTagClearedEventType, StringComparison.OrdinalIgnoreCase)
                     => ParseSharedTagClearedEvent(envelope),
                 _ => null
             };
@@ -155,7 +155,7 @@ namespace mbottrilby.Services
 
         private async Task RunAsync(CancellationToken cancellationToken)
         {
-            var attempt = 0;
+            int attempt = 0;
             while (!cancellationToken.IsCancellationRequested)
             {
                 ClientWebSocket? websocket = null;
@@ -184,7 +184,7 @@ namespace mbottrilby.Services
                 }
                 catch (WebSocketException ex) when (!cancellationToken.IsCancellationRequested)
                 {
-                    var handshakeStatus = GetHandshakeStatusCode(websocket);
+                    System.Net.HttpStatusCode? handshakeStatus = GetHandshakeStatusCode(websocket);
                     _log?.Invoke(
                         $"Trilby events connection failed. env={_environmentName ?? "<unknown>"} " +
                         $"user_id={_userId?.ToString() ?? "<unknown>"} username={_username ?? "<unknown>"} " +
@@ -217,7 +217,7 @@ namespace mbottrilby.Services
                     break;
                 }
 
-                var delay = TimeSpan.FromSeconds(Math.Min(30, Math.Pow(2, Math.Min(attempt, 4))));
+                System.TimeSpan delay = TimeSpan.FromSeconds(Math.Min(30, Math.Pow(2, Math.Min(attempt, 4))));
                 attempt += 1;
                 try
                 {
@@ -234,13 +234,13 @@ namespace mbottrilby.Services
         {
             while (!cancellationToken.IsCancellationRequested && websocket.State == WebSocketState.Open)
             {
-                var message = await ReceiveTextMessageAsync(websocket, cancellationToken).ConfigureAwait(false);
+                string message = await ReceiveTextMessageAsync(websocket, cancellationToken).ConfigureAwait(false);
                 if (message is null)
                 {
                     return;
                 }
 
-                var trilbyEvent = ParseEvent(message);
+                mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent trilbyEvent = ParseEvent(message);
                 if (trilbyEvent is null)
                 {
                     continue;
@@ -254,12 +254,12 @@ namespace mbottrilby.Services
             ClientWebSocket websocket,
             CancellationToken cancellationToken)
         {
-            var buffer = new byte[4096];
-            using var stream = new MemoryStream();
+            byte[] buffer = new byte[4096];
+            using System.IO.MemoryStream stream = new MemoryStream();
 
             while (true)
             {
-                var result = await websocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken)
+                System.Net.WebSockets.WebSocketReceiveResult result = await websocket.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken)
                     .ConfigureAwait(false);
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
@@ -282,8 +282,8 @@ namespace mbottrilby.Services
 
         private static ClipPlayedEvent? ParseClipPlayedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<ClipPlayedEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
+            mbottrilby.Services.TrilbyEventsClientService.ClipPlayedEventPayload payload = DeserializePayload<ClipPlayedEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null ||
                 guildId is null ||
                 string.IsNullOrWhiteSpace(payload.Trigger) ||
@@ -306,8 +306,8 @@ namespace mbottrilby.Services
 
         private static ClipTaggedEvent? ParseClipTaggedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<ClipTagMembershipEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
+            mbottrilby.Services.TrilbyEventsClientService.ClipTagMembershipEventPayload payload = DeserializePayload<ClipTagMembershipEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null ||
                 guildId is null ||
                 string.IsNullOrWhiteSpace(payload.TagName) ||
@@ -321,8 +321,8 @@ namespace mbottrilby.Services
 
         private static ClipUntaggedEvent? ParseClipUntaggedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<ClipTagMembershipEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
+            mbottrilby.Services.TrilbyEventsClientService.ClipTagMembershipEventPayload payload = DeserializePayload<ClipTagMembershipEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null ||
                 guildId is null ||
                 string.IsNullOrWhiteSpace(payload.TagName) ||
@@ -336,9 +336,9 @@ namespace mbottrilby.Services
 
         private static CurrentIntroUpdatedEvent? ParseCurrentIntroUpdatedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<CurrentIntroUpdatedEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
-            var userId = payload is null ? null : ParseSnowflake(payload.UserId);
+            mbottrilby.Services.TrilbyEventsClientService.CurrentIntroUpdatedEventPayload payload = DeserializePayload<CurrentIntroUpdatedEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
+            long? userId = payload is null ? null : ParseSnowflake(payload.UserId);
             if (payload is null || guildId is null || userId is null)
             {
                 return null;
@@ -349,8 +349,8 @@ namespace mbottrilby.Services
 
         private static ClipPlayCountChangedEvent? ParseClipPlayCountChangedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<ClipPlayedEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
+            mbottrilby.Services.TrilbyEventsClientService.ClipPlayedEventPayload payload = DeserializePayload<ClipPlayedEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null ||
                 guildId is null ||
                 string.IsNullOrWhiteSpace(payload.Trigger) ||
@@ -373,8 +373,8 @@ namespace mbottrilby.Services
 
         private static ClipCreatedEvent? ParseClipCreatedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<ClipCreatedEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
+            mbottrilby.Services.TrilbyEventsClientService.ClipCreatedEventPayload payload = DeserializePayload<ClipCreatedEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null || guildId is null || string.IsNullOrWhiteSpace(payload.Trigger))
             {
                 return null;
@@ -392,8 +392,8 @@ namespace mbottrilby.Services
 
         private static ClipDeletedEvent? ParseClipDeletedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<ClipDeletedEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
+            mbottrilby.Services.TrilbyEventsClientService.ClipDeletedEventPayload payload = DeserializePayload<ClipDeletedEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null || guildId is null || string.IsNullOrWhiteSpace(payload.Trigger))
             {
                 return null;
@@ -404,8 +404,8 @@ namespace mbottrilby.Services
 
         private static TagCreatedEvent? ParseTagCreatedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
+            mbottrilby.Services.TrilbyEventsClientService.TagLifecycleEventPayload payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null || guildId is null || string.IsNullOrWhiteSpace(payload.TagName))
             {
                 return null;
@@ -416,8 +416,8 @@ namespace mbottrilby.Services
 
         private static TagDeletedEvent? ParseTagDeletedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
+            mbottrilby.Services.TrilbyEventsClientService.TagLifecycleEventPayload payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null || guildId is null || string.IsNullOrWhiteSpace(payload.TagName))
             {
                 return null;
@@ -428,8 +428,8 @@ namespace mbottrilby.Services
 
         private static SharedTagSelectedEvent? ParseSharedTagSelectedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
+            mbottrilby.Services.TrilbyEventsClientService.TagLifecycleEventPayload payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
             if (payload is null || guildId is null || string.IsNullOrWhiteSpace(payload.TagName))
             {
                 return null;
@@ -440,8 +440,8 @@ namespace mbottrilby.Services
 
         private static SharedTagClearedEvent? ParseSharedTagClearedEvent(EventEnvelopePayload envelope)
         {
-            var payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
-            var guildId = ParseSnowflake(envelope.GuildId);
+            mbottrilby.Services.TrilbyEventsClientService.TagLifecycleEventPayload payload = DeserializePayload<TagLifecycleEventPayload>(envelope.Payload);
+            long? guildId = ParseSnowflake(envelope.GuildId);
             if (guildId is null)
             {
                 return null;
@@ -457,7 +457,7 @@ namespace mbottrilby.Services
             return value.ValueKind switch
             {
                 JsonValueKind.String => ParseSnowflake(value.GetString()),
-                JsonValueKind.Number when value.TryGetInt64(out var parsed) => parsed,
+                JsonValueKind.Number when value.TryGetInt64(out long parsed) => parsed,
                 _ => null,
             };
         }
@@ -479,7 +479,7 @@ namespace mbottrilby.Services
                 return null;
             }
 
-            return long.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed)
+            return long.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out long parsed)
                 ? parsed
                 : null;
         }
@@ -497,11 +497,11 @@ namespace mbottrilby.Services
 
         private static Uri BuildEventsUri(string baseUrl, long guildId)
         {
-            var baseUri = new Uri(baseUrl, UriKind.Absolute);
-            var scheme = string.Equals(baseUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)
+            System.Uri baseUri = new Uri(baseUrl, UriKind.Absolute);
+            string scheme = string.Equals(baseUri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)
                 ? "wss"
                 : "ws";
-            var builder = new UriBuilder(baseUri)
+            System.UriBuilder builder = new UriBuilder(baseUri)
             {
                 Scheme = scheme,
                 Path = "/v1/events",
@@ -512,13 +512,13 @@ namespace mbottrilby.Services
 
         private static string ComputeTokenFingerprint(string accessToken)
         {
-            var hash = SHA256.HashData(Encoding.UTF8.GetBytes(accessToken));
+            byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(accessToken));
             return Convert.ToHexString(hash[..6]).ToLowerInvariant();
         }
 
         private static string DescribeHandshakeStatus(ClientWebSocket? websocket)
         {
-            var statusCode = GetHandshakeStatusCode(websocket);
+            System.Net.HttpStatusCode? statusCode = GetHandshakeStatusCode(websocket);
             return statusCode is null ? "<unknown>" : $"{(int)statusCode.Value} ({statusCode.Value})";
         }
 
@@ -531,7 +531,7 @@ namespace mbottrilby.Services
 
             try
             {
-                var statusCode = websocket.HttpStatusCode;
+                System.Net.HttpStatusCode statusCode = websocket.HttpStatusCode;
                 return statusCode == 0 ? null : statusCode;
             }
             catch
@@ -542,16 +542,16 @@ namespace mbottrilby.Services
 
         private static string GetGuildIdFromEventsUri(Uri eventsUri)
         {
-            var query = eventsUri.Query;
+            string query = eventsUri.Query;
             if (string.IsNullOrWhiteSpace(query))
             {
                 return "<unknown>";
             }
 
-            var trimmedQuery = query.TrimStart('?');
-            foreach (var part in trimmedQuery.Split('&', StringSplitOptions.RemoveEmptyEntries))
+            string trimmedQuery = query.TrimStart('?');
+            foreach (string part in trimmedQuery.Split('&', StringSplitOptions.RemoveEmptyEntries))
             {
-                var pieces = part.Split('=', 2);
+                string[] pieces = part.Split('=', 2);
                 if (pieces.Length == 2 && string.Equals(pieces[0], "guild_id", StringComparison.OrdinalIgnoreCase))
                 {
                     return Uri.UnescapeDataString(pieces[1]);

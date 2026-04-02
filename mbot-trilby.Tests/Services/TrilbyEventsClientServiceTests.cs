@@ -8,7 +8,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesClipPlayedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "clip_played",
               "guild_id": 123,
@@ -23,10 +23,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var clipPlayedEvent = Assert.IsType<TrilbyEventsClientService.ClipPlayedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.ClipPlayedEvent clipPlayedEvent = Assert.IsType<TrilbyEventsClientService.ClipPlayedEvent>(parsed);
             Assert.Equal(123, clipPlayedEvent.GuildId);
             Assert.Equal("hello", clipPlayedEvent.Trigger);
             Assert.Equal("random", clipPlayedEvent.Mode);
@@ -39,7 +39,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_FallsBackToUserIdWhenNameMissing()
         {
-            var json = """
+            string json = """
             {
               "event_type": "clip_played",
               "guild_id": 123,
@@ -52,17 +52,17 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var clipPlayedEvent = Assert.IsType<TrilbyEventsClientService.ClipPlayedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.ClipPlayedEvent clipPlayedEvent = Assert.IsType<TrilbyEventsClientService.ClipPlayedEvent>(parsed);
             Assert.Equal("456", clipPlayedEvent.RequesterDisplayName);
         }
 
         [Fact]
         public void ParseEvent_ReturnsNullForUnknownEventType()
         {
-            var json = """
+            string json = """
             {
               "event_type": "unknown_event",
               "guild_id": 123,
@@ -70,7 +70,7 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.Null(parsed);
         }
@@ -78,7 +78,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesClipTaggedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "clip_tagged",
               "guild_id": 123,
@@ -89,10 +89,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var clipTaggedEvent = Assert.IsType<TrilbyEventsClientService.ClipTaggedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.ClipTaggedEvent clipTaggedEvent = Assert.IsType<TrilbyEventsClientService.ClipTaggedEvent>(parsed);
             Assert.Equal(123, clipTaggedEvent.GuildId);
             Assert.Equal("test", clipTaggedEvent.TagName);
             Assert.Equal("hello", clipTaggedEvent.ClipTrigger);
@@ -101,7 +101,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesClipPlayCountChangedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "clip_play_count_changed",
               "guild_id": 123,
@@ -115,10 +115,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var clipPlayCountChangedEvent = Assert.IsType<TrilbyEventsClientService.ClipPlayCountChangedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.ClipPlayCountChangedEvent clipPlayCountChangedEvent = Assert.IsType<TrilbyEventsClientService.ClipPlayCountChangedEvent>(parsed);
             Assert.Equal(123, clipPlayCountChangedEvent.GuildId);
             Assert.Equal("hello", clipPlayCountChangedEvent.Trigger);
             Assert.Equal("direct", clipPlayCountChangedEvent.Mode);
@@ -130,7 +130,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesClipCreatedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "clip_created",
               "guild_id": 123,
@@ -145,10 +145,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var clipCreatedEvent = Assert.IsType<TrilbyEventsClientService.ClipCreatedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.ClipCreatedEvent clipCreatedEvent = Assert.IsType<TrilbyEventsClientService.ClipCreatedEvent>(parsed);
             Assert.Equal(123, clipCreatedEvent.GuildId);
             Assert.Equal("hello", clipCreatedEvent.Trigger);
             Assert.Equal("https://example.com/video", clipCreatedEvent.SourceUrl);
@@ -161,7 +161,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesClipDeletedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "clip_deleted",
               "guild_id": 123,
@@ -171,10 +171,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var clipDeletedEvent = Assert.IsType<TrilbyEventsClientService.ClipDeletedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.ClipDeletedEvent clipDeletedEvent = Assert.IsType<TrilbyEventsClientService.ClipDeletedEvent>(parsed);
             Assert.Equal(123, clipDeletedEvent.GuildId);
             Assert.Equal("hello", clipDeletedEvent.Trigger);
         }
@@ -182,7 +182,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesClipUntaggedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "clip_untagged",
               "guild_id": 123,
@@ -193,10 +193,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var clipUntaggedEvent = Assert.IsType<TrilbyEventsClientService.ClipUntaggedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.ClipUntaggedEvent clipUntaggedEvent = Assert.IsType<TrilbyEventsClientService.ClipUntaggedEvent>(parsed);
             Assert.Equal(123, clipUntaggedEvent.GuildId);
             Assert.Equal("test", clipUntaggedEvent.TagName);
             Assert.Equal("hello", clipUntaggedEvent.ClipTrigger);
@@ -205,7 +205,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesCurrentIntroUpdatedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "current_intro_updated",
               "guild_id": 123,
@@ -216,10 +216,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var currentIntroUpdatedEvent = Assert.IsType<TrilbyEventsClientService.CurrentIntroUpdatedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.CurrentIntroUpdatedEvent currentIntroUpdatedEvent = Assert.IsType<TrilbyEventsClientService.CurrentIntroUpdatedEvent>(parsed);
             Assert.Equal(123, currentIntroUpdatedEvent.GuildId);
             Assert.Equal(456, currentIntroUpdatedEvent.UserId);
             Assert.Equal("intro1", currentIntroUpdatedEvent.Trigger);
@@ -228,7 +228,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesTagCreatedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "tag_created",
               "guild_id": 123,
@@ -238,10 +238,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var tagCreatedEvent = Assert.IsType<TrilbyEventsClientService.TagCreatedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.TagCreatedEvent tagCreatedEvent = Assert.IsType<TrilbyEventsClientService.TagCreatedEvent>(parsed);
             Assert.Equal(123, tagCreatedEvent.GuildId);
             Assert.Equal("test", tagCreatedEvent.TagName);
         }
@@ -249,7 +249,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesTagDeletedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "tag_deleted",
               "guild_id": 123,
@@ -259,10 +259,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var tagDeletedEvent = Assert.IsType<TrilbyEventsClientService.TagDeletedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.TagDeletedEvent tagDeletedEvent = Assert.IsType<TrilbyEventsClientService.TagDeletedEvent>(parsed);
             Assert.Equal(123, tagDeletedEvent.GuildId);
             Assert.Equal("test", tagDeletedEvent.TagName);
         }
@@ -270,7 +270,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesSharedTagSelectedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "shared_tag_selected",
               "guild_id": 123,
@@ -280,10 +280,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var sharedTagSelectedEvent = Assert.IsType<TrilbyEventsClientService.SharedTagSelectedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.SharedTagSelectedEvent sharedTagSelectedEvent = Assert.IsType<TrilbyEventsClientService.SharedTagSelectedEvent>(parsed);
             Assert.Equal(123, sharedTagSelectedEvent.GuildId);
             Assert.Equal("test", sharedTagSelectedEvent.TagName);
         }
@@ -291,7 +291,7 @@ namespace mbottrilby.Tests.Services
         [Fact]
         public void ParseEvent_ParsesSharedTagClearedEnvelope()
         {
-            var json = """
+            string json = """
             {
               "event_type": "shared_tag_cleared",
               "guild_id": 123,
@@ -301,10 +301,10 @@ namespace mbottrilby.Tests.Services
             }
             """;
 
-            var parsed = TrilbyEventsClientService.ParseEvent(json);
+            mbottrilby.Services.TrilbyEventsClientService.TrilbyEvent parsed = TrilbyEventsClientService.ParseEvent(json);
 
             Assert.NotNull(parsed);
-            var sharedTagClearedEvent = Assert.IsType<TrilbyEventsClientService.SharedTagClearedEvent>(parsed);
+            mbottrilby.Services.TrilbyEventsClientService.SharedTagClearedEvent sharedTagClearedEvent = Assert.IsType<TrilbyEventsClientService.SharedTagClearedEvent>(parsed);
             Assert.Equal(123, sharedTagClearedEvent.GuildId);
             Assert.Equal("test", sharedTagClearedEvent.TagName);
         }

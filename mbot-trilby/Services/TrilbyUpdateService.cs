@@ -62,7 +62,7 @@ namespace mbottrilby.Services
 
             try
             {
-                var updateInfo = await _updateManager.CheckForUpdatesAsync();
+                Velopack.UpdateInfo updateInfo = await _updateManager.CheckForUpdatesAsync();
                 if (updateInfo is null)
                 {
                     _status = _status with
@@ -95,7 +95,7 @@ namespace mbottrilby.Services
                     },
                     cancellationToken);
 
-                var pendingUpdate = _updateManager.UpdatePendingRestart ?? updateInfo.TargetFullRelease;
+                Velopack.VelopackAsset pendingUpdate = _updateManager.UpdatePendingRestart ?? updateInfo.TargetFullRelease;
                 _status = _status with
                 {
                     StatusText = $"Update {pendingUpdate.Version} is ready to install when Trilby exits.",
@@ -131,7 +131,7 @@ namespace mbottrilby.Services
 
         public async Task<bool> PrepareUpdateForExitAsync()
         {
-            var pendingUpdate = _updateManager.UpdatePendingRestart;
+            Velopack.VelopackAsset pendingUpdate = _updateManager.UpdatePendingRestart;
             if (pendingUpdate is null)
             {
                 return false;
@@ -147,7 +147,7 @@ namespace mbottrilby.Services
 
         public async Task<bool> PrepareUpdateForImmediateRestartAsync()
         {
-            var pendingUpdate = _updateManager.UpdatePendingRestart;
+            Velopack.VelopackAsset pendingUpdate = _updateManager.UpdatePendingRestart;
             if (pendingUpdate is null)
             {
                 return false;
@@ -163,10 +163,10 @@ namespace mbottrilby.Services
 
         private TrilbyUpdateStatus BuildInitialStatus()
         {
-            var currentVersion = _updateManager.CurrentVersion?.ToString()
+            string currentVersion = _updateManager.CurrentVersion?.ToString()
                 ?? Assembly.GetEntryAssembly()?.GetName().Version?.ToString()
                 ?? "unknown";
-            var pendingUpdate = _updateManager.UpdatePendingRestart;
+            Velopack.VelopackAsset pendingUpdate = _updateManager.UpdatePendingRestart;
             if (!_updateManager.IsInstalled)
             {
                 return new TrilbyUpdateStatus(

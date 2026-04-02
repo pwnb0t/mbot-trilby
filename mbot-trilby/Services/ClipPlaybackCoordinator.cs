@@ -15,7 +15,7 @@ namespace mbottrilby.Services
 
         public async Task<LoadClipsResult> LoadClipsAsync(string reason)
         {
-            var logLines = new List<string>
+            System.Collections.Generic.List<string> logLines = new List<string>
             {
                 $"Loading clips ({reason})..."
             };
@@ -33,7 +33,7 @@ namespace mbottrilby.Services
 
             try
             {
-                var catalog = await _trilbyApiClient.ListClipsAsync();
+                mbottrilby.Services.TrilbyApiClientService.ClipCatalog catalog = await _trilbyApiClient.ListClipsAsync();
                 logLines.Add($"Loaded {catalog.Clips.Count} clips (API total={catalog.Total}).");
                 return new LoadClipsResult(
                     success: true,
@@ -56,7 +56,7 @@ namespace mbottrilby.Services
 
         public async Task<LoadTagsResult> LoadTagsAsync(string reason)
         {
-            var logLines = new List<string>
+            System.Collections.Generic.List<string> logLines = new List<string>
             {
                 $"Loading tags ({reason})..."
             };
@@ -74,7 +74,7 @@ namespace mbottrilby.Services
 
             try
             {
-                var catalog = await _trilbyApiClient.ListTagsAsync();
+                mbottrilby.Services.TrilbyApiClientService.TagCatalog catalog = await _trilbyApiClient.ListTagsAsync();
                 logLines.Add($"Loaded {catalog.Tags.Count} tags (API total={catalog.Total}).");
                 return new LoadTagsResult(
                     success: true,
@@ -97,7 +97,7 @@ namespace mbottrilby.Services
 
         public async Task<PlayClipResult> PlayClipAsync(string clipName, string trigger)
         {
-            var logLines = new List<string>();
+            System.Collections.Generic.List<string> logLines = new List<string>();
 
             if (_trilbyApiClient is null)
             {
@@ -115,7 +115,7 @@ namespace mbottrilby.Services
 
             try
             {
-                var message = await _trilbyApiClient.PlayClipAsync(trigger);
+                string message = await _trilbyApiClient.PlayClipAsync(trigger);
                 logLines.Add(message);
                 return new PlayClipResult(success: true, shouldHideOverlay: true, logLines: logLines);
             }
@@ -128,7 +128,7 @@ namespace mbottrilby.Services
 
         public async Task<PlayClipResult> PlayRandomAsync()
         {
-            var logLines = new List<string>();
+            System.Collections.Generic.List<string> logLines = new List<string>();
 
             if (_trilbyApiClient is null)
             {
@@ -139,7 +139,7 @@ namespace mbottrilby.Services
             logLines.Add("Play Random clicked.");
             try
             {
-                var message = await _trilbyApiClient.PlayRandomClipAsync();
+                string message = await _trilbyApiClient.PlayRandomClipAsync();
                 logLines.Add(message);
                 return new PlayClipResult(success: true, shouldHideOverlay: true, logLines: logLines);
             }
@@ -152,7 +152,7 @@ namespace mbottrilby.Services
 
         public async Task<StopClipResult> StopClipAsync()
         {
-            var logLines = new List<string>();
+            System.Collections.Generic.List<string> logLines = new List<string>();
 
             if (_trilbyApiClient is null)
             {
@@ -164,7 +164,7 @@ namespace mbottrilby.Services
 
             try
             {
-                var message = await _trilbyApiClient.StopClipAsync();
+                string message = await _trilbyApiClient.StopClipAsync();
                 logLines.Add(message);
                 return new StopClipResult(success: true, logLines: logLines);
             }
